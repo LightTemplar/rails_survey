@@ -33,3 +33,5 @@ vcs.xml
 bin/
 
 tests_angular/
+
+.project 
