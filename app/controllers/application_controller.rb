@@ -5,11 +5,31 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   include SessionsHelper
   include ProjectsHelper
+  before_filter :check_time_until_logout
   before_filter :authenticate_user_from_token!
   before_filter :store_location
-  before_filter :authenticate_user!
+  before_filter :authenticate_user! 
+  after_filter :set_last_active_at
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+  
+  def set_last_active_at
+    if current_user
+      current_user.update_attribute(:last_active_at, Time.now) 
+    end
+  end
 
+  def check_time_until_logout
+      if user_signed_in?
+        msg =  { time_remaining: (Devise.timeout_in - (Time.now.utc - current_user.last_active_at)).round }
+        puts msg
+        begin
+          $redis.publish 'time-to-logout', msg.to_json
+          rescue Errno::ECONNREFUSED
+            logger.debug 'Redis is not running'
+        end
+      end 
+  end
+  
   def after_sign_in_path_for(resource_or_scope)
     set_current_project_id(session[:previous_url])
     session[:previous_url] || root_path

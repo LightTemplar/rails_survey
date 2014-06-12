@@ -26,7 +26,8 @@ io.sockets.on('connection', function (socket) {
 	// subscribe to redis
 	var subscribe = redis.createClient();
 	subscribe.subscribe('responses-create');
-	
+	subscribe.subscribe('time-to-logout');
+
 	//publish and start periodic update
 	publisher = redis.createClient();
 	setInterval(broadcast, INTERVAL);

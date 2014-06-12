@@ -26,9 +26,8 @@ class User < ActiveRecord::Base
   include RoleModel
   roles :admin, :manager, :translator, :analyst, :user
   include ComplexPassword
-  devise :database_authenticatable, :recoverable, :rememberable, :trackable, :validatable, :timeoutable,
-         :lockable
-  attr_accessible :email, :password, :password_confirmation, :project_ids, :roles_mask, :roles 
+  devise :database_authenticatable, :recoverable, :rememberable, :trackable, :validatable, :timeoutable, :lockable
+  attr_accessible :email, :password, :password_confirmation, :project_ids, :roles_mask, :roles, :last_active_at 
   before_save :ensure_authentication_token
   after_create :set_default_role 
   has_many :user_projects 
