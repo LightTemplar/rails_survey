@@ -55,6 +55,7 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'sshkit', '~> 1.5.1'
 gem 'prawn'
 gem 'sidekiq-status', '~> 0.5.3'
+gem 'roo', '~> 2.0.1'
 
 group :production do
   gem 'rails_12factor'

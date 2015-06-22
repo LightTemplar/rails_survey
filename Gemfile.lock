@@ -264,6 +264,9 @@ GEM
     responders (1.1.2)
       railties (>= 3.2, < 4.2)
     role_model (0.8.1)
+    roo (2.0.1)
+      nokogiri (~> 1)
+      rubyzip (~> 1.1, < 2.0.0)
     rotp (1.4.6)
     rspec-collection_matchers (1.0.0)
       rspec-expectations (>= 2.99.0.beta1)
@@ -399,6 +402,7 @@ DEPENDENCIES
   rails_config
   redis (~> 3.0.7)
   role_model (~> 0.8.1)
+  roo (~> 2.0.1)
   rspec-mocks
   rspec-rails (~> 2.0)
   rubyzip (~> 1.1.2)
