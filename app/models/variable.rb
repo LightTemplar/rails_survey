@@ -10,9 +10,10 @@
 #  unit_id             :integer
 #  created_at          :datetime
 #  updated_at          :datetime
+#  result              :string(255)
 #
 
 class Variable < ActiveRecord::Base
-  attr_accessible :name, :value, :next_variable, :reference_unit_name, :unit_id
+  attr_accessible :name, :value, :next_variable, :reference_unit_name, :unit_id, :result
   belongs_to :unit
 end

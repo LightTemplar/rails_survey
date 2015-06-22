@@ -4,13 +4,12 @@
 #
 #  id         :integer          not null, primary key
 #  name       :string(255)
-#  value      :integer
 #  created_at :datetime
 #  updated_at :datetime
 #
 
 class Unit < ActiveRecord::Base
-  attr_accessible :name, :value
+  attr_accessible :name
   has_many :variables
-  has_many :score_units
+  has_many :unit_scores
 end

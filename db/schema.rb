@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150622184322) do
+ActiveRecord::Schema.define(version: 20150622205524) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -285,13 +285,6 @@ ActiveRecord::Schema.define(version: 20150622184322) do
     t.time     "deleted_at"
   end
 
-  create_table "score_units", force: true do |t|
-    t.integer  "score_id"
-    t.integer  "unit_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "scores", force: true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -345,9 +338,16 @@ ActiveRecord::Schema.define(version: 20150622184322) do
 
   add_index "surveys", ["uuid"], name: "index_surveys_on_uuid"
 
+  create_table "unit_scores", force: true do |t|
+    t.integer  "score_id"
+    t.integer  "unit_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "value"
+  end
+
   create_table "units", force: true do |t|
     t.string   "name"
-    t.integer  "value"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -402,6 +402,7 @@ ActiveRecord::Schema.define(version: 20150622184322) do
     t.integer  "unit_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "result"
   end
 
   create_table "versions", force: true do |t|
