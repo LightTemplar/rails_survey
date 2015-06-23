@@ -71,7 +71,7 @@ class Response < ActiveRecord::Base
     end
 
     header = ['qid', 'short_qid', 'instrument_id', 'instrument_version_number', 'question_version_number',
-      'instrument_title', 'survey_id', 'survey_uuid', 'device_id', 'device_uuid', 'question_type', 'question_text', 'response',
+      'instrument_title', 'survey_id', 'survey_uuid', 'device_id', 'device_uuid', 'device_label', 'question_type', 'question_text', 'response',
       'response_labels', 'special_response', 'other_response', 'response_time_started', 'response_time_ended',
       'device_user_id', 'device_user_username'] + metadata_keys
     format << header
@@ -79,7 +79,7 @@ class Response < ActiveRecord::Base
     all.each do |response|
       row = [response.question_identifier, "q_#{response.question_id}", response.survey.instrument_id,
         response.instrument_version_number, response.question_version, response.survey.instrument_title,
-        response.survey.id, response.survey_uuid, response.survey.device.id, response.survey.device_uuid,
+        response.survey.id, response.survey_uuid, response.survey.device_id, response.survey.device_uuid, response.survey.device.label,
         response.versioned_question.try(:question_type), Sanitize.fragment(response.versioned_question.try(:text)),
         response.text, response.option_labels, response.special_response, response.other_response, response.time_started,
         response.time_ended, response.device_user.try(:id), response.device_user.try(:username)]
