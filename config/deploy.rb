@@ -2,7 +2,7 @@ lock '3.2.1'
 
 set :application, 'rails_survey' 
 set :scm, :git 
-set :repo_url, 'git@github.com:mnipper/rails_survey.git'
+set :repo_url, 'git@github.com:DukeMobileTech/rails_survey.git'
 set :use_sudo, false
 set :rails_env, 'production'
 set :deploy_via, :copy
