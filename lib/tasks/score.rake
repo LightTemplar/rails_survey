@@ -23,24 +23,14 @@ namespace :score do
       if $. == 1
         header = row
       else
-        row = row
         survey_id_index = header.index('survey_id')
         survey_id = row[survey_id_index] if survey_id_index
         score = Score.create(survey_id: survey_id)
-        next_variable = nil
-        Unit.all.each do |current_unit|
-          variable_index = nil
-          variable_identifier = nil
-          current_unit.variables.each do |variable|
-            variable_identifier = variable.name
-            variable_index = header.index(variable_identifier)
-            break if variable_index
-          end
-          next unless variable_index
-          if next_variable && current_unit.variables.pluck(:name).include?(next_variable)
-            variable_index = header.index(next_variable)
-          end
-          
+        next_variable = Variable.first
+        current_unit = next_variable.unit
+        while next_variable do
+          variable_identifier = next_variable.name
+          variable_index = header.index(variable_identifier)
           chosen_variable_result = 0
           chosen_variable = nil
           while chosen_variable_result == 0 do
@@ -58,10 +48,31 @@ namespace :score do
             end
           end
           UnitScore.create(score_id: score.id, unit_id: current_unit.id, value: chosen_variable_result)
-          next_variable = chosen_variable.next_variable if chosen_variable
+          if chosen_variable && chosen_variable.reference_unit_name
+            current_unit = Unit.where(name: chosen_variable.reference_unit_name).try(:first)
+            next_variable = current_unit.variables.where(name: chosen_variable.next_variable) if current_unit
+          elsif chosen_variable && chosen_variable.next_variable == "END"
+            next_variable = nil
+            current_unit = nil
+          elsif chosen_variable == nil
+            current_unit = Unit.where(id: current_unit.id + 1).try(:first)
+            if current_unit
+              next_variable = current_unit.variables.first
+            else
+              next_variable = nil
+            end
+          else
+            next_variable = Variable.where(name: chosen_variable.next_variable).first
+            current_unit = next_variable.unit if next_variable
+          end
         end
       end
     end  
+  end
+  
+  task export_scores: :environment do
+    file_path = "/Users/leonardngeno/Desktop/Scoring/scores.csv"
+    
   end
   
 end
