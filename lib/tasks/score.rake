@@ -71,8 +71,17 @@ namespace :score do
   end
   
   task export_scores: :environment do
-    file_path = "/Users/leonardngeno/Desktop/Scoring/scores.csv"
-    
+    csv_file = "/Users/leonardngeno/Desktop/Scoring/scores.csv"
+    CSV.open(csv_file, "wb") do |csv|
+      header = ['survey_id', 'unit_score_id', 'parent_score_id', 'parent_unit_id', 'parent_unit_name', 'unit_score_value']
+      csv << header
+      Score.all.each do |score|
+        score.unit_scores.each do |unit_score|
+          row = [unit_score.score.survey_id, unit_score.id, unit_score.score_id, unit_score.unit.id, unit_score.unit.name, unit_score.value]
+          csv << row
+        end
+      end
+    end
   end
   
 end
