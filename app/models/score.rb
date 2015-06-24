@@ -10,6 +10,6 @@
 
 class Score < ActiveRecord::Base
   attr_accessible :survey_id
-  has_many :score_units, dependent: :destroy
-  has_many :units, through: :score_units
+  has_many :unit_scores, dependent: :destroy
+  has_many :units, through: :unit_scores
 end

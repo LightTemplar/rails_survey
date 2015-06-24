@@ -10,6 +10,6 @@
 
 class Unit < ActiveRecord::Base
   attr_accessible :name
-  has_many :variables
-  has_many :unit_scores
+  has_many :variables, dependent: :destroy
+  has_many :unit_scores, dependent: :destroy
 end
