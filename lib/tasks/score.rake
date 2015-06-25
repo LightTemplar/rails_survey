@@ -26,10 +26,10 @@ namespace :score do
         survey_id_index = header.index('survey_id')
         survey_id = row[survey_id_index] if survey_id_index
         score = Score.create(survey_id: survey_id)
-        next_variable = Variable.first
-        current_unit = next_variable.unit
-        while next_variable do
-          variable_identifier = next_variable.name
+        current_variable = Variable.first
+        current_unit = current_variable.unit
+        while current_variable do
+          variable_identifier = current_variable.name
           variable_index = header.index(variable_identifier)
           chosen_variable_result = 0
           chosen_variable = nil
@@ -39,6 +39,7 @@ namespace :score do
               chosen_variables = current_unit.variables.where("name = ? AND value = ?", variable_identifier, variable_response) if variable_response       
               chosen_variable = chosen_variables[0] unless chosen_variables.blank?
               chosen_variable_result = chosen_variable.result.to_i if chosen_variable
+              break unless chosen_variable
               if chosen_variable_result == 0
                 variable_index = header.index(chosen_variable.result)
                 variable_identifier = chosen_variable.result
@@ -50,20 +51,25 @@ namespace :score do
           UnitScore.create(score_id: score.id, unit_id: current_unit.id, value: chosen_variable_result)
           if chosen_variable && chosen_variable.reference_unit_name
             current_unit = Unit.where(name: chosen_variable.reference_unit_name).try(:first)
-            next_variable = current_unit.variables.where(name: chosen_variable.next_variable) if current_unit
+            current_variable = current_unit.variables.where(name: chosen_variable.next_variable).try(:first) if current_unit
           elsif chosen_variable && chosen_variable.next_variable == "END"
-            next_variable = nil
+            current_variable = nil
             current_unit = nil
           elsif chosen_variable == nil
-            current_unit = Unit.where(id: current_unit.id + 1).try(:first)
-            if current_unit
-              next_variable = current_unit.variables.first
+            last_variable_in_current_unit = current_unit.variables.where(result: "1.0").try(:first)
+            if last_variable_in_current_unit.reference_unit_name
+              current_unit = Unit.where(name: last_variable_in_current_unit.reference_unit_name).try(:first)
+              current_variable = current_unit.variables.where(name: last_variable_in_current_unit.next_variable).try(:first) if current_unit
             else
-              next_variable = nil
+              current_variable = Variable.where(name: last_variable_in_current_unit.next_variable).try(:first)
+              current_unit = current_variable.unit if current_variable
+            end
+            unless current_variable
+              puts "===NIL CURRENT_VARIABLE==="
             end
           else
-            next_variable = Variable.where(name: chosen_variable.next_variable).first
-            current_unit = next_variable.unit if next_variable
+            current_variable = Variable.where("name = ? AND unit_id != ?", chosen_variable.next_variable, current_unit.id).try(:first)
+            current_unit = current_variable.unit if current_variable
           end
         end
       end
