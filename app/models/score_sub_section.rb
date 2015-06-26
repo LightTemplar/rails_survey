@@ -11,6 +11,6 @@
 
 class ScoreSubSection < ActiveRecord::Base
   attr_accessible :name, :score_section_id
-  has_many :scores, dependent: :destroy
+  has_many :units, dependent: :destroy
   belongs_to :score_section
 end

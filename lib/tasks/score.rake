@@ -1,15 +1,25 @@
 namespace :score do
   
   task initialize: :environment do
-    book = Roo::Spreadsheet.open('/Users/leonardngeno/Desktop/Scoring/Scoring-ObservationSection-AW_LK.xlsx', extension: :xlsx)
+    book = Roo::Spreadsheet.open('/Users/leonardngeno/Desktop/Scoring/Scoring-ObservationSection-AW_LK_updated.xlsx', extension: :xlsx)
     sheet1 = book.sheet('Sheet1')
     current_unit = Unit.new
+    current_section = ScoreSection.new
+    current_sub_section = ScoreSubSection.new
     sheet1.drop(1).each do |row|
       unless row[0].nil?
         if current_unit.name == row[0]
           variable = Variable.create(result: row[1], name: row[2], value: row[3], next_variable: row[4], reference_unit_name: row[5], unit_id: current_unit.id)
         else
-          unit = Unit.create(name: row[0], weight: row[6])
+          if current_section.name == row[7]
+            unless current_sub_section.name == row[8]
+             current_sub_section = ScoreSubSection.create(name: row[8], score_section_id: current_section.id)  
+            end
+          else
+            current_section = ScoreSection.create(name: row[7])
+            current_sub_section = ScoreSubSection.create(name: row[8], score_section_id: current_section.id)
+          end 
+          unit = Unit.create(name: row[0], weight: row[6], score_sub_section_id: current_sub_section.id)
           variable = Variable.create(result: row[1], name: row[2], value: row[3], next_variable: row[4], reference_unit_name: row[5], unit_id: unit.id)
           current_unit = unit
         end
@@ -97,12 +107,17 @@ namespace :score do
   task export_scores: :environment do
     csv_file = "/Users/leonardngeno/Desktop/Scoring/scores.csv"
     CSV.open(csv_file, "wb") do |csv|
-      header = ['survey_id', 'unit_score_id', 'parent_score_id', 'parent_unit_id', 'parent_unit_name', 'unit_score_value', 'unit_score_weight']
+      header = ['score_section_name', 'score_sub_section_name' ,'survey_id', 'unit_score_id', 'parent_score_id', 'parent_unit_id', 'parent_unit_name', 'unit_score_value', 'unit_score_weight']
       csv << header
-      Score.all.each do |score|
-        score.unit_scores.each do |unit_score|
-          row = [unit_score.score.survey_id, unit_score.id, unit_score.score_id, unit_score.unit.id, unit_score.unit.name, unit_score.value, unit_score.unit.weight]
-          csv << row
+      ScoreSection.all.each do |score_section|
+        score_section.score_sub_sections.each do |score_sub_section|
+          score_sub_section.units.each do |unit|
+            unit.unit_scores.each do |unit_score|
+              row = [unit_score.unit.score_sub_section.score_section.name, unit_score.unit.score_sub_section.name, unit_score.score.survey_id, unit_score.id, unit_score.score_id, 
+                unit_score.unit_id, unit_score.unit.name, unit_score.value, unit_score.unit.weight]
+              csv << row
+            end
+          end
         end
       end
     end
