@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150626192443) do
+ActiveRecord::Schema.define(version: 20150626213326) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -298,12 +298,6 @@ ActiveRecord::Schema.define(version: 20150626192443) do
     t.datetime "updated_at"
   end
 
-  create_table "scores", force: true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "survey_id"
-  end
-
   create_table "section_translations", force: true do |t|
     t.integer  "section_id"
     t.string   "language"
@@ -334,6 +328,18 @@ ActiveRecord::Schema.define(version: 20150626192443) do
 
   add_index "skips", ["deleted_at"], name: "index_skips_on_deleted_at"
 
+  create_table "survey_scores", force: true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "survey_id"
+    t.string   "survey_uuid"
+    t.string   "device_label"
+    t.string   "device_user"
+    t.string   "survey_start_time"
+    t.string   "survey_end_time"
+    t.string   "center_id"
+  end
+
   create_table "surveys", force: true do |t|
     t.integer  "instrument_id"
     t.datetime "created_at"
@@ -352,11 +358,12 @@ ActiveRecord::Schema.define(version: 20150626192443) do
   add_index "surveys", ["uuid"], name: "index_surveys_on_uuid"
 
   create_table "unit_scores", force: true do |t|
-    t.integer  "score_id"
+    t.integer  "survey_score_id"
     t.integer  "unit_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "value"
+    t.integer  "variable_id"
   end
 
   create_table "units", force: true do |t|

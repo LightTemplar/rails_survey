@@ -16,4 +16,5 @@
 class Variable < ActiveRecord::Base
   attr_accessible :name, :value, :next_variable, :reference_unit_name, :unit_id, :result
   belongs_to :unit
+  has_many :unit_scores
 end

@@ -36,7 +36,14 @@ namespace :score do
         else
           survey_id_index = header.index('survey_id')
           survey_id = row[survey_id_index] if survey_id_index
-          score = Score.create(survey_id: survey_id)
+          survey_uuid = row[header.index('survey_uuid')] if header.index('survey_uuid')
+          device_label = row[header.index('device_label')] if header.index('device_label')
+          device_user = row[header.index('device_user_username')] if header.index('device_user_username')
+          survey_start_time = row[header.index('survey_start_time')] if header.index('survey_start_time')
+          survey_end_time = row[header.index('survey_end_time')] if header.index('survey_end_time')
+          center_id = row[header.index('Center ID')] if header.index('Center ID')
+          score = SurveyScore.create(survey_id: survey_id, survey_uuid: survey_uuid, device_label: device_label, 
+            device_user: device_user, survey_start_time: survey_start_time, survey_end_time: survey_end_time, center_id: center_id)
           current_variable = Variable.first
           current_unit = current_variable.unit
           while current_variable do
@@ -77,7 +84,7 @@ namespace :score do
               end
             end
             if chosen_variable_result != 0
-              UnitScore.create(score_id: score.id, unit_id: current_unit.id, value: chosen_variable_result)
+              UnitScore.create(survey_score_id: score.id, unit_id: current_unit.id, value: chosen_variable_result, variable_id: chosen_variable.id)
             end
             if chosen_variable && chosen_variable.reference_unit_name
               current_unit = Unit.where(name: chosen_variable.reference_unit_name).try(:first)
@@ -107,14 +114,17 @@ namespace :score do
   task export_scores: :environment do
     csv_file = "/Users/leonardngeno/Desktop/Scoring/scores.csv"
     CSV.open(csv_file, "wb") do |csv|
-      header = ['score_section_name', 'score_sub_section_name' ,'survey_id', 'unit_score_id', 'parent_score_id', 'parent_unit_id', 'parent_unit_name', 'unit_score_value', 'unit_score_weight']
+      header = ['survey_id', 'survey_uuid', 'device_label', 'device_user', 'survey_start_time', 'survey_end_time', 'unit_score_id', 'parent_score_id', 
+        'parent_unit_id', 'parent_unit_name', 'variable_name', 'center_id', 'score_section_name', 'score_sub_section_name' , 'unit_score_value', 'unit_score_weight']
       csv << header
       ScoreSection.all.each do |score_section|
         score_section.score_sub_sections.each do |score_sub_section|
           score_sub_section.units.each do |unit|
             unit.unit_scores.each do |unit_score|
-              row = [unit_score.unit.score_sub_section.score_section.name, unit_score.unit.score_sub_section.name, unit_score.score.survey_id, unit_score.id, unit_score.score_id, 
-                unit_score.unit_id, unit_score.unit.name, unit_score.value, unit_score.unit.weight]
+              row = [unit_score.survey_score.survey_id, unit_score.survey_score.survey_uuid, unit_score.survey_score.device_label, 
+                unit_score.survey_score.device_user, unit_score.survey_score.survey_start_time, unit_score.survey_score.survey_end_time, 
+                unit_score.id, unit_score.survey_score_id, unit_score.unit_id, unit_score.unit.name, unit_score.variable.name, unit_score.survey_score.center_id, 
+                unit_score.unit.score_sub_section.score_section.name, unit_score.unit.score_sub_section.name, unit_score.value, unit_score.unit.weight]
               csv << row
             end
           end
