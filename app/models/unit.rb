@@ -15,4 +15,5 @@ class Unit < ActiveRecord::Base
   has_many :variables, dependent: :destroy
   has_many :unit_scores, dependent: :destroy
   belongs_to :score_sub_section
+  validates :name, uniqueness: true
 end
