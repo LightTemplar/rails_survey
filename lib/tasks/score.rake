@@ -1,7 +1,7 @@
 namespace :score do
   
   task initialize: :environment do
-    book = Roo::Spreadsheet.open('/Users/leonardngeno/Desktop/Scoring/Scoring-ObservationSection-v3.xlsx', extension: :xlsx)
+    book = Roo::Spreadsheet.open('/Users/leonardngeno/Desktop/Scoring/Scoring-ObservationSection-v4.xlsx', extension: :xlsx)
     sheet1 = book.sheet('Sheet1')
     current_unit = Unit.new
     current_section = ScoreSection.new
@@ -16,7 +16,7 @@ namespace :score do
              current_sub_section = ScoreSubSection.create(name: row[8], score_section_id: current_section.id)  
             end
           else
-            current_section = ScoreSection.create(name: row[7])
+            current_section = ScoreSection.create(name: row[7], instrument_id: row[9])
             current_sub_section = ScoreSubSection.create(name: row[8], score_section_id: current_section.id)
           end 
           unit = Unit.create(name: row[0], weight: row[6], score_sub_section_id: current_sub_section.id)
@@ -45,9 +45,17 @@ namespace :score do
           score = SurveyScore.create(survey_id: survey_id, survey_uuid: survey_uuid, device_label: device_label, 
             device_user: device_user, survey_start_time: survey_start_time, survey_end_time: survey_end_time, center_id: center_id)
           
-          current_variable = Variable.first
-          current_unit = current_variable.unit
+          puts "===ROW==="
+          puts $.
+          
+          instrument_id_index = header.index('instrument_id') 
+          instrument_id = row[instrument_id_index] if instrument_id_index
+          current_section = ScoreSection.find_by_instrument_id(instrument_id) if instrument_id
+          current_variable = current_section.variables.first if current_section
+          current_unit = current_variable.unit if current_variable
+          previous_unit = nil
           while current_variable do
+            current_variable_already_set = false
             variable_identifier = current_variable.name
             variable_index = header.index(variable_identifier)
             chosen_variable = nil
@@ -61,28 +69,51 @@ namespace :score do
                 if chosen_variable_result == 0
                   variable_identifier = chosen_variable.result
                   variable_index = header.index(variable_identifier)
-                  if current_variable.next_variables.blank? #Is current_variable always the same as chosen_variable?
+                  if current_variable.next_variables.blank? 
                     break
                   else
+                    previous_unit = current_unit
                     current_variable = current_variable.next_variables.first
                     current_unit = current_variable.unit
+                    if current_unit.score_sub_section.score_section != previous_unit.score_sub_section.score_section
+                      current_variable = nil
+                      current_unit = nil
+                      break
+                    end
                   end
                 end
               else
+                previous_unit = current_unit
+                current_variable = current_variable.last_variable_in_unit
+                current_unit = current_variable.unit
+                current_variable_already_set = true
+                if current_unit.score_sub_section.score_section != previous_unit.score_sub_section.score_section
+                  current_variable = nil
+                  current_unit = nil
+                end
                 break
               end
             end
             if chosen_variable_result != 0
               UnitScore.create(survey_score_id: score.id, unit_id: current_unit.id, value: chosen_variable.result.to_i, variable_id: chosen_variable.id)
             end
-            if current_variable.next_variables.blank?
-              current_variable = nil
-              current_unit = nil
-            else
-              current_variable = current_variable.next_variables.first
-              current_unit = current_variable.unit
+            unless current_variable_already_set
+              if current_variable
+                if current_variable.next_variables.blank?
+                  current_variable = nil
+                  current_unit = nil
+                else
+                  previous_unit = current_unit
+                  current_variable = current_variable.next_variables.first
+                  current_unit = current_variable.unit
+                  if current_unit.score_sub_section.score_section != previous_unit.score_sub_section.score_section
+                    current_variable = nil
+                    current_unit = nil
+                  end
+                end
+              end
             end
-          end
+          end   
         end
       end  
     end

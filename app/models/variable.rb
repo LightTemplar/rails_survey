@@ -25,5 +25,9 @@ class Variable < ActiveRecord::Base
     next_unit = Unit.find_by_name(next_unit_name)
     next_unit.variables.where('name = ?', next_variable) if next_unit
   end
+  
+  def last_variable_in_unit
+    unit.variables.last
+  end
 
 end
