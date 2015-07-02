@@ -13,6 +13,6 @@ class ScoreSubSection < ActiveRecord::Base
   attr_accessible :name, :score_section_id
   has_many :units, dependent: :destroy
   has_many :unit_scores, through: :units
-  has_many :survey_scores, -> { uniq }, through: :units
+  has_many :survey_scores, through: :units
   belongs_to :score_section
 end

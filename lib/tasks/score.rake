@@ -84,7 +84,10 @@ namespace :score do
                 current_variable = nil
               end
             else
-              UnitScore.create(survey_score_id: score.id, unit_id: current_unit.id, value: chosen_variable.result.to_i, variable_id: chosen_variable.id)
+              three_name = (center_id.to_i).to_s + "_" + chosen_variable.unit.score_sub_section.score_section.name + "_" + (chosen_variable.unit.score_sub_section.name.to_i).to_s
+              two_name = (center_id.to_i).to_s + "_" + chosen_variable.unit.score_sub_section.score_section.name
+              UnitScore.create(survey_score_id: score.id, unit_id: current_unit.id, value: chosen_variable.result.to_i, 
+                variable_id: chosen_variable.id, center_section_sub_section_name: three_name, center_section_name: two_name)
               if chosen_variable.next_variables
                 previous_unit = current_unit
                 current_variable = chosen_variable.next_variables.first
@@ -110,20 +113,33 @@ namespace :score do
   task export_scores: :environment do
     csv_file = "/Users/leonardngeno/Desktop/Scoring/scores.csv"
     CSV.open(csv_file, "wb") do |csv|
-      header = ['survey_id', 'survey_uuid', 'device_label', 'device_user', 'survey_start_time', 'survey_end_time', 'unit_score_id', 'parent_score_id', 
-        'parent_unit_id', 'parent_unit_name', 'variable_name', 'center_id', 'score_section_name', 'score_sub_section_name' , 'unit_score_value', 
-        'unit_score_weight', 'score_X_weight', 'sum_unit_score_weight', 'sum_score_X_weight', 'score']
+      header = ['survey_id', 'survey_uuid', 'device_label', 'device_user', 'survey_start_time', 'survey_end_time', 'parent_unit_name', 
+        'variable_name', 'center_id', 'score_section_name', 'score_sub_section_name' , 'unit_score_value', 'unit_score_weight', 
+        'score_X_weight', 'sum_unit_score_weight', 'sum_score_X_weight', 'sub_section_score', 'section_score', 'center_section_subsection', 'center_section']
       
       csv << header
-      SurveyScore.all.each do |survey_score|
-        survey_score.unit_scores.each do |unit_score|
-          row = [unit_score.survey_score.survey_id, unit_score.survey_score.survey_uuid, unit_score.survey_score.device_label,
-            unit_score.survey_score.device_user, unit_score.survey_score.survey_start_time, unit_score.survey_score.survey_end_time,
-            unit_score.id, unit_score.survey_score_id, unit_score.unit_id, unit_score.unit.name, unit_score.variable.name, unit_score.survey_score.center_id,
-            unit_score.unit.score_sub_section.score_section.name, unit_score.unit.score_sub_section.name, unit_score.value, unit_score.unit.weight,
-            unit_score.score_weight_product, '', '', '']
-          csv << row
+      unit_scores = UnitScore.all.order('center_section_sub_section_name')
+      index = 0
+      unit_scores.each do |unit_score|
+        row = [unit_score.survey_score.survey_id, unit_score.survey_score.survey_uuid, unit_score.survey_score.device_label,
+          unit_score.survey_score.device_user, unit_score.survey_score.survey_start_time, unit_score.survey_score.survey_end_time,
+          unit_score.unit.name, unit_score.variable.name, unit_score.survey_score.center_id,
+          unit_score.unit.score_sub_section.score_section.name, unit_score.unit.score_sub_section.name, unit_score.value, unit_score.unit.weight,
+          unit_score.score_weight_product, '', '', '', '', '', '']
+        if index + 1 < unit_scores.length
+          if unit_score.center_section_sub_section_name != unit_scores[index+1].center_section_sub_section_name
+            row[header.index('center_section_subsection')] = unit_score.center_section_sub_section_name
+            row[header.index('sum_unit_score_weight')] = unit_score.unit_weights_sum
+            row[header.index('sum_score_X_weight')] = unit_score.score_weight_product_sum
+            row[header.index('sub_section_score')] = unit_score.sub_section_score
+          end
+          if unit_score.center_section_name != unit_scores[index+1].center_section_name
+            row[header.index('center_section')] = unit_score.center_section_name
+            row[header.index('section_score')] = unit_score.section_score
+          end
         end
+        csv << row
+        index += 1
       end
     end
   end

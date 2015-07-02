@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150630201629) do
+ActiveRecord::Schema.define(version: 20150702175804) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -365,6 +365,8 @@ ActiveRecord::Schema.define(version: 20150630201629) do
     t.datetime "updated_at"
     t.integer  "value"
     t.integer  "variable_id"
+    t.string   "center_section_sub_section_name"
+    t.string   "center_section_name"
   end
 
   create_table "units", force: true do |t|
