@@ -111,19 +111,18 @@ namespace :score do
     csv_file = "/Users/leonardngeno/Desktop/Scoring/scores.csv"
     CSV.open(csv_file, "wb") do |csv|
       header = ['survey_id', 'survey_uuid', 'device_label', 'device_user', 'survey_start_time', 'survey_end_time', 'unit_score_id', 'parent_score_id', 
-        'parent_unit_id', 'parent_unit_name', 'variable_name', 'center_id', 'score_section_name', 'score_sub_section_name' , 'unit_score_value', 'unit_score_weight']
+        'parent_unit_id', 'parent_unit_name', 'variable_name', 'center_id', 'score_section_name', 'score_sub_section_name' , 'unit_score_value', 
+        'unit_score_weight', 'score_X_weight', 'sum_unit_score_weight', 'sum_score_X_weight', 'score']
+      
       csv << header
-      ScoreSection.all.each do |score_section|
-        score_section.score_sub_sections.each do |score_sub_section|
-          score_sub_section.units.each do |unit|
-            unit.unit_scores.each do |unit_score|
-              row = [unit_score.survey_score.survey_id, unit_score.survey_score.survey_uuid, unit_score.survey_score.device_label, 
-                unit_score.survey_score.device_user, unit_score.survey_score.survey_start_time, unit_score.survey_score.survey_end_time, 
-                unit_score.id, unit_score.survey_score_id, unit_score.unit_id, unit_score.unit.name, unit_score.variable.name, unit_score.survey_score.center_id, 
-                unit_score.unit.score_sub_section.score_section.name, unit_score.unit.score_sub_section.name, unit_score.value, unit_score.unit.weight]
-              csv << row
-            end
-          end
+      SurveyScore.all.each do |survey_score|
+        survey_score.unit_scores.each do |unit_score|
+          row = [unit_score.survey_score.survey_id, unit_score.survey_score.survey_uuid, unit_score.survey_score.device_label,
+            unit_score.survey_score.device_user, unit_score.survey_score.survey_start_time, unit_score.survey_score.survey_end_time,
+            unit_score.id, unit_score.survey_score_id, unit_score.unit_id, unit_score.unit.name, unit_score.variable.name, unit_score.survey_score.center_id,
+            unit_score.unit.score_sub_section.score_section.name, unit_score.unit.score_sub_section.name, unit_score.value, unit_score.unit.weight,
+            unit_score.score_weight_product, '', '', '']
+          csv << row
         end
       end
     end
