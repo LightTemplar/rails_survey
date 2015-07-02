@@ -16,4 +16,9 @@ class UnitScore < ActiveRecord::Base
   belongs_to :survey_score
   belongs_to :unit
   belongs_to :variable
+  
+  def score_weight_product
+    value * unit.weight
+  end
+  
 end

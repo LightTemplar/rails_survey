@@ -45,75 +45,63 @@ namespace :score do
           score = SurveyScore.create(survey_id: survey_id, survey_uuid: survey_uuid, device_label: device_label, 
             device_user: device_user, survey_start_time: survey_start_time, survey_end_time: survey_end_time, center_id: center_id)
           
-          puts "===ROW==="
-          puts $.
-          
           instrument_id_index = header.index('instrument_id') 
           instrument_id = row[instrument_id_index] if instrument_id_index
-          current_section = ScoreSection.find_by_instrument_id(instrument_id) if instrument_id
-          current_variable = current_section.variables.first if current_section
+          current_sections = ScoreSection.where(instrument_id: instrument_id) if instrument_id
+          current_variable = current_sections[0].variables.first        
           current_unit = current_variable.unit if current_variable
           previous_unit = nil
-          while current_variable do
-            current_variable_already_set = false
+          
+          while current_unit do
             variable_identifier = current_variable.name
             variable_index = header.index(variable_identifier)
             chosen_variable = nil
             chosen_variable_result = 0
             while chosen_variable_result == 0 do
-              if variable_index
-                variable_response = row[variable_index].to_i
-                chosen_variable = current_unit.variables.where("name = ? AND value = ?", variable_identifier, variable_response).try(:first) if variable_response       
-                chosen_variable_result = chosen_variable.result.to_i if chosen_variable
-                break unless chosen_variable
-                if chosen_variable_result == 0
-                  variable_identifier = chosen_variable.result
-                  variable_index = header.index(variable_identifier)
-                  if current_variable.next_variables.blank? 
-                    break
-                  else
-                    previous_unit = current_unit
-                    current_variable = current_variable.next_variables.first
-                    current_unit = current_variable.unit
-                    if current_unit.score_sub_section.score_section != previous_unit.score_sub_section.score_section
-                      current_variable = nil
-                      current_unit = nil
-                      break
-                    end
-                  end
-                end
+               if variable_index
+                 break if row[variable_index].blank?
+                 variable_response = row[variable_index].to_i
+                 chosen_variable = current_unit.variables.where("name = ? AND value = ?", variable_identifier, variable_response).try(:first) if variable_response       
+                 chosen_variable_result = chosen_variable.result.to_i if chosen_variable
+                 break unless chosen_variable #TODO Figure out why it would be nil
+                 if chosen_variable_result == 0
+                   variable_identifier = chosen_variable.result
+                   variable_index = header.index(variable_identifier)
+                 end
+               else
+                 break
+               end
+            end
+            if chosen_variable_result == 0
+              previous_unit = current_unit
+              last_variable = current_variable.last_variable_in_unit   
+              if last_variable.next_variables
+                current_variable = last_variable.next_variables.first
+                current_unit = current_variable.unit
               else
                 previous_unit = current_unit
-                current_variable = current_variable.last_variable_in_unit
-                current_unit = current_variable.unit
-                current_variable_already_set = true
-                if current_unit.score_sub_section.score_section != previous_unit.score_sub_section.score_section
-                  current_variable = nil
-                  current_unit = nil
-                end
-                break
+                current_unit = nil
+                current_variable = nil
               end
-            end
-            if chosen_variable_result != 0
+            else
               UnitScore.create(survey_score_id: score.id, unit_id: current_unit.id, value: chosen_variable.result.to_i, variable_id: chosen_variable.id)
-            end
-            unless current_variable_already_set
-              if current_variable
-                if current_variable.next_variables.blank?
-                  current_variable = nil
-                  current_unit = nil
-                else
-                  previous_unit = current_unit
-                  current_variable = current_variable.next_variables.first
-                  current_unit = current_variable.unit
-                  if current_unit.score_sub_section.score_section != previous_unit.score_sub_section.score_section
-                    current_variable = nil
-                    current_unit = nil
-                  end
-                end
+              if chosen_variable.next_variables
+                previous_unit = current_unit
+                current_variable = chosen_variable.next_variables.first
+                current_unit = current_variable.unit
+              else
+                previous_unit = current_unit
+                current_unit = nil
+                current_variable = nil
               end
             end
-          end   
+            if current_unit && current_unit.score_sub_section.score_section != previous_unit.score_sub_section.score_section
+              unless current_unit.score_sub_section.score_section.name == "D"
+                current_unit = nil
+                current_variable = nil
+              end
+            end
+          end
         end
       end  
     end
