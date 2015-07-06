@@ -57,16 +57,18 @@ namespace :score do
             variable_index = header.index(variable_identifier)
             chosen_variable = nil
             chosen_variable_result = 0
+            navigation_result = false
             while chosen_variable_result == 0 do
                if variable_index
                  break if row[variable_index].blank?
                  variable_response = row[variable_index].to_i
                  chosen_variable = current_unit.variables.where("name = ? AND value = ?", variable_identifier, variable_response).try(:first) if variable_response       
                  chosen_variable_result = chosen_variable.result.to_i if chosen_variable
-                 break unless chosen_variable #TODO Figure out why it would be nil
+                 break unless chosen_variable
                  if chosen_variable_result == 0
                    variable_identifier = chosen_variable.result
                    variable_index = header.index(variable_identifier)
+                   navigation_result = !current_unit.variables.pluck(:name).include?(variable_identifier)
                  end
                else
                  break
@@ -74,14 +76,24 @@ namespace :score do
             end
             if chosen_variable_result == 0
               previous_unit = current_unit
-              last_variable = current_variable.last_variable_in_unit   
-              if last_variable.next_variables
-                current_variable = last_variable.next_variables.first
-                current_unit = current_variable.unit
+              if navigation_result
+                if current_variable.next_variables
+                  current_variable = current_variable.next_variables.first
+                  current_unit = current_variable.unit
+                else
+                  current_unit = nil
+                  current_variable = nil
+                end
               else
-                previous_unit = current_unit
-                current_unit = nil
-                current_variable = nil
+                last_variable = current_variable.last_variable_in_unit
+                if last_variable.next_variables
+                  current_variable = last_variable.next_variables.first
+                  current_unit = current_variable.unit
+                else
+                  previous_unit = current_unit
+                  current_unit = nil
+                  current_variable = nil
+                end
               end
             else
               three_name = (center_id.to_i).to_s + "_" + chosen_variable.unit.score_sub_section.score_section.name + "_" + (chosen_variable.unit.score_sub_section.name.to_i).to_s
