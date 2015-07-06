@@ -76,24 +76,13 @@ namespace :score do
             end
             if chosen_variable_result == 0
               previous_unit = current_unit
-              if navigation_result
-                if current_variable.next_variables
-                  current_variable = current_variable.next_variables.first
-                  current_unit = current_variable.unit
-                else
-                  current_unit = nil
-                  current_variable = nil
-                end
+              current_variable = current_variable.last_variable_in_unit unless navigation_result
+              if current_variable.next_variables
+                current_variable = current_variable.next_variables.first
+                current_unit = current_variable.unit
               else
-                last_variable = current_variable.last_variable_in_unit
-                if last_variable.next_variables
-                  current_variable = last_variable.next_variables.first
-                  current_unit = current_variable.unit
-                else
-                  previous_unit = current_unit
-                  current_unit = nil
-                  current_variable = nil
-                end
+                current_unit = nil
+                current_variable = nil
               end
             else
               three_name = (center_id.to_i).to_s + "_" + chosen_variable.unit.score_sub_section.score_section.name + "_" + (chosen_variable.unit.score_sub_section.name.to_i).to_s
