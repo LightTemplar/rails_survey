@@ -27,7 +27,7 @@ gem 'paper_trail', '~> 3.0.8'
 group :test do
   gem 'rspec-rails', '~> 2.0'
   gem 'rspec-mocks'
-  gem "factory_girl_rails", "~> 4.0"
+  gem "factory_girl_rails", "~> 4.0", :require => false
   gem 'database_cleaner', '~> 1.0'
   gem 'capybara'
   gem 'selenium-webdriver', '~> 2.39'
