@@ -5,8 +5,6 @@ u = User.new
 u.email=user_email
 u.password=u.password_confirmation=user_password
 u.save!
-u.roles=['admin', 'manager', 'translator', 'analyst', 'user'] 
-u.save!
 
 admin_email = "admin@example.com"
 admin_password = "Password1"
