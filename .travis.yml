@@ -16,3 +16,7 @@ script:
 notifications:
   email:
     - leonard@chpir.org
+branches:
+  only:
+    -master
+    -develop
