@@ -14,6 +14,5 @@ script:
   - bundle exec rake db:test:prepare
   - bundle exec rake
 notifications:
-  email: false
-  hipchat:
-    secure: "itDSvxPNx0StDU2A4fA4lh030sPL9Hv08wQqE6nVfl5L7AJub/J8M+2UHnjoi2UrMt4AYgLnp4bI0JNe4QbPu07xeaqM9JkkxM2WeGBzmgSh8cQIxrsIoIAzNOtoxG5prOXItvU8uAbC/m2Qe/axdo7xv2KOu22RBtZgKhuw3BE="
+  email:
+    - leonard@chpir.org

@@ -35,9 +35,13 @@ class Survey < ActiveRecord::Base
   end
   
   def calculate_completion_rate
-    self.update(completion_rate: (responses.where.not('text = ? AND other_response = ? AND special_response = ?', nil || "", nil || "", nil || "")
-    .pluck(:question_id).uniq.count.to_f / instrument.version_by_version_number(instrument_version_number)
-    .questions.select{|question| question.question_type != 'INSTRUCTIONS'}.count).round(2))
+    valid_response_count = responses.where.not('text = ? AND other_response = ? AND special_response = ?',
+                            nil || "", nil || "", nil || "").pluck(:question_id).uniq.count
+    valid_question_count = instrument.version_by_version_number(instrument_version_number)
+                            .questions.select{|question| question.question_type != 'INSTRUCTIONS'}.count
+    rate = (valid_response_count.to_f / valid_question_count).round(2) if (valid_response_count &&
+          valid_question_count && valid_question_count != 0)
+    self.update(completion_rate: rate) if rate
     completion_rate 
   end
 
