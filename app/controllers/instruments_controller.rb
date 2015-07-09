@@ -74,7 +74,7 @@ class InstrumentsController < ApplicationController
     short_csv_file = File.new(root + "/#{Time.now.to_i}" + "_short" + ".csv", "a+")
     short_csv_file.close
     export = ResponseExport.create(:instrument_id => @instrument.id, :long_format_url => long_csv_file.path, 
-      :wide_format_url => wide_csv_file.path, :short_format_url => short_csv_file, :instrument_versions => @instrument.survey_instrument_versions)
+      :wide_format_url => wide_csv_file.path, :short_format_url => short_csv_file.path, :instrument_versions => @instrument.survey_instrument_versions)
     long_id = InstrumentLongResponsesExportWorker.perform_async(@instrument.id, long_csv_file.path)
     wide_id = InstrumentWideResponsesExportWorker.perform_async(@instrument.id, wide_csv_file.path)
     short_id = InstrumentShortResponsesExportWorker.perform_async(@instrument.id, short_csv_file.path)
