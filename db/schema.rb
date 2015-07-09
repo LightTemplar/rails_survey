@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150605200250) do
+ActiveRecord::Schema.define(version: 20150709202824) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -232,6 +232,8 @@ ActiveRecord::Schema.define(version: 20150605200250) do
     t.text     "instrument_versions"
     t.string   "wide_format_url"
     t.boolean  "wide_done",           default: false
+    t.string   "short_format_url"
+    t.boolean  "short_done",          default: false
   end
 
   create_table "response_images", force: true do |t|

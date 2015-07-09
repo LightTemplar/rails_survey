@@ -12,10 +12,12 @@
 #  instrument_versions :text
 #  wide_format_url     :string(255)
 #  wide_done           :boolean          default(FALSE)
+#  short_format_url    :string(255)
+#  short_done          :boolean          default(FALSE)
 #
 
 class ResponseExport < ActiveRecord::Base
-  attr_accessible :long_format_url, :wide_format_url, :project_id, :instrument_id, :instrument_versions, :long_done, :wide_done
+  attr_accessible :long_format_url, :wide_format_url, :project_id, :instrument_id, :instrument_versions, :long_done, :wide_done, :short_format_url, :short_done
   serialize :instrument_versions
   belongs_to :project
   belongs_to :instrument
