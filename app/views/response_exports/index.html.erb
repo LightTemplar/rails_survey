@@ -82,7 +82,9 @@
                   <td>
                       <% if export.short_done && export.short_format_url %>
                         <%= link_to 'short csv', instrument_short_format_responses_project_response_export_path(current_project, export.id) %>
-                      <% end %>
+                      <% else %>
+			Processing...
+		      <% end %>
                   </td>
                 </tr>
               <% end %>
