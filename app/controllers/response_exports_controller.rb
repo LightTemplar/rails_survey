@@ -1,7 +1,7 @@
 class ResponseExportsController < ApplicationController
   after_action :verify_authorized, :except => 
     [:index, :project_long_format_responses, :project_wide_format_responses, :instrument_long_format_responses,
-      :instrument_wide_format_responses, :project_response_images, :instrument_response_images]
+      :instrument_wide_format_responses, :instrument_short_format_responses, :project_response_images, :instrument_response_images]
   
   def index
     @project_exports = current_project.response_exports.order('created_at DESC').limit(10)
@@ -71,6 +71,14 @@ class ResponseExportsController < ApplicationController
       if instrument
         instrument_download(export.wide_format_url, 'text/csv', "#{ instrument.title.gsub(/\s+/,  '_') }.csv")
       end
+   end
+
+  def instrument_short_format_responses
+    export = ResponseExport.find(params[:id])
+    instrument = current_project.instruments.find(export.instrument_id)
+    if instrument
+      instrument_download(export.short_format_url, 'text/csv', "#{ instrument.title.gsub(/\s+/,  '_') }" + '_short_' + '.csv')
+    end
   end
   
   def project_response_images

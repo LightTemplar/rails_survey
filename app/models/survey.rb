@@ -156,4 +156,31 @@ class Survey < ActiveRecord::Base
     labels.join(Settings.list_delimiter)
   end
 
+  def self.to_short_csv(csv_file)
+    CSV.open(csv_file, "wb") do |csv|
+      short_export(csv)
+    end
+  end
+
+  def short_export(format)
+    header = ['center_id', 'survey_id', 'question_identifier', 'question_text', 'response_text', 'response_label', 'special_response', 'other_response']
+    format << header
+    all.each do |survey|
+      @center_id ||= center_id(survey)
+      survey.responses.each do |response|
+        row = [@center_id, survey.id, response.question_identifier, Sanitize.fragment(survey.chronicled_question(response.question_identifier).try(:text)),
+               response.text, response.option_labels, response.special_response, response.other_response]
+        format << row
+      end
+    end
+  end
+
+  def center_id(survey)
+    if survey.metadata
+      survey.metadata.each do |key, value|
+        return value if key == 'Center ID'
+      end
+    end
+  end
+
 end

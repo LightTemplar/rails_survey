@@ -50,9 +50,9 @@
                   <th>Instrument</th>
                   <th>Versions</th>
                   <th>Date</th>
-                  <th>Long format csv</th>
-                  <th>Wide format csv</th>
-                  <th>Pictures</th>
+                  <th>Long format</th>
+                  <th>Wide format</th>
+                  <th>Short format</th>
               </tr>
           </thead>
           <tbody>
@@ -80,8 +80,8 @@
                       <% end %>
                   </td>
                   <td>
-                      <% if policy(export).instrument_response_images? && export.response_images_export && export.response_images_export.download_url %>
-                        <%= link_to 'pictures', instrument_response_images_project_response_export_path(current_project, export.id) %>
+                      <% if export.short_done && export.short_format_url %>
+                        <%= link_to 'short csv', instrument_short_format_responses_project_response_export_path(current_project, export.id) %>
                       <% end %>
                   </td>
                 </tr>
