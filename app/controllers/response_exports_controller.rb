@@ -1,6 +1,6 @@
 class ResponseExportsController < ApplicationController
   after_action :verify_authorized, :except => 
-    [:index, :project_long_format_responses, :project_wide_format_responses, :instrument_long_format_responses,
+    [:index, :show, :project_long_format_responses, :project_wide_format_responses, :instrument_long_format_responses,
       :instrument_wide_format_responses, :instrument_short_format_responses, :project_response_images, :instrument_response_images]
   
   def index
@@ -12,6 +12,10 @@ class ResponseExportsController < ApplicationController
     @project = current_project
     @export = current_project.response_exports.new
     authorize @export
+  end
+
+  def show
+    @export = current_project.instrument_response_exports.find(params[:id])
   end
   
   def create
