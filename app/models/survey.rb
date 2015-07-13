@@ -163,24 +163,20 @@ class Survey < ActiveRecord::Base
   end
 
   def self.short_export(format)
-    header = ['center_id', 'survey_id', 'question_identifier', 'question_text', 'response_text', 'response_label', 'special_response', 'other_response']
+    header = ['identifier', 'survey_id', 'question_identifier', 'question_text', 'response_text', 'response_label', 'special_response', 'other_response']
     format << header
     all.each do |survey|
-      @center_id ||= survey.center_id
+      validator = survey.validation_identifier
       survey.responses.each do |response|
-        row = [@center_id, survey.id, response.question_identifier, Sanitize.fragment(survey.chronicled_question(response.question_identifier).try(:text)),
+        row = [validator, survey.id, response.question_identifier, Sanitize.fragment(survey.chronicled_question(response.question_identifier).try(:text)),
                response.text, response.option_labels, response.special_response, response.other_response]
         format << row
       end
     end
   end
 
-  def center_id
-    if metadata
-      metadata.each do |key, value|
-        return value if key == 'Center ID'
-      end
-    end
+  def validation_identifier
+    metadata['Center ID'] ? metadata['Center ID'] : metadata['Participant ID'] if metadata
   end
 
 end
