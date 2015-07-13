@@ -1,0 +1,10 @@
+<table>
+  <tbody>
+  <% for attribute in @export.attributes.keys %>
+      <tr>
+        <td><b><%= attribute.humanize %></b></td>
+        <td><%= @export.attributes[attribute].to_s %></td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
