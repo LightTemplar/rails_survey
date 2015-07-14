@@ -142,7 +142,10 @@ class Survey < ActiveRecord::Base
   end
   
   def chronicled_question(question_identifier)
-    @chronicled_question ||= instrument_version.find_question_by(question_identifier: question_identifier)
+    @chronicled_question ||= Hash.new do |question_hash, q_id|
+      question_hash[q_id] = instrument_version.find_question_by(question_identifier: q_id)
+    end
+    @chronicled_question[question_identifier]
   end
   
   def option_labels(response)
