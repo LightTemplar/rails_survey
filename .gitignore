@@ -29,6 +29,7 @@ rails_survey.iml
 vcs.xml
 .idea/
 .project
+.settings/
 
 #Ignore bin
 bin/
