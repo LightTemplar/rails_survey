@@ -15,11 +15,12 @@
 #  longitude                 :string(255)
 #  metadata                  :text
 #  completion_rate           :decimal(3, 2)
+#  device_label              :string(255)
 #
 
 class Survey < ActiveRecord::Base
   attr_accessible :instrument_id, :instrument_version_number, :uuid, :device_id, :instrument_title,
-    :device_uuid, :latitude, :longitude, :metadata, :completion_rate
+    :device_uuid, :latitude, :longitude, :metadata, :completion_rate, :device_label
   belongs_to :instrument
   belongs_to :device
   has_many :responses, foreign_key: :survey_uuid, primary_key: :uuid, dependent: :destroy
@@ -99,7 +100,7 @@ class Survey < ActiveRecord::Base
     format << header
       
     all.each do |survey|
-      row = [survey.id, survey.uuid, survey.device.identifier, survey.device.label, survey.latitude, survey.longitude, survey.instrument.id, 
+      row = [survey.id, survey.uuid, survey.device.identifier, survey.device_label ? survey.device_label : survey.device.label, survey.latitude, survey.longitude, survey.instrument.id,
         survey.instrument_version_number, survey.instrument.title, survey.responses.order('time_started').try(:first).try(:time_started), 
         survey.responses.order('time_ended').try(:last).try(:time_ended)]     
       
