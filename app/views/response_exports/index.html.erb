@@ -69,28 +69,31 @@
             </td>
             <td><%= export.created_at.strftime("%Y-%m-%d %I:%M%p") %></td>
             <td>
-              <% if policy(export).instrument_long_format_responses? && export.long_done && export.long_format_url %>
+              <% if export.long_done && export.long_format_url %>
                   <%= link_to 'long csv', instrument_long_format_responses_project_response_export_path(current_project, export.id) %>
-              <% else %>
+              <% elsif export.long_format_url && !export.long_done %>
                   Processing...
+              <% else %>
               <% end %>
             </td>
             <td>
-              <% if policy(export).instrument_wide_format_responses? && export.wide_done && export.wide_format_url %>
+              <% if export.wide_done && export.wide_format_url %>
                   <%= link_to 'wide csv', instrument_wide_format_responses_project_response_export_path(current_project, export.id) %>
-              <% else %>
+              <% elsif export.wide_format_url && !export.wide_done %>
                   Processing...
+              <% else %>
               <% end %>
             </td>
             <td>
               <% if export.short_done && export.short_format_url %>
                   <%= link_to 'short csv', instrument_short_format_responses_project_response_export_path(current_project, export.id) %>
-              <% else %>
+              <% elsif !export.short_done && export.short_format_url %>
                   Processing...
+              <% else %>
               <% end %>
             </td>
             <td>
-              <% if policy(export).instrument_response_images? && export.response_images_export && export.response_images_export.download_url %>
+              <% if export.response_images_export && export.response_images_export.download_url %>
                   <%= link_to 'pictures', instrument_response_images_project_response_export_path(current_project, export.id) %>
               <% end %>
             </td>
