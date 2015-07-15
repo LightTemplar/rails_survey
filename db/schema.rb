@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150709202824) do
+ActiveRecord::Schema.define(version: 20150715150437) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -287,20 +287,6 @@ ActiveRecord::Schema.define(version: 20150709202824) do
     t.time     "deleted_at"
   end
 
-  create_table "score_sections", force: true do |t|
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "instrument_id"
-  end
-
-  create_table "score_sub_sections", force: true do |t|
-    t.string   "name"
-    t.integer  "score_section_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "section_translations", force: true do |t|
     t.integer  "section_id"
     t.string   "language"
@@ -331,18 +317,6 @@ ActiveRecord::Schema.define(version: 20150709202824) do
 
   add_index "skips", ["deleted_at"], name: "index_skips_on_deleted_at"
 
-  create_table "survey_scores", force: true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "survey_id"
-    t.string   "survey_uuid"
-    t.string   "device_label"
-    t.string   "device_user"
-    t.string   "survey_start_time"
-    t.string   "survey_end_time"
-    t.string   "center_id"
-  end
-
   create_table "surveys", force: true do |t|
     t.integer  "instrument_id"
     t.datetime "created_at"
@@ -356,28 +330,10 @@ ActiveRecord::Schema.define(version: 20150709202824) do
     t.string   "longitude"
     t.text     "metadata"
     t.decimal  "completion_rate",           precision: 3, scale: 2
+    t.string   "device_label"
   end
 
   add_index "surveys", ["uuid"], name: "index_surveys_on_uuid"
-
-  create_table "unit_scores", force: true do |t|
-    t.integer  "survey_score_id"
-    t.integer  "unit_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "value"
-    t.integer  "variable_id"
-    t.string   "center_section_sub_section_name"
-    t.string   "center_section_name"
-  end
-
-  create_table "units", force: true do |t|
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "weight"
-    t.integer  "score_sub_section_id"
-  end
 
   create_table "user_projects", force: true do |t|
     t.integer  "user_id"
@@ -420,17 +376,6 @@ ActiveRecord::Schema.define(version: 20150709202824) do
   add_index "users", ["authentication_token"], name: "index_users_on_authentication_token", unique: true
   add_index "users", ["email"], name: "index_users_on_email", unique: true
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-
-  create_table "variables", force: true do |t|
-    t.string   "name"
-    t.integer  "value"
-    t.string   "next_variable"
-    t.integer  "unit_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "result"
-    t.string   "next_unit_name"
-  end
 
   create_table "versions", force: true do |t|
     t.string   "item_type",  null: false

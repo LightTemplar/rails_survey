@@ -15,6 +15,7 @@
 #  longitude                 :string(255)
 #  metadata                  :text
 #  completion_rate           :decimal(3, 2)
+#  device_label              :string(255)
 #
 
 require "spec_helper"
