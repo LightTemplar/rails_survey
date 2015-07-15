@@ -28,7 +28,7 @@
           <td><%= link_to survey.instrument_version_number,
               project_instrument_version_path(current_project, survey.instrument, survey.instrument_version_number) %></td>
           <td><%= survey.device_uuid %></td>
-          <td><%= survey.device.label if survey.device %></td>
+          <td><%= survey.device_label ? survey.device_label : (survey.device.label if survey.device) %></td>
           <td><a href="<%= survey.location_link %>" target="_blank"><%= survey.location %></a></td>
           <td><%= survey.percent_complete %>
           <td><%= link_to 'View Responses', project_survey_path(current_project, survey) %></td>
