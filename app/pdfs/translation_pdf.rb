@@ -44,8 +44,7 @@ class TranslationPdf < Prawn::Document
       number_question(question)
 
       if question.has_translation_for?(@language)
-        text Sanitize.fragment(question.instructions), style: :italic
-        move_down InstructionQuestionMargin 
+        move_down InstructionQuestionMargin
         text Sanitize.fragment(question.translated_for(@language, :text))
         draw_options(question) if question.has_options?
       end
@@ -110,7 +109,7 @@ class TranslationPdf < Prawn::Document
       when 'en'
         'Skip pattern: Skip to'
       when 'es'
-        'Modelo de Omisión: vaya al #'
+        'Pase a la pregunta'
       else
         'Skip pattern: Skip to'
       end
@@ -121,7 +120,7 @@ class TranslationPdf < Prawn::Document
       when 'en'
         'Special Response (circle one):   RF   DK   SK   NA'
       when 'es'
-        'Respuesta Especial (circule uno):   RC   NS   SP   NA'
+        'Respuesta Especial (circule uno):   NR   NS   SP   NA'
       else
         'Special Response (circle one):   RF   DK   SK   NA'
       end
