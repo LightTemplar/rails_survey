@@ -51,7 +51,7 @@ class InstrumentsController < ApplicationController
     redirect_to project_instruments_url, notice: "Successfully destroyed instrument."
   end
 
-  def export
+  def csv_export
     @instrument = current_project.instruments.find(params[:id])
     authorize @instrument
     respond_to do |format|
@@ -59,6 +59,17 @@ class InstrumentsController < ApplicationController
         send_data @instrument.to_csv, 
           type: 'text/csv; charset=iso-8859-1; header=present',
           disposition: "attachment; filename=#{@instrument.title}_#{@instrument.current_version_number}.csv"
+      end
+    end
+  end
+
+  def pdf_export
+    @instrument = current_project.instruments.find(params[:id])
+    authorize @instrument
+    respond_to do |format|
+      format.pdf do
+        pdf = InstrumentPdf.new(@instrument)
+        send_data pdf.render, filename: pdf.display_name, type: 'application/pdf'
       end
     end
   end
