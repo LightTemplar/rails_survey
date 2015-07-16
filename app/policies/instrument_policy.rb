@@ -34,8 +34,12 @@ class InstrumentPolicy
     write_access
   end
   
-  def export?
+  def csv_export?
     export_access 
+  end
+
+  def pdf_export?
+    export_access
   end
   
   def export_responses?
