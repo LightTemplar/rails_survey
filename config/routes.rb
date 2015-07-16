@@ -66,7 +66,8 @@ RailsSurvey::Application.routes.draw do
       resources :sections
       resources :grids
       member do
-        get :export
+        get :csv_export
+        get :pdf_export
         get :export_responses
         get :move
         match :update_move, action: :update_move, via: [:patch, :put]

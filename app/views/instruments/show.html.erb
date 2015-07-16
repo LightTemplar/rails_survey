@@ -20,8 +20,11 @@
 <section class="widget">
   <header>
     <div class="actions hidden-xs-portrait"> 
-      <%= link_to export_project_instrument_path(@project, @instrument, format: :csv, filename: "#{@instrument.title}_#{@instrument.current_version_number}.csv"), class: 'btn btn-primary' do %>
-        <i class="icon-circle-arrow-down"></i> Export Instrument
+      <%= link_to csv_export_project_instrument_path(@project, @instrument, format: :csv, filename: "#{@instrument.title}_#{@instrument.current_version_number}.csv"), class: 'btn btn-primary' do %>
+        <i class="icon-circle-arrow-down"></i> CSV Export
+      <% end %>
+      <%= link_to pdf_export_project_instrument_path(@project, @instrument, format: :pdf, filename: "#{@instrument.title}_#{@instrument.current_version_number}.pdf"), class: 'btn btn-primary' do %>
+          <i class="icon-print"></i> PDF Export
       <% end %>
       <%= link_to project_instrument_instrument_translations_path(@project, @instrument), class: 'btn btn-primary' do %>
         <i class="icon-globe"></i> Translations
