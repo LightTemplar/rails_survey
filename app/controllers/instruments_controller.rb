@@ -77,10 +77,7 @@ class InstrumentsController < ApplicationController
   def export_responses
     @instrument = current_project.instruments.find(params[:id])
     authorize @instrument
-    export = ResponseExport.create(:instrument_id => @instrument.id, :instrument_versions => @instrument.survey_instrument_versions)
-    Survey.export_wide_csv(@instrument.id, export.id)
-    Survey.export_short_csv(@instrument.id, export.id)
-    Survey.export_long_csv(@instrument.id, export.id)
+    Survey.export(@instrument)
     redirect_to project_response_exports_path(current_project)
   end
   
