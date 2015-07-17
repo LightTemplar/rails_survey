@@ -20,7 +20,7 @@
 
 class Survey < ActiveRecord::Base
   attr_accessible :instrument_id, :instrument_version_number, :uuid, :device_id, :instrument_title,
-    :device_uuid, :latitude, :longitude, :metadata, :completion_rate, :device_label
+                  :device_uuid, :latitude, :longitude, :metadata, :completion_rate, :device_label
   belongs_to :instrument
   belongs_to :device
   has_many :responses, foreign_key: :survey_uuid, primary_key: :uuid, dependent: :destroy
@@ -30,30 +30,30 @@ class Survey < ActiveRecord::Base
   validates :instrument_id, presence: true, allow_blank: false
   validates :instrument_version_number, presence: true, allow_blank: false
   paginates_per 50
-  
+
   def percent_complete
     completion_rate || calculate_completion_rate
   end
-  
+
   def calculate_completion_rate
     valid_response_count = responses.where.not('text = ? AND other_response = ? AND special_response = ?',
-                            nil || "", nil || "", nil || "").pluck(:question_id).uniq.count
+                                               nil || "", nil || "", nil || "").pluck(:question_id).uniq.count
     valid_question_count = instrument.version_by_version_number(instrument_version_number)
-                            .questions.select{|question| question.question_type != 'INSTRUCTIONS'}.count
+                               .questions.select{|question| question.question_type != 'INSTRUCTIONS'}.count
     rate = (valid_response_count.to_f / valid_question_count).round(2) if (valid_response_count &&
-          valid_question_count && valid_question_count != 0)
+        valid_question_count && valid_question_count != 0)
     self.update(completion_rate: rate) if rate
-    completion_rate 
+    completion_rate
   end
 
   def location
     "#{latitude} / #{longitude}" if latitude and longitude
   end
-  
+
   def group_responses_by_day
-    self.responses.group_by_day(:created_at).count 
+    self.responses.group_by_day(:created_at).count
   end
-  
+
   def group_responses_by_hour
     self.responses.group_by_hour_of_day(:created_at).count
   end
@@ -69,23 +69,30 @@ class Survey < ActiveRecord::Base
   def metadata
     JSON.parse(read_attribute(:metadata)) unless read_attribute(:metadata).nil?
   end
-  
+
   def chronicled_question(question_identifier)
     @chronicled_question ||= Hash.new do |question_hash, q_id|
       question_hash[q_id] = instrument_version.find_question_by(question_identifier: q_id)
     end
     @chronicled_question[question_identifier]
   end
-  
+
   def option_labels(response)
-    labels = [] 
+    labels = []
     versioned_question = chronicled_question(response.question_identifier)
-    if response.question and versioned_question and versioned_question.has_options? 
+    if response.question and versioned_question and versioned_question.has_options?
       response.text.split(Settings.list_delimiter).each do |option_index|
         (versioned_question.has_other? and option_index.to_i == versioned_question.other_index) ? labels << "Other" : labels << versioned_question.options[option_index.to_i].to_s
       end
     end
     labels.join(Settings.list_delimiter)
+  end
+
+  def self.export(instrument)
+    export = ResponseExport.create(:instrument_id => instrument.id, :instrument_versions => instrument.survey_instrument_versions)
+    export_wide_csv(instrument.id, export.id)
+    export_short_csv(instrument.id, export.id)
+    export_long_csv(instrument.id, export.id)
   end
 
   def self.export_short_csv(instrument_id, export_id)
@@ -98,15 +105,13 @@ class Survey < ActiveRecord::Base
       csv << %w[identifier survey_id question_identifier question_text response_text response_label special_response other_response]
     end
     instrument = Instrument.find(instrument_id, include: :surveys)
-    job_count = instrument.surveys.count
-    $redis.set("#{export_id}_short_job_count", '0')
     instrument.surveys.each do |survey|
-      ShortExportWorker.perform_async(short_csv.path, survey.id, export_id)
+      ShortExportWorker.perform_async(short_csv.path, survey.id)
     end
-    StatusWorker.perform_in(1.minute, export_id, 'short_job', job_count.to_s)
+    StatusWorker.perform_in(1.minute, export_id)
   end
 
-  def self.write_short_row(file, survey_id, export_id)
+  def self.write_short_row(file, survey_id)
     survey = Survey.find(survey_id, include: :responses)
     validator = survey.validation_identifier
     CSV.open(file, 'a+') do |csv|
@@ -115,9 +120,6 @@ class Survey < ActiveRecord::Base
                 response.text, response.option_labels, response.special_response, response.other_response]
       end
     end
-    current_job_count = $redis.get("#{export_id}_short_job_count")
-    current_job_count = current_job_count.to_i + 1
-    $redis.set("#{export_id}_short_job_count", current_job_count.to_s)
   end
 
   def validation_identifier
@@ -135,12 +137,10 @@ class Survey < ActiveRecord::Base
     CSV.open(wide_csv, 'wb') do |csv|
       header = write_wide_header(instrument, csv)
     end
-    job_count = instrument.surveys.count
-    $redis.set("#{export_id}_wide_job_count", '0')
     instrument.surveys.each do |survey|
-      WideExportWorker.perform_async(wide_csv.path, survey.id, header, export_id)
+      WideExportWorker.perform_async(wide_csv.path, survey.id, header)
     end
-    StatusWorker.perform_in(1.minute, export_id, 'wide_job', job_count.to_s)
+    StatusWorker.perform_in(1.minute, export_id)
   end
 
   def self.write_wide_header(instrument, csv)
@@ -164,7 +164,7 @@ class Survey < ActiveRecord::Base
     header.join(',')
   end
 
-  def self.write_wide_row(file, survey_id, headers, export_id)
+  def self.write_wide_row(file, survey_id, headers)
     survey = Survey.find(survey_id, include: :responses)
     header = headers.split(',')
     CSV.open(file, 'a+') do |csv|
@@ -208,9 +208,6 @@ class Survey < ActiveRecord::Base
       end
       csv << row
     end
-    current_job_count = $redis.get("#{export_id}_wide_job_count")
-    current_job_count = current_job_count.to_i + 1
-    $redis.set("#{export_id}_wide_job_count", current_job_count.to_s)
   end
 
   def self.export_long_csv(instrument_id, export_id)
@@ -224,12 +221,10 @@ class Survey < ActiveRecord::Base
     CSV.open(long_csv, 'wb') do |csv|
       header = write_long_header(instrument, csv)
     end
-    job_count = instrument.surveys.count
-    $redis.set("#{export_id}_long_job_count", '0')
     instrument.surveys.each do |survey|
-      LongExportWorker.perform_async(long_csv.path, survey.id, header, export_id)
+      LongExportWorker.perform_async(long_csv.path, survey.id, header)
     end
-    StatusWorker.perform_in(1.minute, export_id, 'long_job', job_count.to_s)
+    StatusWorker.perform_in(1.minute, export_id)
   end
 
   def self.write_long_header(instrument, csv)
@@ -247,7 +242,7 @@ class Survey < ActiveRecord::Base
     header.join(',')
   end
 
-  def self.write_long_row(file, survey_id, headers, export_id)
+  def self.write_long_row(file, survey_id, headers)
     survey = Survey.find(survey_id, include: :responses)
     header = headers.split(',')
     CSV.open(file, 'a+') do |csv|
@@ -266,9 +261,6 @@ class Survey < ActiveRecord::Base
         csv << row
       end
     end
-    current_job_count = $redis.get("#{export_id}_long_job_count")
-    current_job_count = current_job_count.to_i + 1
-    $redis.set("#{export_id}_long_job_count", current_job_count.to_s)
   end
 
 end
