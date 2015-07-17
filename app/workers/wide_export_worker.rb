@@ -1,7 +1,7 @@
 class WideExportWorker
   include Sidekiq::Worker
 
-  def perform(file, survey_id, headers, export_id)
-    Survey.write_wide_row(file, survey_id, headers, export_id)
+  def perform(file, survey_id, headers)
+    Survey.write_wide_row(file, survey_id, headers)
   end
 end
