@@ -65,7 +65,7 @@ class ProjectsController < ApplicationController
     #   pictures_export = ResponseImagesExport.create(:response_export_id => export.id, :download_url => zipped_file.path)
     #   ProjectImagesExportWorker.perform_async(current_project.id, zipped_file.path, pictures_export.id)
     # end
-    # TODO
+    # TODO Reimplement like instrument exports
     redirect_to project_response_exports_path(current_project)
   end
 

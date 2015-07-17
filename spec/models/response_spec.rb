@@ -48,7 +48,8 @@ describe Response do
       question.options << build(:option)
       @response.to_s.should == question.options.first.to_s
     end
-
+# TODO move to Survey
+=begin
     it "should export correctly" do
       out = []
       Response.export(out)
@@ -98,6 +99,7 @@ describe Response do
           @response.device_user.username]
         ]
     end
+=end
 
     describe "validations" do
       it "should require a question" do
