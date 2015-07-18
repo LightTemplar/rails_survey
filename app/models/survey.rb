@@ -88,19 +88,22 @@ class Survey < ActiveRecord::Base
     labels.join(Settings.list_delimiter)
   end
 
-  def self.export(instrument)
-    export = ResponseExport.create(:instrument_id => instrument.id, :instrument_versions => instrument.survey_instrument_versions)
-    export_wide_csv(instrument.id, export.id)
-    export_short_csv(instrument.id, export.id)
-    export_long_csv(instrument.id, export.id)
+  def self.instrument_export(instrument)
+    root = File.join('files', 'exports').to_s
+    short_csv = File.new(root + "/#{Time.now.to_i}_#{instrument.title}_short.csv", 'a+')
+    wide_csv = File.new(root + "/#{Time.now.to_i}_#{instrument.title}_wide.csv", 'a+')
+    long_csv = File.new(root + "/#{Time.now.to_i}_#{instrument.title}_long.csv", 'a+')
+    long_csv.close
+    wide_csv.close
+    short_csv.close
+    export = ResponseExport.create(:instrument_id => instrument.id, :instrument_versions => instrument.survey_instrument_versions,
+              :short_format_url => short_csv.path, :wide_format_url => wide_csv.path, :long_format_url => long_csv.path)
+    export_wide_csv(wide_csv, instrument.id, export.id)
+    export_short_csv(short_csv, instrument.id, export.id)
+    export_long_csv(long_csv, instrument.id, export.id)
   end
 
-  def self.export_short_csv(instrument_id, export_id)
-    root = File.join('files', 'exports').to_s
-    short_csv = File.new(root + "/#{Time.now.to_i}" + '_short' + '.csv', 'a+')
-    short_csv.close
-    export = ResponseExport.find(export_id)
-    export.update(short_format_url: short_csv.path)
+  def self.export_short_csv(short_csv, instrument_id, export_id)
     CSV.open(short_csv, 'wb') do |csv|
       csv << %w[identifier survey_id question_identifier question_text response_text response_label special_response other_response]
     end
@@ -126,12 +129,7 @@ class Survey < ActiveRecord::Base
     metadata['Center ID'] ? metadata['Center ID'] : metadata['Participant ID'] if metadata
   end
 
-  def self.export_wide_csv(instrument_id, export_id)
-    root = File.join('files', 'exports').to_s
-    wide_csv = File.new(root + "/#{Time.now.to_i}" + '_wide' + '.csv', 'a+')
-    wide_csv.close
-    export = ResponseExport.find(export_id)
-    export.update(wide_format_url: wide_csv.path)
+  def self.export_wide_csv(wide_csv, instrument_id, export_id)
     instrument = Instrument.find(instrument_id, include: :surveys)
     header = ''
     CSV.open(wide_csv, 'wb') do |csv|
@@ -210,12 +208,7 @@ class Survey < ActiveRecord::Base
     end
   end
 
-  def self.export_long_csv(instrument_id, export_id)
-    root = File.join('files', 'exports').to_s
-    long_csv = File.new(root + "/#{Time.now.to_i}" + '_long' + '.csv', 'a+')
-    long_csv.close
-    export = ResponseExport.find(export_id)
-    export.update(long_format_url: long_csv.path)
+  def self.export_long_csv(long_csv, instrument_id, export_id)
     instrument = Instrument.find(instrument_id, include: :surveys)
     header = ''
     CSV.open(long_csv, 'wb') do |csv|

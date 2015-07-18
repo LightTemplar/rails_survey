@@ -77,7 +77,7 @@ class InstrumentsController < ApplicationController
   def export_responses
     @instrument = current_project.instruments.find(params[:id])
     authorize @instrument
-    Survey.export(@instrument)
+    Survey.instrument_export(@instrument)
     redirect_to project_response_exports_path(current_project)
   end
   
