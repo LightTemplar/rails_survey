@@ -1,5 +1,5 @@
 class ProjectsController < ApplicationController
-  after_action :verify_authorized, :except => [:export]
+  after_action :verify_authorized, :except => [:export_responses]
   
   def index
     @projects = current_user.projects
@@ -49,23 +49,13 @@ class ProjectsController < ApplicationController
   end
 
   def export_responses
-    # root = File.join('files', 'exports').to_s
-    # long_csv_file = File.new(root + "/#{Time.now.to_i}" + "_long" + ".csv", "a+")
-    # long_csv_file.close
-    # wide_csv_file = File.new(root + "/#{Time.now.to_i}" + "_wide" + ".csv", "a+")
-    # wide_csv_file.close
-    # export = ResponseExport.create(:project_id => current_project.id, :long_format_url => long_csv_file.path, :wide_format_url => wide_csv_file.path)
-    # long_id = ProjectLongResponsesExportWorker.perform_async(current_project.id, long_csv_file.path)
-    # wide_id = ProjectWideResponsesExportWorker.perform_async(current_project.id, wide_csv_file.path)
-    # StatusWorker.perform_in(1.minute, export.id, long_id, "long_job")
-    # StatusWorker.perform_in(1.minute, export.id, wide_id, "wide_job")
-    # unless current_project.response_images.empty?
-    #   zipped_file = File.new(root + "/#{Time.now.to_i}.zip", "a+")
-    #   zipped_file.close
-    #   pictures_export = ResponseImagesExport.create(:response_export_id => export.id, :download_url => zipped_file.path)
-    #   ProjectImagesExportWorker.perform_async(current_project.id, zipped_file.path, pictures_export.id)
-    # end
-    # TODO Reimplement like instrument exports
+    current_project.export_responses
+    unless current_project.response_images.empty?
+      zipped_file = File.new(root + "/#{Time.now.to_i}.zip", "a+")
+      zipped_file.close
+      pictures_export = ResponseImagesExport.create(:response_export_id => export.id, :download_url => zipped_file.path)
+      ProjectImagesExportWorker.perform_async(current_project.id, zipped_file.path, pictures_export.id)
+    end
     redirect_to project_response_exports_path(current_project)
   end
 
