@@ -75,7 +75,7 @@ RailsSurvey::Application.routes.draw do
     end
     
     member do
-      get :export
+      get :instrument_export
     end
 
     resources :rules
@@ -102,6 +102,7 @@ RailsSurvey::Application.routes.draw do
         get :instrument_response_images
       end
     end
+    get :export_responses
     get 'graphs/daily/' => 'graphs#daily_responses'
     get 'graphs/hourly/' => 'graphs#hourly_responses'
   end
