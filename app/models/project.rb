@@ -104,6 +104,23 @@ class Project < ActiveRecord::Base
     array << sanitize(count_per_hour)
   end
 
+  def export_responses
+    root = File.join('files', 'exports').to_s
+    short_csv = File.new(root + "/#{Time.now.to_i}_#{name}_short.csv", 'a+')
+    wide_csv = File.new(root + "/#{Time.now.to_i}_#{name}_wide.csv", 'a+')
+    long_csv = File.new(root + "/#{Time.now.to_i}_#{name}_long.csv", 'a+')
+    long_csv.close
+    wide_csv.close
+    short_csv.close
+    export = ResponseExport.create(:project_id => id, :short_format_url => short_csv.path, :wide_format_url => wide_csv.path, :long_format_url => long_csv.path)
+    instruments(include: :surveys).each do |instrument|
+      Survey.export_wide_csv(wide_csv, instrument)
+      Survey.export_short_csv(short_csv, instrument)
+      Survey.export_long_csv(long_csv, instrument)
+    end
+    StatusWorker.perform_in(1.minute, export.id)
+  end
+
   private
   def sanitize(hash)
     (0..23).each do |h|
