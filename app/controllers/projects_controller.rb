@@ -48,7 +48,7 @@ class ProjectsController < ApplicationController
     redirect_to projects_url
   end
 
-  def export
+  def export_responses
     # root = File.join('files', 'exports').to_s
     # long_csv_file = File.new(root + "/#{Time.now.to_i}" + "_long" + ".csv", "a+")
     # long_csv_file.close

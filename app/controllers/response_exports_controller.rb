@@ -19,7 +19,7 @@ class ResponseExportsController < ApplicationController
   end
   
   def create
-    @export = current_project.response_exports.new(params[:export])
+    @export = current_project.response_exports.new(params[:instrument_export])
     authorize @export
     if @export.save
       render text:"", notice: "Successfully created export."
@@ -37,7 +37,7 @@ class ResponseExportsController < ApplicationController
   def update
     @export = current_project.response_exports.find(params[:id])
     authorize @export
-    if @export.update_attributes(params[:export])
+    if @export.update_attributes(params[:instrument_export])
       render text:"", notice: "Successfully updated export."
     else
       render :edit
