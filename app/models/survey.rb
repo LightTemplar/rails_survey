@@ -104,7 +104,7 @@ class Survey < ActiveRecord::Base
     export_wide_csv(wide_csv, instrument)
     export_short_csv(short_csv, instrument)
     export_long_csv(long_csv, instrument)
-    StatusWorker.perform_in(1.minute, export.id)
+    StatusWorker.perform_in(5.minutes, export.id)
   end
 
   def self.export_short_csv(short_csv, instrument)
