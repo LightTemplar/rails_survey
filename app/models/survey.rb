@@ -181,7 +181,7 @@ class Survey < ActiveRecord::Base
         short_qid_index = headers.index(response.question_identifier + '_short_qid')
         row[short_qid_index] = response.question_id if short_qid_index
         question_type_index = headers.index(response.question_identifier + '_question_type')
-        row[question_type_index] = response.question.question_type if question_type_index
+        row[question_type_index] = survey.chronicled_question(response.question_identifier).try(:question_type) if question_type_index
         special_identifier_index = headers.index(response.question_identifier + '_special')
         row[special_identifier_index] = response.special_response if special_identifier_index
         other_identifier_index = headers.index(response.question_identifier + '_other')
