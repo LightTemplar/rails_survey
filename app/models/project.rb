@@ -113,6 +113,9 @@ class Project < ActiveRecord::Base
     wide_csv.close
     short_csv.close
     export = ResponseExport.create(:project_id => id, :short_format_url => short_csv.path, :wide_format_url => wide_csv.path, :long_format_url => long_csv.path)
+    Survey.write_short_header(short_csv)
+    Survey.write_long_header(long_csv, self)
+    Survey.write_wide_header(wide_csv, self)
     instruments(include: :surveys).each do |instrument|
       Survey.export_wide_csv(wide_csv, instrument)
       Survey.export_short_csv(short_csv, instrument)
