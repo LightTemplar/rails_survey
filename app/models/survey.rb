@@ -98,6 +98,9 @@ class Survey < ActiveRecord::Base
     short_csv.close
     export = ResponseExport.create(:instrument_id => instrument.id, :instrument_versions => instrument.survey_instrument_versions,
               :short_format_url => short_csv.path, :wide_format_url => wide_csv.path, :long_format_url => long_csv.path)
+    write_short_header(short_csv)
+    write_long_header(long_csv, instrument)
+    write_wide_header(wide_csv, instrument)
     export_wide_csv(wide_csv, instrument)
     export_short_csv(short_csv, instrument)
     export_long_csv(long_csv, instrument)
@@ -105,11 +108,14 @@ class Survey < ActiveRecord::Base
   end
 
   def self.export_short_csv(short_csv, instrument)
-    CSV.open(short_csv, 'wb') do |csv|
-      csv << %w[identifier survey_id question_identifier question_text response_text response_label special_response other_response]
-    end
     instrument.surveys.each do |survey|
       ShortExportWorker.perform_async(short_csv.path, survey.id)
+    end
+  end
+
+  def self.write_short_header(short_csv)
+    CSV.open(short_csv, 'wb') do |csv|
+      csv << %w[identifier survey_id question_identifier question_text response_text response_label special_response other_response]
     end
   end
 
@@ -129,73 +135,70 @@ class Survey < ActiveRecord::Base
   end
 
   def self.export_wide_csv(wide_csv, instrument)
-    header = ''
-    CSV.open(wide_csv, 'wb') do |csv|
-      header = write_wide_header(instrument, csv)
-    end
     instrument.surveys.each do |survey|
-      WideExportWorker.perform_async(wide_csv.path, survey.id, header)
+      WideExportWorker.perform_async(wide_csv.path, survey.id)
     end
   end
 
-  def self.write_wide_header(instrument, csv)
+  def self.write_wide_header(wide_csv, model)
     variable_identifiers = []
     question_identifier_variables = %w[_short_qid _question_type _label _special _other _version _text _start_time _end_time]
-    instrument.questions.each do |question|
+    model.questions.each do |question|
       variable_identifiers << question.question_identifier unless variable_identifiers.include? question.question_identifier
       question_identifier_variables.each do |variable|
         variable_identifiers << question.question_identifier + variable unless variable_identifiers.include? question.question_identifier + variable
       end
     end
     metadata_keys = []
-    instrument.surveys.each do |survey|
+    model.surveys.each do |survey|
       survey.metadata.keys.each do |key|
         metadata_keys << key unless metadata_keys.include? key
       end if survey.metadata
     end
     header = %w[survey_id survey_uuid device_identifier device_label latitude longitude instrument_id instrument_version_number
               instrument_title survey_start_time survey_end_time device_user_id device_user_username] + metadata_keys + variable_identifiers
-    csv << header
-    header.join(',')
+    CSV.open(wide_csv, 'wb') do |csv|
+      csv << header
+    end
   end
 
-  def self.write_wide_row(file, survey_id, headers)
+  def self.write_wide_row(file, survey_id)
     survey = Survey.find(survey_id, include: :responses)
-    header = headers.split(',')
+    headers = get_headers(file)
     CSV.open(file, 'a+') do |csv|
       row = [survey.id, survey.uuid, survey.device.identifier, survey.device_label ? survey.device_label : survey.device.label, survey.latitude, survey.longitude, survey.instrument.id,
              survey.instrument_version_number, survey.instrument.title, survey.responses.order('time_started').try(:first).try(:time_started),
              survey.responses.order('time_ended').try(:last).try(:time_ended)]
 
       survey.metadata.each do |k, v|
-        key_index = header.index {|h| h == k}
+        key_index = headers.index {|h| h == k}
         row[key_index] = v
       end if survey.metadata
 
       survey.responses.each do |response|
-        identifier_index = header.index(response.question_identifier)
+        identifier_index = headers.index(response.question_identifier)
         row[identifier_index] = response.text if identifier_index
-        short_qid_index = header.index(response.question_identifier + '_short_qid')
+        short_qid_index = headers.index(response.question_identifier + '_short_qid')
         row[short_qid_index] = response.question_id if short_qid_index
-        question_type_index = header.index(response.question_identifier + '_question_type')
+        question_type_index = headers.index(response.question_identifier + '_question_type')
         row[question_type_index] = response.question.question_type if question_type_index
-        special_identifier_index = header.index(response.question_identifier + '_special')
+        special_identifier_index = headers.index(response.question_identifier + '_special')
         row[special_identifier_index] = response.special_response if special_identifier_index
-        other_identifier_index = header.index(response.question_identifier + '_other')
+        other_identifier_index = headers.index(response.question_identifier + '_other')
         row[other_identifier_index] = response.other_response if other_identifier_index
-        label_index = header.index(response.question_identifier + '_label')
+        label_index = headers.index(response.question_identifier + '_label')
         row[label_index] = survey.option_labels(response) if label_index
-        question_version_index = header.index(response.question_identifier + '_version')
+        question_version_index = headers.index(response.question_identifier + '_version')
         row[question_version_index] = response.question_version if question_version_index
-        question_text_index = header.index(response.question_identifier + '_text')
+        question_text_index = headers.index(response.question_identifier + '_text')
         row[question_text_index] = Sanitize.fragment(survey.chronicled_question(response.question_identifier).try(:text)) if question_text_index
-        start_time_index = header.index(response.question_identifier + '_start_time')
+        start_time_index = headers.index(response.question_identifier + '_start_time')
         row[start_time_index] = response.time_started if start_time_index
-        end_time_index = header.index(response.question_identifier + '_end_time')
+        end_time_index = headers.index(response.question_identifier + '_end_time')
         row[end_time_index] = response.time_ended if end_time_index
       end
-      device_user_id_index = header.index('device_user_id')
-      device_user_username_index = header.index('device_user_username')
+      device_user_id_index = headers.index('device_user_id')
+      device_user_username_index = headers.index('device_user_username')
       device_user_ids = survey.responses.pluck(:device_user_id).uniq.compact
       unless device_user_ids.empty?
         row[device_user_id_index] = device_user_ids.join(",")
@@ -205,19 +208,22 @@ class Survey < ActiveRecord::Base
     end
   end
 
-  def self.export_long_csv(long_csv, instrument)
-    header = ''
-    CSV.open(long_csv, 'wb') do |csv|
-      header = write_long_header(instrument, csv)
+  def self.get_headers(file)
+    @headers ||= Hash.new do |hash, filename|
+      hash[filename] = CSV.open(filename, 'r'){|csv| csv.first}
     end
-    instrument.surveys.each do |survey|
-      LongExportWorker.perform_async(long_csv.path, survey.id, header)
+    @headers[file]
+  end
+
+  def self.export_long_csv(long_csv, model)
+    model.surveys.each do |survey|
+      LongExportWorker.perform_async(long_csv.path, survey.id)
     end
   end
 
-  def self.write_long_header(instrument, csv)
+  def self.write_long_header(long_csv, model)
     metadata_keys = []
-    instrument.surveys.each do |survey|
+    model.surveys.each do |survey|
       survey.metadata.keys.each do |key|
         metadata_keys << key unless metadata_keys.include? key
       end if survey.metadata
@@ -226,14 +232,15 @@ class Survey < ActiveRecord::Base
               instrument_title survey_id survey_uuid device_id device_uuid device_label question_type question_text
               response response_labels special_response other_response response_time_started response_time_ended
               device_user_id device_user_username] + metadata_keys
-    csv << header
-    header.join(',')
+    CSV.open(long_csv, 'wb') do |csv|
+      csv << header
+    end
   end
 
-  def self.write_long_row(file, survey_id, headers)
+  def self.write_long_row(file, survey_id)
     survey = Survey.find(survey_id, include: :responses)
-    header = headers.split(',')
-    CSV.open(file, 'a+') do |csv|
+    headers = get_headers(file)
+    CSV .open(file, 'a+') do |csv|
       survey.responses.each do |response|
         row = [response.question_identifier, "q_#{response.question_id}", survey.instrument_id,
                response.instrument_version_number, response.question_version, survey.instrument_title,
@@ -243,8 +250,7 @@ class Survey < ActiveRecord::Base
                response.text, response.option_labels, response.special_response, response.other_response, response.time_started,
                response.time_ended, response.device_user.try(:id), response.device_user.try(:username)]
         survey.metadata.each do |k, v|
-          key_index = header.index {|h| h == k}
-          row[key_index] = v
+          row[headers.index(k)] = v if headers.index(k)
         end if survey.metadata
         csv << row
       end
