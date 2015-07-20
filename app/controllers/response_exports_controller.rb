@@ -1,6 +1,6 @@
 class ResponseExportsController < ApplicationController
   after_action :verify_authorized, :except => 
-    [:index, :show, :project_long_format_responses, :project_wide_format_responses, :instrument_long_format_responses,
+    [:index, :show, :project_long_format_responses, :project_wide_format_responses, :instrument_long_format_responses, :project_short_format_responses,
       :instrument_wide_format_responses, :instrument_short_format_responses, :project_response_images, :instrument_response_images]
   
   def index
@@ -59,6 +59,11 @@ class ResponseExportsController < ApplicationController
   def project_wide_format_responses
     export = current_project.response_exports.find params[:id]
     send_file export.wide_format_url, :type => 'text/csv', :disposition => 'attachment', :filename => "#{ current_project.name.gsub(/\s+/,  '_') }.csv"
+  end
+
+  def project_short_format_responses
+    export = current_project.response_exports.find params[:id]
+    send_file export.short_format_url, :type => 'text/csv', :disposition => 'attachment', :filename => "#{ current_project.name.gsub(/\s+/,  '_') }.csv"
   end
   
   def instrument_long_format_responses
