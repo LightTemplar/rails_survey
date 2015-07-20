@@ -95,6 +95,7 @@ RailsSurvey::Application.routes.draw do
       member do
         get :project_long_format_responses
         get :project_wide_format_responses
+        get :project_short_format_responses
         get :instrument_long_format_responses
         get :instrument_wide_format_responses
         get :instrument_short_format_responses

@@ -8,8 +8,9 @@
       <tr>
         <th>Project</th>
         <th>Date</th>
-        <th>Long format csv</th>
-        <th>Wide format csv</th>
+        <th>Long format</th>
+        <th>Wide format</th>
+        <th>Short format</th>
         <th>Pictures</th>
       </tr>
       </thead>
@@ -19,17 +20,24 @@
             <td><%= link_to current_project.name, project_path(export.try(:project_id)) %></td>
             <td><%= export.created_at.strftime("%Y-%m-%d %I:%M%p") %></td>
             <td>
-              <% if policy(export).project_long_format_responses? && export.long_done && export.long_format_url %>
+              <% if export.long_done && export.long_format_url %>
                   <%= link_to 'long csv', project_long_format_responses_project_response_export_path(current_project, export.id) %>
               <% else %>
                   Processing...
               <% end %>
             </td>
             <td>
-              <% if policy(export).project_wide_format_responses? && export.wide_done && export.wide_format_url %>
+              <% if export.wide_done && export.wide_format_url %>
                   <%= link_to 'wide csv', project_wide_format_responses_project_response_export_path(current_project, export.id) %>
               <% else %>
                   Processing...
+              <% end %>
+            </td>
+            <td>
+              <% if export.short_done && export.short_format_url %>
+                  <%= link_to 'short csv', project_short_format_responses_project_response_export_path(current_project, export.id) %>
+              <% else %>
+                Processing..
               <% end %>
             </td>
             <td>
