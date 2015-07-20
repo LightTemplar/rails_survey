@@ -8,7 +8,7 @@ class StatusWorker
     if [sr.size, ss.enqueued].uniq.length == 1
       export.update(short_done: true, long_done: true, wide_done: true)
     else
-      StatusWorker.perform_in(2.minute, export_id)
+      StatusWorker.perform_in(1.minute, export_id)
     end
   end
 

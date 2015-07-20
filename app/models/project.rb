@@ -121,7 +121,7 @@ class Project < ActiveRecord::Base
       Survey.export_short_csv(short_csv, instrument)
       Survey.export_long_csv(long_csv, instrument)
     end
-    StatusWorker.perform_in(1.minute, export.id)
+    StatusWorker.perform_in(5.minutes, export.id)
   end
 
   private
