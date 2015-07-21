@@ -122,7 +122,7 @@ class Project < ActiveRecord::Base
       Survey.export_long_csv(long_csv, instrument, export.id)
     end
     Survey.set_export_count(export.id.to_s, surveys.count * 3)
-    StatusWorker.perform_in(30.seconds, export.id)
+    StatusWorker.perform_in(5.minutes, export.id)
   end
 
   private
