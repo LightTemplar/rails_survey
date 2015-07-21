@@ -106,7 +106,7 @@ class Survey < ActiveRecord::Base
     export_short_csv(short_csv, instrument, export.id)
     export_long_csv(long_csv, instrument, export.id)
     set_export_count(export.id.to_s, instrument.surveys.count * 3)
-    StatusWorker.perform_in(35.seconds, export.id)
+    StatusWorker.perform_in(5.minutes, export.id)
   end
 
   def self.export_short_csv(short_csv, instrument, export_id)

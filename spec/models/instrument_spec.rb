@@ -160,7 +160,7 @@ describe Instrument do
 
     it "should export correctly" do
       out = []
-      @instrument.instrument_export(out)
+      @instrument.export(out)
       out.should == [
         ["Instrument id:", @instrument.id],
         ["Instrument title:", @instrument.title],
