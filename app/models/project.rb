@@ -117,11 +117,12 @@ class Project < ActiveRecord::Base
     Survey.write_long_header(long_csv, self)
     Survey.write_wide_header(wide_csv, self)
     instruments(include: :surveys).each do |instrument|
-      Survey.export_wide_csv(wide_csv, instrument)
-      Survey.export_short_csv(short_csv, instrument)
-      Survey.export_long_csv(long_csv, instrument)
+      Survey.export_wide_csv(wide_csv, instrument, export.id)
+      Survey.export_short_csv(short_csv, instrument, export.id)
+      Survey.export_long_csv(long_csv, instrument, export.id)
     end
-    StatusWorker.perform_in(5.minutes, export.id)
+    Survey.set_export_count(export.id.to_s, surveys.count * 3)
+    StatusWorker.perform_in(30.seconds, export.id)
   end
 
   private

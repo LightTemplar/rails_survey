@@ -19,6 +19,7 @@
 #
 
 class Survey < ActiveRecord::Base
+  include RedisJobTracker
   attr_accessible :instrument_id, :instrument_version_number, :uuid, :device_id, :instrument_title,
                   :device_uuid, :latitude, :longitude, :metadata, :completion_rate, :device_label
   belongs_to :instrument
@@ -101,15 +102,16 @@ class Survey < ActiveRecord::Base
     write_short_header(short_csv)
     write_long_header(long_csv, instrument)
     write_wide_header(wide_csv, instrument)
-    export_wide_csv(wide_csv, instrument)
-    export_short_csv(short_csv, instrument)
-    export_long_csv(long_csv, instrument)
-    StatusWorker.perform_in(5.minutes, export.id)
+    export_wide_csv(wide_csv, instrument, export.id)
+    export_short_csv(short_csv, instrument, export.id)
+    export_long_csv(long_csv, instrument, export.id)
+    set_export_count(export.id.to_s, instrument.surveys.count * 3)
+    StatusWorker.perform_in(35.seconds, export.id)
   end
 
-  def self.export_short_csv(short_csv, instrument)
+  def self.export_short_csv(short_csv, instrument, export_id)
     instrument.surveys.each do |survey|
-      ShortExportWorker.perform_async(short_csv.path, survey.id)
+      ShortExportWorker.perform_async(short_csv.path, survey.id, export_id)
     end
   end
 
@@ -119,7 +121,7 @@ class Survey < ActiveRecord::Base
     end
   end
 
-  def self.write_short_row(file, survey_id)
+  def self.write_short_row(file, survey_id, export_id)
     survey = Survey.find(survey_id, include: :responses)
     validator = survey.validation_identifier
     CSV.open(file, 'a+') do |csv|
@@ -128,15 +130,16 @@ class Survey < ActiveRecord::Base
                 response.text, response.option_labels, response.special_response, response.other_response]
       end
     end
+    decrement_export_count(export_id.to_s)
   end
 
   def validation_identifier
     metadata['Center ID'] ? metadata['Center ID'] : metadata['Participant ID'] if metadata
   end
 
-  def self.export_wide_csv(wide_csv, instrument)
+  def self.export_wide_csv(wide_csv, instrument, export_id)
     instrument.surveys.each do |survey|
-      WideExportWorker.perform_async(wide_csv.path, survey.id)
+      WideExportWorker.perform_async(wide_csv.path, survey.id, export_id)
     end
   end
 
@@ -162,7 +165,7 @@ class Survey < ActiveRecord::Base
     end
   end
 
-  def self.write_wide_row(file, survey_id)
+  def self.write_wide_row(file, survey_id, export_id)
     survey = Survey.find(survey_id, include: :responses)
     headers = get_headers(file)
     CSV.open(file, 'a+') do |csv|
@@ -206,6 +209,7 @@ class Survey < ActiveRecord::Base
       end
       csv << row
     end
+    decrement_export_count(export_id.to_s)
   end
 
   def self.get_headers(file)
@@ -215,9 +219,9 @@ class Survey < ActiveRecord::Base
     @headers[file]
   end
 
-  def self.export_long_csv(long_csv, model)
+  def self.export_long_csv(long_csv, model, export_id)
     model.surveys.each do |survey|
-      LongExportWorker.perform_async(long_csv.path, survey.id)
+      LongExportWorker.perform_async(long_csv.path, survey.id, export_id)
     end
   end
 
@@ -237,7 +241,7 @@ class Survey < ActiveRecord::Base
     end
   end
 
-  def self.write_long_row(file, survey_id)
+  def self.write_long_row(file, survey_id, export_id)
     survey = Survey.find(survey_id, include: :responses)
     headers = get_headers(file)
     CSV .open(file, 'a+') do |csv|
@@ -255,6 +259,7 @@ class Survey < ActiveRecord::Base
         csv << row
       end
     end
+    decrement_export_count(export_id.to_s)
   end
 
 end
