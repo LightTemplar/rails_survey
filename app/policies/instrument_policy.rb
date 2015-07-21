@@ -57,6 +57,13 @@ class InstrumentPolicy
   def update_move?
     write_access
   end
+  def copy?
+    read_access
+  end
+
+  def update_copy?
+    write_access
+  end
   
   private
   def read_access

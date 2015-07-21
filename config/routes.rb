@@ -70,7 +70,9 @@ RailsSurvey::Application.routes.draw do
         get :pdf_export
         get :export_responses
         get :move
+        get :copy
         match :update_move, action: :update_move, via: [:patch, :put]
+        match :update_copy, action: :update_copy, via: [:patch, :put]
       end
     end
     

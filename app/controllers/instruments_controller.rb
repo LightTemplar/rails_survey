@@ -101,5 +101,18 @@ class InstrumentsController < ApplicationController
       redirect_to project_path(@project)
     end
   end
+
+  def copy
+    @projects = current_user.projects
+    @instrument = current_project.instruments.find(params[:id])
+    authorize @instrument
+  end
+
+  def update_copy
+    @instrument = current_project.instruments.find(params[:id])
+    authorize @instrument
+    InstrumentCopyWorker.perform_async(@instrument.id, params[:end_project].to_i)
+    redirect_to project_path current_project
+  end
   
 end
