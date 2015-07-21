@@ -3,10 +3,9 @@ class StatusWorker
 
   def perform(export_id)
     export = ResponseExport.find(export_id)
-    sr = Sidekiq::RetrySet.new
-    ss = Sidekiq::Stats.new
-    if [sr.size, ss.enqueued].uniq.length == 1
+    if Survey.get_export_count(export_id.to_s) == '0'
       export.update(short_done: true, long_done: true, wide_done: true)
+      Survey.delete_export_count(export_id.to_s)
     else
       StatusWorker.perform_in(1.minute, export_id)
     end
