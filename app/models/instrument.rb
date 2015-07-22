@@ -184,12 +184,37 @@ class Instrument < ActiveRecord::Base
       t.save!
     end
 
+    grids.each do |grid|
+      g = grid.dup
+      g.instrument_id = i.id
+      g.save!
+
+      grid.grid_labels.each do |grid_label|
+        gl = grid_label.dup
+        gl.grid_id = g.id
+        gl.option_id = -(gl.option_id)
+        gl.save!
+      end
+
+      grid.questions.each do |question|
+        q = question.dup
+        q.question_identifier = "#{question.question_identifier}_#{project_id}"
+        q.grid_id = g.id
+        q.following_up_question_identifier = "#{question.following_up_question_identifier}_#{project_id}" if question.following_up_question_identifier
+        q.instrument_id = i.id
+        q.save!
+      end
+    end
+
     questions.each do |question|
-      q = question.dup
-      q.question_identifier = "#{question.question_identifier}_#{project_id}"
-      q.following_up_question_identifier = "#{question.following_up_question_identifier}_#{project_id}"
-      q.instrument_id = i.id
-      q.save!
+      q = Question.where(question_identifier: "#{question.question_identifier}_#{project_id}").try(:first)
+      unless q
+        q = question.dup
+        q.question_identifier = "#{question.question_identifier}_#{project_id}"
+        q.following_up_question_identifier = "#{question.following_up_question_identifier}_#{project_id}" if question.following_up_question_identifier
+        q.instrument_id = i.id
+        q.save!
+      end
 
       question.images.each do |image|
         im = image.dup
@@ -205,13 +230,13 @@ class Instrument < ActiveRecord::Base
 
       question.options.each do |option|
         o = option.dup
-        o.next_question = "#{option.next_question}_#{project_id}"
+        o.next_question = "#{option.next_question}_#{project_id}" if option.next_question
         o.question_id = q.id
         o.save!
 
         option.skips.each do |skip|
           s = skip.dup
-          s.question_identifier = "#{skip.question_identifier}_#{project_id}"
+          s.question_identifier = "#{skip.question_identifier}_#{project_id}" if skip.question_identifier
           s.option_id = o.id
           s.save!
         end
@@ -220,6 +245,12 @@ class Instrument < ActiveRecord::Base
           t = translation.dup
           t.option_id = o.id
           t.save!
+        end
+
+        if option.grid_label
+          gl = GridLabel.where(option_id: -(option.id)).first
+          gl.option_id = o.id if gl
+          gl.save!
         end
       end
     end
@@ -236,7 +267,6 @@ class Instrument < ActiveRecord::Base
         t.save!
       end
     end
-    #TODO Copy Grid & GridLabel
   end
 
   private
