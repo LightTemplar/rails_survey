@@ -51,7 +51,7 @@ class ProjectsController < ApplicationController
   def export_responses
     current_project.export_responses
     unless current_project.response_images.empty?
-      zipped_file = File.new(root + "/#{Time.now.to_i}.zip", "a+")
+      zipped_file = File.new(File.join('files', 'exports').to_s + "/#{Time.now.to_i}.zip", 'a+')
       zipped_file.close
       pictures_export = ResponseImagesExport.create(:response_export_id => export.id, :download_url => zipped_file.path)
       ProjectImagesExportWorker.perform_async(current_project.id, zipped_file.path, pictures_export.id)
