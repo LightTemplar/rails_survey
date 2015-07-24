@@ -1,11 +1,12 @@
 module Api
   module V1
     class InstrumentsController < ApiApplicationController
+      include Syncable
       respond_to :json
 
       def index
         project = Project.find(params[:project_id])
-        instruments = project.instruments_to_sync(project.ids_and_versions(params[:device_instruments], params[:device_instrument_versions]))
+        instruments = to_sync(project.instruments, 'instruments', params[:last_sync_time])
         respond_with instruments, include: :translations
       end
 

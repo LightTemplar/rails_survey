@@ -33,50 +33,7 @@ class Project < ActiveRecord::Base
   
   validates :name, presence: true, allow_blank: false
   validates :description, presence: true, allow_blank: true
-  
-  def instruments_to_sync(instrument_ids_and_versions)
-    return instruments.with_deleted if instrument_ids_and_versions.blank?
-    synced_instruments = instruments.where(id: instrument_ids_and_versions.keys)
-    unsynced_instruments = instruments.with_deleted - synced_instruments 
-    instrument_ids_and_versions.each do |instrument_id, instrument_version|
-      instrument = instruments.where(id: instrument_id.to_i).try(:first)
-      unsynced_instruments << instrument if !instrument.blank? && instrument.current_version_number > instrument_version
-    end
-    unsynced_instruments
-  end
-  
-  def questions_to_sync(instrument_ids_and_versions) 
-    return questions.with_deleted if instrument_ids_and_versions.blank?
-    synced_instruments = instruments.where(id: instrument_ids_and_versions.keys)
-    synced_questions = synced_instruments.map {|inst| inst.questions}.flatten
-    unsynced_questions = questions.with_deleted - synced_questions
-    instrument_ids_and_versions.each do |instrument_id, instrument_version|
-      instrument = instruments.where(id: instrument_id.to_i).try(:first)
-      unsynced_questions << instrument.questions.select{|question| question.instrument_version_number > instrument_version} unless instrument.blank?
-    end
-    unsynced_questions.flatten
-  end
-  
-  def options_to_sync(instrument_ids_and_versions)
-    return options.with_deleted if instrument_ids_and_versions.blank?
-    synced_instruments = instruments.where(id: instrument_ids_and_versions.keys)
-    synced_options = synced_instruments.map {|inst| inst.options}.flatten
-    unsynced_options = options.with_deleted - synced_options
-    instrument_ids_and_versions.each do |instrument_id, instrument_version|
-      instrument = instruments.where(id: instrument_id.to_i).try(:first)
-      unsynced_options << instrument.options.select {|option| option.instrument_version_number > instrument_version} unless instrument.blank?
-    end
-    unsynced_options.flatten
-  end
-  
-  def ids_and_versions(ids, versions)
-    instrument_ids_and_versions = {}
-    if ids && versions
-      instrument_ids_and_versions = Hash[ids.split(",").map(&:to_i).zip versions.split(",").map(&:to_i)]
-    end
-    instrument_ids_and_versions
-  end
-  
+
   def non_responsive_devices
     devices.includes(:surveys).where('surveys.updated_at < ?', Settings.danger_zone_days.days.ago).order('surveys.updated_at ASC')
   end
