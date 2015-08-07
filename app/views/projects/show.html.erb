@@ -1,19 +1,20 @@
-<h1><%= current_project.name %> </h1>
+<div class="block-header">
+  <h2><i class="md-folder-shared"></i> <%= current_project.name %></h2>
+</div>
 
-<section class="widget">
-  <header>
-    <div class="actions hidden-xs-portrait">
-      <%= link_to edit_project_path(@project), class: 'btn btn-primary' do %>
-          <i class="icon-edit"></i> Edit Project
-      <% end %>
-    </div>
-  </header> <br />
+<div class="card">
+  <div class="card-header">
+    <%= link_to edit_project_path(@project), class: 'btn btn-primary pull-right' do %>
+        <i class="md-edit"></i> Edit Project
+    <% end %>
+  </div>
 
-  <div>
-    <strong>Description:</strong> <br />
+  <div class="card-body">
+    <strong>Description:</strong> <br/>
+
     <p> <%= @project.description %> </p>
   </div>
 
-</section>
+</div>
 
 <%= render 'instruments/index' %>

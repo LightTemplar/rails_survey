@@ -1,31 +1,51 @@
 <!DOCTYPE html>
 <html ng-app="Survey">
 <head>
-  <title>Rails Survey</title>
-  <%= stylesheet_link_tag    "application", media: "all" %>
+  <title>Mchunguzi</title>
+  <%= stylesheet_link_tag 'application', media: 'all' %>
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-  <script type="text/javascript">google.load('visualization', '1', {'packages':['corechart']});</script>
-  <%= javascript_include_tag "application" %>
+  <script type="text/javascript">google.load('visualization', '1', {'packages': ['corechart']});</script>
+  <%= javascript_include_tag 'application' %>
   <%= csrf_meta_tags %>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="">
   <meta name="author" content="">
   <meta charset="utf-8">
 </head>
 
-  <%= render 'layouts/header' %>
-  
-  <div class="content container">
+<% if current_user %>
+    <body>
+    <header id="header">
+      <%= render 'layouts/header' %>
+    </header>
+
     <div class="row">
       <% flash.each do |key, msg| %>
-        <% if key == :alert or key == :notice %>
-          <div class="alert alert-<%= key == :alert ? "danger" : "success" %> text-center"><%= msg %></div>
-        <% end %>
+          <% if key == :alert or key == :notice %>
+              <div class="alert alert-<%= key == :alert ? 'danger' : 'success' %> text-center"><%= msg %></div>
+          <% end %>
       <% end %>
     </div>
-    <div class="row">
-      <%= yield %>
-    </div>
-  </div>
 
-  <%= render 'layouts/footer' %>
+    <section id="main">
+      <aside id="sidebar">
+        <div class="sidebar-inner c-overflow">
+          <% if current_project %>
+              <%= render 'layouts/sidebar' %>
+          <% end %>
+        </div>
+      </aside>
+
+      <section id="content">
+        <div class="container">
+          <%= yield %>
+        </div>
+      </section>
+    </section>
+
+    <%= render 'layouts/footer' %>
+    </body>
+<% else %>
+    <%= render 'users/sessions/new' %>
+<% end %>
+</html>
