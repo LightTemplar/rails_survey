@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby "2.0.0"
+ruby '2.0.0'
 gem 'rails', '4.0.4'
 gem 'pg', group: [:production]
 gem 'sass-rails', '~> 4.0.0'
@@ -7,7 +7,7 @@ gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.0.0'
 gem 'therubyracer', platforms: :ruby
 gem 'jquery-rails'
-gem "rubyzip", "~> 1.1.2"
+gem 'rubyzip', '~> 1.1.2'
 gem 'zip-zip'
 gem 'turbolinks'
 gem 'jbuilder', '~> 1.2'
@@ -19,15 +19,15 @@ group :doc do
   gem 'sdoc', require: false
 end
 
-gem "rails_config"
-gem "twitter-bootstrap-rails"
+gem 'rails_config'
+gem 'twitter-bootstrap-rails'
 gem 'devise'
 gem 'paper_trail', '~> 3.0.8'
 
 group :test do
   gem 'rspec-rails', '~> 2.0'
   gem 'rspec-mocks'
-  gem "factory_girl_rails", "~> 4.0", :require => false
+  gem 'factory_girl_rails', '~> 4.0', :require => false
   gem 'database_cleaner', '~> 1.0'
   gem 'capybara'
   gem 'selenium-webdriver', '~> 2.39'
@@ -41,7 +41,7 @@ gem 'paranoia', '~> 2.0'
 gem 'pundit'
 gem 'groupdate', github: 'mieko/groupdate', :branch => 'sqlite3'
 gem 'paperclip', '~> 4.1.0'
-gem "redis", "~> 3.0.7"
+gem 'redis', '~> 3.0.7'
 gem 'role_model', '~> 0.8.1'
 gem 'sidekiq', '~> 3.0.0'
 gem 'mandrill-api', '~> 1.0.51'

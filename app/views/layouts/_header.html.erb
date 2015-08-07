@@ -1,27 +1,27 @@
-<body class="background-dark">
-<% if user_signed_in? %>
-    <div class="logo">
-      <h4><%= link_to 'Rails Survey', root_path %></h4>
+<ul class="header-inner">
+  <li id="menu-trigger" data-trigger="#sidebar">
+    <div class="line-wrap">
+      <div class="line top"></div>
+      <div class="line center"></div>
+      <div class="line bottom"></div>
     </div>
+  </li>
+  <li class="logo hidden-xs">
+    <%= link_to 'Mchunguzi', root_path %>
+  </li>
 
-    <%= render 'layouts/sidebar' if current_project %>
-
-    <div class="wrap">
-      <header class="page-header">
-        <div class="navbar">
-          <ul class="nav navbar-nav navbar-right pull-right">
-            <li class="hidden-xs">
-              <%= button_to destroy_user_session_path, :method => :delete, class: 'btn btn-default' do %>
-                  <i class="icon-signout"></i>
-              <% end %>
-            </li>
-          </ul>
-          <div class="notifications pull-right">
-            <div class="alert pull-right">
-              <a href="#" class="close" data-dismiss="alert">&times;</a>
-              <i class="icon-info-sign"></i> Currently logged in as <%= current_user.email %>
-            </div>
-          </div>
-        </div>
-      </header>
-<% end %>
+  <li class="pull-right">
+    <% if user_signed_in? %>
+        <ul class="top-menu">
+          <li class="logged-in-user">
+            <i class="md-person"> Currently logged in as <%= current_user.email %> </i>
+          </li>
+          <li>
+            <%= link_to destroy_user_session_path, :method => :delete, class: 'btn btn-danger' do %>
+                <i class="md md-history"> Logout </i>
+            <% end %>
+          </li>
+        </ul>
+    <% end %>
+  </li>
+</ul>

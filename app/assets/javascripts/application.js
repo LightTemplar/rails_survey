@@ -10,7 +10,15 @@
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require ../../../vendor/assets/javascripts/jquery.min
+//= require ../../../vendor/assets/lib/jquery/dist/jquery.min
+//= require ../../../vendor/assets/lib/bootstrap/dist/js/bootstrap.min
+//= require ../../../vendor/assets/lib/waves/dist/waves.min
+//= require ../../../vendor/assets/lib/bootstrap-growl/bootstrap-growl
+//= require ../../../vendor/assets/lib/sweetalert/dist/sweetalert.min
+//= require ../../../vendor/assets/lib/autosize/dist/autosize.min
+//= require ../../../vendor/assets/javascripts/jquery-2.1.1.min
+//= require ../../../vendor/assets/javascripts/bootstrap.min
+//= require ../../../vendor/assets/javascripts/theme-functions
 //= require ../../../vendor/assets/javascripts/angular
 //= require ../../../vendor/assets/javascripts/angular-resource
 //= require ../../../vendor/assets/javascripts/angular-animate
