@@ -34,8 +34,3 @@ table.fixed-wide {
   table-layout: fixed;
   width: 100%
 }
-
-.logged-in-user {
-    background-color: #4caf50;
-    color: #ffffff;
-}
