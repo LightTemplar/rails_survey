@@ -1,20 +1,18 @@
-<div class="block-header">
-  <h2><i class="md-folder-shared"></i> <%= current_project.name %></h2>
+<div class="block-header text-center text-capitalize">
+  <h2><i class="md-folder-shared c-indigo"> <%= current_project.name %> </i></h2>
 </div>
 
 <div class="card">
   <div class="card-header">
     <%= link_to edit_project_path(@project), class: 'btn btn-primary pull-right' do %>
-        <i class="md-edit"></i> Edit Project
+        <i class="md-edit"> Edit Project </i>
     <% end %>
   </div>
 
-  <div class="card-body">
-    <strong>Description:</strong> <br/>
-
-    <p> <%= @project.description %> </p>
+  <div class="card-body card-padding">
+    <h4 class="text-center">Description</h4>
+    <p class="text-left"> <%= @project.description %> </p>
   </div>
-
 </div>
 
 <%= render 'instruments/index' %>
