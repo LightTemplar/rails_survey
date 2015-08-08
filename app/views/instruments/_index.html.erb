@@ -1,12 +1,16 @@
+<div class="block-header text-center text-capitalize">
+  <h2><i class="md-edit c-indigo"> Instruments </i></h2>
+</div>
+
 <div class="card" ng-controller="InstrumentsCtrl" ng-init="initialize(<%= current_project.id %>)">
   <div class="card-header">
-    <h2><i class="md-edit"></i> Instruments</h2>
     <%= link_to new_project_instrument_path(current_project), class: 'btn btn-primary pull-right' do %>
         <i class="md-add"></i> New Instrument
     <% end %>
   </div>
-  <div class="card-body">
-    <input type="search" ng-model="q.title" placeholder="Filter instruments..." class="form-control top-buffer">
+
+  <div class="card-body card-padding text-capitalize">
+    <input type="search" ng-model="q.title" placeholder="Filter instruments..." class="form-control tm-search text-center">
 
     <div class="table-responsive">
       <table class="table table-hover">
