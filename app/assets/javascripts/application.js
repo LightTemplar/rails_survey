@@ -10,15 +10,16 @@
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require ../../../vendor/assets/lib/jquery/dist/jquery.min
-//= require ../../../vendor/assets/lib/bootstrap/dist/js/bootstrap.min
-//= require ../../../vendor/assets/lib/waves/dist/waves.min
-//= require ../../../vendor/assets/lib/bootstrap-growl/bootstrap-growl
-//= require ../../../vendor/assets/lib/sweetalert/dist/sweetalert.min
-//= require ../../../vendor/assets/lib/autosize/dist/autosize.min
-//= require ../../../vendor/assets/javascripts/jquery-2.1.1.min
-//= require ../../../vendor/assets/javascripts/bootstrap.min
-//= require ../../../vendor/assets/javascripts/theme-functions
+//= require jquery/dist/jquery.min
+//= require bootstrap/dist/js/bootstrap.min
+//= require waves/dist/waves.min
+//= require bootstrap-growl/bootstrap-growl
+//= require sweetalert/dist/sweetalert.min
+//= require autosize/dist/autosize.min
+//= require jquery-2.1.1.min
+//= require bootstrap.min
+//= require moment/min/moment.min
+//= require summernote/dist/summernote.min
 //= require ../../../vendor/assets/javascripts/angular
 //= require ../../../vendor/assets/javascripts/angular-resource
 //= require ../../../vendor/assets/javascripts/angular-animate
@@ -29,6 +30,7 @@
 //= require ../../../vendor/assets/javascripts/angular-ui-utils.min
 //= require twitter/bootstrap
 //= require chosen-jquery
+//= require theme-functions
 //= require app
 //= require ../../../vendor/assets/lib/jquery-ui-1.10.1.custom
 //= require ../../../vendor/assets/javascripts/ui-sortable
