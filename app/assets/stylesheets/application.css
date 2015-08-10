@@ -9,17 +9,18 @@
  * compiled file, but it's generally better to create a new file per style scope.
  *
  *= require_self
- *= require ../../../vendor/assets/stylesheets/animate.css/animate.min
- *= require ../../../vendor/assets/lib/sweetalert/dist/sweetalert-override.min
- *= require ../../../vendor/assets/stylesheets/material-design-iconic-font/css/material-design-iconic-font.min
- *= require ../../../vendor/assets/stylesheets/socicon/socicon.min
- *= require ../../../vendor/assets/stylesheets/app.min.1
- *= require ../../../vendor/assets/stylesheets/app.min.2
+ *= require animate.css/animate.min
+ *= require sweetalert/dist/sweetalert-override.min
+ *= require material-design-iconic-font/css/material-design-iconic-font.min
+ *= require socicon/socicon.min
+ *= require font-awesome-4.0.3/css/font-awesome.min
+ *= require summernote/dist/summernote.css
+ *= require app.min.1
+ *= require app.min.2
  *= require ../../../vendor/assets/lib/nvd3/src/nv.d3
  *= require ../../../vendor/assets/stylesheets/loading-bar
  *= require ../../../vendor/assets/stylesheets/nv.d3
  *= require ../../../vendor/assets/stylesheets/xeditable.css
- *= require font-awesome-4.0.3/css/font-awesome.min
  *= require fontello/css/fontello
  *= require graphs
  *= require instruments

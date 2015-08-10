@@ -8,7 +8,8 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
   $scope.current_page = 1
   $scope.total_pages = 1
   $scope.searchText = ""
-  $scope.visible = false
+  $scope.questionCopyVisibility = false
+  $scope.searchAndPaginationVisibility = true
   $scope.questionVisibility = true
   $scope.init = (project_id, instrument_id) ->
     $scope.project_id = project_id
@@ -215,8 +216,9 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
     id.substr 0, length
 
   $scope.displayQuestions = () ->
-    $scope.visible = !$scope.visible
+    $scope.questionCopyVisibility = !$scope.questionCopyVisibility
     $scope.questionVisibility = !$scope.questionVisibility
+    $scope.searchAndPaginationVisibility = !$scope.searchAndPaginationVisibility
     
   $scope.copyQuestions = () ->
     counter = 1
@@ -224,7 +226,8 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
       if q.checked == true
         $scope.copyHelper(q, counter)
         counter += 1
-    $scope.visible = false
+    $scope.bodyVisibility = false
+    $scope.paginationVisibility = true
     $scope.questionVisibility = true
     (instrument.checked = false) for instrument in $scope.instruments
     (question.checked = false) for question in $scope.all_questions
