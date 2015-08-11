@@ -55,9 +55,10 @@
                         <%= render 'questions_form_advanced_tab' %>
                         <%= render 'questions_form_copy_tab' %>
                         <%= render 'questions_form_grid_tab' %>
-                        <div class="form-actions">
-                          <a class="btn btn-success pull-right" id="save-question" ng-click="saveQuestion()" ng-disabled="question_form.$invalid">Save</a>
-                          <a class="btn btn-danger pull-right" ng-click="cancelQuestion()">Cancel</a>
+                        <div class="clearfix"></div>
+                        <div class="form-actions m-10">
+                          <a class="btn btn-success" id="save-question" ng-click="saveQuestion()" ng-disabled="question_form.$invalid">Save</a>
+                          <a class="btn btn-danger" ng-click="cancelQuestion()">Cancel</a>
                         </div>
                       </div>
                     </div>
