@@ -9,6 +9,7 @@ module Api
         project = Project.find_by_id(params[:device_sync_entry][:project_id])
         if device
           device.projects << project if project && !device.projects.include?(project)
+          device.update(label: params[:device_sync_entry][:device_label]) if device.label != params[:device_sync_entry][:device_label]
         else
           device = Device.new
           device.projects << project if project && !device.projects.include?(project)
