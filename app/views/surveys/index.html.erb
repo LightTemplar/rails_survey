@@ -1,11 +1,12 @@
-<section class="widget">
-  <header>
-    <h4><i class="icon-download-alt"></i> Survey Results</h4>
-  </header>
-  <%= paginate @surveys %>
-  <div class="body">
-    <table class="table table-hover">
-      <thead>
+<section>
+  <div class="block-header text-center text-capitalize">
+    <h2><i class="md-cloud-download c-indigo"> Survey Results </i></h2>
+  </div>
+
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-striped table-hover">
+        <thead>
         <tr>
           <th>Survey UUID</th>
           <th>Time Created</th>
@@ -17,25 +18,27 @@
           <th>% complete</th>
           <th>Responses</th>
         </tr>
-      </thead>
-      <tbody>
-      <% @surveys.each do |survey| %>
-        <% if survey.instrument %>
-        <tr>
-          <td><%= survey.uuid %></td>
-          <td><%= survey.created_at %></td>
-          <td><%= link_to survey.instrument_title, project_instrument_path(current_project, survey.instrument) %></td>
-          <td><%= link_to survey.instrument_version_number,
-              project_instrument_version_path(current_project, survey.instrument, survey.instrument_version_number) %></td>
-          <td><%= survey.device_uuid %></td>
-          <td><%= survey.device_label ? survey.device_label : (survey.device.label if survey.device) %></td>
-          <td><a href="<%= survey.location_link %>" target="_blank"><%= survey.location %></a></td>
-          <td><%= survey.percent_complete %>
-          <td><%= link_to 'View Responses', project_survey_path(current_project, survey) %></td>
-        </tr>
+        </thead>
+        <tbody>
+        <% @surveys.each do |survey| %>
+            <% if survey.instrument %>
+                <tr>
+                  <td><%= survey.uuid %></td>
+                  <td><%= survey.created_at %></td>
+                  <td><%= link_to survey.instrument_title, project_instrument_path(current_project, survey.instrument) %></td>
+                  <td><%= link_to survey.instrument_version_number,
+                                  project_instrument_version_path(current_project, survey.instrument, survey.instrument_version_number) %></td>
+                  <td><%= survey.device_uuid %></td>
+                  <td><%= survey.device_label ? survey.device_label : (survey.device.label if survey.device) %></td>
+                  <td><a href="<%= survey.location_link %>" target="_blank"><%= survey.location %></a></td>
+                  <td><%= survey.percent_complete %>
+                  <td><%= link_to 'View Responses', project_survey_path(current_project, survey) %></td>
+                </tr>
+            <% end %>
         <% end %>
-      <% end %>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   </div>
+  <%= paginate @surveys %>
 </section>
