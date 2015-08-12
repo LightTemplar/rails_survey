@@ -1,149 +1,80 @@
 <div class="tab-general tab-pane active" role="tabpanel">
   <form class="form-horizontal label-left" role="form" name="question_form" id="question_form" novalidate>
-    <fieldset>
-      <div class="form-group">
-        <label for="question-identifier" class="col-sm-2 control-label">Question Identifier</label>
+    <div class="form-group">
+      <label for="question-identifier" class="col-sm-2 control-label">Question Identifier</label>
 
-        <div class="col-sm-10">
-          <div class="fg-line">
-            <input type="text" class="form-control" name="question-identifier" ng-model="question.question_identifier" required>
-          </div>
+      <div class="col-sm-10">
+        <div class="fg-line">
+          <input type="text" class="form-control" name="question-identifier" ng-model="question.question_identifier" required>
         </div>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label for="question-type" class="col-sm-2 control-label">Question Type</label>
+    <div class="form-group">
+      <label for="question-type" class="col-sm-2 control-label">Question Type</label>
 
-        <div class="col-sm-10">
-          <select
-          chosen
-          class="select2-container select-block-level"
-          data-placeholder="Select a question type..."
-          no-results-text="'This does not match any valid question type'"
-          name="question-type"
-          id="question-type"
-          ng-model="question.question_type"
-          ng-options="type for type in questionTypes()"
-          required
-          >
-            <option value=""></option>
-          </select>
-        </div>
+      <div class="col-sm-10">
+        <select
+        chosen
+        class="select2-container select-block-level"
+        data-placeholder="Select a question type..."
+        no-results-text="'This does not match any valid question type'"
+        name="question-type"
+        id="question-type"
+        ng-model="question.question_type"
+        ng-options="type for type in questionTypes()"
+        required
+        >
+          <option value=""></option>
+        </select>
       </div>
-      <% if @instrument.show_instructions %>
-          <div class="form-group">
-            <label for="instructions" class="col-sm-2 control-label">Instructions</label>
+    </div>
 
-            <div class="col-sm-10">
-              <summernote height="150" ng-model="question.instructions"></summernote>
-            </div>
+    <% if @instrument.show_instructions %>
+        <div class="form-group">
+          <label for="instructions" class="col-sm-2 control-label">Instructions</label>
+
+          <div class="col-sm-10">
+            <summernote height="150" ng-model="question.instructions"></summernote>
           </div>
-      <% end %>
-      <div class="form-group">
-        <label for="content" class="col-sm-2 control-label">Content</label>
-
-        <div class="col-sm-10">
-          <summernote height="150" ng-model="question.text"></summernote>
         </div>
+    <% end %>
+
+    <div class="form-group">
+      <label for="content" class="col-sm-2 control-label">Content</label>
+
+      <div class="col-sm-10">
+        <summernote height="150" ng-model="question.text"></summernote>
       </div>
+    </div>
 
-      <div ng-controller="FileUploadCtrl" ng-init="initialize(<%= @project.id %>, <%= @instrument.id %>, question.id)">
-        <div ng-show="questionTypesWithImages(question.question_type)">
-          <legend class="section"><i class="icon-upload"></i> <span><b>Images</b></span></legend>
-          <div ng-hide="uploader.isHTML5" class="btn btn-warning btn-lg btn-block">
-            ENTER text, SAVE question and REFRESH page for image uploader to appear
-          </div>
-          <div ng-show="uploader.isHTML5">
-            <input ng-file-select type="file" multiple/>
-          </div>
-          <table class="table">
-            <thead>
-            <tr>
-              <th ng-show="uploader.isHTML5" width="50%">Name</th>
-              <th ng-show="uploader.isHTML5">Size</th>
-              <th ng-show="uploader.isHTML5">Progress</th>
-              <th ng-show="uploader.isHTML5">Status</th>
-              <th ng-show="uploader.isHTML5">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="item in uploader.queue">
-              <td>
-                <strong>{{ item.file.name }}</strong>
+    <div ng-show="questionTypesWithOptions(question.question_type)">
+      <div>
+        <fieldset class="m-15">
+          <legend class="text-center">
+            <strong>Options</strong>
+            <button type="submit" ng-click="addOption()" class="btn btn-xs btn-primary pull-right">
+              <i class="md-add">Add Option</i>
+            </button>
+          </legend>
+          <div class="controls form-group">
+            <div ng-repeat="option in options">
+              <div class="input-group m-10">
+                <input type="text" class="fg-line form-control" ng-model="option.text" autofocus="autofocus">
 
-                <div ng-show="uploader.isHTML5" ng-thumb="{ file: item.file, height: 100 }"></div>
-              </td>
-              <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
-              <td ng-show="uploader.isHTML5">
-                <div class="progress" style="margin-bottom: 0;">
-                  <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
+                <div class="input-group-btn m-10">
+                  <button ng-click="removeOption(option)" class="btn btn-danger">
+                    <i class="md-delete"></i>
+                  </button>
                 </div>
-              </td>
-              <td class="text-center">
-                <span ng-show="item.isSuccess"><i class="eicon-check"></i></span>
-                <span ng-show="item.isCancel"><i class="eicon-cancel"></i></span>
-                <span ng-show="item.isError"><i class="eicon-trash"></i></span>
-              </td>
-              <td nowrap>
-                <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
-                  <span class="eicon-upload-cloud"></span> Upload
-                </button>
-                <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
-                  <span class="eicon-cancel"></span> Cancel
-                </button>
-                <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
-                  <span class="eicon-trash"></span> Remove
-                </button>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-          <div ui-sortable="sortableImages" ng-model="images">
-            <div ng-repeat="img in images | orderBy:number">
-              <section class="row widget move-image">
-                <img class="col-md-8" ng-src="{{img.photo_url}}"></img>
-
-                <div class="col-md-4">
-                  <div><b>Name</b></div>
-                  <div>{{img.photo_file_name}}</div>
-                  <div><b>Description</b></div>
-                  <textarea class="form-control" ng-model="img.description"></textarea>
-                  <button ng-click="deleteImage(img)" class="btn btn-danger">Delete</button>
-                  <button ng-click="saveImageDetails(img)" class="btn btn-success">Save</button>
-                </div>
-              </section>
+              </div>
             </div>
           </div>
-        </div>
-
+        </fieldset>
       </div>
-      <div ng-show="questionTypesWithOptions(question.question_type)">
-        <div>
-          <fieldset>
-            <legend>
-              <span class="m-l-25"><strong>Options</strong></span>
-              <button type="submit" ng-click="addOption()" class="btn btn-xs btn-primary pull-right">
-                <i class="md-add">Add Option</i>
-              </button>
-            </legend>
-            <div class="controls form-group">
-              <ol>
-                <li ng-repeat="option in options">
-                  <div class="input-group m-10">
-                    <input type="text" class="form-control" ng-model="option.text" autofocus="autofocus">
+    </div>
 
-                    <div class="input-group-btn m-10">
-                      <button ng-click="removeOption(option)" class="btn btn-danger">
-                        <i class="md-delete"></i>
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              </ol>
-            </div>
-          </fieldset>
-        </div>
-      </div>
-    </fieldset>
+    <%= render 'questions_form_images' %>
+
   </form>
 </div>
