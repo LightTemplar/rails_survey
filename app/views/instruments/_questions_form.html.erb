@@ -1,73 +1,86 @@
 <div ng-controller="QuestionsCtrl" ng-init="init(<%= @project.id %>, <%= @instrument.id %>)">
   <div class="card-header card-padding">
-    <button class="btn btn-primary pull-right" ng-click="displayQuestions()">Copy Questions</button>
-    <div ng-show="searchAndPaginationVisibility">
-      <div class="pagination" ng-show="total_pages > 1">
-        <li><a ng-click="setEndPages(1)"><i class="md-chevron-left"></i></a></li>
-        <li><a ng-click="setPage(current_page - 1)"><i class="md-arrow-back"></i></a></li>
-        <li ng-repeat="page in pages" ng-class="{ active: current_page == page }">
-          <a ng-click="setPage(page)"> {{ page }} </a>
-        </li>
-        <li><a ng-click="setPage(current_page + 1)"><i class="md-arrow-forward"></i></a></li>
-        <li><a ng-click="setEndPages(total_pages)"><i class="md-chevron-right"></i></a></li>
-      </div>
+    <div class="col-sm-9" ng-show="searchBarVisibility">
       <input type="search" ng-model="searchText" ui-keypress="{ 13 : 'searchItem()' }" placeholder="Search questions..." class="form-control bottom-buffer">
     </div>
-    <div ng-show="questionCopyVisibility"><%= render 'questions_form_mass_copy' %></div>
+    <div class="col-sm-3">
+    <button class="btn btn-primary pull-right" ng-click="displayQuestions()">Copy Questions</button>
+    </div>
   </div>
 
-  <div class="card-body card-padding" ng-show="questionVisibility">
-    <div class="listview lv-bordered lv-lg">
-      <div class="lv-body">
-        <div ui-sortable="sortableOptions" ng-model="questions">
-          <div class="lv-item media" ng-repeat="question in questions | orderBy:number_in_instrument">
-            <div class="col-xs-3">
-              <form class="col-xs-5 pull-left" ng-submit="repositionQuestion(question)">
-                <input type="text" size="5" name="number-in-instrument" ng-model="question.number_in_instrument" required>
-              </form>
-              <a class="col-xs-5 btn btn-default move-question pull-right"><i class="md-open-with"></i></a>
-              <a class="col-xs-5 btn btn-default pull-left" ng-click="editQuestion(question)"><i class="md-mode-edit"></i></a>
-              <a class="col-xs-5 btn btn-danger pull-right" ng-click="deleteQuestion(question)"><i class="md-delete"></i></a>
-            </div>
-            <div class="col-xs-9">
-              <div ng-hide="edit_question == question" class="card">
-                <div class="card-header">
-                  <div class="col-xs-6 text-left"><strong><h4>{{question.question_identifier}}</h4></strong></div>
-                  <div class="col-xs-6 text-right"><strong><p>{{question.question_type}}</p></strong></div>
-                </div>
-                <div class="card-body" ng-bind-html="question.text"></div>
+  <div class="card-body card-padding">
+    <div ng-show="!questionVisibility">
+      <%= render 'questions_form_mass_copy' %>
+    </div>
+    <div ng-show="questionVisibility">
+      <div class="listview lv-bordered lv-lg">
+        <div class="lv-body">
+          <div ui-sortable="sortableOptions" ng-model="questions">
+            <div class="lv-item media" ng-repeat="question in questions | orderBy:number_in_instrument">
+              <div class="col-xs-3">
+                <form class="col-xs-5 pull-left" ng-submit="repositionQuestion(question)">
+                  <input type="text" size="5" name="number-in-instrument" ng-model="question.number_in_instrument" required>
+                </form>
+                <a class="col-xs-5 btn btn-default move-question pull-right"><i class="md-open-with"></i></a>
+                <a class="col-xs-5 btn btn-default pull-left" ng-click="editQuestion(question)"><i class="md-mode-edit"></i></a>
+                <a class="col-xs-5 btn btn-danger pull-right" ng-click="deleteQuestion(question)"><i class="md-delete"></i></a>
               </div>
-              <div ng-controller="OptionsCtrl" ng-init="init(<%= @project.id %>, <%= @instrument.id %>, question.id)">
-                <div ng-show="edit_question == question">
-                  <section class="card">
-                    <div role="tabpanel">
-                      <ul class="tab-nav" role="tablist">
-                        <li class="active waves-effect"><a href=".tab-general" role="tab" data-toggle="tab">General</a>
-                        </li>
-                        <li class="waves-effect"><a href=".tab-logic" role="tab" data-toggle="tab">Logic</a></li>
-                        <li class="waves-effect"><a href=".tab-advanced" role="tab" data-toggle="tab">Advanced</a></li>
-                        <li class="waves-effect"><a href=".tab-copy" role="tab" data-toggle="tab">Copy</a></li>
-                      </ul>
-                      <div class="tab-content">
-                        <%= render 'questions_form_body_tab' %>
-                        <%= render 'questions_form_logic_tab' %>
-                        <%= render 'questions_form_advanced_tab' %>
-                        <%= render 'questions_form_copy_tab' %>
-                        <div class="clearfix"></div>
-                        <div class="form-actions m-10">
-                          <a class="btn btn-success" id="save-question" ng-click="saveQuestion()" ng-disabled="question_form.$invalid">Save</a>
-                          <a class="btn btn-danger" ng-click="cancelQuestion()">Cancel</a>
+              <div class="col-xs-9">
+                <div ng-hide="edit_question == question" class="card">
+                  <div class="card-header">
+                    <div class="col-xs-6 text-left"><strong><h4>{{question.question_identifier}}</h4></strong></div>
+                    <div class="col-xs-6 text-right"><strong><p>{{question.question_type}}</p></strong></div>
+                  </div>
+                  <div class="card-body" ng-bind-html="question.text"></div>
+                </div>
+                <div ng-controller="OptionsCtrl" ng-init="init(<%= @project.id %>, <%= @instrument.id %>, question.id)">
+                  <div ng-show="edit_question == question">
+                    <section class="card">
+                      <div role="tabpanel">
+                        <ul class="tab-nav" role="tablist">
+                          <li class="active waves-effect">
+                            <a href=".tab-general" role="tab" data-toggle="tab">General</a>
+                          </li>
+                          <li class="waves-effect"><a href=".tab-logic" role="tab" data-toggle="tab">Logic</a></li>
+                          <li class="waves-effect"><a href=".tab-advanced" role="tab" data-toggle="tab">Advanced</a>
+                          </li>
+                          <li class="waves-effect"><a href=".tab-copy" role="tab" data-toggle="tab">Copy</a></li>
+                        </ul>
+                        <div class="tab-content">
+                          <%= render 'questions_form_body_tab' %>
+                          <%= render 'questions_form_logic_tab' %>
+                          <%= render 'questions_form_advanced_tab' %>
+                          <%= render 'questions_form_copy_tab' %>
+                          <div class="clearfix"></div>
+                          <div class="form-actions m-10">
+                            <a class="btn btn-success" id="save-question" ng-click="saveQuestion()" ng-disabled="question_form.$invalid">Save</a>
+                            <a class="btn btn-danger" ng-click="cancelQuestion()">Cancel</a>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </section>
+                    </section>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <div class="col-sm-9">
+        <div class="pagination" ng-show="total_pages > 1">
+          <li><a ng-click="setEndPages(1)"><i class="md-chevron-left"></i></a></li>
+          <li><a ng-click="setPage(current_page - 1)"><i class="md-arrow-back"></i></a></li>
+          <li ng-repeat="page in pages" ng-class="{ active: current_page == page }">
+            <a ng-click="setPage(page)"> {{ page }} </a>
+          </li>
+          <li><a ng-click="setPage(current_page + 1)"><i class="md-arrow-forward"></i></a></li>
+          <li><a ng-click="setEndPages(total_pages)"><i class="md-chevron-right"></i></a></li>
+        </div>
+      </div>
+      <div class="col-sm-3 m-t-30">
+        <a class="btn btn-success pull-right" ng-click="newQuestion()" id="add-question-button"><i class="md-add"></i> Add Question</a>
+      </div>
+      <div class="clearfix"></div>
     </div>
-    <a class="btn btn-success" ng-click="newQuestion()" id="add-question-button"><i class="md-add"></i> Add Question</a>
   </div>
 </div>
