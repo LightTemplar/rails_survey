@@ -69,4 +69,5 @@ group :development do
   gem 'capistrano-rvm', '~> 0.1.1'
   gem 'capistrano-sidekiq', '~> 0.3.5'
   gem 'capistrano-multiconfig', '~> 3.0.8'
+  gem 'quiet_assets'
 end
