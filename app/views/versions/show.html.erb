@@ -6,7 +6,7 @@
   <ol class="questions">
     <% @instrument_version.questions.each do |question| %>
         <li>
-          <%= question.text %> <br/>
+          <%= raw question.text %> <br/>
           <span class="label label-info"><%= question.question_type %></span>
           <% if question.has_options? %>
               <br/>Options:
