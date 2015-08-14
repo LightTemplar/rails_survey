@@ -1,12 +1,13 @@
-<section class="widget">
-  <header>
-    <h4><i class="icon-edit"></i> Projects</h4>
-  </header>
-  <div class="body">
+<div class="block-header text-center text-capitalize">
+  <h2><i class="md-folder-shared c-indigo"> <%= @project.name %> </i></h2>
+</div>
+
+<div class="card">
+  <div class="card-body card-padding">
     <%= form_for(@project) do |f| %>
         <% if @project.errors.any? %>
             <div id="error_explanation">
-              <h2><%= pluralize(@project.errors.count, "error") %> prohibited this project from being saved:</h2>
+              <h2><%= pluralize(@project.errors.count, 'error') %> prohibited this project from being saved:</h2>
 
               <ul>
                 <% @project.errors.full_messages.each do |msg| %>
@@ -16,17 +17,17 @@
             </div>
         <% end %>
 
-        <div class="field top-buffer">
-          <%= f.label :name, 'Project Name' %> <br />
-          <%= f.text_field :name, class: 'form-control' %>
+        <div class="form-group fg-line">
+          <%= f.label :name, 'Project Name' %> <br/>
+          <%= f.text_field :name, class: 'form-control input-sm', placeholder: 'Enter project name' %>
         </div>
-        <div class="field top-buffer">
-          <%= f.label :description, 'Project Description' %> <br />
-          <%= f.text_area :description, class: 'form-control' %>
+        <div class="form-group fg-line">
+          <%= f.label :description, 'Project Description' %> <br/>
+          <%= f.text_area :description, class: 'form-control input-sm', placeholder: 'Enter project description' %>
         </div>
-        <div class="top-buffer">
-          <%= f.submit class: 'btn btn-primary' %>
+        <div class="form-actions">
+          <%= f.button :submit, class: 'btn btn-primary' %>
         </div>
     <% end %>
   </div>
-</section>
+</div>
