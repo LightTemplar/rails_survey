@@ -223,6 +223,8 @@ GEM
       activemodel (>= 4.0.1, < 5.0)
     pundit (0.3.0)
       activesupport (>= 3.0.0)
+    quiet_assets (1.1.0)
+      railties (>= 3.1, < 5.0)
     rack (1.5.2)
     rack-protection (1.5.3)
       rack
@@ -392,6 +394,7 @@ DEPENDENCIES
   prawn
   protected_attributes
   pundit
+  quiet_assets
   rails (= 4.0.4)
   rails_12factor
   rails_config

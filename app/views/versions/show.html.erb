@@ -1,22 +1,23 @@
-<h1><%= @instrument_version.title %></h1>
+<div class="block-header text-center text-capitalize">
+  <h2><i class="md-track-changes c-indigo"> <%= @instrument_version.title %> </i></h2>
+</div>
 
-<section class="widget">
-  <div class="body">
-    <ol class="questions">
-      <% @instrument_version.questions.each do |question| %>
+<div class="card card-body card-padding">
+  <ol class="questions">
+    <% @instrument_version.questions.each do |question| %>
         <li>
-          <%= question.text %> <br />
+          <%= raw question.text %> <br/>
           <span class="label label-info"><%= question.question_type %></span>
           <% if question.has_options? %>
-            <br />Options:
-            <ol class="options" start="0">
-              <% question.options.each do |option| %>
-                <li><%= option.text %></li>
-              <% end %>
-            </ol>
+              <br/>Options:
+              <ol class="options" start="0">
+                <% question.options.each do |option| %>
+                    <li><%= option.text %></li>
+                <% end %>
+              </ol>
           <% end %>
         </li>
-      <% end %>
-    </ol>
-  </div>
-</section>
+    <% end %>
+  </ol>
+  <div class="clearfix"></div>
+</div>
