@@ -1,8 +1,8 @@
 <section class="widget">
   <div class="body">
-    <header>
-      <h4><i class="eicon-export"></i><b>Project Exports</b></h4>
-    </header>
+    <div class="block-header text-center text-capitalize">
+      <h2><i class="md-file-download c-indigo"> Project Exports </i></h2>
+    </div>
     <table class="table table-hover">
       <thead>
       <tr>
@@ -37,7 +37,7 @@
               <% if export.short_done && export.short_format_url %>
                   <%= link_to 'short csv', project_short_format_responses_project_response_export_path(current_project, export.id) %>
               <% elsif export.short_format_url && !export.short_done %>
-                Processing..
+                  Processing..
               <% end %>
             </td>
             <td>
@@ -49,9 +49,12 @@
       <% end %>
       </tbody>
     </table>
-    <header>
-      <h4><i class="eicon-export"></i> <b>Instrument Exports</b></h4>
-    </header>
+
+    <div class="clearfix"><br/></div>
+
+    <div class="block-header text-center text-capitalize">
+      <h2><i class="md-file-download c-indigo"> Instrument Exports </i></h2>
+    </div>
     <table class="table table-hover">
       <thead>
       <tr>

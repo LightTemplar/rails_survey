@@ -1,13 +1,19 @@
-<h1><%= @instrument.title %></h1>
-<section class="widget">
-    <p>Pick a project to move the instrument (<%= @instrument.title %>) to:</p>
+<div class="block-header text-center text-capitalize">
+  <h2><i class="md-open-in-new c-indigo"> <%= @instrument.title %> </i></h2>
+</div>
+
+<div class="card">
+  <div class="card-body card-padding">
+    <p>Pick a project to move the instrument, <i><%= @instrument.title %></i>, to:</p>
     <%= form_for @instrument, url: update_move_project_instrument_path(current_project, @instrument) do |f| %>
         <% @projects.each do |project| %>
             <% unless project == current_project %>
-                <%= radio_button_tag(:end_project, project.id) %> 
+                <%= radio_button_tag(:end_project, project.id) %> <span class="m-10"></span>
                 <%= label_tag(:end_project, project.name) %> </br>
             <% end %>
         <% end %>
-        <%= f.submit 'Move Instrument', class: 'btn btn-primary btn-large' %>
+        <%= f.button :submit, class: 'btn btn-primary btn-large pull-right' %>
+        <div class="clearfix"></div>
     <% end %>
-</section>
+  </div>
+</div>

@@ -1,21 +1,25 @@
-<section class="widget">
-  <header>
-    <h4><i class="icon-bell-alt"></i> Notifications</h4>
-  </header>
-  <div class="body">
-    <table class="table table-hover">
-      <tbody>
+<section>
+  <div class="block-header text-center text-capitalize">
+    <h2><i class="md-notifications-on c-indigo"> notifications </i></h2>
+  </div>
+  <div class="card">
+    <div class="card-body card-padding">
+      <table class="table table-hover">
+        <tbody>
         <% if @dangerous_devices.empty? %>
-          <tr><td>No notifications.</td></tr>
+            <tr>
+              <td>No notifications.</td>
+            </tr>
         <% else %>
-          <% @dangerous_devices.each do |device| %>
-              <tr>
-                <td><%= %Q[#{device.label.blank? ? device.identifier : device.label} has not sent a survey in 
+            <% @dangerous_devices.each do |device| %>
+                <tr>
+                  <td><%= %Q[#{device.label.blank? ? device.identifier : device.label} has not sent a survey in
                     #{time_ago_in_words(device.last_survey.updated_at)}] %></td>
-              </tr>
-          <% end %>
+                </tr>
+            <% end %>
         <% end %>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   </div>
 </section>

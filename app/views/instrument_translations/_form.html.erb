@@ -1,84 +1,91 @@
-<section class="widget">
-  <header>
-    <h4><i class="icon-globe"></i> Translation for <%= @instrument.title %></h4>
-  </header>
+<div class="block-header text-center text-capitalize">
+  <h2><i class="md-language c-indigo"> Translations for <%= @instrument.title %> </i></h2>
+
+  <div class="pull-left"> Instrument language: <%= @instrument.language %> </div>
+</div>
+
+<div class="card">
   <div class="body">
     <%= form_for [@project, @instrument, @instrument_translation] do |f| %>
-      <% if @instrument_translation.errors.any? %>
-        <div class="error_messages">
-          <h2><%= pluralize(@instrument_translation.errors.count, "error") %> prohibited this translation from being saved:</h2>
-          <ul>
-          <% @instrument_translation.errors.full_messages.each do |msg| %>
-            <li><%= msg %></li>
+        <div class="card-header">
+          <% if @instrument_translation.errors.any? %>
+              <div class="error_messages">
+                <h2><%= pluralize(@instrument_translation.errors.count, "error") %> prohibited this translation from
+                  being
+                  saved:</h2>
+                <ul>
+                  <% @instrument_translation.errors.full_messages.each do |msg| %>
+                      <li><%= msg %></li>
+                  <% end %>
+                </ul>
+              </div>
           <% end %>
-          </ul>
+
+          <div class="form-group">
+            <%= f.label :title, 'Instrument Title', class: 'col-sm-2 control-label' %>
+            <div class="col-sm-10">
+              <%= f.text_field :title, class: 'fg-line form-control input-sm' %>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :language, 'Translation Language', class: 'col-sm-2 control-label' %>
+            <div class="col-sm-10">
+              <%= f.select(:language, options_for_select(Settings.languages, @instrument_translation.language), {}, {class: 'form-control'}) %>
+            </div>
+          </div>
+
+          <%= paginate @instrument.questions.page(params[:page]) %>
         </div>
-      <% end %>
 
-      <div class="field bottom-buffer">
-        <%= f.label :title, 'Instrument Title' %><br />
-        <%= f.text_field :title, class: 'form-control' %>
-      </div>
-
-      <div>
-        <strong>Instrument language:</strong> <%= @instrument.language %>
-      </div>
-
-      <div class="field bottom-buffer">
-        <%= f.label :language, 'Translation Language' %>
-        <%= f.select(:language, options_for_select(Settings.languages, @instrument_translation.language)) %>
-      </div>
-
-    <%= paginate @instrument.questions.page(params[:page]) %>
-
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th>Question Identifier</th>
-          <th><%= @instrument.language %></th>
-          <th>Translated Text</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @instrument.questions.page(params[:page]).each do |question| %>
-          <tr class="<%= "danger" if question.translated_for(@instrument_translation.language, :question_changed) %>">
-            <td><%= question.question_identifier %></td>
-            <td><%= raw question.text %></td>
-            <td><div class="controls form-group" ng-init="q_<%= question.id %>.text = '<%= question.translated_for(@instrument_translation.language, :text) %>'">
-              <div text-angular="text-angular" id="text-angular-content" rows="4" ta-toolbar="[['bold','italics','underline','insertLink'],['redo','undo'],['html']]" ng-model="q_<%= question.id  %>.text" name="<%= "question_translations[#{question.id}]" %>"></div>
-            </div></td>
-          </tr>
-          <% if question.has_options? %>
-            <% question.options.each do |option| %>
-              <tr class="<%= "danger" if option.translated_for(@instrument_translation.language, :option_changed) %>">
-                <td>Option for <%= question.question_identifier %></td>
-                <td><%= option.text %></td>
-                <td><%= text_area_tag "option_translations[#{option.id}]",
-                  option.translated_for(@instrument_translation.language, :text), size: '50x5' %></td>
-              </tr>
-            <% end %>
-          <% end %>
-          <% if question.starts_section %>
-            <tr class="<%= "danger" if question.starts_section.translated_for(@instrument_translation.language, :section_changed) %>">
-                <td>Section starting with <%= question.question_identifier %></td>
-                <td><%= question.starts_section.title %></td>
-                <td><%= text_area_tag "section_translations[#{question.starts_section.id}]",
-                   question.starts_section.translated_for(@instrument_translation.language, :text), size: '50x5' %></td>
+        <div class="card-body card-padding">
+          <table class="table table-hover">
+            <thead>
+            <tr>
+              <th>Question Identifier</th>
+              <th><%= @instrument.language %></th>
+              <th>Translated Text</th>
             </tr>
-          <% end %>
-          <% if question.reg_ex_validation_message %>
-            <td>Regular expression failure message for <%= question.question_identifier %></td>
-            <td><%= question.reg_ex_validation_message %></td>
-            <td><%= text_area_tag "validation_translations[#{question.id}]",
-              question.translated_for(@instrument_translation.language, :reg_ex_validation_message), size: '50x5' %></td>
-          <% end %>
-        <% end %>
-      </tbody>
-    </table>
-
-      <div class="top-buffer pull-right">
-        <%= f.submit class: 'btn btn-primary btn-large' %>
-      </div>
+            </thead>
+            <tbody>
+            <% @instrument.questions.page(params[:page]).each do |question| %>
+                <tr class="<%= 'danger' if question.translated_for(@instrument_translation.language, :question_changed) %>">
+                  <td><%= question.question_identifier %></td>
+                  <td><%= raw question.text %></td>
+                  <td><%= text_area_tag "question_translations[#{question.id}]",
+                                        question.translated_for(@instrument_translation.language, :text), size: '50x5' %></td>
+                </tr>
+                <% if question.has_options? %>
+                    <% question.options.each do |option| %>
+                        <tr class="<%= 'danger' if option.translated_for(@instrument_translation.language, :option_changed) %>">
+                          <td>Option for <%= question.question_identifier %></td>
+                          <td><%= option.text %></td>
+                          <td><%= text_area_tag "option_translations[#{option.id}]",
+                                                option.translated_for(@instrument_translation.language, :text), size: '50x5' %></td>
+                        </tr>
+                    <% end %>
+                <% end %>
+                <% if question.starts_section %>
+                    <tr class="<%= 'danger' if question.starts_section.translated_for(@instrument_translation.language, :section_changed) %>">
+                      <td>Section starting with <%= question.question_identifier %></td>
+                      <td><%= question.starts_section.title %></td>
+                      <td><%= text_area_tag "section_translations[#{question.starts_section.id}]",
+                                            question.starts_section.translated_for(@instrument_translation.language, :text), size: '50x5' %></td>
+                    </tr>
+                <% end %>
+                <% if question.reg_ex_validation_message %>
+                    <td>Regular expression failure message for <%= question.question_identifier %></td>
+                    <td><%= question.reg_ex_validation_message %></td>
+                    <td><%= text_area_tag "validation_translations[#{question.id}]",
+                                          question.translated_for(@instrument_translation.language, :reg_ex_validation_message), size: '50x5' %></td>
+                <% end %>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+        <div class="pull-right">
+          <%= f.button :submit, class: 'btn btn-success btn-large' %>
+        </div>
     <% end %>
   </div>
-</section>
+</div>
