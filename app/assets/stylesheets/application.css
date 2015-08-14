@@ -30,11 +30,11 @@
  *= require bootstrap_elements.css.scss
  */
 
-.top-buffer { margin-top:20px; }
-.bottom-buffer { margin-bottom:20px; }
-ul.squares { list-style: square }
-li.active-result { color:#333; }
+.top-buffer { margin-top: 20px; }
+.bottom-buffer { margin-bottom: 20px; }
+ul.squares { list-style: square; }
+li.active-result { color: #333; }
 table.fixed-wide {
   table-layout: fixed;
-  width: 100%
+  width: 100%;
 }
