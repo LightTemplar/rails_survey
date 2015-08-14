@@ -27,6 +27,7 @@
  *= require graphs
  *= require instruments
  *= require materialize
+ *= require bootstrap_elements.css.scss
  */
 
 .top-buffer { margin-top:20px; }
