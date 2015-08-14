@@ -1,6 +1,10 @@
+<style type="text/css">
+    #sidebar{ display:none; }
+</style>
+
 <section class="widget">
-  <header>
-    <h2><i class="eicon-login"></i> Forgot your password? </h2>
+  <header class="text-center bgm-red">
+    <h2><i class="md-vpn-lock m-10 c-white"> Forgot your password? </i></h2>
   </header>
   <div class="body">
     <%= form_for(resource, :as => resource_name, :url => password_path(resource_name), :html => { :method => :post }) do |f| %>
@@ -16,7 +20,7 @@
         </div>
     
         <div class="form-actions">
-          <%= f.submit "Send me reset password instructions", class: 'btn btn-primary pull-right' %>
+          <%= f.submit 'Send me reset password instructions', class: 'btn btn-primary pull-right' %>
         </div>
     <% end %>
   </div>
