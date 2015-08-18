@@ -40,7 +40,7 @@ rule_types:
   participant_type_rule:
     constant_name: 'PARTICIPANT_TYPE_RULE'
     pretty_name: 'Participant Type Rule'
-    params: ['Child', 'Caregiver', 'Center']
+    params: ['Child', 'Caregiver', 'Center', 'Neighbour']
     description: 'Limit an instrument such that it can only be created for a certain type of participant.'
  
 # List delimiter for options
@@ -68,7 +68,7 @@ right_align_languages: ['ar']
 exception_notifications:
   email_prefix: '[RailsSurvey] '
   sender: 'noreply@chpir.org'
-  recipients: ['michael@chpir.org', 'leonard@chpir.org']
+  recipients: ['leonard@chpir.org']
 
 questions_per_page: 15
 pages_to_show: 15
