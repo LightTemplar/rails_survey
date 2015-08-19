@@ -38,7 +38,7 @@
                     <div class="col-md-6 text-right"><h2><strong>{{question.question_type}}</strong></h2></div>
                   </div>
                   <div class="card-body card-padding">
-                    <div class="text-center text-capitalize" ng-bind-html="question.text"></div>
+                    <div ng-bind-html="question.text | ToTrustedHtml"></div>
                   </div>
                 </div>
 
