@@ -324,14 +324,14 @@ div.fc-row {
   background-color: #FFF;
   background-position: right calc(100% - 7px);
   background-repeat: no-repeat;
-  background-image: image-url("select.png");
+  background-image: image-url("/assets/select.png");
   pointer-events: none;
   z-index: 5;
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
   .bootstrap-select > .btn-default:before {
-    background-image: image-url("select@2x.png");
+    background-image: image-url("/assets/select@2x.png");
     background-size: 12px 12px;
   }
 }
@@ -582,7 +582,7 @@ div.fc-row {
   width: 13px;
   right: 0;
   z-index: 1;
-  background-image: image-url("select.png");
+  background-image: image-url("/assets/select.png");
   background-position: right;
   background-repeat: no-repeat;
   content: "";
@@ -590,7 +590,7 @@ div.fc-row {
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
   .chosen-container-single:before {
-    background-image: image-url("select@2x.png");
+    background-image: image-url("/assets/select@2x.png");
     background-size: 12px 12px;
   }
 }
