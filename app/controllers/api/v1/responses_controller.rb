@@ -20,7 +20,7 @@ module Api
         device_user = DeviceUser.find_by_id(params[:response][:device_user_id]) if params[:response][:device_user_id]
         project.device_users << device_user if device_user && !project.device_users.include?(device_user)
         device = @response.survey.device if @response.survey
-        device_user.devices << device if device && !device_user.devices.include?(device)
+        device_user.devices << device if device_user && device && !device_user.devices.include?(device)
       end
     end
   end
