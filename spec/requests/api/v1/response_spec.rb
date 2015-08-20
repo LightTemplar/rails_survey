@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "Responses API" do
+describe 'Responses API' do
   before :each do
     @question = FactoryGirl.create(:question)
     @survey = FactoryGirl.create(:survey)
@@ -24,7 +24,8 @@ describe "Responses API" do
     post "/api/v1/projects/#{@question.instrument.project.id}/responses?access_token=#{@api_key.access_token}",
       response:
         {
-          'survey_uuid' => @survey.uuid
+          'survey_uuid' => @survey.uuid,
+          'device_user_id' => @device_user.id
         }
     expect(response).to_not be_success
   end
@@ -53,7 +54,8 @@ describe "Responses API" do
       response:
         {
           'question_id' => '-1',
-          'survey_uuid' => @survey.uuid 
+          'survey_uuid' => @survey.uuid,
+          'device_user_id' => @device_user.id
         }
     expect(response).to_not be_success
   end
@@ -89,7 +91,8 @@ describe "Responses API" do
       response:
         {
           'question_id' => @question.id,
-          'survey_uuid' => @survey.uuid
+          'survey_uuid' => @survey.uuid,
+          'device_user_id' => @device_user.id
         }
     expect(response).to be_success
   end
