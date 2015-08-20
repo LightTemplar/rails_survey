@@ -6,12 +6,12 @@ module Api
 
       def create
         @survey = Survey.new(params[:survey])
-        @device = Device.find_by identifier: params[:survey][:device_uuid]
-        if @device
-          @survey.device = @device
+        device = Device.find_by identifier: params[:survey][:device_uuid]
+        if device
+          @survey.device = device
           project = Project.find_by_id(params[:project_id])
-          @device.projects << project unless @device.projects.include?(project)
-          @device.update(label: params[:survey][:device_label]) if @device.label != params[:survey][:device_label]
+          device.projects << project unless device.projects.include?(project)
+          device.update(label: params[:survey][:device_label]) if device.label != params[:survey][:device_label]
         else
           device = Device.new
           device.projects << Project.find_by_id(params[:project_id])

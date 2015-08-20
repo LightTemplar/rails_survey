@@ -24,8 +24,9 @@ class Project < ActiveRecord::Base
   has_many :questions, through: :instruments
   has_many :images, through: :questions
   has_many :options, through: :questions
-  has_many :sections, through: :instruments 
-  has_many :device_users
+  has_many :sections, through: :instruments
+  has_many :project_device_users
+  has_many :device_users, through: :project_device_users
   has_many :skips, through: :options 
   has_many :rules, through: :instruments
   has_many :grids, through: :instruments
