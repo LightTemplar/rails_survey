@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150715150437) do
+ActiveRecord::Schema.define(version: 20150820142926) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -69,6 +69,13 @@ ActiveRecord::Schema.define(version: 20150715150437) do
     t.datetime "updated_at"
   end
 
+  create_table "device_device_users", force: true do |t|
+    t.integer  "device_id"
+    t.integer  "device_user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "device_sync_entries", force: true do |t|
     t.string   "latitude"
     t.string   "longitude"
@@ -89,10 +96,8 @@ ActiveRecord::Schema.define(version: 20150715150437) do
     t.string   "name"
     t.string   "password_digest"
     t.boolean  "active",          default: false
-    t.integer  "device_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "project_id"
   end
 
   create_table "devices", force: true do |t|
@@ -173,6 +178,13 @@ ActiveRecord::Schema.define(version: 20150715150437) do
     t.integer  "number_in_question"
     t.datetime "deleted_at"
     t.integer  "instrument_version_number", default: -1
+  end
+
+  create_table "project_device_users", force: true do |t|
+    t.integer  "project_id"
+    t.integer  "device_user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "project_devices", force: true do |t|

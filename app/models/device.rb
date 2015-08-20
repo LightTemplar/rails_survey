@@ -14,6 +14,8 @@ class Device < ActiveRecord::Base
   has_many :project_devices
   has_many :projects, through: :project_devices
   has_many :device_sync_entries, foreign_key: :device_uuid, primary_key: :identifier, dependent: :destroy
+  has_many :device_device_users
+  has_many :device_users, through: :device_device_users
   validates :identifier, uniqueness: true, presence: true, allow_blank: false
 
   include Comparable

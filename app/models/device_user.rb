@@ -7,19 +7,19 @@
 #  name            :string(255)
 #  password_digest :string(255)
 #  active          :boolean          default(FALSE)
-#  device_id       :integer
 #  created_at      :datetime
 #  updated_at      :datetime
-#  project_id      :integer
 #
 
 class DeviceUser < ActiveRecord::Base
   has_secure_password
 
-  attr_accessible :name, :username, :password, :password_confirmation, :active
+  attr_accessible :name, :username, :password, :password_confirmation, :active, :device_ids, :project_ids
 
-  belongs_to :device
-  belongs_to :project
+  has_many :device_device_users
+  has_many :devices, through: :device_device_users
+  has_many :project_device_users
+  has_many :projects, through: :project_device_users
   validates :username, presence: true, uniqueness: true, allow_blank: false
   validates :name, presence: true
   validates :password_digest, presence: true

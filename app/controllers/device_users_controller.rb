@@ -22,7 +22,7 @@ class DeviceUsersController < ApplicationController
   def create
     @device_user = current_project.device_users.new(params[:device_user])
     authorize @device_user
-    if @device_user.save
+    if @device_user.save && @device_user.project_device_users.create(device_user_id: @device_user.id, project_id: current_project.id)
       redirect_to project_device_users_path(current_project), notice: 'Device User was successfully created.'
     else
       render :new
