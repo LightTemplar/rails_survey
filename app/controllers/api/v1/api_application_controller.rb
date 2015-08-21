@@ -5,6 +5,7 @@ module Api
       before_filter :check_version_code
       skip_before_filter :authenticate_user!
       skip_before_filter :authenticate_user_from_token!
+      skip_before_filter :set_project
 
       private
         def restrict_access
