@@ -8,6 +8,7 @@ class ApplicationController < ActionController::Base
   before_filter :authenticate_user_from_token!
   before_filter :store_location
   before_filter :authenticate_user!, unless: :current_admin_user
+  before_filter :set_project
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   def after_sign_in_path_for(resource_or_scope)
@@ -42,7 +43,7 @@ class ApplicationController < ActionController::Base
   end
 
   def user_not_authorized
-    flash[:alert] = "You are not authorized to perform this action."
+    flash[:alert] = 'You are not authorized to perform this action.'
     flash.keep
     request_path = request.fullpath.split('/')
     if (request_path[1] == 'api')
@@ -51,6 +52,13 @@ class ApplicationController < ActionController::Base
       redirect_to request_roles_path
     else
       redirect_to (request.referrer || root_path)
+    end
+  end
+
+  def set_project
+    if params[:project_id] && current_project && current_project.id != params[:project_id]
+      project = Project.find(params[:project_id])
+      set_current_project(project)
     end
   end
 
