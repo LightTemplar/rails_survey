@@ -1,11 +1,13 @@
 module Api
   module V1
     class SectionsController < ApiApplicationController
+      include Syncable
       respond_to :json
 
       def index
         project = Project.find(params[:project_id])
-        respond_with project.sections.with_deleted, include: :translations
+        sections = to_sync(project.sections, 'sections', params[:last_sync_time])
+        respond_with sections, include: :translations
       end
 
       def show
