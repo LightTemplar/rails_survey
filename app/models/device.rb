@@ -27,8 +27,8 @@ class Device < ActiveRecord::Base
   end
 
   def danger_zone?
-    if device_sync_entries && device_sync_entries.last
-      device_sync_entries.last.updated_at < Settings.danger_zone_days.days.ago
+    if device_sync_entries && last_sync_entry
+      last_sync_entry.updated_at < Settings.danger_zone_days.days.ago
     elsif last_survey
       last_survey.updated_at.to_time < Settings.danger_zone_days.days.ago
     end
@@ -36,6 +36,12 @@ class Device < ActiveRecord::Base
 
   def last_survey
     surveys.order('updated_at ASC').last
+  end
+
+  def last_project_survey(project)
+    if projects.include?(project)
+      project.device_surveys(self).order('updated_at ASC').last
+    end
   end
 
   def last_sync_entry

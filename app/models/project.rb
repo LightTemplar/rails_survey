@@ -83,6 +83,10 @@ class Project < ActiveRecord::Base
     StatusWorker.perform_in(5.minutes, export.id)
   end
 
+  def device_surveys(device)
+    surveys.where(device_uuid: device.identifier)
+  end
+
   private
   def sanitize(hash)
     (0..23).each do |h|
