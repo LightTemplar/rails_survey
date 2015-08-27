@@ -17,7 +17,6 @@ module Api
           device.label = params[:device_sync_entry][:device_label]
           device.save
         end
-        params[:device_sync_entry].delete :project_id
         params[:device_sync_entry].delete :device_label
         @device_sync_entry = DeviceSyncEntry.new(params[:device_sync_entry])
         if @device_sync_entry.save
