@@ -9,7 +9,7 @@ RailsSurvey::Application.routes.draw do
   ActiveAdmin.routes(self)
   devise_for :users
 
-  namespace :api, defaults: { format: 'json' } do
+  namespace :api, defaults: {format: 'json'} do
     namespace :v1 do
       namespace :frontend do
         resources :projects do
@@ -75,7 +75,7 @@ RailsSurvey::Application.routes.draw do
         match :update_copy, action: :update_copy, via: [:patch, :put]
       end
     end
-    
+
     member do
       get :instrument_export
     end
@@ -88,12 +88,12 @@ RailsSurvey::Application.routes.draw do
     end
     resources :surveys, :concerns => :paginatable
     resources :notifications, only: [:index]
-    resources :devices, only: [:index] do
+    resources :devices, only: [:index, :show] do
       resources :device_sync_entries, only: [:index]
     end
-    resources :response_images, only:[:show]
-    resources :graphs, only:[:index]
-    resources :response_exports  do
+    resources :response_images, only: [:show]
+    resources :graphs, only: [:index]
+    resources :response_exports do
       member do
         get :project_long_format_responses
         get :project_wide_format_responses

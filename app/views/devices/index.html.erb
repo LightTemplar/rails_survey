@@ -1,39 +1,29 @@
 <div class="block-header text-center text-uppercase">
   <h2><i class="md-devices c-indigo"> Devices </i></h2>
 </div>
+
 <div class="card">
   <div class="table-responsive">
     <table class="table table-striped">
       <thead>
       <tr>
-        <th>Device Identifier</th>
-        <th>Device Label</th>
-        <th>Survey Count</th>
-        <th>Unsynced Surveys</th>
-        <th>Last Survey</th>
-        <th>Last Update</th>
-        <th>App Version Name</th>
-        <th>Sync Data</th>
+        <th>Device</th>
+        <th>Uptodate?</th>
       </tr>
       </thead>
       <tbody>
       <% @devices.each do |device| %>
-          <tr>
-            <td><%= device.identifier[0...10] %></td>
-            <td><%= device.label %></td>
-            <td><%= current_project.device_surveys(device).count %></td>
-            <td class="<%= 'danger' if device.last_sync_entry.num_complete_surveys > 0 %>">
-              <%= device.last_sync_entry.num_complete_surveys %>
-            </td>
-            <td><%= device.last_project_survey(current_project) ? (link_to device.last_project_survey(current_project).uuid, project_survey_path(current_project, device.last_project_survey(current_project))) : '' %></td>
-            <td class="<%= 'danger' if device.danger_zone? %>">
-              <%= device.device_sync_entries.blank? ? '' : time_ago_in_words(device.last_sync_entry.updated_at) %>
-            </td>
-            <td class="<%= 'danger' if device.last_sync_entry.current_version_code != (AndroidUpdate.latest_version.version.to_s if AndroidUpdate.latest_version) %>">
-              <%= device.device_sync_entries.blank? ? '' : device.last_sync_entry.current_version_name %>
-            </td>
-            <td><%= link_to 'Sync Entries', project_device_device_sync_entries_path(current_project, device) %></td>
-          </tr>
+          <% if device.uptodate? %>
+              <tr class="success">
+                <td><%= link_to device.label, project_device_path(current_project, device) %></td>
+                <td>YES</td>
+              </tr>
+          <% else %>
+              <tr class="danger">
+                <td><%= link_to device.label, project_device_path(current_project, device) %></td>
+                <td>NO</td>
+              </tr>
+          <% end %>
       <% end %>
       </tbody>
     </table>

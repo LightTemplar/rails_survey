@@ -8,5 +8,9 @@ class DevicePolicy
   def index?
     @user.admin? || @user.manager? || @user.user?
   end
-  
+
+  def show?
+    @user.admin? || @user.manager? || @user.user?
+  end
+
 end
