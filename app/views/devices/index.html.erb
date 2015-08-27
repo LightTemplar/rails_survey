@@ -13,14 +13,14 @@
       </thead>
       <tbody>
       <% @devices.each do |device| %>
-          <% if device.uptodate? %>
+          <% if device.uptodate?(current_project) %>
               <tr class="success">
-                <td><%= link_to device.label, project_device_path(current_project, device) %></td>
+                <td><%= link_to (device.label.blank? ? device.identifier : device.label), project_device_path(current_project, device) %></td>
                 <td>YES</td>
               </tr>
           <% else %>
               <tr class="danger">
-                <td><%= link_to device.label, project_device_path(current_project, device) %></td>
+                <td><%= link_to (device.label.blank? ? device.identifier : device.label), project_device_path(current_project, device) %></td>
                 <td>NO</td>
               </tr>
           <% end %>

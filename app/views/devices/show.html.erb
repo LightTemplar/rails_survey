@@ -15,33 +15,35 @@
       <div class="col-sm-3 label-info">Synced surveys count</div>
       <div class="col-sm-9"><%= current_project.device_surveys(@device).count %></div>
     </div>
-    <div class="row <%= 'label-danger' if @device.last_sync_entry.num_complete_surveys > 0 %>">
-      <div class="col-sm-3 label-info">Complete unsynced surveys count</div>
-      <div class="col-sm-9"><%= @device.last_sync_entry.num_complete_surveys %></div>
-    </div>
-    <div class="row">
-      <div class="col-sm-3 label-info">Incomplete unsynced surveys count</div>
-      <div class="col-sm-9"><%= @device.last_sync_entry.num_incomplete_surveys %></div>
-    </div>
-    <div class="row">
-      <div class="col-sm-3 label-info">Last Survey</div>
-      <div class="col-sm-9"><%= @device.last_project_survey(current_project) ? (link_to @device.last_project_survey(current_project).uuid, project_survey_path(current_project, @device.last_project_survey(current_project))) : '' %></div>
-    </div>
-    <div class="row <%= 'label-danger' if @device.danger_zone? %>">
-      <div class="col-sm-3 label-info">Last sync time</div>
-      <div class="col-sm-9"><%= @device.device_sync_entries.blank? ? '' : time_ago_in_words(@device.last_sync_entry.updated_at) %></div>
-    </div>
-    <div class="row <%= 'label-danger' if @device.last_sync_entry.current_version_code != (AndroidUpdate.latest_version.version.to_s if AndroidUpdate.latest_version) %>">
-      <div class="col-sm-3 label-info">App Version Name</div>
-      <div class="col-sm-9"><%= @device.device_sync_entries.blank? ? '' : @device.last_sync_entry.current_version_name %></div>
-    </div>
-    <div class="row">
-      <div class="col-sm-3 label-info">OS build number</div>
-      <div class="col-sm-9"><%= @device.last_sync_entry.os_build_number %></div>
-    </div>
-    <div class="row">
-      <div class="col-sm-3 label-info">Sync Data</div>
-      <div class="col-sm-9"><%= link_to 'Sync Entries', project_device_device_sync_entries_path(current_project, @device) %></div>
-    </div>
+    <% if @device.last_sync_entry(current_project) %>
+        <div class="row <%= 'label-danger' if @device.last_sync_entry(current_project).num_complete_surveys > 0 %>">
+          <div class="col-sm-3 label-info">Complete unsynced surveys count</div>
+          <div class="col-sm-9"><%= @device.last_sync_entry(current_project).num_complete_surveys %></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3 label-info">Incomplete unsynced surveys count</div>
+          <div class="col-sm-9"><%= @device.last_sync_entry(current_project).num_incomplete_surveys %></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3 label-info">Last Survey</div>
+          <div class="col-sm-9"><%= @device.last_project_survey(current_project) ? (link_to @device.last_project_survey(current_project).uuid, project_survey_path(current_project, @device.last_project_survey(current_project))) : '' %></div>
+        </div>
+        <div class="row <%= 'label-danger' if @device.danger_zone?(current_project) %>">
+          <div class="col-sm-3 label-info">Last sync time</div>
+          <div class="col-sm-9"><%= @device.device_sync_entries.blank? ? '' : time_ago_in_words(@device.last_sync_entry(current_project).updated_at) %></div>
+        </div>
+        <div class="row <%= 'label-danger' if @device.last_sync_entry(current_project).current_version_code != (AndroidUpdate.latest_version.version.to_s if AndroidUpdate.latest_version) %>">
+          <div class="col-sm-3 label-info">App Version Name</div>
+          <div class="col-sm-9"><%= @device.device_sync_entries.blank? ? '' : @device.last_sync_entry(current_project).current_version_name %></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3 label-info">OS build number</div>
+          <div class="col-sm-9"><%= @device.last_sync_entry(current_project).os_build_number %></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3 label-info">Sync Data</div>
+          <div class="col-sm-9"><%= link_to 'Sync Entries', project_device_device_sync_entries_path(current_project, @device) %></div>
+        </div>
+    <% end %>
   </div>
 </div>
