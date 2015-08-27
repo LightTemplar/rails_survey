@@ -18,14 +18,6 @@ class Device < ActiveRecord::Base
   has_many :device_users, through: :device_device_users
   validates :identifier, uniqueness: true, presence: true, allow_blank: false
 
-  include Comparable
-  def <=> other
-    return 0 if !last_sync_entry && !other.last_sync_entry
-    return 1 if !last_sync_entry
-    return -1 if !other.last_sync_entry
-    last_sync_entry.updated_at <=> other.last_sync_entry.updated_at
-  end
-
   def danger_zone?
     if device_sync_entries && last_sync_entry
       last_sync_entry.updated_at < Settings.danger_zone_days.days.ago
@@ -46,6 +38,10 @@ class Device < ActiveRecord::Base
 
   def last_sync_entry
     device_sync_entries.order('updated_at ASC').last
+  end
+
+  def uptodate?
+    last_sync_entry.num_complete_surveys == 0 && !danger_zone? && last_sync_entry.current_version_code == (AndroidUpdate.latest_version.version.to_s if AndroidUpdate.latest_version)
   end
 
 end
