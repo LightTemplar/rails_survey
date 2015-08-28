@@ -54,6 +54,7 @@ gem 'devise_google_authenticator', '0.3.14'
 gem 'bcrypt', '~> 3.1.7'
 gem 'sshkit', '~> 1.5.1'
 gem 'prawn'
+gem 'newrelic_rpm'
 
 group :production do
   gem 'rails_12factor'
