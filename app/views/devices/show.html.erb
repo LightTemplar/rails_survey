@@ -16,7 +16,7 @@
       <div class="col-sm-9"><%= current_project.device_surveys(@device).count %></div>
     </div>
     <% if @device.last_sync_entry(current_project) %>
-        <div class="row <%= 'label-danger' if @device.last_sync_entry(current_project).num_complete_surveys > 0 %>">
+        <div class="row <%= 'label-danger' if @device.last_sync_entry(current_project).num_complete_surveys && @device.last_sync_entry(current_project).num_complete_surveys > 0 %>">
           <div class="col-sm-3 label-info">Complete unsynced surveys count</div>
           <div class="col-sm-9"><%= @device.last_sync_entry(current_project).num_complete_surveys %></div>
         </div>
