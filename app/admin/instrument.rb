@@ -4,8 +4,8 @@ ActiveAdmin.register Instrument do
   config.per_page = 10
 
   form do |f|
-    f.inputs "Instrument Details" do
-      f.input :project, collection: Project.all {|i| [i.name, i.id]}
+    f.inputs 'Instrument Details' do
+      f.input :project, collection: Project.all { |i| [i.name, i.id] }
       f.input :title
       f.input :language, collection: Settings.languages
       f.input :published
@@ -13,5 +13,5 @@ ActiveAdmin.register Instrument do
     end
     f.actions
   end
-  
+
 end

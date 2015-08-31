@@ -3,7 +3,7 @@ ActiveAdmin.register Question do
   permit_params :text, :question_type, :question_identifier, :instrument_id, :following_up_question_identifier, :reg_ex_validation,
           :number_in_instrument, :follow_up_position, :reg_ex_validation_message, :identifies_survey, :instructions
   config.per_page = 10
-  config.sort_order = "id_asc"
+  config.sort_order = 'id_asc'
  
   index do 
     column :id
@@ -44,7 +44,7 @@ ActiveAdmin.register Question do
   end
   
  form do |f|
-   f.inputs "Question Details" do
+   f.inputs 'Question Details' do
     f.input :instrument
     f.input :text
     f.input :question_type, collection: Settings.question_types

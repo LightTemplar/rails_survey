@@ -13,8 +13,7 @@
 
 class Section < ActiveRecord::Base
   include Translatable
-  attr_accessible :title, :start_question_identifier, :instrument_id 
-  belongs_to :instrument 
+  belongs_to :instrument
   has_many :translations, foreign_key: 'section_id', class_name: 'SectionTranslation', dependent: :destroy
   before_save :update_instrument_version, if: Proc.new { |section| section.changed? }
   before_save :update_section_translation, if: Proc.new { |section| section.title_changed? }

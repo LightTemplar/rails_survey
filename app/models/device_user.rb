@@ -14,8 +14,6 @@
 class DeviceUser < ActiveRecord::Base
   has_secure_password
 
-  attr_accessible :name, :username, :password, :password_confirmation, :active, :device_ids, :project_ids
-
   has_many :device_device_users
   has_many :devices, through: :device_device_users
   has_many :project_device_users

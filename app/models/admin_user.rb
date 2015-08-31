@@ -25,13 +25,11 @@
 #
 
 class AdminUser < ActiveRecord::Base
-	attr_accessor :gauth_token
+  attr_accessor :gauth_token
   include ComplexPassword
-  attr_accessible :email, :password, :password_confirmation, :gauth_enabled, :gauth_tmp, :gauth_tmp_datetime
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :google_authenticatable, :database_authenticatable, 
+  devise :google_authenticatable, :database_authenticatable,
          :recoverable, :rememberable, :trackable, :validatable, :timeoutable
-
 end

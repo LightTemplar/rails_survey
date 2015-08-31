@@ -11,7 +11,6 @@
 #
 
 class GridLabel < ActiveRecord::Base
-  attr_accessible :label, :grid_id, :option_id
   belongs_to :grid
   belongs_to :option
   after_create :create_options

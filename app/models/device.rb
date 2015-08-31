@@ -9,7 +9,6 @@
 #  label      :string(255)
 #
 class Device < ActiveRecord::Base
-  attr_accessible :identifier, :label
   has_many :surveys
   has_many :project_devices
   has_many :projects, through: :project_devices

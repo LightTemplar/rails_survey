@@ -27,21 +27,20 @@
 #
 
 class User < ActiveRecord::Base
-	attr_accessor :gauth_token
+  attr_accessor :gauth_token
   include ComplexPassword
   devise :google_authenticatable, :database_authenticatable, :recoverable, :rememberable, :trackable, :validatable, :timeoutable, :lockable
-  attr_accessible :email, :password, :password_confirmation, :project_ids, :role_ids, :gauth_enabled, :gauth_tmp, :gauth_tmp_datetime
   before_save :ensure_authentication_token
-  after_create :set_default_role 
-  has_many :user_projects 
+  after_create :set_default_role
+  has_many :user_projects
   has_many :projects, through: :user_projects
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
 
   def set_default_role
-    role = Role.find_by_name("user")
+    role = Role.find_by_name('user')
     return unless role
-    UserRole.create(:user_id => self.id, :role_id => role.id)  
+    UserRole.create(:user_id => self.id, :role_id => role.id)
   end
 
   def ensure_authentication_token
@@ -49,25 +48,25 @@ class User < ActiveRecord::Base
       self.authentication_token = generate_authentication_token
     end
   end
-  
+
   def user?
-    roles.find_by_name("user")
+    roles.find_by_name('user')
   end
-  
+
   def admin?
-    roles.find_by_name("admin")
+    roles.find_by_name('admin')
   end
-  
+
   def manager?
-    roles.find_by_name("manager")
+    roles.find_by_name('manager')
   end
-  
+
   def analyst?
-    roles.find_by_name("analyst")
+    roles.find_by_name('analyst')
   end
-  
+
   def translator?
-    roles.find_by_name("translator")
+    roles.find_by_name('translator')
   end
 
   private

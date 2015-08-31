@@ -23,8 +23,6 @@ class Instrument < ActiveRecord::Base
   include InstrumentCopy
   scope :published, -> { where(published: true) }
 
-  attr_accessible :title, :language, :alignment, :previous_question_count, :child_update_count,
-      :published, :show_instructions, :project_id 
   belongs_to :project
   has_many :questions, dependent: :destroy
   has_many :options, through: :questions
@@ -32,7 +30,7 @@ class Instrument < ActiveRecord::Base
   has_many :responses, through: :surveys
   has_many :response_images, through: :responses
   has_many :translations, foreign_key: 'instrument_id', class_name: 'InstrumentTranslation', dependent: :destroy
-  has_many :response_exports 
+  has_many :response_exports
   has_many :sections, dependent: :destroy
   has_many :rules, dependent: :destroy
   has_many :grids, dependent: :destroy
@@ -46,15 +44,15 @@ class Instrument < ActiveRecord::Base
 
   def version_by_version_number(version_number)
     InstrumentVersion.build(
-      instrument_id: id,
-      version_number: version_number
+        instrument_id: id,
+        version_number: version_number
     )
   end
 
   def completion_rate
     sum = 0.0
     self.surveys.each do |survey|
-        sum += survey.percent_complete
+      sum += survey.percent_complete
     end
     (sum / self.surveys.count).round(2)
   end
@@ -69,10 +67,10 @@ class Instrument < ActiveRecord::Base
 
   def as_json(options={})
     super((options || {}).merge({
-        methods: [:current_version_number, :question_count]
-    }))
+                                    methods: [:current_version_number, :question_count]
+                                }))
   end
-  
+
   def survey_instrument_versions
     surveys.pluck(:instrument_version_number).uniq
   end
@@ -83,7 +81,7 @@ class Instrument < ActiveRecord::Base
     end
   end
 
-  def export(format)   
+  def export(format)
     format << ['Instrument id:', id]
     format << ['Instrument title:', title]
     format << ['Version number:', current_version_number]
@@ -91,25 +89,25 @@ class Instrument < ActiveRecord::Base
     format << ["\n"]
     format << ['number_in_instrument', 'question_identifier', 'question_type', 'question_instructions', 'question_text'] + instrument_translation_languages
     questions.each do |question|
-      format << [question.number_in_instrument, question.question_identifier, question.question_type, 
-        Sanitize.fragment(question.instructions), Sanitize.fragment(question.text)] + translations_for_object(question) 
+      format << [question.number_in_instrument, question.question_identifier, question.question_type,
+                 Sanitize.fragment(question.instructions), Sanitize.fragment(question.text)] + translations_for_object(question)
       question.options.each {
-        |option| format << ['', '', '', "Option for question #{question.question_identifier}", option.text] + translations_for_object(option) 
+          |option| format << ['', '', '', "Option for question #{question.question_identifier}", option.text] + translations_for_object(option)
         if option.next_question
           format << ['', '', '', "For option #{option}, SKIP TO question", option.next_question]
         end
         if option.skips
           option.skips.each {
-            |skip| format << ['', '', '', "For option #{option.text}, SKIP question", skip.question_identifier]
+              |skip| format << ['', '', '', "For option #{option.text}, SKIP question", skip.question_identifier]
           }
         end
       }
       if question.reg_ex_validation_message
         format << ['', '', '', "Regular expression failure message for #{question.question_identifier}",
-          question.reg_ex_validation_message]
+                   question.reg_ex_validation_message]
       end
       if question.following_up_question_identifier
-        format << ['','', '', "Following up on question", question.following_up_question_identifier]
+        format << ['', '', '', "Following up on question", question.following_up_question_identifier]
         format << ['', '', '', "Follow up position", question.follow_up_position]
       end
       if question.identifies_survey
@@ -117,16 +115,16 @@ class Instrument < ActiveRecord::Base
       end
     end
   end
-  
+
   def instrument_translation_languages
     translation_languages = []
     translations.each do |t_language|
       translation_languages << t_language.language
     end
-    translation_languages 
+    translation_languages
   end
-  
-  def translations_for_object(obj) 
+
+  def translations_for_object(obj)
     text_translations = []
     obj.translations.each do |translation|
       if (instrument_translation_languages.include? translation.language)

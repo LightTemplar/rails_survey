@@ -1,4 +1,5 @@
 ActiveAdmin.register DeviceUser do
+  permit_params :name, :username, :password, :password_confirmation, :active, :device_ids, :project_ids
 
   index do
     selectable_column
