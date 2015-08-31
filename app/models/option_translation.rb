@@ -12,7 +12,6 @@
 #
 
 class OptionTranslation < ActiveRecord::Base
-  attr_accessible :text, :language, :option_changed
   belongs_to :option
   validates :text, presence: true, allow_blank: false
 end

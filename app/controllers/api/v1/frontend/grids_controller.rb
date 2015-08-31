@@ -11,7 +11,7 @@ module Api
         
         def create
           instrument = current_project.instruments.find(params[:instrument_id])
-          grid = instrument.grids.new(params[:grid])
+          grid = instrument.grids.new(grid_params)
           if grid.save
             render json: grid, status: :created
           else
@@ -22,7 +22,7 @@ module Api
         def update
           instrument = current_project.instruments.find(params[:instrument_id])
           grid = instrument.grids.find(params[:id])
-          grid.update_attributes(params[:grid])
+          grid.update_attributes(grid_params)
           respond_with grid
         end
         
@@ -30,6 +30,11 @@ module Api
           instrument = current_project.instruments.find(params[:instrument_id])
           grid = instrument.grids.find(params[:id])
           respond_with grid.destroy
+        end
+
+        private
+        def grid_params
+          params.require(:grid).permit(:instrument_id, :question_type, :name)
         end
         
       end

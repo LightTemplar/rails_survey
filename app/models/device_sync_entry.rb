@@ -21,9 +21,6 @@
 #
 
 class DeviceSyncEntry < ActiveRecord::Base
-  attr_accessible :latitude, :longitude, :num_complete_surveys, :current_language, :current_version_code, :instrument_versions,
-                  :api_key, :device_uuid, :timezone, :current_version_name, :os_build_number, :project_id, :num_incomplete_surveys
-
   belongs_to :device, foreign_key: :identifier, primary_key: :device_uuid
   belongs_to :project
 

@@ -13,13 +13,8 @@
 
 class Rule < ActiveRecord::Base
   Rules = [:instrument_survey_limit_rule, :instrument_timing_rule, :instrument_survey_limit_per_minute_rule, :instrument_launch_rule, :participant_type_rule]
-
   belongs_to :instrument
-
-  attr_accessible :instrument_id, :rule_type, :rule_params
-
   validates :rule_type, presence: true
-
   acts_as_paranoid
 
   def rule_params_hash

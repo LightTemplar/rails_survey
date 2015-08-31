@@ -5,7 +5,7 @@ module Api
       respond_to :json
 
       def create
-        @survey = Survey.new(params[:survey])
+        @survey = Survey.new(survey_params)
         device = Device.find_by identifier: params[:survey][:device_uuid]
         if device
           @survey.device = device
@@ -26,6 +26,12 @@ module Api
         else
           render nothing: true, status: :unprocessable_entity
         end
+      end
+
+      private
+      def survey_params
+        params.require(:survey).permit(:instrument_id, :instrument_version_number, :uuid, :device_id, :instrument_title,
+                                       :device_uuid, :latitude, :longitude, :metadata, :completion_rate, :device_label)
       end
     end
   end

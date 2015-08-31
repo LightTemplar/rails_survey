@@ -20,7 +20,7 @@ module Api
         def create
           instrument = current_project.instruments.find(params[:instrument_id])
           grid = instrument.grids.find(params[:grid_id])
-          grid_label = grid.grid_labels.new(params[:grid_label])
+          grid_label = grid.grid_labels.new(grid_label_params)
           if grid_label.save
             render json: grid_label, status: :created
           else
@@ -32,7 +32,7 @@ module Api
           instrument = current_project.instruments.find(params[:instrument_id])
           grid = instrument.grids.find(params[:grid_id])
           grid_label = grid.grid_labels.find(params[:id])
-          grid_label.update_attributes(params[:grid_label])
+          grid_label.update_attributes(grid_label_params)
           respond_with grid_label
         end
         
@@ -41,6 +41,11 @@ module Api
           grid = instrument.grids.find(params[:grid_id])
           grid_label = grid.grid_labels.find(params[:id])
           respond_with grid_label.destroy
+        end
+
+        private
+        def grid_label_params
+          params.require(:grid_label).permit(:label, :grid_id, :option_id)
         end
 
       end

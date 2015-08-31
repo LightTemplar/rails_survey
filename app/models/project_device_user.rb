@@ -10,7 +10,6 @@
 #
 
 class ProjectDeviceUser < ActiveRecord::Base
-  attr_accessible :project_id, :device_user_id
   belongs_to :project
   belongs_to :device_user
 end

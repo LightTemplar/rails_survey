@@ -7,7 +7,7 @@ ActiveAdmin.register ApiKey do
     actions
   end
 
-  show do |user|
+  show do |key|
     attributes_table do
       row :id
       row :access_token
@@ -18,7 +18,7 @@ ActiveAdmin.register ApiKey do
 
   form do |f|
     unless f.object.new_record?
-      f.inputs "Api Key Details" do
+      f.inputs 'Api Key Details' do
         f.input :access_token
       end
     end

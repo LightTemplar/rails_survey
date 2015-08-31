@@ -10,7 +10,6 @@
 #
 
 class Project < ActiveRecord::Base
-  attr_accessible :name, :description
   has_many :instruments, dependent: :destroy
   has_many :surveys, through: :instruments
   has_many :project_devices, dependent: :destroy
