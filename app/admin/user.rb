@@ -1,6 +1,6 @@
 ActiveAdmin.register User do
   menu priority: 3
-  permit_params :email, :password, :password_confirmation, :project_ids, :role_ids, :gauth_enabled, :gauth_tmp, :gauth_tmp_datetime
+  permit_params :email, :password, :password_confirmation, :gauth_enabled, :gauth_tmp, :gauth_tmp_datetime, project_ids: [], role_ids: []
 
   index do
     column :email
@@ -55,15 +55,20 @@ ActiveAdmin.register User do
     def update
       @user = User.find(params[:id])
       if params[:user].blank? || params[:password].blank? || params[:password_confirmation].blank?
-        @user.update_without_password(params[:user])
+        @user.update_without_password(user_params)
       else
-        @user.update_attributes(params[:user])
+        @user.update_attributes(user_params)
       end
       if @user.errors.blank?
         redirect_to admin_user_path(params[:id]), :notice => 'User updated successfully.'
       else
         render :edit
       end
+    end
+
+    private
+    def user_params
+      params.require(:user).permit(:email, :password, :password_confirmation, :gauth_enabled, :gauth_tmp, :gauth_tmp_datetime, project_ids: [], role_ids: [])
     end
   end
 
