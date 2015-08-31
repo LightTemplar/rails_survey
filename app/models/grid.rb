@@ -11,7 +11,6 @@
 #
 
 class Grid < ActiveRecord::Base
-  attr_accessible :instrument_id, :question_type, :name
   belongs_to :instrument
   has_many :questions, dependent: :destroy
   has_many :grid_labels, dependent: :destroy

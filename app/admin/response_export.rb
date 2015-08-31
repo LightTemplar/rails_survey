@@ -1,11 +1,12 @@
 ActiveAdmin.register ResponseExport do
-  
+  permit_params :long_format_url, :wide_format_url, :project_id, :instrument_id,
+                :instrument_versions, :long_done, :wide_done, :short_format_url, :short_done
   actions :all, except: [:new, :edit]
-  
+
   member_action :download_exports, method: :get do
-    redirect_to resource_path, notice: "Download successful!"
+    redirect_to resource_path, notice: 'Download successful!'
   end
-  
+
   action_item :download, only: :show do
     link_to 'Download Files', download_exports_admin_response_export_path(response_export)
   end
@@ -34,7 +35,7 @@ ActiveAdmin.register ResponseExport do
     actions
   end
 
-  controller do   
+  controller do
     def download_exports
       response_export = ResponseExport.find_by_id(params[:id])
       if response_export
@@ -56,7 +57,7 @@ ActiveAdmin.register ResponseExport do
         file.close
         DeleteFilesWorker.perform_in(2.minutes, file.path)
       end
-    end  
+    end
   end
 
 end

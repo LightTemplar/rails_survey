@@ -12,7 +12,6 @@
 #
 
 class SectionTranslation < ActiveRecord::Base
-  attr_accessible :language, :text, :section_changed
   belongs_to :section
   validates :text, presence: true, allow_blank: false
 end

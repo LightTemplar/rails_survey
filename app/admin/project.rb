@@ -1,5 +1,6 @@
 ActiveAdmin.register Project do
   menu priority: 4
+  permit_params :name, :description
 
   index do
     selectable_column

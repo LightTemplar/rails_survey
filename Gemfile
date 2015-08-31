@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 ruby '2.0.0'
-gem 'rails', '4.0.4'
+gem 'rails', '4.1.13'
 gem 'pg', group: [:production]
 gem 'sass-rails', '~> 4.0.0'
 gem 'uglifier', '>= 1.3.0'
@@ -12,8 +12,7 @@ gem 'zip-zip'
 gem 'turbolinks'
 gem 'jbuilder', '~> 1.2'
 gem 'angularjs-rails', '~> 1.0.7'
-gem 'protected_attributes'
-gem 'annotate', ">=2.5.0"
+gem 'annotate', '>=2.5.0'
 
 group :doc do
   gem 'sdoc', require: false

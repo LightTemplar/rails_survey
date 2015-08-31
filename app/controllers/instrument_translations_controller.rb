@@ -30,12 +30,12 @@ class InstrumentTranslationsController < ApplicationController
 
   def create
     @instrument = current_project.instruments.find(params[:instrument_id])
-    @instrument_translation = @instrument.translations.new(params[:instrument_translation])
+    @instrument_translation = @instrument.translations.new(instrument_translation_params)
     authorize @instrument_translation
     if @instrument_translation.save
       update_translations(params, @instrument, @instrument_translation)
       redirect_to project_instrument_instrument_translation_path(current_project, @instrument, @instrument_translation),
-        notice: "Successfully created instrument translation."
+        notice: 'Successfully created instrument translation.'
     else
       render :new
     end
@@ -53,9 +53,9 @@ class InstrumentTranslationsController < ApplicationController
     @instrument_translation = @instrument.translations.find(params[:id])
     authorize @instrument_translation
     update_translations(params, @instrument, @instrument_translation)
-    if @instrument_translation.update_attributes(params[:instrument_translation])
+    if @instrument_translation.update_attributes(instrument_translation_params)
       redirect_to project_instrument_instrument_translation_path(current_project, @instrument, @instrument_translation),
-        notice: "Successfully updated instrument translation."
+        notice: 'Successfully updated instrument translation.'
     else
       render :edit
     end
@@ -66,7 +66,7 @@ class InstrumentTranslationsController < ApplicationController
     @instrument_translation = @instrument.translations.find(params[:id])
     authorize @instrument_translation
     @instrument_translation.destroy
-    redirect_to project_instrument_instrument_translations_url, notice: "Successfully destroyed instrument translation."
+    redirect_to project_instrument_instrument_translations_url, notice: 'Successfully destroyed instrument translation.'
   end
 
   private
@@ -105,5 +105,9 @@ class InstrumentTranslationsController < ApplicationController
       end
       section.add_or_update_translation_for(language, translation, :text)
     end if params.has_key? :section_translations
+  end
+
+  def instrument_translation_params
+    params.require(:instrument_translation).permit(:title, :language, :alignment)
   end
 end

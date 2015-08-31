@@ -10,7 +10,6 @@
 #
 
 class DeviceDeviceUser < ActiveRecord::Base
-  attr_accessible :device_id, :device_user_id
   belongs_to :device
   belongs_to :device_user
 end

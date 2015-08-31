@@ -54,6 +54,6 @@ class SectionsController < ApplicationController
     end
 
     def section_params
-      params[:section]
+      params.require(:section).permit(:title, :start_question_identifier, :instrument_id)
     end
 end
