@@ -80,6 +80,7 @@ class Project < ActiveRecord::Base
     end
     Survey.set_export_count(export.id.to_s, surveys.count * 3)
     StatusWorker.perform_in(5.minutes, export.id)
+    export.id
   end
 
   def device_surveys(device)

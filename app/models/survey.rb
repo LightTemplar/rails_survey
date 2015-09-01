@@ -105,6 +105,7 @@ class Survey < ActiveRecord::Base
     export_long_csv(long_csv, instrument, export.id)
     set_export_count(export.id.to_s, instrument.surveys.count * 3)
     StatusWorker.perform_in(5.minutes, export.id)
+    export.id
   end
 
   def self.export_short_csv(short_csv, instrument, export_id)
@@ -120,7 +121,7 @@ class Survey < ActiveRecord::Base
   end
 
   def self.write_short_row(file, survey_id, export_id)
-    survey = Survey.find(survey_id, include: :responses)
+    survey = Survey.includes(:responses).where(id: survey_id).first
     validator = survey.validation_identifier
     CSV.open(file, 'a+') do |csv|
       survey.responses.each do |response|
@@ -164,7 +165,7 @@ class Survey < ActiveRecord::Base
   end
 
   def self.write_wide_row(file, survey_id, export_id)
-    survey = Survey.find(survey_id, include: :responses)
+    survey = Survey.includes(:responses).where(id: survey_id).first
     headers = get_headers(file)
     CSV.open(file, 'a+') do |csv|
       row = [survey.id, survey.uuid, survey.device.identifier, survey.device_label ? survey.device_label : survey.device.label, survey.latitude, survey.longitude, survey.instrument.id,
@@ -240,7 +241,7 @@ class Survey < ActiveRecord::Base
   end
 
   def self.write_long_row(file, survey_id, export_id)
-    survey = Survey.find(survey_id, include: :responses)
+    survey = Survey.includes(:responses).where(id: survey_id).first
     headers = get_headers(file)
     CSV .open(file, 'a+') do |csv|
       survey.responses.each do |response|
