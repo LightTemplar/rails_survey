@@ -12,10 +12,12 @@
             </tr>
         <% else %>
             <% @dangerous_devices.each do |device| %>
-                <tr>
-                  <td><%= %Q[#{device.label.blank? ? device.identifier : device.label} has not sent a survey in
+                <% if device.last_project_survey(current_project) %>
+                    <tr>
+                      <td><%= %Q[#{device.label.blank? ? device.identifier : device.label} has not sent a survey in
                     #{time_ago_in_words(device.last_project_survey(current_project).updated_at)}] %></td>
-                </tr>
+                    </tr>
+                <% end %>
             <% end %>
         <% end %>
         </tbody>
