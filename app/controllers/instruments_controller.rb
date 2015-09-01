@@ -75,13 +75,13 @@ class InstrumentsController < ApplicationController
   end
 
   def export_responses
-    @instrument = current_project.instruments.find(params[:id], include: :surveys)
+    @instrument = current_project.instruments.includes(:surveys).where(id: params[:id]).try(:first)
     authorize @instrument
-    Survey.instrument_export(@instrument)
+    export_id = Survey.instrument_export(@instrument)
     unless @instrument.response_images.empty?
       zipped_file = File.new(File.join('files', 'exports').to_s + "/#{Time.now.to_i}.zip", 'a+')
       zipped_file.close
-      pictures_export = ResponseImagesExport.create(:response_export_id => export.id, :download_url => zipped_file.path)
+      pictures_export = ResponseImagesExport.create(:response_export_id => export_id, :download_url => zipped_file.path)
       InstrumentImagesExportWorker.perform_async(@instrument.id, zipped_file.path, pictures_export.id)
     end
     redirect_to project_response_exports_path(current_project)
