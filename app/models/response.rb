@@ -31,18 +31,17 @@ class Response < ActiveRecord::Base
 
   validate :question_existence
   validates :survey, presence: true
-  # after_create :calculate_response_rate
-  # after_destroy :calculate_response_rate
-  # after_create {|response| response.message }
+  after_destroy :calculate_response_rate
+  after_create {|response| response.message }
 
   def question_existence
     unless Question.with_deleted.find_by_id(question_id)
-      errors.add(:question, "has never existed")
+      errors.add(:question, 'has never existed')
     end
   end
   
   def calculate_response_rate
-    survey.calculate_completion_rate
+    SurveyPercentWorker.perform_in(30.minutes, survey.id)
   end
 
   def to_s
@@ -68,7 +67,7 @@ class Response < ActiveRecord::Base
     if question and versioned_question and versioned_question.has_options? 
       text.split(Settings.list_delimiter).each do |option_index|
         if versioned_question.has_other? and option_index.to_i == versioned_question.other_index
-          labels << "Other"
+          labels << 'Other'
         else
           labels << versioned_question.options[option_index.to_i].to_s
         end

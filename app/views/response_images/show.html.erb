@@ -1,8 +1,8 @@
-<h2>
-    <%= @image.picture_file_name %>
-</h2>
-<section class="widget">
-    <body>
-        <%= image_tag @image.picture.url  %>
-    </body>
-</section>
+<div class="block-header text-center text-capitalize">
+  <%= @image.picture_file_name %>
+</div>
+<div class="card">
+  <div class="card-body card-padding">
+    <%= image_tag @image.picture.url %>
+  </div>
+</div>
