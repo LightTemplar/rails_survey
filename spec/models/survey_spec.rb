@@ -14,7 +14,7 @@
 #  latitude                  :string(255)
 #  longitude                 :string(255)
 #  metadata                  :text
-#  completion_rate           :decimal(3, 2)
+#  completion_rate           :string(3)
 #  device_label              :string(255)
 #
 
@@ -24,7 +24,6 @@ describe Survey do
   it { should respond_to(:instrument) }
   it { should respond_to(:device) }
   it { should respond_to(:responses) }
-  it { should respond_to(:percent_complete) }
 
   before :each do
     @survey = build(:survey) 

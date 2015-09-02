@@ -52,7 +52,7 @@ class Instrument < ActiveRecord::Base
   def completion_rate
     sum = 0.0
     self.surveys.each do |survey|
-      sum += survey.percent_complete
+      sum += survey.completion_rate.to_f if survey.completion_rate
     end
     (sum / self.surveys.count).round(2)
   end

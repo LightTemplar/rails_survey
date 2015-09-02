@@ -14,7 +14,7 @@
 #  latitude                  :string(255)
 #  longitude                 :string(255)
 #  metadata                  :text
-#  completion_rate           :decimal(3, 2)
+#  completion_rate           :string(3)
 #  device_label              :string(255)
 #
 
@@ -29,9 +29,10 @@ class Survey < ActiveRecord::Base
   validates :instrument_id, presence: true, allow_blank: false
   validates :instrument_version_number, presence: true, allow_blank: false
   paginates_per 50
+  after_create :calculate_percentage
 
-  def percent_complete
-    completion_rate || calculate_completion_rate
+  def calculate_percentage
+    SurveyPercentWorker.perform_in(30.minutes, id)
   end
 
   def calculate_completion_rate
@@ -39,10 +40,9 @@ class Survey < ActiveRecord::Base
                                                nil || '', nil || '', nil || '').pluck(:question_id).uniq.count
     valid_question_count = instrument.version_by_version_number(instrument_version_number)
                                .questions.select{|question| question.question_type != 'INSTRUCTIONS'}.count
-    rate = (valid_response_count.to_f / valid_question_count).round(2) if (valid_response_count &&
+    rate = (valid_response_count.to_f / valid_question_count.to_f).round(2) if (valid_response_count &&
         valid_question_count && valid_question_count != 0)
-    update_columns(completion_rate: rate) if rate
-    completion_rate
+    update_columns(completion_rate: rate.to_s) if rate
   end
 
   def location
