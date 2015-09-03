@@ -69,7 +69,11 @@ class Question < ActiveRecord::Base
   end
 
   def instrument_version
-    read_attribute(:instrument_version_number) == -1 ? instrument.current_version_number : read_attribute(:instrument_version_number)
+    if instrument && (read_attribute(:instrument_version_number) == -1)
+      instrument.current_version_number
+    else
+      read_attribute(:instrument_version_number)
+    end
   end
 
   def as_json(options={})
