@@ -17,7 +17,7 @@ class Option < ActiveRecord::Base
   include Translatable
   default_scope { order('number_in_question ASC') }
   belongs_to :question
-  delegate :instrument, to: :question
+  delegate :instrument, to: :question, allow_nil: true
   delegate :project, to: :question
   has_many :translations, foreign_key: 'option_id', class_name: 'OptionTranslation', dependent: :destroy
   before_save :update_instrument_version, if: Proc.new { |option| option.changed? }
