@@ -1,0 +1,40 @@
+<div class="block-header text-center text-capitalize">
+  <h2><i class="md-store c-indigo"> Metrics </i></h2>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <%= link_to new_project_metric_path(current_project), class: 'btn btn-primary pull-right' do %>
+        <i class="md-add">New Metric</i>
+    <% end %>
+  </div>
+  <div class="card-body card-padding">
+    <table class="table table-responsive table-striped">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Instrument</th>
+        <th>Expected</th>
+        <th>Key name</th>
+        <th></th>
+        <th></th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <% @metrics.each do |metric| %>
+          <tr>
+            <td><%= metric.name %></td>
+            <td><%= metric.instrument.title %></td>
+            <td><%= metric.expected %></td>
+            <td><%= metric.key_name %></td>
+            <td> <%= link_to 'Edit', edit_project_metric_path(current_project, metric), class: 'btn btn-primary' %> </td>
+            <td>
+              <%= button_to 'Delete', project_metric_path(current_project, metric), method: :delete, data: {confirm: 'Are you sure?'}, class: 'btn btn-danger' %>
+            </td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

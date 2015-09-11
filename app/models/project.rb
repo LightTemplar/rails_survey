@@ -30,6 +30,7 @@ class Project < ActiveRecord::Base
   has_many :rules, through: :instruments
   has_many :grids, through: :instruments
   has_many :grid_labels, through: :grids
+  has_many :metrics, through: :instruments
   
   validates :name, presence: true, allow_blank: false
   validates :description, presence: true, allow_blank: true
