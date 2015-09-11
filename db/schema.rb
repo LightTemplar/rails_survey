@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150902130340) do
+ActiveRecord::Schema.define(version: 20150911161524) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -161,6 +161,15 @@ ActiveRecord::Schema.define(version: 20150902130340) do
     t.boolean  "published"
     t.datetime "deleted_at"
     t.boolean  "show_instructions",       default: false
+  end
+
+  create_table "metrics", force: true do |t|
+    t.integer  "instrument_id"
+    t.string   "name"
+    t.integer  "expected"
+    t.string   "key_name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "option_translations", force: true do |t|
