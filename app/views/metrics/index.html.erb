@@ -16,6 +16,7 @@
         <th>Instrument</th>
         <th>Expected</th>
         <th>Key name</th>
+        <th>Stats</th>
         <th></th>
         <th></th>
       </tr>
@@ -28,6 +29,7 @@
             <td><%= metric.instrument.title %></td>
             <td><%= metric.expected %></td>
             <td><%= metric.key_name %></td>
+            <td><%= link_to 'Stats', project_metric_stats_path(current_project, metric) %></td>
             <td> <%= link_to 'Edit', edit_project_metric_path(current_project, metric), class: 'btn btn-primary' %> </td>
             <td>
               <%= button_to 'Delete', project_metric_path(current_project, metric), method: :delete, data: {confirm: 'Are you sure?'}, class: 'btn btn-danger' %>
