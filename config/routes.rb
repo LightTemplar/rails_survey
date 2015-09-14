@@ -108,7 +108,13 @@ RailsSurvey::Application.routes.draw do
     get :export_responses
     get 'graphs/daily/' => 'graphs#daily_responses'
     get 'graphs/hourly/' => 'graphs#hourly_responses'
-    resources :metrics
+    resources :metrics do
+      resources :stats do
+        collection do
+          get :crunch
+        end
+      end
+    end
   end
   resources :request_roles, only: [:index]
   get "/photos/:id/:style.:format", :controller => "api/v1/frontend/images", :action => "show"

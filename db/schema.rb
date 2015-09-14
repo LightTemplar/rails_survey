@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150911161524) do
+ActiveRecord::Schema.define(version: 20150911190151) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -340,6 +340,15 @@ ActiveRecord::Schema.define(version: 20150911161524) do
   end
 
   add_index "skips", ["deleted_at"], name: "index_skips_on_deleted_at"
+
+  create_table "stats", force: true do |t|
+    t.integer  "metric_id"
+    t.string   "key_value"
+    t.integer  "count"
+    t.string   "percent"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "surveys", force: true do |t|
     t.integer  "instrument_id"

@@ -69,6 +69,14 @@ class Survey < ActiveRecord::Base
     JSON.parse(read_attribute(:metadata)) unless read_attribute(:metadata).nil?
   end
 
+  def center_id
+    metadata['Center ID'] if metadata
+  end
+
+  def participant_id
+    metadata['Participant ID'] if metadata
+  end
+
   def chronicled_question(question_identifier)
     @chronicled_question ||= Hash.new do |question_hash, q_id|
       question_hash[q_id] = instrument_version.find_question_by(question_identifier: q_id)
