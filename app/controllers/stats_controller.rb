@@ -6,7 +6,7 @@ class StatsController < ApplicationController
 
   def crunch
     metric = current_project.metrics.find(params[:metric_id])
-    metric.crunch_stats
+    StatsWorker.perform_async(metric.id) if metric
     redirect_to project_metric_stats_path(current_project, metric)
   end
 end
