@@ -9,7 +9,7 @@ ActiveAdmin.register Survey do
                 :device_uuid, :latitude, :longitude, :metadata, :completion_rate
 
   config.sort_order = 'id_desc'
-  actions :all, except: [:edit, :new]
+  actions :all, except: :new
 
   index do
     selectable_column
@@ -29,6 +29,13 @@ ActiveAdmin.register Survey do
     end
     column :completion_rate
     actions
+  end
+
+  form do |f|
+    f.inputs 'Survey Details' do
+      f.input :metadata
+    end
+    f.actions
   end
 
 end
