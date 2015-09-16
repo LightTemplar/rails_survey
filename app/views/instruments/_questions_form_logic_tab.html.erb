@@ -85,14 +85,9 @@
         with the following question identifiers:</label>
 
       <div ng-controller="SkipsCtrl" ng-init="init(<%= @project.id %>, <%= @instrument.id %>, question.id, option.id)">
-        <div>
-          <button type="submit" ng-click="addQuestionToSkip()" class="btn btn-xs btn-primary pull-center">
-            <i class="md-add">Add Question</i>
-          </button>
-        </div>
         <div ng-repeat="skip in skips">
           <div class="input-group">
-            <input type="text" class="form-control" ng-model="skip.question_identifier" autofocus="autofocus">
+            <input class="form-control" ng-model="skip.question_identifier" ng-readonly="true">
 
             <div class="input-group-btn">
               <button ng-click="removeSkip(skip)" class="btn btn-danger"><i class="md-delete"></i></button>
@@ -100,8 +95,20 @@
           </div>
         </div>
         <div>
+          <button type="submit" ng-click="addQuestionsToSkip()" class="btn btn-xs btn-primary pull-center">
+            <i class="md-add">Add Skips</i>
+          </button>
+        </div>
+        <div class="card card-padding" ng-show="showSkips">
+          <div class="col-sm-6" ng-repeat="question in questions">
+            <label>
+              <input type="checkbox" ng-model="question.checked"><span class="m-l-10"></span>
+              {{ question.question_identifier }}
+            </label>
+          </div>
+          <div class="clearfix"></div>
           <button type="submit" ng-click="saveQuestionsToSkip()" class="btn btn-success btn-xs pull-center">
-            <i class="md-save">Save Skipped Questions</i>
+            <i class="md-save">Save Skips</i>
           </button>
         </div>
       </div>
