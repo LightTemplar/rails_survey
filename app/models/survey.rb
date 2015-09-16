@@ -32,7 +32,7 @@ class Survey < ActiveRecord::Base
   after_create :calculate_percentage
 
   def calculate_percentage
-    SurveyPercentWorker.perform_in(30.minutes, id)
+    SurveyPercentWorker.perform_in(5.hours, id)
   end
 
   def calculate_completion_rate
