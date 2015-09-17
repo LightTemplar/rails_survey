@@ -85,20 +85,20 @@
         with the following question identifiers:</label>
 
       <div ng-controller="SkipsCtrl" ng-init="init(<%= @project.id %>, <%= @instrument.id %>, question.id, option.id)">
-        <div ng-repeat="skip in skips">
-          <div class="input-group">
-            <input class="form-control" ng-model="skip.question_identifier" ng-readonly="true">
-
-            <div class="input-group-btn">
+        <div class="col-sm-6" ng-repeat="skip in skips">
+          <div class="form-group">
+            <div class="col-sm-8">
+              <input class="form-control" ng-model="skip.question_identifier" ng-readonly="true">
+            </div>
+            <div class="col-sm-4">
               <button ng-click="removeSkip(skip)" class="btn btn-danger"><i class="md-delete"></i></button>
             </div>
           </div>
         </div>
-        <div>
-          <button type="submit" ng-click="addQuestionsToSkip()" class="btn btn-xs btn-primary pull-center">
-            <i class="md-add">Add Skips</i>
-          </button>
-        </div>
+        <div class="clearfix"></div>
+        <button type="submit" ng-click="addQuestionsToSkip()" class="btn btn-xs btn-primary pull-center">
+          <i class="md-add">Add Skips</i>
+        </button>
         <div class="card card-padding" ng-show="showSkips">
           <div class="col-sm-6" ng-repeat="question in questions">
             <label>
