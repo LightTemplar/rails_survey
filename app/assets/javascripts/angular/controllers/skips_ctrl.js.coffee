@@ -23,10 +23,10 @@ App.controller 'SkipsCtrl', ['$scope', '$filter', 'Skip', ($scope, $filter, Skip
   $scope.addQuestionsToSkip = ->
     $scope.showSkips = !$scope.showSkips
     for question in $scope.questions
-      question.checked = false
+      question.checked = question.disabled = false
     for skip in $scope.skips
       question = $filter('filter')($scope.questions, question_identifier: skip.question_identifier)[0]
-      question.checked = true
+      question.checked = question.disabled = true
 
   $scope.saveQuestionsToSkip = () ->
     $scope.showSkips = !$scope.showSkips
