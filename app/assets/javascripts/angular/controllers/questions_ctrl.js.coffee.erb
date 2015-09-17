@@ -35,20 +35,18 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
     $scope.edit_question.project_id = $scope.project_id
     $scope.edit_question.instrument_id = $scope.instrument_id
 
-  $scope.newQuestionNumber = ->
-    if $scope.current_page > 1
-      (($scope.current_page - 1) * $scope.questions_per_page) + $scope.questions.length + 1
-    else
-      $scope.questions.length + 1
-
-  $scope.newQuestion = ->
+  $scope.newQuestion = (currentQuestion) ->
     question = new Question()
     question.project_id = $scope.project_id
     question.instrument_id = $scope.instrument_id
-    question.number_in_instrument = $scope.newQuestionNumber()
+    question.number_in_instrument = currentQuestion.number_in_instrument + 1
     question.question_identifier = "q_#{question.project_id}_#{question.instrument_id}_#{$scope.uniqueId()}"
-    $scope.questions.push(question)
+    $scope.questions.splice(currentQuestion.number_in_instrument, 0, question)
     $scope.edit_question = question
+    indexOfChange = $scope.questions.indexOf(question)
+    for qst in $scope.questions
+        if $scope.questions.indexOf(qst) > indexOfChange
+            qst.number_in_instrument = qst.number_in_instrument + 1
 
   $scope.saveQuestionSuccess = (data, headers) ->
     $scope.$broadcast('SAVE_QUESTION', data.id)
@@ -130,7 +128,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
     $scope.getQuestions()
     if $scope.current_page > $scope.pages_to_show and $scope.current_page % $scope.pages_to_show == 1
       if $scope.current_page > $scope.pages_to_show
-        lower_bound = (($scope.current_page/$scope.pages_to_show) * $scope.pages_to_show) 
+        lower_bound = (($scope.current_page/$scope.pages_to_show) * $scope.pages_to_show)
         upper_bound = (($scope.current_page/$scope.pages_to_show) * $scope.pages_to_show) + ($scope.pages_to_show - 1)
         if $scope.total_pages < upper_bound
           upper_bound = $scope.total_pages
@@ -138,14 +136,14 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
     else if $scope.current_page % $scope.pages_to_show == 0
       lower_bound = (($scope.current_page/$scope.pages_to_show) * $scope.pages_to_show) - ($scope.pages_to_show - 1)
       $scope.pages =  [lower_bound..$scope.current_page]
-       
+
   $scope.createPages = () ->
     $scope.total_pages = Math.ceil($scope.instrument[0].question_count / $scope.questions_per_page)
     if $scope.total_pages > $scope.pages_to_show
       $scope.pages = [1..$scope.pages_to_show]
     else
       $scope.pages = [1..$scope.total_pages]
-      
+
   $scope.setEndPages = (end_page) ->
      $scope.current_page = end_page
      $scope.getQuestions()
@@ -184,7 +182,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
     first_number = $scope.questions[0].number_in_instrument
     last_number = $scope.questions[$scope.questions.length - 1].number_in_instrument
     question.number_in_instrument >= first_number and question.number_in_instrument <= last_number
-    
+
   $scope.searchItem = () ->
     if $scope.searchText is ""
       $scope.getQuestions()
@@ -195,7 +193,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
     $scope.copyHelper(question, 1)
     $scope.edit_question = null
     (instrument.checked = false) for instrument in $scope.instruments
-    
+
   $scope.copyHelper = (question, counter) ->
     for instrument in $scope.instruments
       if instrument.checked == true
@@ -208,7 +206,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
         copy_question.copy_question_identifier = question.question_identifier + "_" + $scope.generateUniqueId()
         copy_question.number_in_instrument = new_position
         copy_question.$copy()
-  
+
   $scope.generateUniqueId = (length=8) ->
     id = ""
     id += Math.random().toString(36).substr(2) while id.length < length
@@ -217,7 +215,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
   $scope.displayQuestions = () ->
     $scope.questionVisibility = !$scope.questionVisibility
     $scope.searchBarVisibility = !$scope.searchBarVisibility
-    
+
   $scope.copyQuestions = () ->
     counter = 1
     for q in $scope.all_questions
@@ -228,5 +226,5 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
     $scope.questionVisibility = true
     (instrument.checked = false) for instrument in $scope.instruments
     (question.checked = false) for question in $scope.all_questions
-    
+
 ]
