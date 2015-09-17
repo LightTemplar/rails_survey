@@ -102,7 +102,7 @@
         <div class="card card-padding" ng-show="showSkips">
           <div class="col-sm-6" ng-repeat="question in questions">
             <label>
-              <input type="checkbox" ng-model="question.checked"><span class="m-l-10"></span>
+              <input type="checkbox" ng-disabled="question.disabled" ng-model="question.checked"><span class="m-l-10"></span>
               {{ question.question_identifier }}
             </label>
           </div>
