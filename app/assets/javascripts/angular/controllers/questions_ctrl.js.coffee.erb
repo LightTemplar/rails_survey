@@ -14,13 +14,13 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
     $scope.project_id = project_id
     $scope.current_page = 1
     $scope.instrument_id = instrument_id
-    $scope.questions = Question.query({"project_id": project_id, "instrument_id": instrument_id, "page": $scope.current_page})
+    $scope.getQuestions($scope.current_page)
     $scope.all_questions = Question.query({"project_id": project_id, "instrument_id": instrument_id})
     $scope.instrument = Instrument.query({"project_id": project_id, "id": instrument_id}, -> $scope.createPages())
     $scope.instruments = Instrument.query({"project_id": project_id})
 
-  $scope.getQuestions = () ->
-    $scope.questions = Question.query({"project_id": $scope.project_id, "instrument_id": $scope.instrument_id, "page": $scope.current_page})
+  $scope.getQuestions = (page_number) ->
+    $scope.questions = Question.query({"project_id": $scope.project_id, "instrument_id": $scope.instrument_id, "page": page_number})
 
   $scope.sortableOptions = {
     cursor: 'move',
@@ -41,7 +41,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
     question.instrument_id = $scope.instrument_id
     question.number_in_instrument = currentQuestion.number_in_instrument + 1
     question.question_identifier = "q_#{question.project_id}_#{question.instrument_id}_#{$scope.uniqueId()}"
-    $scope.questions.splice(currentQuestion.number_in_instrument, 0, question)
+    $scope.questions.splice($scope.questions.indexOf(currentQuestion) + 1, 0, question)
     $scope.edit_question = question
     indexOfChange = $scope.questions.indexOf(question)
     for qst in $scope.questions
@@ -125,7 +125,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
     new_page = 1 if new_page < 1
     new_page = $scope.total_pages if new_page > $scope.total_pages
     $scope.current_page = new_page
-    $scope.getQuestions()
+    $scope.getQuestions($scope.current_page)
     if $scope.current_page > $scope.pages_to_show and $scope.current_page % $scope.pages_to_show == 1
       if $scope.current_page > $scope.pages_to_show
         lower_bound = (($scope.current_page/$scope.pages_to_show) * $scope.pages_to_show)
@@ -146,7 +146,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
 
   $scope.setEndPages = (end_page) ->
      $scope.current_page = end_page
-     $scope.getQuestions()
+     $scope.getQuestions($scope.current_page)
      if end_page == 1
        $scope.createPages()
      else if $scope.total_pages > $scope.pages_to_show
@@ -185,7 +185,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
 
   $scope.searchItem = () ->
     if $scope.searchText is ""
-      $scope.getQuestions()
+      $scope.getQuestions($scope.current_page)
     else
       $scope.questions = filterFilter($scope.all_questions, $scope.searchText)
 
