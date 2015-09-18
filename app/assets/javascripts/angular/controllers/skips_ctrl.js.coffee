@@ -5,7 +5,7 @@ App.controller 'SkipsCtrl', ['$scope', '$filter', 'Skip', ($scope, $filter, Skip
     $scope.instrument_id = instrument_id
     $scope.question_id = question_id
     $scope.option_id = option_id
-    currentQuestion = $filter('filter')($scope.$parent.$parent.questions, id: question_id)[0]
+    currentQuestion = $filter('filter')($scope.$parent.$parent.questions, id: question_id, true)[0]
     $scope.questions = $scope.$parent.$parent.questionsAfter(currentQuestion)
     if $scope.option_id and $scope.question_id and $scope.instrument_id 
       $scope.skips = $scope.querySkips()
@@ -25,7 +25,7 @@ App.controller 'SkipsCtrl', ['$scope', '$filter', 'Skip', ($scope, $filter, Skip
     for question in $scope.questions
       question.checked = question.disabled = false
     for skip in $scope.skips
-      question = $filter('filter')($scope.questions, question_identifier: skip.question_identifier)[0]
+      question = $filter('filter')($scope.questions, question_identifier: skip.question_identifier, true)[0]
       question.checked = question.disabled = true
 
   $scope.saveQuestionsToSkip = () ->
@@ -39,7 +39,7 @@ App.controller 'SkipsCtrl', ['$scope', '$filter', 'Skip', ($scope, $filter, Skip
           skip.question_id = q.id
           skip.option_id = $scope.option_id
           skip.question_identifier = q.question_identifier
-          if $filter('filter')($scope.skips, question_identifier: q.question_identifier).length == 0
+          if $filter('filter')($scope.skips, question_identifier: q.question_identifier, true).length == 0
             $scope.skips.push(skip)
             skip.$save({},
               (data, headers) -> $scope.skips = $scope.querySkips(),
