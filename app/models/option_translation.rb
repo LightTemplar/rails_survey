@@ -13,5 +13,10 @@
 
 class OptionTranslation < ActiveRecord::Base
   belongs_to :option
+  before_save :touch_option
   validates :text, presence: true, allow_blank: false
+
+  def touch_option
+    option.touch if changed?
+  end
 end

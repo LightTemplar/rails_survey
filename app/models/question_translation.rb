@@ -14,5 +14,10 @@
 
 class QuestionTranslation < ActiveRecord::Base
   belongs_to :question
+  before_save :touch_question
   validates :text, presence: true, allow_blank: false
+
+  def touch_question
+    question.touch if changed?
+  end
 end
