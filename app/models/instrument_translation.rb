@@ -14,6 +14,10 @@
 class InstrumentTranslation < ActiveRecord::Base
   include Alignable
   include LanguageAssignable
-
   belongs_to :instrument
+  before_save :touch_instrument
+
+  def touch_instrument
+    instrument.touch if changed?
+  end
 end
