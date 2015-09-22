@@ -1,10 +1,17 @@
 ActiveAdmin.register Question do
-  menu priority: 6
+  belongs_to :instrument
   permit_params :text, :question_type, :question_identifier, :instrument_id, :following_up_question_identifier, :reg_ex_validation,
           :number_in_instrument, :follow_up_position, :reg_ex_validation_message, :identifies_survey, :instructions
   config.per_page = 10
   config.sort_order = 'id_asc'
- 
+
+  sidebar 'Question Associations', only: :show do
+    ul do
+      li link_to 'Options', admin_question_options_path(params[:id])
+      li link_to 'Translations', admin_question_question_translations_path(params[:id])
+    end
+  end
+
   index do 
     column :id
     column :question_identifier
