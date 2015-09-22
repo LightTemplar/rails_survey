@@ -216,15 +216,4 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
     $scope.questionVisibility = !$scope.questionVisibility
     $scope.searchBarVisibility = !$scope.searchBarVisibility
 
-  $scope.copyQuestions = () ->
-    counter = 1
-    for q in $scope.all_questions
-      if q.checked == true
-        $scope.copyHelper(q, counter)
-        counter += 1
-    $scope.searchBarVisibility = true
-    $scope.questionVisibility = true
-    (instrument.checked = false) for instrument in $scope.instruments
-    (question.checked = false) for question in $scope.all_questions
-
 ]

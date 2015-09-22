@@ -115,6 +115,9 @@ class InstrumentsController < ApplicationController
     redirect_to project_path current_project
   end
 
+  def copy_questions
+  end
+
   private
   def instrument_params
     params.require(:instrument).permit(:title, :language, :alignment, :previous_question_count, :child_update_count,
