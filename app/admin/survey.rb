@@ -10,6 +10,11 @@ ActiveAdmin.register Survey do
                 :device_uuid, :latitude, :longitude, :metadata, :completion_rate
 
   config.sort_order = 'id_desc'
+  config.filters = true
+  filter :id
+  filter :uuid
+  filter :device_label
+  filter :metadata
   actions :all, except: :new
 
   index do

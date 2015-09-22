@@ -19,12 +19,6 @@ ActiveAdmin.register Question do
     column (:text) { |qst| raw(qst.text) }
     column :instrument_id
     column :number_in_instrument
-    column (:instructions) { |qst| raw(qst.instructions) }
-    column :identifies_survey
-    column :following_up_question_identifier
-    column :follow_up_position
-    column :reg_ex_validation
-    column :reg_ex_validation_message
     actions
   end
 
