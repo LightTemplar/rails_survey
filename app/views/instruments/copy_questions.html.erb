@@ -1,11 +1,11 @@
-<div class="tab-copy tab-pane">
+<div ng-controller="CopyQuestionsCtrl" ng-init="init(<%= @project.id %>, <%= @instrument.id %>)">
   <fieldset class="m-20">
     <legend class="text-center text-capitalize"><strong>Instruments to copy questions to</strong></legend>
     <p class="text-muted">Check the instruments that you want to copy questions to.</p>
 
     <div class="form-group">
-      <div ng-repeat="inst in instruments">
-        <label> <input type="checkbox" ng-model="inst.checked"><span class="m-l-10"></span> {{ inst.title }} </label>
+      <div ng-repeat="instrument in instruments">
+        <label> <input type="checkbox" ng-model="instrument.checked"><span class="m-l-10"></span> {{ inst.title }} </label>
       </div>
     </div>
 
@@ -13,9 +13,9 @@
     <p class="text-muted">Check the questions that you want copied to the instruments checked above</p>
 
     <div class="form-group">
-      <div class="col-sm-6" ng-repeat="quest in all_questions">
+      <div class="col-sm-6" ng-repeat="question in questions">
         <label>
-          <input type="checkbox" ng-model="quest.checked"><span class="m-l-10"></span>
+          <input type="checkbox" ng-model="question.checked"><span class="m-l-10"></span>
           {{ quest.question_identifier }}
         </label>
       </div>
