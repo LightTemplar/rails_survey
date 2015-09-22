@@ -1,7 +1,6 @@
 ActiveAdmin.register QuestionTranslation do
   belongs_to :question
   permit_params :language, :text, :reg_ex_validation_message, :question_id
-  config.per_page = 10
 
   index do
     column :id

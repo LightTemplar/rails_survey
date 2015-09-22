@@ -1,7 +1,6 @@
 ActiveAdmin.register Option do
   belongs_to :question
   permit_params :question_id, :text, :next_question, :number_in_question, :instrument_version_number
-  config.per_page = 20
 
   sidebar 'Option Associations', only: :show do
     ul do

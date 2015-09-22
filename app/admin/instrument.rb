@@ -1,7 +1,6 @@
 ActiveAdmin.register Instrument do
   belongs_to :project
   permit_params :title, :language, :alignment, :previous_question_count, :child_update_count, :published, :show_instructions, :project_id
-  config.per_page = 10
 
   sidebar 'Instrument Associations', only: :show do
     ul do
