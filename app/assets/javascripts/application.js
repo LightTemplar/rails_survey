@@ -18,6 +18,7 @@
 //= require jquery-2.1.1.min
 //= require bootstrap/dist/js/bootstrap.min
 //= require moment/min/moment.min
+//= require gollum_rails
 //= require bootstrap-select/dist/js/bootstrap-select.min
 //= require summernote/dist/summernote.min
 //= require chosen_v1.4.2/chosen.jquery.min
