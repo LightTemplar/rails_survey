@@ -31,13 +31,15 @@ class Question < ActiveRecord::Base
   has_many :responses
   has_many :options, dependent: :destroy
   has_many :translations, foreign_key: 'question_id', class_name: 'QuestionTranslation', dependent: :destroy
-  has_many :images, dependent: :destroy  
+  has_many :images, dependent: :destroy
+  has_many :skips, foreign_key: :question_identifier, primary_key: :question_identifier, dependent: :destroy #different from has_many :skips, through: :options
   delegate :project, to: :instrument
   before_save :update_instrument_version, if: Proc.new { |question| question.changed? and !question.child_update_count_changed? }
   before_save :update_question_translation, if: Proc.new { |question| question.text_changed? }
   before_save :update_first_in_grid, if: Proc.new { |question| question.first_in_grid_changed? }
   after_save :record_instrument_version
   before_destroy :update_instrument_version
+  after_save :update_multi_skips
   has_paper_trail
   acts_as_paranoid
 
@@ -110,16 +112,16 @@ class Question < ActiveRecord::Base
   end
 
   def select_one_variant?
-    self.question_type == "SELECT_ONE" or self.question_type == "SELECT_ONE_WRITE_OTHER"
+    self.question_type == 'SELECT_ONE' or self.question_type == 'SELECT_ONE_WRITE_OTHER'
   end
   
   def select_multiple_variant?
-    self.question_type == "SELECT_MULTIPLE" or self.question_type == "SELECT_MULTIPLE_WRITE_OTHER"
+    self.question_type == 'SELECT_MULTIPLE' or self.question_type == 'SELECT_MULTIPLE_WRITE_OTHER'
   end
 
   def update_first_in_grid
     if first_in_grid
-      questions_in_grid = Question.where("grid_id = ?", grid_id)
+      questions_in_grid = Question.where('grid_id = ?', grid_id)
       questions_in_grid.where.not(id: id).each do |question|
         question.update_attribute(:first_in_grid, false)
       end
@@ -133,5 +135,10 @@ class Question < ActiveRecord::Base
   
   def record_instrument_version
     update_column(:instrument_version_number, instrument_version)
+  end
+
+  def update_multi_skips
+    skips_to_update = Skip.where(question_identifier: question_identifier_was)
+    skips_to_update.update_all(question_identifier: question_identifier) unless skips_to_update.blank?
   end
 end
