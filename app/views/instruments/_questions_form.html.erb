@@ -90,6 +90,11 @@
         <li><a ng-click="setPage(current_page + 1)"><i class="md-arrow-forward"></i></a></li>
         <li><a ng-click="setEndPages(total_pages)"><i class="md-chevron-right"></i></a></li>
       </div>
+      <div class="m-r-15" ng-show="questions.length == 0">
+        <a class="btn btn-success pull-right" ng-click="newQuestion(null)" id="add-question-button"><i class="md-add"></i>
+          Add Question</a>
+        <div class="clearfix"></div>
+      </div>
     </div>
   </div>
 </div>
