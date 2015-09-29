@@ -69,6 +69,10 @@ class User < ActiveRecord::Base
     roles.find_by_name('translator')
   end
 
+  def wiki_editor?
+    roles.find_by_name('wiki_editor')
+  end
+
   private
   def generate_authentication_token
     loop do

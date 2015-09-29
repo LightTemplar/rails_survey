@@ -1,7 +1,6 @@
 ActiveAdmin.register QuestionTranslation do
-  menu priority: 9
+  belongs_to :question
   permit_params :language, :text, :reg_ex_validation_message, :question_id
-  config.per_page = 10
 
   index do
     column :id
@@ -38,4 +37,7 @@ ActiveAdmin.register QuestionTranslation do
     f.actions
   end
 
+  controller do
+    defaults :collection_name => "translations"
+  end
 end

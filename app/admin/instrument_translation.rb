@@ -1,6 +1,8 @@
 ActiveAdmin.register InstrumentTranslation do
-  menu priority: 8
+  belongs_to :instrument
   permit_params :title, :language, :alignment, :instrument_id
-  config.per_page = 10
-  
+
+  controller do
+    defaults :collection_name => "translations"
+  end
 end

@@ -1,7 +1,6 @@
 source 'https://rubygems.org'
 ruby '2.0.0'
 gem 'rails', '4.1.13'
-gem 'pg', group: [:production]
 gem 'sass-rails', '~> 4.0.0'
 gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.0.0'
@@ -13,25 +12,10 @@ gem 'turbolinks'
 gem 'jbuilder', '~> 1.2'
 gem 'angularjs-rails', '~> 1.0.7'
 gem 'annotate', '>=2.5.0'
-
-group :doc do
-  gem 'sdoc', require: false
-end
-
 gem 'rails_config'
 gem 'twitter-bootstrap-rails'
 gem 'devise'
 gem 'paper_trail', '~> 3.0.8'
-
-group :test do
-  gem 'rspec-rails', '~> 2.0'
-  gem 'rspec-mocks'
-  gem 'factory_girl_rails', '~> 4.0', :require => false
-  gem 'database_cleaner', '~> 1.0'
-  gem 'capybara'
-  gem 'selenium-webdriver', '~> 2.39'
-end
-
 gem 'exception_notification'
 gem 'sqlite3'
 gem 'chosen-rails'
@@ -54,9 +38,11 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'sshkit', '~> 1.5.1'
 gem 'prawn'
 gem 'newrelic_rpm'
+gem 'gollum_rails', '~> 2.0.0'
 
 group :production do
   gem 'rails_12factor'
+  gem 'pg'
 end
 
 group :development do
@@ -70,4 +56,17 @@ group :development do
   gem 'capistrano-sidekiq', '~> 0.3.5'
   gem 'capistrano-multiconfig', '~> 3.0.8'
   gem 'quiet_assets'
+end
+
+group :test do
+  gem 'rspec-rails', '~> 2.0'
+  gem 'rspec-mocks'
+  gem 'factory_girl_rails', '~> 4.0', :require => false
+  gem 'database_cleaner', '~> 1.0'
+  gem 'capybara'
+  gem 'selenium-webdriver', '~> 2.39'
+end
+
+group :doc do
+  gem 'sdoc', require: false
 end
