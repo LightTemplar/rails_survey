@@ -26,5 +26,6 @@ module RailsSurvey
     I18n.enforce_available_locales = false
     config.assets.initialize_on_precompile = false
     config.assets.precompile += %w( active_admin.js active_admin.css.scss )
+    config.wiki_path = 'wiki.git'
   end
 end

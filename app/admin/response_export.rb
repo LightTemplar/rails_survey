@@ -1,4 +1,5 @@
 ActiveAdmin.register ResponseExport do
+  belongs_to :instrument
   permit_params :long_format_url, :wide_format_url, :project_id, :instrument_id,
                 :instrument_versions, :long_done, :wide_done, :short_format_url, :short_done
   actions :all, except: [:new, :edit]
@@ -8,17 +9,17 @@ ActiveAdmin.register ResponseExport do
   end
 
   action_item :download, only: :show do
-    link_to 'Download Files', download_exports_admin_response_export_path(response_export)
+    link_to 'Download Files', download_exports_admin_instrument_response_export_path(params[:instrument_id], response_export)
   end
 
   index do
     selectable_column
     column :id do |export|
-      link_to export.id, admin_response_export_path(export.id)
+      link_to export.id, admin_instrument_response_export_path(export.instrument_id, export.id) if export.instrument_id
     end
     column 'Instrument', sortable: :instrument_title do |export|
       instrument = Instrument.find_by_id(export.instrument_id) if export.instrument_id
-      instrument ? (link_to instrument.title, admin_instrument_path(instrument)) : ''
+      instrument ? (link_to instrument.title, admin_project_instrument_path(instrument.project_id, instrument)) : ''
     end
     column 'Project', sortable: :name do |export|
       project = Project.find_by_id(export.project_id) if export.project_id

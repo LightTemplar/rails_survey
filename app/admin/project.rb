@@ -1,4 +1,9 @@
 ActiveAdmin.register Project do
+  sidebar 'Project Associations', only: :show do
+    ul do
+      li link_to 'Instruments', admin_project_instruments_path(params[:id])
+    end
+  end
   menu priority: 4
   permit_params :name, :description
 
@@ -27,13 +32,6 @@ ActiveAdmin.register Project do
         ul do
           project.users.each do |user|
             li {user.email}
-          end
-        end
-      end
-      row :instruments do 
-        ul do
-          project.instruments.each do |instrument|
-            li {instrument.title}
           end
         end
       end

@@ -32,6 +32,14 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def wiki_user
+    if user_signed_in?
+      GollumRails::WikiUser.new(current_user.email, current_user.email, true)
+    else
+      nil
+    end
+  end
+
   private
   def authenticate_user_from_token!
     user_email = params[:user_email].presence

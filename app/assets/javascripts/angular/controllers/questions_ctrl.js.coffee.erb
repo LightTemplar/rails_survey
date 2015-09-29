@@ -39,9 +39,13 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
     question = new Question()
     question.project_id = $scope.project_id
     question.instrument_id = $scope.instrument_id
-    question.number_in_instrument = currentQuestion.number_in_instrument + 1
     question.question_identifier = "q_#{question.project_id}_#{question.instrument_id}_#{$scope.uniqueId()}"
-    $scope.questions.splice($scope.questions.indexOf(currentQuestion) + 1, 0, question)
+    if currentQuestion == null
+        question.number_in_instrument = $scope.questions.length + 1
+        $scope.questions.push(question)
+    else
+        question.number_in_instrument = currentQuestion.number_in_instrument + 1
+        $scope.questions.splice($scope.questions.indexOf(currentQuestion) + 1, 0, question)
     $scope.edit_question = question
     indexOfChange = $scope.questions.indexOf(question)
     for qst in $scope.questions
