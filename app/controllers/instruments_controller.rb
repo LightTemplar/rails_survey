@@ -116,6 +116,9 @@ class InstrumentsController < ApplicationController
   end
 
   def copy_questions
+    @project = current_project
+    @instrument = @project.instruments.find(params[:id])
+    authorize @instrument
   end
 
   private
