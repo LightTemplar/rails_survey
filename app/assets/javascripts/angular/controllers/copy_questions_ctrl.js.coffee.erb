@@ -1,0 +1,41 @@
+App.controller 'CopyQuestionsCtrl', ['$scope', '$window', 'Instrument', 'Question', 'CopyQuestion',
+    ($scope, $window, Instrument, Question, CopyQuestion) ->
+        $scope.init = (project_id, instrument_id) ->
+            $scope.project_id = project_id
+            $scope.instrument_id = instrument_id
+            $scope.instruments = Instrument.query({"project_id": project_id})
+            $scope.questions = Question.query({"project_id": project_id, "instrument_id": instrument_id})
+
+        $scope.copyQuestions = () ->
+            counter = 1
+            for q in $scope.questions
+                if q.checked == true
+                    $scope.copyHelper(q, counter)
+                    counter += 1
+            if $scope.isUndefined($scope.project_id) || $scope.isUndefined($scope.destination_instrument_id)
+                $window.location.href = '/projects'
+            else
+                $window.location.href = "/projects/#{$scope.project_id}/instruments/#{$scope.destination_instrument_id}"
+
+        $scope.copyHelper = (question, counter) ->
+            for instrument in $scope.instruments
+                if instrument.checked == true
+                    $scope.destination_instrument_id = instrument.id
+                    copiedQuestion = new CopyQuestion()
+                    copiedQuestion.project_id = $scope.project_id
+                    copiedQuestion.instrument_id = $scope.instrument_id
+                    copiedQuestion.id = question.id
+                    copiedQuestion.destination_instrument_id = instrument.id
+                    copiedQuestion.copy_question_identifier = question.question_identifier + "_" + $scope.generateUniqueId()
+                    copiedQuestion.number_in_instrument = instrument.question_count + counter
+                    copiedQuestion.$copy()
+
+        $scope.generateUniqueId = (length = 8) ->
+            id = ""
+            id += Math.random().toString(36).substr(2) while id.length < length
+            id.substr 0, length
+
+        $scope.isUndefined = (value) ->
+            typeof value == 'undefined'
+
+]
