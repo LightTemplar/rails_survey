@@ -40,8 +40,7 @@ module Api
 
         private
         def image_params
-          params.require(:image).permit(:photo, :photo_file_name, :photo_content_type, :photo_file_size,
-                                        :photo_updated_at, :question_id, :description, :number)
+          params.permit(:photo, :photo_file_name, :photo_content_type, :photo_file_size, :photo_updated_at, :question_id, :description, :number)
         end
 
       end
