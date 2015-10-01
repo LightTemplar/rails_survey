@@ -13,7 +13,7 @@ RailsSurvey::Application.routes.draw do
     namespace :v1 do
       namespace :frontend do
         resources :projects do
-          resources :instruments, only: [:index, :show] do
+          resources :instruments, only: :index do
             resources :questions do
               resources :question_translations, only: [:update]
               member do

@@ -17,6 +17,6 @@ class OptionTranslation < ActiveRecord::Base
   validates :text, presence: true, allow_blank: false
 
   def touch_option
-    option.touch if changed?
+    option.touch if option && changed?
   end
 end

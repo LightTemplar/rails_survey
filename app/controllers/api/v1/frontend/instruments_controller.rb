@@ -10,11 +10,6 @@ module Api
           end
         end
 
-        def show
-          if current_user
-            respond_with [current_project.instruments.find(params[:id])]
-          end
-        end
       end
     end
   end
