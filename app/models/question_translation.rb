@@ -18,6 +18,6 @@ class QuestionTranslation < ActiveRecord::Base
   validates :text, presence: true, allow_blank: false
 
   def touch_question
-    question.touch if changed?
+    question.touch if question && changed?
   end
 end

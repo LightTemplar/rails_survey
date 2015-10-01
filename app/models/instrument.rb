@@ -26,6 +26,8 @@ class Instrument < ActiveRecord::Base
   belongs_to :project
   has_many :questions, dependent: :destroy
   has_many :options, through: :questions
+  has_many :skips, through: :options
+  has_many :images, through: :questions
   has_many :surveys
   has_many :responses, through: :surveys
   has_many :response_images, through: :responses

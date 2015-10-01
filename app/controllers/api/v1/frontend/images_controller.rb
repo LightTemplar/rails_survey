@@ -5,8 +5,8 @@ module Api
         respond_to :json
 
         def index
-          question = current_project.questions.find(params[:question_id])
-          respond_with question.images.order('number')
+          instrument = current_project.instruments.find(params[:instrument_id])
+          respond_with instrument.images.order('number')
         end
 
         def show
@@ -15,8 +15,8 @@ module Api
         end
 
         def create
-          question = current_project.questions.find(params[:question_id])
-          @image = question.images.new(image_params)
+          instrument = current_project.instruments.find(params[:instrument_id])
+          @image = instrument.images.new(image_params)
           if @image.save
             render nothing: true, status: :created
           else
@@ -40,8 +40,7 @@ module Api
 
         private
         def image_params
-          params.require(:image).permit(:photo, :photo_file_name, :photo_content_type, :photo_file_size,
-                                        :photo_updated_at, :question_id, :description, :number)
+          params.permit(:photo, :question_id, :description, :number)
         end
 
       end

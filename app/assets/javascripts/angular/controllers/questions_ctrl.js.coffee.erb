@@ -1,4 +1,4 @@
-App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilter', ($scope, Question, Instrument, filterFilter) ->
+App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'Option', 'Skip', 'Image', 'filterFilter', ($scope, Question, Instrument, Option, Skip, Image, filterFilter) ->
   $scope.questions = []
   $scope.all_questions = []
   $scope.selectedQuestions = []
@@ -10,15 +10,23 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
   $scope.searchText = ""
   $scope.init = (project_id, instrument_id) ->
     $scope.project_id = project_id
-    $scope.current_page = 1
     $scope.instrument_id = instrument_id
     $scope.getQuestions($scope.current_page)
     $scope.all_questions = Question.query({"project_id": project_id, "instrument_id": instrument_id})
-    $scope.instrument = Instrument.query({"project_id": project_id, "id": instrument_id}, -> $scope.createPages())
-    $scope.instruments = Instrument.query({"project_id": project_id})
+    $scope.instruments = Instrument.query({"project_id": project_id}, -> $scope.filterInstruments())
+    $scope.options = Option.query({"project_id": project_id, "instrument_id": instrument_id})
+    $scope.skips = $scope.querySkips()
+    $scope.images = Image.query({"project_id": project_id, "instrument_id": instrument_id}, -> $scope.$broadcast('IMAGES-LOADED', ''))
 
   $scope.getQuestions = (page_number) ->
     $scope.questions = Question.query({"project_id": $scope.project_id, "instrument_id": $scope.instrument_id, "page": page_number})
+
+  $scope.querySkips = () ->
+    Skip.query({"project_id": $scope.project_id, "instrument_id": $scope.instrument_id})
+
+  $scope.filterInstruments = () ->
+    $scope.instrument = filterFilter($scope.instruments, id: $scope.instrument_id, true)[0]
+    $scope.createPages()
 
   $scope.sortableOptions = {
     cursor: 'move',
@@ -140,7 +148,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
       $scope.pages =  [lower_bound..$scope.current_page]
 
   $scope.createPages = () ->
-    $scope.total_pages = Math.ceil($scope.instrument[0].question_count / $scope.questions_per_page)
+    $scope.total_pages = Math.ceil($scope.instrument.question_count / $scope.questions_per_page)
     if $scope.total_pages > $scope.pages_to_show
       $scope.pages = [1..$scope.pages_to_show]
     else

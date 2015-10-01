@@ -5,14 +5,13 @@ module Api
         respond_to :json
 
         def index
-          option = current_project.options.find(params[:option_id])
-          skips = option.skips
-          respond_with skips
+          instrument = current_project.instruments.find(params[:instrument_id])
+          respond_with instrument.skips
         end
 
         def show
           option = current_project.options.find(params[:option_id])
-          skip = option.skips.find(params[:id])
+          respond_with option.skips.find(params[:id])
         end
 
         def create
@@ -26,14 +25,12 @@ module Api
         end
 
         def update
-          option = current_project.options.find(params[:option_id])
-          skip = option.skips.find(params[:id])
+          skip = current_project.skips.find(params[:id])
           respond_with skip.update_attributes(skip_params)
         end
 
         def destroy
-          option = current_project.options.find(params[:option_id])
-          skip = option.skips.find(params[:id])
+          skip = current_project.skips.find(params[:id])
           respond_with skip.destroy
         end
 
