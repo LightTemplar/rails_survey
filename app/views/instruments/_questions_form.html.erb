@@ -49,13 +49,11 @@
                         <li class="waves-effect"><a href=".tab-logic" role="tab" data-toggle="tab">Logic</a></li>
                         <li class="waves-effect"><a href=".tab-advanced" role="tab" data-toggle="tab">Advanced</a>
                         </li>
-                        <li class="waves-effect"><a href=".tab-copy" role="tab" data-toggle="tab">Copy</a></li>
                       </ul>
                       <div class="tab-content">
                         <%= render 'questions_form_body_tab' %>
                         <%= render 'questions_form_logic_tab' %>
                         <%= render 'questions_form_advanced_tab' %>
-                        <%= render 'questions_form_copy_tab' %>
                         <div class="clearfix"></div>
                         <div class="form-actions m-10">
                           <a class="btn btn-success" id="save-question" ng-click="saveQuestion()" ng-disabled="question_form.$invalid">Save</a>

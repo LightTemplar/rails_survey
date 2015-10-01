@@ -18,6 +18,6 @@ class InstrumentTranslation < ActiveRecord::Base
   before_save :touch_instrument
 
   def touch_instrument
-    instrument.touch if changed?
+    instrument.touch if instrument && changed?
   end
 end
