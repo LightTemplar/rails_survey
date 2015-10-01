@@ -14,6 +14,7 @@ App.controller 'FileUploadCtrl', ['$scope', '$fileUploader', 'Image', ($scope, $
         headers: {'X-CSRF-Token': $('meta[name=csrf-token]').attr('content')},
         isHTML5: true,
         withCredentials: true,
+        alias: 'photo',
         formData: [ { name: uploader } ]
       })
     
