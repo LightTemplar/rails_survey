@@ -11,7 +11,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
     $scope.project_id = project_id
     $scope.instrument_id = instrument_id
     $scope.getQuestionsPerPage(1)
-    $scope.all_questions = Question.query({"project_id": project_id, "instrument_id": instrument_id}) #TODO: slows initial request
+    $scope.all_questions = Question.query({"project_id": project_id, "instrument_id": instrument_id})
     $scope.instruments = Instrument.query({"project_id": project_id}, -> $scope.filterInstruments())
 
   $scope.pagination = current: 1

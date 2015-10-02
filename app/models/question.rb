@@ -27,7 +27,7 @@ class Question < ActiveRecord::Base
   include Translatable
   default_scope { order('number_in_instrument ASC') }
   belongs_to :instrument
-  belongs_to :grid 
+  belongs_to :grid
   has_many :responses
   has_many :options, dependent: :destroy
   has_many :translations, foreign_key: 'question_id', class_name: 'QuestionTranslation', dependent: :destroy
@@ -66,7 +66,7 @@ class Question < ActiveRecord::Base
   def option_count
     options.count
   end
-  
+
   def image_count
     images.count
   end
@@ -80,9 +80,13 @@ class Question < ActiveRecord::Base
   end
 
   def as_json(options={})
-    super((options || {}).merge({
+    if options[:only].blank?
+      super((options || {}).merge({
         methods: [:option_count, :instrument_version, :image_count, :question_version]
-    }))
+      }))
+    else
+      super(options)
+    end
   end
 
   def has_other?
@@ -107,7 +111,7 @@ class Question < ActiveRecord::Base
   def question_version
     versions.count
   end
-  
+
   def starts_section
     Section.find_by_start_question_identifier(self.question_identifier)
   end
@@ -115,7 +119,7 @@ class Question < ActiveRecord::Base
   def select_one_variant?
     self.question_type == 'SELECT_ONE' or self.question_type == 'SELECT_ONE_WRITE_OTHER'
   end
-  
+
   def select_multiple_variant?
     self.question_type == 'SELECT_MULTIPLE' or self.question_type == 'SELECT_MULTIPLE_WRITE_OTHER'
   end
@@ -128,12 +132,12 @@ class Question < ActiveRecord::Base
       end
     end
   end
-  
+
   private
   def update_instrument_version
-    instrument.update_instrument_version 
+    instrument.update_instrument_version
   end
-  
+
   def record_instrument_version
     update_column(:instrument_version_number, instrument_version)
   end
