@@ -7,7 +7,7 @@
     <div class="listview lv-bordered lv-lg">
       <div class="lv-body">
         <div ui-sortable="sortableOptions" ng-model="questions">
-          <div class="lv-item media" ng-repeat="question in questions | orderBy:number_in_instrument">
+          <div class="lv-item media" dir-paginate="question in questions | orderBy:number_in_instrument | itemsPerPage: questionsPerPage" total-items="totalQuestions" current-page="pagination.current">
 
             <div class="col-xs-3">
               <form ng-submit="repositionQuestion(question)">
@@ -70,19 +70,11 @@
         </div>
       </div>
     </div>
-    <div class="pagination" ng-show="total_pages > 1">
-      <li><a ng-click="setEndPages(1)"><i class="md-chevron-left"></i></a></li>
-      <li><a ng-click="setPage(current_page - 1)"><i class="md-arrow-back"></i></a></li>
-      <li ng-repeat="page in pages" ng-class="{ active: current_page == page }">
-        <a ng-click="setPage(page)"> {{ page }} </a>
-      </li>
-      <li><a ng-click="setPage(current_page + 1)"><i class="md-arrow-forward"></i></a></li>
-      <li><a ng-click="setEndPages(total_pages)"><i class="md-chevron-right"></i></a></li>
-    </div>
-    <div class="m-r-15" ng-show="questions.length == 0">
-      <a class="btn btn-success pull-right" ng-click="newQuestion(null)" id="add-question-button"><i class="md-add"></i>
-        Add Question</a>
 
+    <dir-pagination-controls on-page-change="getQuestionsPerPage(newPageNumber)" max-size="maxNumOfLinks"></dir-pagination-controls>
+
+    <div class="m-r-15" ng-show="questions.length == 0">
+      <a class="btn btn-success pull-right" ng-click="newQuestion(null)" id="add-question-button"><i class="md-add"></i>Add Question</a>
       <div class="clearfix"></div>
     </div>
   </div>
