@@ -2,19 +2,25 @@ module Api
   module V1
     module Frontend
       class QuestionsController < ApiApplicationController
+        include CleanPagination
         respond_to :json
 
         def index
           instrument = current_project.instruments.find(params[:instrument_id])
-          if !params[:page].blank?
-            questions = instrument.questions.page(params[:page]).per(Settings.questions_per_page)
-            authorize questions
-            respond_with questions
-          elsif !params[:grid_id].blank?
-            respond_with instrument.questions.where(grid_id: params[:grid_id])
-          else
-            respond_with instrument.questions
+          paginate instrument.questions.count, Settings.questions_per_page do |limit, offset|
+            respond_with instrument.questions.limit(limit).offset(offset)
           end
+
+          # if !params[:page].blank?
+          #   questions = instrument.questions.page(params[:page]).per(Settings.questions_per_page)
+          #   authorize questions
+          #   respond_with questions
+          # elsif !params[:grid_id].blank?
+          #   respond_with instrument.questions.where(grid_id: params[:grid_id])
+          # else
+          #   respond_with instrument.questions
+          # end
+
         end
 
         def show

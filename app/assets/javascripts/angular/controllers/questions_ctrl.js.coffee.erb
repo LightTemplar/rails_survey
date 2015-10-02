@@ -11,8 +11,9 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
   $scope.init = (project_id, instrument_id) ->
     $scope.project_id = project_id
     $scope.instrument_id = instrument_id
-    $scope.getQuestions($scope.current_page)
-    $scope.all_questions = Question.query({"project_id": project_id, "instrument_id": instrument_id})
+    $scope.questions_url = "/api/v1/frontend/projects/#{project_id}/instruments/#{instrument_id}/questions/"
+#    $scope.getQuestions($scope.current_page)
+#    $scope.all_questions = Question.query({"project_id": project_id, "instrument_id": instrument_id})
     $scope.instruments = Instrument.query({"project_id": project_id}, -> $scope.filterInstruments())
 
   $scope.getQuestions = (page_number) ->

@@ -42,5 +42,6 @@
 //= require angular-file-upload.min
 //= require xeditable
 //= require angular-summernote.min
+//= require paginate-anything-tpls.min
 //= require_tree ./angular
 //= require_directory .

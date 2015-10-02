@@ -39,6 +39,7 @@ gem 'sshkit', '~> 1.5.1'
 gem 'prawn'
 gem 'newrelic_rpm'
 gem 'gollum_rails', '~> 2.0.0'
+gem 'clean_pagination', '~> 0.0.9'
 
 group :production do
   gem 'rails_12factor'
