@@ -42,5 +42,6 @@
 //= require angular-file-upload.min
 //= require xeditable
 //= require angular-summernote.min
+//= require dirPagination
 //= require_tree ./angular
 //= require_directory .

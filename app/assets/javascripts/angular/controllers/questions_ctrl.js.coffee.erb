@@ -2,25 +2,26 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
   $scope.questions = []
   $scope.all_questions = []
   $scope.selectedQuestions = []
-  $scope.pages = []
-  $scope.questions_per_page = <%= Settings.questions_per_page %>
-  $scope.pages_to_show = <%= Settings.pages_to_show %>
-  $scope.current_page = 1
-  $scope.total_pages = 1
   $scope.searchText = ""
+  $scope.totalQuestions = 0
+  $scope.questionsPerPage = <%= Settings.questions_per_page %>
+  $scope.maxNumOfLinks = <%= Settings.maximum_number_of_links %>
+
   $scope.init = (project_id, instrument_id) ->
     $scope.project_id = project_id
     $scope.instrument_id = instrument_id
-    $scope.getQuestions($scope.current_page)
-    $scope.all_questions = Question.query({"project_id": project_id, "instrument_id": instrument_id})
+    $scope.getQuestionsPerPage(1)
+    $scope.all_questions = Question.query({"project_id": project_id, "instrument_id": instrument_id}) #TODO: slows initial request
     $scope.instruments = Instrument.query({"project_id": project_id}, -> $scope.filterInstruments())
 
-  $scope.getQuestions = (page_number) ->
-    $scope.questions = Question.query({"project_id": $scope.project_id, "instrument_id": $scope.instrument_id, "page": page_number})
+  $scope.pagination = current: 1
+
+  $scope.getQuestionsPerPage = (pageNumber) ->
+    $scope.questions = Question.query({"project_id": $scope.project_id, "instrument_id": $scope.instrument_id, "page": pageNumber})
 
   $scope.filterInstruments = () ->
     $scope.instrument = filterFilter($scope.instruments, id: $scope.instrument_id, true)[0]
-    $scope.createPages()
+    $scope.totalQuestions = $scope.instrument.question_count
 
   $scope.sortableOptions = {
     cursor: 'move',
@@ -125,39 +126,6 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
   $scope.questionTypesWithMultipleSkipPatterns = (questionType) ->
     questionType in <%= Settings.question_with_multiple_skips %>
 
-  $scope.setPage = (new_page) ->
-    new_page = 1 if new_page < 1
-    new_page = $scope.total_pages if new_page > $scope.total_pages
-    $scope.current_page = new_page
-    $scope.getQuestions($scope.current_page)
-    if $scope.current_page > $scope.pages_to_show and $scope.current_page % $scope.pages_to_show == 1
-      if $scope.current_page > $scope.pages_to_show
-        lower_bound = (($scope.current_page/$scope.pages_to_show) * $scope.pages_to_show)
-        upper_bound = (($scope.current_page/$scope.pages_to_show) * $scope.pages_to_show) + ($scope.pages_to_show - 1)
-        if $scope.total_pages < upper_bound
-          upper_bound = $scope.total_pages
-        $scope.pages = [lower_bound..upper_bound]
-    else if $scope.current_page % $scope.pages_to_show == 0
-      lower_bound = (($scope.current_page/$scope.pages_to_show) * $scope.pages_to_show) - ($scope.pages_to_show - 1)
-      $scope.pages =  [lower_bound..$scope.current_page]
-
-  $scope.createPages = () ->
-    $scope.total_pages = Math.ceil($scope.instrument.question_count / $scope.questions_per_page)
-    if $scope.total_pages > $scope.pages_to_show
-      $scope.pages = [1..$scope.pages_to_show]
-    else
-      $scope.pages = [1..$scope.total_pages]
-
-  $scope.setEndPages = (end_page) ->
-     $scope.current_page = end_page
-     $scope.getQuestions($scope.current_page)
-     if end_page == 1
-       $scope.createPages()
-     else if $scope.total_pages > $scope.pages_to_show
-       $scope.pages = [($scope.total_pages - $scope.pages_to_show)..$scope.total_pages]
-     else
-       $scope.pages = [1..$scope.total_pages]
-
   $scope.repositionQuestion = (question) ->
     question.project_id = $scope.project_id
     question.$update({},
@@ -189,7 +157,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
 
   $scope.searchItem = () ->
     if $scope.searchText is ""
-      $scope.getQuestions($scope.current_page)
+      $scope.getQuestionsPerPage($scope.current_page)
     else
       $scope.questions = filterFilter($scope.all_questions, $scope.searchText)
 
