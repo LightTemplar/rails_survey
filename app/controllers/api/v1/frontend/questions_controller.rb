@@ -8,25 +8,22 @@ module Api
           instrument = current_project.instruments.find(params[:instrument_id])
           if !params[:page].blank?
             questions = instrument.questions.page(params[:page]).per(Settings.questions_per_page)
-            authorize questions
             respond_with questions
           elsif !params[:grid_id].blank?
             respond_with instrument.questions.where(grid_id: params[:grid_id])
           else
-            respond_with instrument.questions
+            respond_with instrument.questions.select(:id, :question_identifier).as_json(only: [:id, :question_identifier])
           end
         end
 
         def show
           question = current_project.questions.find(params[:id])
-          authorize question
           respond_with question
         end
 
         def create
           instrument = current_project.instruments.find(params[:instrument_id])
           question = instrument.questions.new(question_params)
-          authorize question
           if question.save
             ReorderQuestionsWorker.perform_async(instrument.id, instrument.questions.last.number_in_instrument, question.number_in_instrument)
             render json: question, status: :created
@@ -38,7 +35,6 @@ module Api
         def update
           instrument = current_project.instruments.find(params[:instrument_id])
           question = instrument.questions.find(params[:id])
-          authorize question
           old_number = question.number_in_instrument
           question.update_attributes(question_params)
           if old_number != question.number_in_instrument
@@ -50,7 +46,6 @@ module Api
         def destroy
           instrument = current_project.instruments.find(params[:instrument_id])
           question = instrument.questions.find(params[:id])
-          authorize question
           question_number = question.number_in_instrument
           if question.destroy
             DeleteQuestionWorker.perform_async(instrument.id, question_number)
