@@ -42,7 +42,7 @@
 
           <div class="field top-buffer" ng-show="currentRuleType == 'INSTRUMENT_TIMING_RULE'">
             <%= Settings.rule_types.instrument_timing_rule.description %><br/><br/>
-            Start time: <input type="time" ng-model="startTime"><br/>
+            Start Time: <input type="time" ng-model="startTime"><br/>
             End Time: <input type="time" ng-model="endTime">
           </div>
 
@@ -56,6 +56,12 @@
             <%= Settings.rule_types.participant_type_rule.description %><br/><br/>
             Participant Type:
             <select ng-options="pt as pt for pt in participantTypes()" ng-model="participantType"></select><br/>
+          </div>
+
+          <div class="field top-buffer" ng-show="currentRuleType == 'PARTICIPANT_AGE_RULE'">
+            <%= Settings.rule_types.participant_age_rule.description %><br/><br/>
+            Start Age: <input type="number" ng-init="startAge=0" ng-model="startAge"><br/>
+            End Age: <input type="number" ng-init="endAge=150" ng-model="endAge">
           </div>
 
           <input id="rule_rule_params" name="rule[rule_params]" type="hidden" value="{{ getRuleParams() }}">
