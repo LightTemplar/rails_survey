@@ -42,6 +42,11 @@ rule_types:
     pretty_name: 'Participant Type Rule'
     params: ['Child', 'Caregiver', 'Center', 'Neighbour']
     description: 'Limit an instrument such that it can only be created for a certain type of participant.'
+  participant_age_rule:
+    constant_name: 'PARTICIPANT_AGE_RULE'
+    pretty_name: 'Participant Age Rule'
+    params: ['start_age', 'end_age']
+    description: 'Limit an instrument so a survey can only be created if the age of the participant falls within the range'
  
 # List delimiter for options
 list_delimiter: ','

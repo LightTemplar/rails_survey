@@ -12,4 +12,5 @@ App.controller 'RulesCtrl', ['$scope', ($scope) ->
       when "INSTRUMENT_SURVEY_LIMIT_PER_MINUTE_RULE" then "{\"num_surveys\": \"#{ $scope.numSurveys }\", \"minute_interval\": \"#{ $scope.minuteInterval }\" }"
       when "PARTICIPANT_TYPE_RULE" then "{\"participant_type\": \"#{ $scope.participantType }\" }"
       when "INSTRUMENT_LAUNCH_RULE" then "{}"
+      when "PARTICIPANT_AGE_RULE" then "{\"start_age\": \"#{ $scope.startAge }\", \"end_age\": \"#{ $scope.endAge }\" }"
 ]
