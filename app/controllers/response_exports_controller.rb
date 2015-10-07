@@ -5,7 +5,7 @@ class ResponseExportsController < ApplicationController
 
   def index
     @project_exports = current_project.response_exports.order('created_at DESC').limit(10)
-    @instrument_exports = current_project.instrument_response_exports.take(10)
+    @instrument_exports = current_project.instrument_response_exports.take(30)
   end
 
   def new
