@@ -117,8 +117,10 @@ class Survey < ActiveRecord::Base
   end
 
   def self.export_short_csv(short_csv, instrument, export_id)
+    interval = 0
     instrument.surveys.each do |survey|
-      ShortExportWorker.perform_async(short_csv.path, survey.id, export_id)
+      interval += 10
+      ShortExportWorker.perform_in(interval.seconds, short_csv.path, survey.id, export_id)
     end
   end
 
@@ -145,8 +147,10 @@ class Survey < ActiveRecord::Base
   end
 
   def self.export_wide_csv(wide_csv, instrument, export_id)
+    interval = 0
     instrument.surveys.each do |survey|
-      WideExportWorker.perform_async(wide_csv.path, survey.id, export_id)
+      interval += 10
+      WideExportWorker.perform_in(interval.seconds, wide_csv.path, survey.id, export_id)
     end
   end
 
@@ -227,8 +231,10 @@ class Survey < ActiveRecord::Base
   end
 
   def self.export_long_csv(long_csv, model, export_id)
+    interval = 0
     model.surveys.each do |survey|
-      LongExportWorker.perform_async(long_csv.path, survey.id, export_id)
+      interval += 10
+      LongExportWorker.perform_in(interval.seconds, long_csv.path, survey.id, export_id)
     end
   end
 
