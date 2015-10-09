@@ -20,8 +20,8 @@
 //= require moment/min/moment.min
 //= require gollum_rails
 //= require bootstrap-select/dist/js/bootstrap-select.min
-//= require summernote/dist/summernote.min
 //= require chosen_v1.4.2/chosen.jquery.min
+//= require bootstrap-wysihtml5
 //= require angular
 //= require angular-resource
 //= require angular-animate
@@ -41,7 +41,8 @@
 //= require es5-shim.min
 //= require angular-file-upload.min
 //= require xeditable
-//= require angular-summernote.min
 //= require dirPagination
+//= require rangy-core
+//= require hallo
 //= require_tree ./angular
 //= require_directory .
