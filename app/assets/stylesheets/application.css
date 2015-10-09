@@ -16,7 +16,6 @@
  *= require socicon/socicon.min
  *= require bootstrap-select/dist/css/bootstrap-select.min
  *= require font-awesome-4.0.3/css/font-awesome.min
- *= require summernote/dist/summernote.css
  *= require chosen_v1.4.2/chosen.min
  *= require app.min.1
  *= require app.min.2
@@ -24,6 +23,7 @@
  *= require nv.d3
  *= require xeditable
  *= require fontello/css/fontello
+ *= require bootstrap-wysihtml5
  *= require graphs
  *= require instruments
  *= require materialize
