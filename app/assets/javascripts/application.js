@@ -21,7 +21,9 @@
 //= require gollum_rails
 //= require bootstrap-select/dist/js/bootstrap-select.min
 //= require chosen_v1.4.2/chosen.jquery.min
-//= require bootstrap-wysihtml5
+//= require rangy-core
+//= require rangy-selectionsaverestore.min
+//= require bootstrap3-wysihtml5.all.min
 //= require angular
 //= require angular-resource
 //= require angular-animate
@@ -42,7 +44,7 @@
 //= require angular-file-upload.min
 //= require xeditable
 //= require dirPagination
-//= require rangy-core
-//= require hallo
+//= require angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.min
+//= require angular-wysiwyg.min
 //= require_tree ./angular
 //= require_directory .

@@ -10,6 +10,7 @@
 #  updated_at                :datetime
 #  reg_ex_validation_message :string(255)
 #  question_changed          :boolean          default(FALSE)
+#  instructions              :text
 #
 
 class QuestionTranslation < ActiveRecord::Base

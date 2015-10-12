@@ -6,6 +6,16 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
   $scope.totalQuestions = 0
   $scope.questionsPerPage = <%= Settings.questions_per_page %>
   $scope.maxNumOfLinks = <%= Settings.maximum_number_of_links %>
+  $scope.questionToolMenu = [
+      ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
+      ['format-block'],
+      ['font'],
+      ['font-size'],
+      ['remove-format'],
+      ['ordered-list', 'unordered-list', 'outdent', 'indent'],
+      ['left-justify', 'center-justify', 'right-justify'],
+      ['code', 'quote', 'paragraph'],
+  ];
 
   $scope.init = (project_id, instrument_id) ->
     $scope.project_id = project_id

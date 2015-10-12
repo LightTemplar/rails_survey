@@ -49,11 +49,20 @@
             </thead>
             <tbody>
             <% @instrument.questions.page(params[:page]).each do |question| %>
+                <tr>
+                  <% unless question.instructions.blank? %>
+                      <td><%= question.question_identifier %></td>
+                      <td><%= raw question.instructions %></td>
+                      <td><%= text_area_tag "instructions_translations[#{question.id}]",
+                                            question.translated_for(@instrument_translation.language, :instructions), size: '70x5', class: 'wysihtml5' %>
+                      </td>
+                  <% end %>
+                </tr>
                 <tr class="<%= 'danger' if question.translated_for(@instrument_translation.language, :question_changed) %>">
                   <td><%= question.question_identifier %></td>
                   <td><%= raw question.text %></td>
                   <td><%= text_area_tag "question_translations[#{question.id}]",
-                                        question.translated_for(@instrument_translation.language, :text), size: '50x5', class: 'wysihtml5' %></td>
+                                        question.translated_for(@instrument_translation.language, :text), size: '70x5', class: 'wysihtml5' %></td>
                 </tr>
                 <% if question.has_options? %>
                     <% question.options.each do |option| %>
@@ -61,7 +70,7 @@
                           <td>Option for <%= question.question_identifier %></td>
                           <td><%= option.text %></td>
                           <td><%= text_area_tag "option_translations[#{option.id}]",
-                                                option.translated_for(@instrument_translation.language, :text), size: '50x5' %></td>
+                                                option.translated_for(@instrument_translation.language, :text), size: '70x5' %></td>
                         </tr>
                     <% end %>
                 <% end %>
@@ -70,21 +79,21 @@
                       <td>Section starting with <%= question.question_identifier %></td>
                       <td><%= question.starts_section.title %></td>
                       <td><%= text_area_tag "section_translations[#{question.starts_section.id}]",
-                                            question.starts_section.translated_for(@instrument_translation.language, :text), size: '50x5' %></td>
+                                            question.starts_section.translated_for(@instrument_translation.language, :text), size: '70x5' %></td>
                     </tr>
                 <% end %>
                 <% if question.reg_ex_validation_message %>
                     <td>Regular expression failure message for <%= question.question_identifier %></td>
                     <td><%= question.reg_ex_validation_message %></td>
                     <td><%= text_area_tag "validation_translations[#{question.id}]",
-                                          question.translated_for(@instrument_translation.language, :reg_ex_validation_message), size: '50x5' %></td>
+                                          question.translated_for(@instrument_translation.language, :reg_ex_validation_message), size: '70x5' %></td>
                 <% end %>
             <% end %>
             </tbody>
           </table>
         </div>
         <div class="pull-right">
-          <%= f.button :submit, class: 'btn btn-success btn-large' %>
+          <%= f.submit class: 'btn btn-success btn-large' %>
         </div>
     <% end %>
   </div>
