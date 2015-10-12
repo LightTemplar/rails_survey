@@ -17,13 +17,14 @@
  *= require bootstrap-select/dist/css/bootstrap-select.min
  *= require font-awesome-4.0.3/css/font-awesome.min
  *= require chosen_v1.4.2/chosen.min
+ *= require angular-bootstrap-colorpicker/css/colorpicker.min
  *= require app.min.1
  *= require app.min.2
  *= require loading-bar
  *= require nv.d3
  *= require xeditable
  *= require fontello/css/fontello
- *= require bootstrap-wysihtml5
+ *= require bootstrap3-wysihtml5.min
  *= require graphs
  *= require instruments
  *= require materialize

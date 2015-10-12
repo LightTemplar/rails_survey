@@ -45,6 +45,7 @@ class TranslationPdf < Prawn::Document
 
       if question.has_translation_for?(@language)
         move_down InstructionQuestionMargin
+        text Sanitize.fragment(question.translated_for(@language, :instructions)) if question.instructions
         text Sanitize.fragment(question.translated_for(@language, :text))
         draw_options(question) if question.has_options?
       end

@@ -39,7 +39,6 @@ gem 'sshkit', '~> 1.5.1'
 gem 'prawn'
 gem 'newrelic_rpm'
 gem 'gollum_rails', '~> 2.0.0'
-gem 'bootstrap-wysihtml5-rails', '~> 0.3.3.7'
 
 group :production do
   gem 'rails_12factor'

@@ -12,7 +12,7 @@ module Api
 
         private
         def question_translation_params
-          params.require(:question_translation).permit(:language, :text, :reg_ex_validation_message, :question_changed)
+          params.require(:question_translation).permit(:language, :text, :reg_ex_validation_message, :question_changed, :instructions)
         end
       end
     end
