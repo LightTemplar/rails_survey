@@ -17,10 +17,9 @@
 //= require autosize/dist/autosize.min
 //= require jquery-2.1.1.min
 //= require bootstrap/dist/js/bootstrap.min
-//= require moment/min/moment.min
+//= require bootstrap-select/js/bootstrap-select.min
 //= require gollum_rails
-//= require bootstrap-select/dist/js/bootstrap-select.min
-//= require chosen_v1.4.2/chosen.jquery.min
+//= require chosen/chosen.min
 //= require rangy-core
 //= require rangy-selectionsaverestore.min
 //= require bootstrap3-wysihtml5.all.min
