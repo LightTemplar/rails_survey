@@ -32,3 +32,30 @@ namespace :deploy do
   after 'deploy:publishing', 'deploy:restart'
   after 'deploy:published', 'sidekiq:monit:config'
 end
+
+namespace :clients do
+  task :deploy_on_all do
+    on roles(:all), in: :parallel do
+      invoke 'deploy'
+    end
+    invoke 'clients:migrate_on_all'
+  end
+
+  task :migrate_on_all do
+    on roles(:db), in: :parallel do
+      conditionally_migrate = fetch(:conditionally_migrate)
+      info '[deploy:migrate] Checking changes in /db/migrate' if conditionally_migrate
+      if conditionally_migrate && test("diff -q #{release_path}/db/migrate #{current_path}/db/migrate")
+        info '[deploy:migrate] Skip `deploy:migrate` (nothing changed in db/migrate)'
+      else
+        info '[deploy:migrate] Run `rake db:migrate`'
+        within release_path do
+          with rails_env: fetch(:rails_env) do
+            execute :rake, 'db:migrate'
+          end
+        end
+      end
+    end
+  end
+
+end
