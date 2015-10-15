@@ -21,6 +21,7 @@
 #  grid_id                          :integer
 #  first_in_grid                    :boolean          default(FALSE)
 #  instrument_version_number        :integer          default(-1)
+#  section_id                       :integer
 #
 
 require "spec_helper"

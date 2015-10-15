@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151012150305) do
+ActiveRecord::Schema.define(version: 20151014175041) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -243,6 +243,7 @@ ActiveRecord::Schema.define(version: 20151012150305) do
     t.integer  "grid_id"
     t.boolean  "first_in_grid",                    default: false
     t.integer  "instrument_version_number",        default: -1
+    t.integer  "section_id"
   end
 
   add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true
@@ -337,7 +338,6 @@ ActiveRecord::Schema.define(version: 20151012150305) do
 
   create_table "sections", force: true do |t|
     t.string   "title"
-    t.string   "start_question_identifier"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "instrument_id"
