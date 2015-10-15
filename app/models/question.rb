@@ -21,6 +21,7 @@
 #  grid_id                          :integer
 #  first_in_grid                    :boolean          default(FALSE)
 #  instrument_version_number        :integer          default(-1)
+#  section_id                       :integer
 #
 
 class Question < ActiveRecord::Base
@@ -28,12 +29,12 @@ class Question < ActiveRecord::Base
   default_scope { order('number_in_instrument ASC') }
   belongs_to :instrument
   belongs_to :grid
+  belongs_to :section
   has_many :responses
   has_many :options, dependent: :destroy
   has_many :translations, foreign_key: 'question_id', class_name: 'QuestionTranslation', dependent: :destroy
   has_many :images, dependent: :destroy
   has_many :skips, foreign_key: :question_identifier, primary_key: :question_identifier, dependent: :destroy #different from has_many :skips, through: :options
-  has_one :section, foreign_key: :start_question_identifier, primary_key: :question_identifier, dependent: :destroy
   delegate :project, to: :instrument
   before_save :update_instrument_version, if: Proc.new { |question| question.changed? and !question.child_update_count_changed? }
   before_save :update_question_translation, if: Proc.new { |question| question.text_changed? }
@@ -146,8 +147,6 @@ class Question < ActiveRecord::Base
     if question_identifier != question_identifier_was
       skips_to_update = Skip.where(question_identifier: question_identifier_was)
       skips_to_update.update_all(question_identifier: question_identifier) unless skips_to_update.blank?
-      section_to_update = Section.where(start_question_identifier: question_identifier_was).try(:first)
-      section_to_update.update_attribute(:start_question_identifier, question_identifier) if section_to_update
       options_to_update = Option.where(next_question: question_identifier_was)
       options_to_update.update_all(next_question: question_identifier) unless options_to_update.blank?
       follow_ups_to_update = Question.where(following_up_question_identifier: question_identifier_was)

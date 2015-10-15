@@ -1,0 +1,14 @@
+<div class="block-header text-center text-capitalize">
+  <h2><i class="md-filter-list c-indigo"> <%= @section.title %> </i></h2>
+</div>
+
+<div class="card">
+  <div class="card-body card-padding-sm">
+    <div class="form-group text-center">
+      <div class="text-center"> <strong>Questions in this section</strong> </div>
+      <% @section.questions.each do |question| %>
+          <div class="col-sm-4"> <%= question.number_in_instrument.to_s + ': ' + question.question_identifier %> </div>
+      <% end %>
+    </div>
+  </div>
+</div>

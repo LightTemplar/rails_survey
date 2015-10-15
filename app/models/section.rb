@@ -2,43 +2,48 @@
 #
 # Table name: sections
 #
-#  id                        :integer          not null, primary key
-#  title                     :string(255)
-#  start_question_identifier :string(255)
-#  created_at                :datetime
-#  updated_at                :datetime
-#  instrument_id             :integer
-#  deleted_at                :datetime
+#  id            :integer          not null, primary key
+#  title         :string(255)
+#  created_at    :datetime
+#  updated_at    :datetime
+#  instrument_id :integer
+#  deleted_at    :datetime
 #
 
 class Section < ActiveRecord::Base
   include Translatable
   belongs_to :instrument
-  belongs_to :question, foreign_key: :start_question_identifier, primary_key: :question_identifier
+  has_many :questions #Do not put dependent destroy - want questions to remain whenever section is deleted
   has_many :translations, foreign_key: 'section_id', class_name: 'SectionTranslation', dependent: :destroy
   before_save :update_instrument_version, if: Proc.new { |section| section.changed? }
   before_save :update_section_translation, if: Proc.new { |section| section.title_changed? }
   before_destroy :update_instrument_version
-  acts_as_paranoid 
+  acts_as_paranoid
   validates :title, presence: true
-  validates :start_question_identifier, presence: true
-  validate :question_identifier_exists
-  
+
   def update_section_translation(status = true)
     translations.each do |translation|
       translation.update_attribute(:section_changed, status)
     end
   end
-  
+
+  def as_json(options={})
+    super((options || {}).merge({
+                                    methods: [:first_question_number, :section_number]
+                                }))
+  end
+
+  def first_question_number
+    questions.order(:number_in_instrument).try(:first).try(:number_in_instrument)
+  end
+
+  def section_number
+    instrument.sections.find_index(self)
+  end
+
   private
   def update_instrument_version
     instrument.update_instrument_version
   end
 
-  def question_identifier_exists
-    unless Question.find_by_question_identifier(start_question_identifier)
-      errors.add(:question, ': question does not exist!')
-    end
-  end
-  
 end
