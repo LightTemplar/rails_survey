@@ -20,7 +20,7 @@
  *= require bootstrap-select/css/bootstrap-select.min
  *= require app.min.1
  *= require app.min.2
- *= require loading-bar
+ *= require loading-bar.min
  *= require chosen-spinner
  *= require nv.d3
  *= require xeditable
@@ -30,6 +30,7 @@
  *= require instruments
  *= require materialize
  *= require bootstrap_elements
+ *= require fancypants_override
  */
 
 .top-buffer { margin-top: 20px; }

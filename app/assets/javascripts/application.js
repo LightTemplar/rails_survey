@@ -36,7 +36,7 @@
 //= require jquery-ui-1.10.1.custom
 //= require ui-sortable
 //= require chosen
-//= require loading-bar
+//= require loading-bar.min
 //= require d3
 //= require nv.d3
 //= require es5-shim.min
