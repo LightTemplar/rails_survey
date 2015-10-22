@@ -71,7 +71,6 @@ namespace :project do
 
       instrument.sections.each do |section|
         s = section.dup
-        s.start_question_identifier = "#{section.start_question_identifier}_#{project_to.id}"
         s.instrument_id = i.id
         s.save!
 

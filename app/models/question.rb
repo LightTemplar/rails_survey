@@ -113,8 +113,8 @@ class Question < ActiveRecord::Base
     versions.count
   end
 
-  def starts_section
-    Section.find_by_start_question_identifier(self.question_identifier)
+  def starts_section?
+    section && !section.questions.blank? ? section.questions.first == self : false
   end
 
   def select_one_variant?
