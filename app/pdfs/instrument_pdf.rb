@@ -63,7 +63,7 @@ class InstrumentPdf < Prawn::Document
     block.call
     span(500, position: OptionLeftMargin + 10) do
       if option.next_question?
-        next_question = Question.find_by_question_identifier(option.next_question)
+        next_question = option.instrument.questions.where(question_identifier: option.next_question).try(:first)
         if next_question.nil?
           text "#{option.text} (<color rgb='ff0000'>Error Locating Question #{option.next_question} for skip pattern!</color>)", :inline_format => true
         else

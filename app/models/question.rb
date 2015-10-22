@@ -136,7 +136,9 @@ class Question < ActiveRecord::Base
 
   private
   def update_instrument_version
-    instrument.update_instrument_version
+    unless instrument.nil?
+      instrument.update_instrument_version
+    end
   end
 
   def record_instrument_version
