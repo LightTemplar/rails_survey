@@ -1,6 +1,6 @@
 window.App = angular.module('Survey',
-  ['ngResource', 'ui.sortable', 'localytics.directives', 'angular-loading-bar', 'ngAnimate', 'ngSanitize',
-   'angularFileUpload', 'ngCookies', 'ui.keypress', 'xeditable', 'angularUtils.directives.dirPagination', 'wysiwyg.module'])
+  ['ngResource', 'ui.sortable', 'localytics.directives', 'angular-loading-bar', 'ngAnimate', 'ngSanitize', 'ngCookies', 'ui.keypress',
+   'angularFileUpload', 'xeditable', 'angularUtils.directives.dirPagination', 'colorpicker.module', 'wysiwyg.module'])
 .config(['$locationProvider', ($locationProvider) ->
     $locationProvider.html5Mode(true)
   ])

@@ -16,7 +16,7 @@
  *= require socicon/socicon.min
  *= require chosen/chosen.min
  *= require font-awesome-4.0.3/css/font-awesome.min
- *= require angular-bootstrap-colorpicker/css/colorpicker.min
+ *= require colorpicker
  *= require bootstrap-select/css/bootstrap-select.min
  *= require app.min.1
  *= require app.min.2

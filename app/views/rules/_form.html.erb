@@ -60,8 +60,8 @@
 
           <div class="field top-buffer" ng-show="currentRuleType == 'PARTICIPANT_AGE_RULE'">
             <%= Settings.rule_types.participant_age_rule.description %><br/><br/>
-            Start Age: <input type="number" ng-init="startAge=0" ng-model="startAge"><br/>
-            End Age: <input type="number" ng-init="endAge=150" ng-model="endAge">
+            Start Age (inclusive): <input type="number" ng-init="startAge=0" ng-model="startAge"><br/>
+            End Age (exclusive): <input type="number" ng-init="endAge=150" ng-model="endAge">
           </div>
 
           <input id="rule_rule_params" name="rule[rule_params]" type="hidden" value="{{ getRuleParams() }}">
