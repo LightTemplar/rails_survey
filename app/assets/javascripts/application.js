@@ -43,7 +43,7 @@
 //= require angular-file-upload.min
 //= require xeditable
 //= require dirPagination
-//= require angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.min
+//= require bootstrap-colorpicker-module
 //= require angular-wysiwyg.min
 //= require_tree ./angular
 //= require_directory .

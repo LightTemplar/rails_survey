@@ -13,9 +13,8 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
       ['font-size'],
       ['remove-format'],
       ['ordered-list', 'unordered-list', 'outdent', 'indent'],
-      ['left-justify', 'center-justify', 'right-justify'],
-      ['code', 'quote', 'paragraph'],
-  ];
+      ['left-justify', 'center-justify', 'right-justify']
+  ]
 
   $scope.init = (project_id, instrument_id) ->
     $scope.project_id = project_id
