@@ -14,6 +14,7 @@
 #  published               :boolean
 #  deleted_at              :datetime
 #  show_instructions       :boolean          default(FALSE)
+#  special_options         :text
 #
 
 require "spec_helper"

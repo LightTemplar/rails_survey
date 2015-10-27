@@ -14,6 +14,7 @@
 #  published               :boolean
 #  deleted_at              :datetime
 #  show_instructions       :boolean          default(FALSE)
+#  special_options         :text
 #
 
 class Instrument < ActiveRecord::Base
@@ -21,8 +22,8 @@ class Instrument < ActiveRecord::Base
   include Alignable
   include LanguageAssignable
   include InstrumentCopy
+  serialize :special_options, Array
   scope :published, -> { where(published: true) }
-
   belongs_to :project
   has_many :questions, dependent: :destroy
   has_many :options, through: :questions
@@ -37,9 +38,7 @@ class Instrument < ActiveRecord::Base
   has_many :metrics, dependent: :destroy
   has_paper_trail :on => [:update, :destroy]
   acts_as_paranoid
-
   before_save :update_question_count
-
   validates :title, presence: true, allow_blank: false
   validates :project_id, presence: true, allow_blank: false
 
