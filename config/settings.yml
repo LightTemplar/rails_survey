@@ -15,6 +15,7 @@ question_with_images: ['SELECT_ONE_IMAGE', 'SELECT_MULTIPLE_IMAGE']
 question_with_other: ['SELECT_ONE_WRITE_OTHER', 'SELECT_MULTIPLE_WRITE_OTHER']
 question_with_select_multiple: ['SELECT_MULTIPLE', 'SELECT_MULTIPLE_WRITE_OTHER', 'SELECT_MULTIPLE_IMAGE']
 question_with_multiple_skips: ['SELECT_ONE']
+question_without_options: ['FREE_RESPONSE', 'SLIDER', 'DATE', 'RATING', 'TIME', 'INTEGER', 'EMAIL_ADDRESS', 'DECIMAL_NUMBER', 'INSTRUCTIONS', 'MONTH_AND_YEAR', 'YEAR', 'PHONE_NUMBER', 'ADDRESS', 'REAR_PICTURE', 'FRONT_PICTURE']
 
 rule_types: 
   instrument_survey_limit_rule:
@@ -67,6 +68,8 @@ languages: [
 
 # Special Responses
 special_responses: ['SKIP', 'NA', 'RF', 'DK']
+any_default_non_empty_response: 'ANY RESPONSE'
+skipped_question_special_response: 'SKIP'
 
 right_align_languages: ['ar']
 

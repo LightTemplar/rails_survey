@@ -191,6 +191,7 @@ ActiveRecord::Schema.define(version: 20151027162423) do
     t.integer  "number_in_question"
     t.datetime "deleted_at"
     t.integer  "instrument_version_number", default: -1
+    t.boolean  "special",                   default: false
   end
 
   create_table "project_device_users", force: true do |t|
