@@ -27,6 +27,7 @@
 class Question < ActiveRecord::Base
   include Translatable
   default_scope { order('number_in_instrument ASC') }
+  scope :special_options, -> { options.where(special: true) }
   belongs_to :instrument
   belongs_to :grid
   belongs_to :section
@@ -42,6 +43,7 @@ class Question < ActiveRecord::Base
   after_save :record_instrument_version
   before_destroy :update_instrument_version
   after_save :update_dependent_records
+  after_create :create_special_options
   has_paper_trail
   acts_as_paranoid
 
@@ -58,6 +60,21 @@ class Question < ActiveRecord::Base
     nullify :question_identifier
     nullify :following_up_question_identifier
     set :follow_up_position => 0
+  end
+
+  def create_special_options
+    unless instrument.special_options.blank?
+      instrument.special_options.reject { |opt_text| opt_text == Settings.skipped_question_special_response }.each do |option_text|
+        create_special_option(option_text)
+      end
+    end
+    if Settings.question_without_options.include?(question_type)
+      create_special_option(Settings.any_default_non_empty_response)
+    end
+  end
+
+  def create_special_option(option_text)
+    options.create(text: option_text, special: true, number_in_question: options.count + 1) if options.where(text: option_text).blank?
   end
 
   def has_options?
