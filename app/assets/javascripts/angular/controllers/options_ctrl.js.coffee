@@ -1,5 +1,6 @@
-App.controller 'OptionsCtrl', ['$scope', 'Option', ($scope, Option) ->
+App.controller 'OptionsCtrl', ['$scope', 'Option', 'filterFilter', ($scope, Option, filterFilter) ->
   $scope.options = []
+  $scope.defaultOptions = []
   $scope.init = (project_id, instrument_id, question_id) ->
     $scope.project_id = project_id
     $scope.instrument_id = instrument_id
@@ -13,8 +14,11 @@ App.controller 'OptionsCtrl', ['$scope', 'Option', ($scope, Option) ->
         "project_id": $scope.project_id,
         "instrument_id": $scope.instrument_id,
         "question_id": $scope.question_id
-      }
+      }, -> $scope.filterSpecialOptions()
     )
+
+  $scope.filterSpecialOptions = () ->
+    $scope.defaultOptions = filterFilter($scope.options, special: false, true)
 
   $scope.$on('SAVE_QUESTION', (event, id) ->
     if ($scope.question_id == id or !$scope.question_id)
@@ -61,6 +65,8 @@ App.controller 'OptionsCtrl', ['$scope', 'Option', ($scope, Option) ->
     option.project_id = $scope.project_id
     option.instrument_id = $scope.instrument_id
     option.question_id = $scope.question_id
+    option.special = false
     $scope.options.push(option)
+    $scope.filterSpecialOptions()
     
 ]
