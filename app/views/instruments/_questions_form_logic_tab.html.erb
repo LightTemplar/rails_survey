@@ -36,7 +36,8 @@
       option when responding to a question. Select the desired pattern for each option to this question.</p>
 
     <div ng-repeat="option in options">
-      <label for="follow-up" class="col-sm-6 control-label">If <strong>{{option.text}}</strong> is selected, skip to:</label>
+      <label ng-if="option.text != 'ANY RESPONSE'" for="follow-up" class="col-sm-6 control-label">If <strong>{{option.text}}</strong> is selected, skip to:</label>
+      <label ng-if="option.text == 'ANY RESPONSE'" for="follow-up" class="col-sm-6 control-label">If <strong>{{option.text}}</strong> is given, skip to:</label>
 
       <div class="col-sm-6">
         <select
