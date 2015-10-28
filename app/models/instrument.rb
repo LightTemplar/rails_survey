@@ -39,8 +39,22 @@ class Instrument < ActiveRecord::Base
   has_paper_trail :on => [:update, :destroy]
   acts_as_paranoid
   before_save :update_question_count
+  after_update :update_special_options
   validates :title, presence: true, allow_blank: false
   validates :project_id, presence: true, allow_blank: false
+
+  def update_special_options
+    if special_options != special_options_was
+      deleted_special_options = special_options_was - special_options
+      options.special_options.where({text: deleted_special_options}).delete_all unless deleted_special_options.blank?
+      new_special_options = special_options - special_options_was
+      if !new_special_options.blank? && !questions.blank?
+        questions.each do |question|
+          question.create_special_options
+        end
+      end
+    end
+  end
 
   def version_by_version_number(version_number)
     InstrumentVersion.build(
