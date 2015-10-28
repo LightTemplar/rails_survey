@@ -27,7 +27,6 @@
 class Question < ActiveRecord::Base
   include Translatable
   default_scope { order('number_in_instrument ASC') }
-  scope :special_options, -> { options.where(special: true) }
   belongs_to :instrument
   belongs_to :grid
   belongs_to :section
@@ -62,19 +61,18 @@ class Question < ActiveRecord::Base
     set :follow_up_position => 0
   end
 
-  def create_special_options
-    unless instrument.special_options.blank?
-      instrument.special_options.reject { |opt_text| opt_text == Settings.skipped_question_special_response }.each do |option_text|
+  def create_special_options(special_options = instrument.special_options)
+    skip_option_callbacks
+    unless special_options.blank?
+      special_options.reject { |opt_text| opt_text == Settings.skipped_question_special_response }.each do |option_text|
         create_special_option(option_text)
       end
     end
     if Settings.question_without_options.include?(question_type)
       create_special_option(Settings.any_default_non_empty_response)
     end
-  end
-
-  def create_special_option(option_text)
-    options.create(text: option_text, special: true, number_in_question: options.count + 1) if options.where(text: option_text).blank?
+    set_option_callbacks
+    update_columns(child_update_count: option_count)
   end
 
   def has_options?
@@ -172,4 +170,21 @@ class Question < ActiveRecord::Base
       follow_ups_to_update.update_all(following_up_question_identifier: question_identifier) unless follow_ups_to_update.blank?
     end
   end
+
+  def create_special_option(option_text)
+    options.create(text: option_text, special: true, number_in_question: options.count + 1) if options.where(text: option_text).blank?
+  end
+
+  def skip_option_callbacks
+    Option.skip_callback(:save, :after, :record_instrument_version_number)
+    Option.skip_callback(:save, :before, :update_instrument_version)
+    Option.skip_callback(:save, :before, :update_option_translation)
+  end
+
+  def set_option_callbacks
+    Option.set_callback(:save, :after, :record_instrument_version_number)
+    Option.set_callback(:save, :before, :update_instrument_version)
+    Option.set_callback(:save, :before, :update_option_translation)
+  end
+
 end

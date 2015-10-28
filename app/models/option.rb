@@ -17,6 +17,7 @@
 class Option < ActiveRecord::Base
   include Translatable
   default_scope { order('number_in_question ASC') }
+  scope :special_options, -> { where(special: true) }
   belongs_to :question
   delegate :instrument, to: :question, allow_nil: true
   delegate :project, to: :question
