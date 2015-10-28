@@ -28,7 +28,7 @@
     </div>
   </fieldset>
 
-  <fieldset class="m-10" ng-hide="$scope.all_questions.length == question.number_in_instrument || !questionTypesWithOptions(question.question_type)">
+  <fieldset class="m-10" ng-hide="all_questions.length == question.number_in_instrument">
     <legend class="text-center text-capitalize">
       <strong>Skip Patterns</strong>
     </legend>
@@ -36,15 +36,12 @@
       option when responding to a question. Select the desired pattern for each option to this question.</p>
 
     <div ng-repeat="option in options">
-      <label for="follow-up" class="col-sm-4 control-label">If <strong>{{option.text}}</strong> is selected, skip
-        to:</label>
+      <label for="follow-up" class="col-sm-6 control-label">If <strong>{{option.text}}</strong> is selected, skip to:</label>
 
-      <div class="col-sm-8">
+      <div class="col-sm-6">
         <select
         chosen
-        width="'400px'"
         allow-single-deselect="true"
-        class="selectpicker"
         data-placeholder="Select a question identifier..."
         no-results-text="'This does not match any valid question identifier'"
         name="skip-pattern"
@@ -73,7 +70,7 @@
     </div>
   </fieldset>
 
-  <fieldset class="m-10" ng-hide="$scope.all_questions.length == question.number_in_instrument || !questionTypesWithMultipleSkipPatterns(question.question_type)">
+  <fieldset class="m-10" ng-hide="all_questions.length == question.number_in_instrument || !questionTypesWithMultipleSkipPatterns(question.question_type)">
     <legend class="text-center text-capitalize">
       <strong>Multiple Skip Patterns</strong>
     </legend>

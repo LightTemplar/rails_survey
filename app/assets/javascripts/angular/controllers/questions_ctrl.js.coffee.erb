@@ -109,7 +109,6 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
       $scope.questions.splice($scope.questions.indexOf(question), 1)
       $scope.updateQuestionNumbers()
 
-
   $scope.uniqueId = ->
     new Date().getTime().toString(36).split("").reverse().join("")
 
@@ -126,8 +125,11 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
   $scope.questionTypes = ->
     <%= Settings.question_types %>
 
-  $scope.questionTypesWithOptions = (questionType)->
+  $scope.questionTypesWithOptions = (questionType) ->
     questionType in <%= Settings.question_with_options %>
+
+  $scope.questionTypesWithoutOptions = (questionType) ->
+    questionType in <%= Settings.question_without_options %>
 
   $scope.questionTypesWithImages = (questionType)->
     questionType in <%= Settings.question_with_images %>
