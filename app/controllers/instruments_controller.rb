@@ -111,7 +111,7 @@ class InstrumentsController < ApplicationController
   def update_copy
     @instrument = current_project.instruments.find(params[:id])
     authorize @instrument
-    InstrumentCopyWorker.perform_async(@instrument.id, params[:end_project].to_i)
+    system "bundle exec rake instrument:copy[#{@instrument.id},#{params[:end_project]}] --trace 2>&1 >> #{Rails.root}/log/rake.log &"
     redirect_to project_path current_project
   end
 
