@@ -33,12 +33,17 @@ namespace :instrument do
       end
 
       grid.questions.each do |question|
-        q = question.dup
-        q.question_identifier = "#{question.question_identifier}_#{project_id}"
-        q.grid_id = g.id
-        q.following_up_question_identifier = "#{question.following_up_question_identifier}_#{project_id}" if question.following_up_question_identifier
-        q.instrument_id = i.id
-        q.save!
+        q = Question.find_by_question_identifier("#{question.question_identifier}_#{project_id}")
+        if q.nil?
+          del_q = Question.only_deleted.where(question_identifier: "#{question.question_identifier}_#{project_id}").try(:first)
+          del_q.really_destroy! if del_q
+          q = question.dup
+          q.question_identifier = "#{question.question_identifier}_#{project_id}"
+          q.grid_id = g.id
+          q.following_up_question_identifier = "#{question.following_up_question_identifier}_#{project_id}" if question.following_up_question_identifier
+          q.instrument_id = i.id
+          q.save!
+        end
       end
     end
 
@@ -55,7 +60,9 @@ namespace :instrument do
 
       section.questions.each do |question|
         q = Question.find_by_question_identifier("#{question.question_identifier}_#{project_id}")
-        unless q
+        if q.nil?
+          del_q = Question.only_deleted.where(question_identifier: "#{question.question_identifier}_#{project_id}").try(:first)
+          del_q.really_destroy! if del_q
           q = question.dup
           q.question_identifier = "#{question.question_identifier}_#{project_id}"
           q.section_id = s.id
@@ -68,7 +75,9 @@ namespace :instrument do
 
     instrument.questions.each do |question|
       q = Question.find_by_question_identifier("#{question.question_identifier}_#{project_id}")
-      unless q
+      if q.nil?
+        del_q = Question.only_deleted.where(question_identifier: "#{question.question_identifier}_#{project_id}").try(:first)
+        del_q.really_destroy! if del_q
         q = question.dup
         q.question_identifier = "#{question.question_identifier}_#{project_id}"
         q.following_up_question_identifier = "#{question.following_up_question_identifier}_#{project_id}" if question.following_up_question_identifier
@@ -108,7 +117,7 @@ namespace :instrument do
         end
 
         if option.grid_label
-          gl = GridLabel.where(option_id: -(option.id)).first
+          gl = GridLabel.where(option_id: -(option.id)).try(:first)
           gl.option_id = o.id if gl
           gl.save!
         end
