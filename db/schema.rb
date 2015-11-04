@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151103194404) do
+ActiveRecord::Schema.define(version: 20151104195524) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -298,8 +298,10 @@ ActiveRecord::Schema.define(version: 20151103194404) do
     t.string   "uuid"
     t.integer  "device_user_id"
     t.integer  "question_version",    default: -1
+    t.datetime "deleted_at"
   end
 
+  add_index "responses", ["deleted_at"], name: "index_responses_on_deleted_at"
   add_index "responses", ["uuid"], name: "index_responses_on_uuid"
 
   create_table "roles", force: true do |t|
@@ -395,8 +397,10 @@ ActiveRecord::Schema.define(version: 20151103194404) do
     t.text     "metadata"
     t.string   "completion_rate",           limit: 3
     t.string   "device_label"
+    t.datetime "deleted_at"
   end
 
+  add_index "surveys", ["deleted_at"], name: "index_surveys_on_deleted_at"
   add_index "surveys", ["uuid"], name: "index_surveys_on_uuid"
 
   create_table "unit_scores", force: true do |t|
