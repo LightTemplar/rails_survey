@@ -17,36 +17,50 @@
         <% end %>
 
         <div class="form-group">
-          <%= f.label :title, 'Instrument Title', class: 'col-sm-2 control-label' %>
-          <div class="col-sm-10">
+          <%= f.label :title, 'Instrument Title', class: 'col-sm-5 control-label' %>
+          <div class="col-sm-7">
             <%= f.text_field :title, class: 'fg-line form-control input-sm', placeholder: 'Enter instrument title' %>
           </div>
         </div>
 
         <div class="form-group">
-          <%= f.label :language, class: 'col-sm-2 control-label' %>
-          <div class="col-sm-10">
+          <%= f.label :language, class: 'col-sm-5 control-label' %>
+          <div class="col-sm-7">
             <%= f.select(:language, options_for_select(Settings.languages, @instrument.language), {}, {class: 'form-control'}) %>
           </div>
         </div>
 
         <div class="form-group">
-          <%= f.label :published, class: 'col-sm-2 control-label' %>
-          <div class="col-sm-10">
+          <%= f.label :published, class: 'col-sm-5 control-label' %>
+          <div class="col-sm-7">
             <%= f.check_box :published, class: 'checkbox' %>
           </div>
         </div>
 
         <div class="form-group">
-          <%= f.label :show_instructions, class: 'col-sm-2 control-label' %>
-          <div class="col-sm-10">
+          <%= f.label :show_instructions, class: 'col-sm-5 control-label' %>
+          <div class="col-sm-7">
             <%= f.check_box :show_instructions, class: 'checkbox' %>
           </div>
         </div>
 
         <div class="form-group">
-          <%= f.label :special_options, class: 'col-sm-2 control-label' %>
-          <div class="col-sm-10">
+          <%= f.label 'Show page for choosing a default response for an entire section', class: 'col-sm-5 control-label' %>
+          <div class="col-sm-7">
+            <%= f.check_box :show_sections_page, class: 'checkbox' %>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <%= f.label 'Allow direct navigation to review page?', class: 'col-sm-5 control-label' %>
+          <div class="col-sm-7">
+            <%= f.check_box :navigate_to_review_page, class: 'checkbox' %>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :special_options, class: 'col-sm-5 control-label' %>
+          <div class="col-sm-7">
             <% Settings.special_responses.each do |option| %>
                 <div>
                     <%= check_box_tag 'instrument[special_options][]', option, @instrument.special_options.include?(option) %>

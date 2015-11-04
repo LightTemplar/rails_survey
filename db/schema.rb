@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151027162423) do
+ActiveRecord::Schema.define(version: 20151103194404) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -162,6 +162,8 @@ ActiveRecord::Schema.define(version: 20151027162423) do
     t.datetime "deleted_at"
     t.boolean  "show_instructions",       default: false
     t.text     "special_options"
+    t.boolean  "show_sections_page",      default: false
+    t.boolean  "navigate_to_review_page", default: false
   end
 
   create_table "metrics", force: true do |t|
