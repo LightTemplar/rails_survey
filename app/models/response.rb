@@ -16,6 +16,7 @@
 #  uuid                :string(255)
 #  device_user_id      :integer
 #  question_version    :integer          default(-1)
+#  deleted_at          :datetime
 #
 
 class Response < ActiveRecord::Base
@@ -28,7 +29,7 @@ class Response < ActiveRecord::Base
   delegate :instrument_version, to: :survey
   has_one :response_image, foreign_key: :response_uuid, primary_key: :uuid
   belongs_to :device_user
-
+  acts_as_paranoid
   validate :question_existence
   validates :survey, presence: true
   after_destroy :calculate_response_rate
