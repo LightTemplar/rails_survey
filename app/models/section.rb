@@ -29,16 +29,12 @@ class Section < ActiveRecord::Base
 
   def as_json(options={})
     super((options || {}).merge({
-                                    methods: [:first_question_number, :section_number]
+                                    methods: [:first_question_number]
                                 }))
   end
 
   def first_question_number
     questions.order(:number_in_instrument).try(:first).try(:number_in_instrument)
-  end
-
-  def section_number
-    instrument.sections.find_index(self)
   end
 
   private
