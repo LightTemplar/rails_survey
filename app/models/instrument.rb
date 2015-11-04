@@ -23,7 +23,6 @@ class Instrument < ActiveRecord::Base
   include Translatable
   include Alignable
   include LanguageAssignable
-  include InstrumentCopy
   serialize :special_options, Array
   scope :published, -> { where(published: true) }
   belongs_to :project
