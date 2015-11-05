@@ -26,6 +26,7 @@ class Option < ActiveRecord::Base
   before_save :update_option_translation, if: Proc.new { |option| option.text_changed? }
   before_destroy :update_instrument_version
   after_save :record_instrument_version_number
+  after_save :sanitize_next_question
   has_paper_trail
   acts_as_paranoid
   has_many :skips, dependent: :destroy 
@@ -37,6 +38,15 @@ class Option < ActiveRecord::Base
     enable
     include_field :translations
     nullify :next_question 
+  end
+
+  def sanitize_next_question
+    unless next_question.blank?
+      next_qst = instrument.questions.where(question_identifier: next_question)
+      if next_qst.blank?
+        update_columns(next_question: nil)
+      end
+    end
   end
 
   def to_s
