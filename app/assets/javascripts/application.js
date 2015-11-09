@@ -10,7 +10,8 @@
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require jquery/dist/jquery.min
+//= require jquery
+//= require jquery_ujs
 //= require waves/dist/waves.min
 //= require bootstrap-growl/bootstrap-growl
 //= require sweetalert/dist/sweetalert.min
