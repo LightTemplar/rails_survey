@@ -16,7 +16,6 @@
 //= require bootstrap-growl/bootstrap-growl
 //= require sweetalert/dist/sweetalert.min
 //= require autosize/dist/autosize.min
-//= require jquery-2.1.1.min
 //= require bootstrap/dist/js/bootstrap.min
 //= require bootstrap-select/js/bootstrap-select.min
 //= require gollum_rails
@@ -34,7 +33,6 @@
 //= require twitter/bootstrap
 //= require theme-functions
 //= require app
-//= require jquery-ui-1.10.1.custom
 //= require ui-sortable
 //= require chosen
 //= require loading-bar.min
