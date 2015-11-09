@@ -19,7 +19,7 @@
 //= require bootstrap/dist/js/bootstrap.min
 //= require bootstrap-select/js/bootstrap-select.min
 //= require gollum_rails
-//= require chosen/chosen.min
+//= require chosen-jquery
 //= require rangy-core
 //= require rangy-selectionsaverestore.min
 //= require bootstrap3-wysihtml5.all.min
