@@ -26,7 +26,7 @@
         <div class="form-group">
           <%= f.label :language, class: 'col-sm-5 control-label' %>
           <div class="col-sm-7">
-            <%= f.select(:language, options_for_select(Settings.languages, @instrument.language), {}, {class: 'form-control'}) %>
+            <%= f.select(:language, options_for_select(Settings.languages, @instrument.language)) %>
           </div>
         </div>
 

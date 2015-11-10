@@ -19,7 +19,6 @@
 //= require bootstrap/dist/js/bootstrap.min
 //= require bootstrap-select/js/bootstrap-select.min
 //= require gollum_rails
-//= require chosen-jquery
 //= require rangy-core
 //= require rangy-selectionsaverestore.min
 //= require bootstrap3-wysihtml5.all.min
@@ -34,7 +33,6 @@
 //= require theme-functions
 //= require app
 //= require ui-sortable
-//= require chosen
 //= require loading-bar.min
 //= require d3
 //= require nv.d3
