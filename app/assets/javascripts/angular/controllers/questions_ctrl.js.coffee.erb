@@ -4,6 +4,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
   $scope.selectedQuestions = []
   $scope.searchText = ""
   $scope.totalQuestions = 0
+  $scope.pageNumber = 1
   $scope.questionsPerPage = <%= Settings.questions_per_page %>
   $scope.maxNumOfLinks = <%= Settings.maximum_number_of_links %>
   $scope.questionToolMenu = [
@@ -26,6 +27,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
   $scope.pagination = current: 1
 
   $scope.getQuestionsPerPage = (pageNumber) ->
+    $scope.pageNumber = pageNumber
     $scope.questions = Question.query({"project_id": $scope.project_id, "instrument_id": $scope.instrument_id, "page": pageNumber})
 
   $scope.filterInstruments = () ->
@@ -143,18 +145,18 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
       () ->
         $scope.questions = $scope.questions.filter (q) -> q isnt question
         if $scope.questionOnPage(question)
-          new_index = question.number_in_instrument - 1 - (($scope.current_page - 1) * $scope.questions_per_page)
+          new_index = question.number_in_instrument - 1 - (($scope.pageNumber - 1) * $scope.questionsPerPage)
           $scope.questions.splice(new_index, 0, question)
         $scope.updateQuestionNumbers()
     )
 
   $scope.updateQuestionNumbers = ->
-    offset = ($scope.current_page - 1) * $scope.questions_per_page
+    offset = ($scope.pageNumber - 1) * $scope.questionsPerPage
     angular.forEach $scope.questions, (question, index) ->
       question.number_in_instrument = offset + index + 1
 
   $scope.updateAndSaveQuestionNumbers = ->
-    offset = ($scope.current_page - 1) * $scope.questions_per_page
+    offset = ($scope.pageNumber - 1) * $scope.questionsPerPage
     angular.forEach $scope.questions, (question, index) ->
       question.number_in_instrument = offset + index + 1
       if question.id and $scope.questionOnPage(question)
@@ -168,7 +170,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
 
   $scope.searchItem = () ->
     if $scope.searchText is ""
-      $scope.getQuestionsPerPage($scope.current_page)
+      $scope.getQuestionsPerPage($scope.pageNumber)
     else
       $scope.questions = filterFilter($scope.all_questions, $scope.searchText)
 

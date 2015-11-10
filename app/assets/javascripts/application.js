@@ -26,7 +26,7 @@
 //= require angular-sanitize
 //= require angular-cookies
 //= require angular-ui-utils.min
-//= require ui-sortable
+//= require sortable
 //= require socket.io.min
 //= require theme-functions
 //= require app
