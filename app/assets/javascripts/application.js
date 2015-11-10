@@ -27,12 +27,12 @@
 //= require angular-animate
 //= require angular-sanitize
 //= require angular-cookies
-//= require socket.io.min
 //= require angular-ui-utils.min
+//= require ui-sortable
+//= require socket.io.min
 //= require twitter/bootstrap
 //= require theme-functions
 //= require app
-//= require ui-sortable
 //= require loading-bar.min
 //= require d3
 //= require nv.d3
