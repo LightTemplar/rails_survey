@@ -1,10 +1,10 @@
-App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilter', ($scope, Question, Instrument, filterFilter) ->
+App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', '$filter', ($scope, Question, Instrument, $filter) ->
   $scope.questions = []
   $scope.all_questions = []
   $scope.selectedQuestions = []
   $scope.searchText = ""
   $scope.totalQuestions = 0
-  $scope.pageNumber = 1
+  $scope.currentPaginationNumber = 1
   $scope.questionsPerPage = <%= Settings.questions_per_page %>
   $scope.maxNumOfLinks = <%= Settings.maximum_number_of_links %>
   $scope.toolBar = [
@@ -12,7 +12,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
       ['justifyLeft', 'justifyCenter', 'justifyRight', 'indent', 'outdent'],
       ['bold', 'italics', 'underline', 'strikeThrough', 'ul', 'ol', 'redo', 'undo', 'clear'],
       ['html', 'wordcount', 'charcount']
-  ];
+  ]
 
   $scope.init = (project_id, instrument_id) ->
     $scope.project_id = project_id
@@ -21,14 +21,17 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
     $scope.all_questions = Question.query({"project_id": project_id, "instrument_id": instrument_id})
     $scope.instruments = Instrument.query({"project_id": project_id}, -> $scope.filterInstruments())
 
-  $scope.pagination = current: 1
+  $scope.pagination = current: $scope.currentPaginationNumber
 
   $scope.getQuestionsPerPage = (pageNumber) ->
-    $scope.pageNumber = pageNumber
-    $scope.questions = Question.query({"project_id": $scope.project_id, "instrument_id": $scope.instrument_id, "page": pageNumber})
+    $scope.currentPaginationNumber = pageNumber
+    $scope.questions = Question.query(
+            {"project_id": $scope.project_id, "instrument_id": $scope.instrument_id, "page": pageNumber}, ->
+            $scope.questions = $filter('orderBy')($scope.questions, 'number_in_instrument', false)
+    )
 
   $scope.filterInstruments = () ->
-    $scope.instrument = filterFilter($scope.instruments, id: $scope.instrument_id, true)[0]
+    $scope.instrument = $filter('filter')($scope.instruments, id: $scope.instrument_id, true)[0]
     $scope.totalQuestions = $scope.instrument.question_count
 
   $scope.sortableOptions = {
@@ -142,18 +145,18 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
       () ->
         $scope.questions = $scope.questions.filter (q) -> q isnt question
         if $scope.questionOnPage(question)
-          new_index = question.number_in_instrument - 1 - (($scope.pageNumber - 1) * $scope.questionsPerPage)
+          new_index = question.number_in_instrument - 1 - (($scope.currentPaginationNumber - 1) * $scope.questionsPerPage)
           $scope.questions.splice(new_index, 0, question)
         $scope.updateQuestionNumbers()
     )
 
   $scope.updateQuestionNumbers = ->
-    offset = ($scope.pageNumber - 1) * $scope.questionsPerPage
+    offset = ($scope.currentPaginationNumber - 1) * $scope.questionsPerPage
     angular.forEach $scope.questions, (question, index) ->
       question.number_in_instrument = offset + index + 1
 
   $scope.updateAndSaveQuestionNumbers = ->
-    offset = ($scope.pageNumber - 1) * $scope.questionsPerPage
+    offset = ($scope.currentPaginationNumber - 1) * $scope.questionsPerPage
     angular.forEach $scope.questions, (question, index) ->
       question.number_in_instrument = offset + index + 1
       if question.id and $scope.questionOnPage(question)
@@ -167,8 +170,8 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', 'filterFilt
 
   $scope.searchItem = () ->
     if $scope.searchText is ""
-      $scope.getQuestionsPerPage($scope.pageNumber)
+      $scope.getQuestionsPerPage($scope.currentPaginationNumber)
     else
-      $scope.questions = filterFilter($scope.all_questions, $scope.searchText)
+      $scope.questions = $filter('filter')($scope.all_questions, $scope.searchText)
 
 ]

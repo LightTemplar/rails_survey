@@ -7,7 +7,7 @@
     <div class="listview lv-bordered lv-lg">
       <div class="lv-body">
         <div ui-sortable="sortableOptions" ng-model="questions">
-          <div class="lv-item media" dir-paginate="question in questions | orderBy:number_in_instrument | itemsPerPage: questionsPerPage" total-items="totalQuestions" current-page="pagination.current">
+          <div class="lv-item media" dir-paginate="question in questions | itemsPerPage: questionsPerPage" total-items="totalQuestions" current-page="pagination.current">
 
             <div class="col-xs-3">
               <form ng-submit="repositionQuestion(question)">
