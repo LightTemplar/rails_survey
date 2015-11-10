@@ -12,12 +12,10 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require twitter/bootstrap
 //= require waves/dist/waves.min
-//= require bootstrap-growl/bootstrap-growl
 //= require sweetalert/dist/sweetalert.min
 //= require autosize/dist/autosize.min
-//= require bootstrap/dist/js/bootstrap.min
-//= require bootstrap-select/js/bootstrap-select.min
 //= require gollum_rails
 //= require rangy-core
 //= require rangy-selectionsaverestore.min
@@ -30,7 +28,6 @@
 //= require angular-ui-utils.min
 //= require ui-sortable
 //= require socket.io.min
-//= require twitter/bootstrap
 //= require theme-functions
 //= require app
 //= require loading-bar.min
