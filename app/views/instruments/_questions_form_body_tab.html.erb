@@ -33,7 +33,7 @@
           <label for="instructions" class="col-sm-2 control-label">Instructions</label>
 
           <div class="col-sm-10">
-            <wysiwyg ng-model="question.instructions"></wysiwyg>
+            <text-angular ta-toolbar="toolBar" textarea-class="form-control" ng-model="question.instructions"></text-angular>
           </div>
         </div>
     <% end %>
@@ -42,7 +42,7 @@
       <label for="content" class="col-sm-2 control-label">Content</label>
 
       <div class="col-sm-10">
-        <wysiwyg textarea-menu="questionToolMenu" textarea-class="form-control" ng-model="question.text"></wysiwyg>
+        <text-angular ta-toolbar="toolBar" textarea-class="form-control" ng-model="question.text"></text-angular>
       </div>
     </div>
 
