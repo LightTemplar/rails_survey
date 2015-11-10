@@ -23,7 +23,6 @@
 //= require angular
 //= require angular-resource
 //= require angular-animate
-//= require angular-sanitize
 //= require angular-cookies
 //= require angular-ui-utils.min
 //= require sortable
@@ -37,7 +36,9 @@
 //= require angular-file-upload.min
 //= require xeditable
 //= require dirPagination
-//= require bootstrap-colorpicker-module
-//= require angular-wysiwyg.min
+//= require textAngular-sanitize.min
+//= require textAngular.min
 //= require_tree ./angular
 //= require_directory .
+
+//textAngular-sanitize replaces angular-sanitize

@@ -15,7 +15,6 @@
  *= require material-design-iconic-font/css/material-design-iconic-font.min
  *= require socicon/socicon.min
  *= require font-awesome-4.0.3/css/font-awesome.min
- *= require colorpicker
  *= require app.min.1
  *= require app.min.2
  *= require loading-bar.min
@@ -23,6 +22,7 @@
  *= require xeditable
  *= require fontello/css/fontello
  *= require bootstrap3-wysihtml5.min
+ *= require textAngular
  *= require graphs
  *= require instruments
  *= require materialize
