@@ -4,9 +4,7 @@ module ProjectsHelper
   end
 
   def current_project
-    @current_project = if session[:project_id]
-      current_user.projects.find(session[:project_id])
-    end
+    @current_project = current_user.projects.find(session[:project_id]) if session[:project_id] && current_user
   end
 
   def current_project=(project)
