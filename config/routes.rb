@@ -5,7 +5,6 @@ RailsSurvey::Application.routes.draw do
     mount Sidekiq::Web => '/sidekiq'
   end
   mount GollumRails::Engine => '/wiki'
-  devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
   devise_for :users
 

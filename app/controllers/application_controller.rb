@@ -7,17 +7,13 @@ class ApplicationController < ActionController::Base
   include ProjectsHelper
   before_filter :authenticate_user_from_token!
   before_filter :store_location
-  before_filter :authenticate_user!, unless: :current_admin_user
+  before_filter :authenticate_user!
   before_filter :set_project
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   def after_sign_in_path_for(resource_or_scope)
-    if resource_or_scope.is_a?(AdminUser)
-      admin_dashboard_path
-    else
-      set_current_project_id(session[:previous_url])
-      session[:previous_url] || root_path
-    end
+    set_current_project_id(session[:previous_url])
+    session[:previous_url] || root_path
   end
   
   def after_update_path_for(resource)
@@ -37,6 +33,14 @@ class ApplicationController < ActionController::Base
       GollumRails::WikiUser.new(current_user.email, current_user.email, true)
     else
       nil
+    end
+  end
+
+  def authenticate_active_admin_user!
+    authenticate_user!
+    unless current_user.admin_user?
+      flash[:alert] = 'Unauthorized Access!'
+      redirect_to root_path
     end
   end
 
