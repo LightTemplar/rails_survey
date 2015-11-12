@@ -57,6 +57,10 @@ class User < ActiveRecord::Base
     roles.find_by_name('admin')
   end
 
+  def super_admin?
+    roles.find_by_name('super_admin')
+  end
+
   def manager?
     roles.find_by_name('manager')
   end
@@ -71,6 +75,10 @@ class User < ActiveRecord::Base
 
   def wiki_editor?
     roles.find_by_name('wiki_editor')
+  end
+
+  def admin_user?
+    admin? || super_admin?
   end
 
   private

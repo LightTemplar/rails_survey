@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="Survey">
 <head>
-  <title>Mchunguzi</title>
+  <title>iSEE</title>
   <%= stylesheet_link_tag 'application', media: 'all' %>
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   <script type="text/javascript">google.load('visualization', '1', {'packages': ['corechart']});</script>
@@ -33,9 +33,7 @@
 <section id="main">
   <aside id="sidebar">
     <div class="sidebar-inner c-overflow">
-      <% if current_project %>
-          <%= render 'layouts/sidebar' %>
-      <% end %>
+      <%= render 'layouts/sidebar' %>
     </div>
   </aside>
 

@@ -1,45 +1,53 @@
 <% unless request.path.include? 'wiki' %>
-    <ul class="main-menu">
-      <li>
-        <%= link_to root_path do %>
-            <i class="md md-home"></i>Dashboard
-        <% end %>
-      </li>
-
-      <% if current_project.id %>
+    <% if current_project %>
+        <ul class="main-menu">
+          <% if current_user.admin_user? %>
+              <li>
+                <%= link_to admin_dashboard_path do %>
+                    <i class="md md-verified-user"></i>Admin Dashboard
+                <% end %>
+              </li>
+          <% end %>
           <li>
-            <%= link_to project_devices_path(current_project) do %>
-                <i class="md-android"></i>Devices
+            <%= link_to root_path do %>
+                <i class="md md-home"></i>Projects
             <% end %>
           </li>
 
-          <li>
-            <%= link_to project_device_users_path(current_project) do %>
-                <i class="md-account-circle"></i>Device Users
-            <% end %>
-          </li>
+          <% if current_project.id %>
+              <li>
+                <%= link_to project_devices_path(current_project) do %>
+                    <i class="md-android"></i>Devices
+                <% end %>
+              </li>
 
-          <li class="sub-menu">
-            <a href=""><i class="md md-mode-edit"></i>Instruments</a>
-            <ul>
-              <li><%= link_to 'View Instruments', project_instruments_path(current_project) %></li>
-              <li><%= link_to 'New Instrument', new_project_instrument_path(current_project) %></li>
-            </ul>
-          </li>
+              <li>
+                <%= link_to project_device_users_path(current_project) do %>
+                    <i class="md-account-circle"></i>Device Users
+                <% end %>
+              </li>
 
-          <li>
-            <%= link_to project_surveys_path(current_project) do %>
-                <i class="md-file-download"></i><span class="name">Survey Results</span>
-            <% end %>
-          </li>
+              <li class="sub-menu">
+                <a href=""><i class="md md-mode-edit"></i>Instruments</a>
+                <ul>
+                  <li><%= link_to 'View Instruments', project_instruments_path(current_project) %></li>
+                  <li><%= link_to 'New Instrument', new_project_instrument_path(current_project) %></li>
+                </ul>
+              </li>
 
-          <li>
-            <%= link_to project_notifications_path(current_project) do %>
-                <i class="md-notifications"></i><span class="name">Notifications</span>
-            <% end %>
-          </li>
+              <li>
+                <%= link_to project_surveys_path(current_project) do %>
+                    <i class="md-file-download"></i><span class="name">Survey Results</span>
+                <% end %>
+              </li>
 
-          <!--<li class="sub-menu">
+              <li>
+                <%= link_to project_notifications_path(current_project) do %>
+                    <i class="md-notifications"></i><span class="name">Notifications</span>
+                <% end %>
+              </li>
+
+              <!--<li class="sub-menu">
            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#side-nav" href="#stats-collapse"><i class="md-insert-chart"></i> <span class="name">Statistics</span></a>
            <ul id="stats-collapse" class="panel-collapse collapse">
              <li><%#= link_to 'Response Charts', project_graphs_daily_path(current_project) %> </li>
@@ -47,32 +55,43 @@
            </ul>
         </li>-->
 
-          <li class="sub-menu">
-            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#side-nav" href="#exports-collapse"><i class="md-cloud-download"></i>
-              <span class="name">Exports</span></a>
-            <ul id="exports-collapse" class="panel-collapse collapse">
-              <li><%= link_to 'Past Exports', project_response_exports_path(current_project) %></li>
-              <li><%= link_to 'New Export', project_responses_path(current_project) %></li>
+              <li class="sub-menu">
+                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#side-nav" href="#exports-collapse"><i class="md-cloud-download"></i>
+                  <span class="name">Exports</span></a>
+                <ul id="exports-collapse" class="panel-collapse collapse">
+                  <li><%= link_to 'Past Exports', project_response_exports_path(current_project) %></li>
+                  <li><%= link_to 'New Export', project_responses_path(current_project) %></li>
+                </ul>
+              </li>
+
+              <li>
+                <%= link_to project_rules_path(current_project) do %>
+                    <i class="md-check-box"></i><span class="name">Rules</span>
+                <% end %>
+              </li>
+
+              <li>
+                <%= link_to user_displayqr_path do %>
+                    <i class="md-lock"></i><span class="name">Two-Factor Authentication</span>
+                <% end %>
+              </li>
+
+              <li>
+                <%= link_to '/wiki' do %>
+                    <i class="md-pages"></i><span class="name">FAQ</span>
+                <% end %>
+              </li>
+          <% end %>
+        </ul>
+    <% else %>
+        <% if current_user && current_user.admin_user? %>
+            <ul class="main-menu">
+              <li>
+                <%= link_to admin_dashboard_path do %>
+                    <i class="md md-verified-user"></i>Admin Dashboard
+                <% end %>
+              </li>
             </ul>
-          </li>
-
-          <li>
-            <%= link_to project_rules_path(current_project) do %>
-                <i class="md-check-box"></i><span class="name">Rules</span>
-            <% end %>
-          </li>
-
-          <li>
-            <%= link_to user_displayqr_path do %>
-                <i class="md-lock"></i><span class="name">Two-Factor Authentication</span>
-            <% end %>
-          </li>
-
-          <li>
-            <%= link_to '/wiki' do %>
-                <i class="md-pages"></i><span class="name">FAQ</span>
-            <% end %>
-          </li>
-      <% end %>
-    </ul>
+        <% end %>
+    <% end %>
 <% end %>
