@@ -1,4 +1,6 @@
 ActiveAdmin.register DeviceUser do
+  belongs_to :project
+  scope_to :current_user, unless: proc{ current_user.super_admin? }
   permit_params :name, :username, :password, :password_confirmation, :active, device_ids: [], project_ids: []
 
   index do

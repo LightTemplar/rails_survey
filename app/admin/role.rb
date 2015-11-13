@@ -1,4 +1,5 @@
 ActiveAdmin.register Role do
+  menu :if => proc{ current_user.super_admin? }
   permit_params :name
 
   show do |role|

@@ -10,6 +10,7 @@ ActiveAdmin.setup do |config|
   config.batch_actions = true
   config.filters = false
   config.breadcrumb = false
+  config.comments = false
 
   config.namespace :admin do |admin|
     admin.build_menu :utility_navigation do |menu|

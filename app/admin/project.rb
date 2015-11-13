@@ -1,12 +1,13 @@
 ActiveAdmin.register Project do
+  scope_to :current_user, unless: proc{ current_user.super_admin? }
   sidebar 'Project Associations', only: :show do
     ul do
       li link_to 'Instruments', admin_project_instruments_path(params[:id])
+      li link_to 'Device Users', admin_project_device_users_path(params[:id])
     end
   end
-  menu priority: 4
   permit_params :name, :description
-
+  
   index do
     selectable_column
     column :id
@@ -38,6 +39,5 @@ ActiveAdmin.register Project do
     end
     active_admin_comments
   end
-
 
 end
