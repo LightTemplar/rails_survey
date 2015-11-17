@@ -1,30 +1,20 @@
-class SurveyPolicy 
-  attr_reader :user, :record
-
-  def initialize(user, record)
-    @user = user
-    @record = record
+class SurveyPolicy < ApplicationPolicy
+  class Scope < Struct.new(:user, :scope)
+    def resolve
+      scope
+    end
   end
 
   def index?
-    read_access
+    @user.admin_user? || @user.manager? || @user.user? || @user.analyst?
   end
 
   def destroy?
-    write_access
+    @user.admin_user?
   end
 
   def show?
-    @user.admin? || @user.manager? || @user.analyst?
-  end
-  
-  private
-  def read_access
-    @user.admin? || @user.manager? || @user.user? || @user.analyst?
-  end
-  
-  def write_access
-    @user.admin?
+    @user.admin_user? || @user.manager? || @user.analyst?
   end
 
 end

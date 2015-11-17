@@ -1,12 +1,12 @@
-class NotificationPolicy
-  
-  def initialize(user, record)
-    @user = user
-    @record = record
+class NotificationPolicy < ApplicationPolicy
+  class Scope < Struct.new(:user, :scope)
+    def resolve
+      scope
+    end
   end
 
   def index?
-    @user.admin? || @user.manager? || @user.user?
+    @user.admin_user? || @user.manager? || @user.user?
   end
   
 end

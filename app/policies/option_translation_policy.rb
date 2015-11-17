@@ -1,0 +1,3 @@
+class OptionTranslationPolicy < InstrumentTranslationPolicy
+
+end

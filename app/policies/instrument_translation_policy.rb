@@ -1,13 +1,12 @@
-class InstrumentTranslationPolicy 
-  attr_reader :user, :record
-
-  def initialize(user, record)
-    @user = user
-    @record = record
+class InstrumentTranslationPolicy < ApplicationPolicy
+  class Scope < Struct.new(:user, :scope)
+    def resolve
+      scope
+    end
   end
 
   def index?
-    read_access
+    true
   end
   
   def new?
@@ -19,11 +18,11 @@ class InstrumentTranslationPolicy
   end
 
   def destroy?
-    @user.admin?
+    @user.admin_user?
   end
 
   def show?
-    read_access
+    true
   end
 
   def edit?
@@ -35,12 +34,9 @@ class InstrumentTranslationPolicy
   end
   
   private
-  def read_access
-    @user.admin? || @user.manager? || @user.user? || @user.translator? || @user.analyst?
-  end
-  
+
   def write_access
-    @user.admin? || @user.translator?
+    @user.admin_user? || @user.translator?
   end
 
 end
