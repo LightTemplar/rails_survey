@@ -7,6 +7,8 @@ ActiveAdmin.setup do |config|
   config.logout_link_method = :delete
   config.skip_before_filter :authenticate_user_from_token!
   config.skip_before_filter :authenticate_user!
+  config.authorization_adapter = ActiveAdmin::PunditAdapter
+  config.pundit_default_policy = 'ApplicationPolicy'
   config.batch_actions = true
   config.filters = false
   config.breadcrumb = false

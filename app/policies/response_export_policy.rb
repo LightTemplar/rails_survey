@@ -1,10 +1,10 @@
-class ResponseExportPolicy < ResponsePolicy
-  
-  def initialize(user, record)
-    @user = user
-    @record = record
+class ResponseExportPolicy < ApplicationPolicy
+  class Scope < Struct.new(:user, :scope)
+    def resolve
+      scope
+    end
   end
-  
+
   def new?
     download_privileges
   end
@@ -22,7 +22,7 @@ class ResponseExportPolicy < ResponsePolicy
   end
   
   def destroy?
-    @user.admin?
+    @user.admin_user?
   end
   
   def project_long_format_responses?
@@ -51,7 +51,7 @@ class ResponseExportPolicy < ResponsePolicy
   
   private
   def download_privileges
-    @user.admin? || @user.manager? || @user.analyst? 
+    @user.admin_user? || @user.manager? || @user.analyst?
   end
   
 end 

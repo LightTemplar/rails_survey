@@ -1,16 +1,21 @@
-class DevicePolicy
-  
-  def initialize(user, record)
-    @user = user
-    @record = record
+class DevicePolicy < ApplicationPolicy
+  class Scope < Struct.new(:user, :scope)
+    def resolve
+      scope
+    end
   end
 
   def index?
-    @user.admin? || @user.manager? || @user.user?
+    viewers
   end
 
   def show?
-    @user.admin? || @user.manager? || @user.user?
+    viewers
+  end
+
+  private
+  def viewers
+    @user.admin_user? || @user.manager? || @user.user?
   end
 
 end

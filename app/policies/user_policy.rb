@@ -1,24 +1,24 @@
-class ProjectPolicy < ApplicationPolicy
+class UserPolicy < ApplicationPolicy
   class Scope < Struct.new(:user, :scope)
     def resolve
       if user.super_admin?
-        Project.all
+        User.all
       else
-        user.projects
+        User.joins(:projects).where('projects.id IN (?)', user.projects.pluck(:id)).distinct
       end
     end
   end
 
   def index?
-    true
+    @user.admin_user?
   end
-  
+
   def new?
-    create?
+    @user.admin_user?
   end
-  
+
   def create?
-    @user.super_admin?
+    @user.admin_user?
   end
 
   def destroy?
@@ -26,7 +26,7 @@ class ProjectPolicy < ApplicationPolicy
   end
 
   def show?
-    true
+    @user.admin_user?
   end
 
   def edit?
@@ -35,10 +35,6 @@ class ProjectPolicy < ApplicationPolicy
 
   def update?
     @user.admin_user?
-  end
-  
-  def export?
-    @user.admin_user || @user.analyst?
   end
 
 end

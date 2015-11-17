@@ -1,9 +1,8 @@
-class RulePolicy 
-  attr_reader :user, :record
-
-  def initialize(user, record)
-    @user = user
-    @record = record
+class RulePolicy < ApplicationPolicy
+  class Scope < Struct.new(:user, :scope)
+    def resolve
+      scope
+    end
   end
 
   def index?
@@ -36,10 +35,10 @@ class RulePolicy
   
   private
   def read_access
-    @user.admin? || @user.manager? || @user.user? || @user.translator? || @user.analyst?
+    true
   end
   
   def write_access
-    @user.admin? || @user.manager?
+    @user.admin_user? || @user.manager?
   end
 end

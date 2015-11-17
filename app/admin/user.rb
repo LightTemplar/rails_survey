@@ -43,8 +43,8 @@ ActiveAdmin.register User do
       f.input :password, hint: 'Leave blank. Do not change.'
       f.input :password_confirmation
       unless current_page?(new_admin_user_path)
-        f.input :projects, :as => :check_boxes
-        f.input :roles, :as => :check_boxes
+        f.input :projects, as: :check_boxes, collection: current_user.projects
+        f.input :roles, as: :check_boxes, collection: Role.where.not(name: 'super_admin')
       end
     end
     f.actions
