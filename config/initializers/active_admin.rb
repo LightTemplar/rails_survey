@@ -1,5 +1,5 @@
 ActiveAdmin.setup do |config|
-  config.site_title = 'iSEE Admin'
+  config.site_title = 'iSEE Admin Dashboard'
   config.site_title_link = :admin_root
   config.authentication_method = :authenticate_active_admin_user!
   config.current_user_method = :current_user
