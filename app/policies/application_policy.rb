@@ -7,11 +7,11 @@ class ApplicationPolicy
   end
 
   def index?
-    true
+    @user.admin_user?
   end
 
   def show?
-    true
+    index?
   end
 
   def new?
@@ -19,23 +19,23 @@ class ApplicationPolicy
   end
 
   def create?
-    @user.admin_user?
+    @user.super_admin?
   end
 
   def edit?
-    update?
+    create?
   end
 
   def update?
-    @user.admin_user?
+    create?
   end
 
   def destroy?
-    @user.admin_user?
+    create?
   end
 
   def destroy_all?
-    @user.admin_user?
+    create?
   end
 
 end
