@@ -30,7 +30,7 @@ namespace :deploy do
   
   after :finishing, 'deploy:cleanup'
   after 'deploy:publishing', 'deploy:restart'
-  after 'deploy:published', 'sidekiq:monit:config'
+  # after 'deploy:published', 'sidekiq:monit:config'
 end
 
 namespace :clients do
