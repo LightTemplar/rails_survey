@@ -44,7 +44,7 @@ group :production do
 end
 
 group :development do
-  gem 'debugger'
+  # gem 'debugger'
   gem 'better_errors'
   gem 'binding_of_caller'
   gem 'capistrano', '~> 3.2.1'

@@ -1,4 +1,4 @@
-lock '3.4.0'
+lock '3.2.1'
 
 set :application, 'rails_survey' 
 set :scm, :git 
