@@ -6,7 +6,7 @@ set :repo_url, 'git@github.com:DukeMobileTech/rails_survey.git'
 set :use_sudo, false
 set :rails_env, 'production'
 set :deploy_via, :copy
-set :ssh_options, { :forward_agent => true, :port => 2222 }
+set :ssh_options, { :forward_agent => true }
 set :pty, false
 set :format, :pretty
 set :keep_releases, 5
