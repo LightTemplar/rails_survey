@@ -11,13 +11,15 @@ set :pty, false
 set :format, :pretty
 set :keep_releases, 5
 set :linked_files, %w{config/database.yml config/secret_token.txt config/local_env.yml config/newrelic.yml}
-set :linked_dirs, %w(bin log tmp/pids tmp/cache tmp/sockets vendor/bundle)
+set :linked_dirs, %w(log tmp/pids tmp/cache tmp/sockets vendor/bundle)
 set :linked_dirs, fetch(:linked_dirs) + %w{ files updates }
 set :branch, 'master'
 set :sidekiq_pid, File.join(shared_path, 'tmp', 'pids', 'sidekiq.pid')
 set :sidekiq_log, File.join(shared_path, 'log', 'sidekiq.log')
 set :sidekiq_concurrency, 15
 set :sidekiq_processes, 2
+set :bundle_binstubs, nil
+set :bundle_flags, '--no-binstubs'
 
 namespace :deploy do
   desc 'Restart Application'
