@@ -406,6 +406,7 @@ DEPENDENCIES
   rails (= 4.1.13)
   rails_12factor
   rails_config
+  rake
   redis (~> 3.0.7)
   rspec-mocks
   rspec-rails (~> 2.0)
@@ -425,4 +426,4 @@ DEPENDENCIES
   zip-zip
 
 BUNDLED WITH
-   1.10.6
+   1.11.2
