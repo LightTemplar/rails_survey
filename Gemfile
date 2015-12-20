@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '2.0.0'
+ruby '2.0.0', patchlevel: '648'
 gem 'rails', '4.1.13'
 gem 'rake'
 gem 'sass-rails', '~> 4.0.0'
