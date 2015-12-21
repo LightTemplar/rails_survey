@@ -38,7 +38,7 @@ class ProjectPolicy < ApplicationPolicy
   end
   
   def export?
-    @user.admin_user || @user.analyst?
+    @user.admin_user? || @user.analyst?
   end
 
 end
