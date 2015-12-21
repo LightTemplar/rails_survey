@@ -40,3 +40,6 @@ dump.rdb
 
 #Ignore public assets - generate by Capistrano on deploy
 public/assets/
+
+#Ignore capistrano files
+config/deploy/production.rb

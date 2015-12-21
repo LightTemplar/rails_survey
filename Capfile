@@ -1,4 +1,4 @@
-require 'capistrano/multiconfig'
+require 'capistrano/setup'
 require 'capistrano/deploy'
 require 'sshkit/dsl'
 require 'capistrano/rvm'
