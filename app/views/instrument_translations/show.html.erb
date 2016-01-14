@@ -52,8 +52,8 @@
                 <td></td>
             </tr>
         <% end %>
-        <% if question.has_options? %>
-          <% question.options.each do |option| %>
+        <% if question.has_non_special_options? %>
+          <% question.non_special_options.each do |option| %>
                         <% if option.has_translation_for?(@instrument_translation.language) %>
                           <tr ng-class="{danger: option_translation_changed}" ng-controller="OptionTranslationsCtrl" ng-init="init(
                             <%= current_project.id %>,

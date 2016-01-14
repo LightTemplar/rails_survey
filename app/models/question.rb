@@ -83,6 +83,14 @@ class Question < ActiveRecord::Base
     options.count
   end
 
+  def non_special_options
+    options.where(special: false)
+  end
+
+  def has_non_special_options?
+    !non_special_options.empty?
+  end
+
   def image_count
     images.count
   end
