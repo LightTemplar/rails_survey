@@ -41,7 +41,7 @@ class Question < ActiveRecord::Base
   before_save :update_first_in_grid, if: Proc.new { |question| question.first_in_grid_changed? }
   after_save :record_instrument_version
   before_destroy :update_instrument_version
-  after_save :update_dependent_records
+  after_update :update_dependent_records
   after_create :create_special_options
   has_paper_trail
   acts_as_paranoid
@@ -169,7 +169,7 @@ class Question < ActiveRecord::Base
   end
 
   def update_dependent_records
-    if question_identifier != question_identifier_was
+    if question_identifier_was && question_identifier != question_identifier_was
       skips_to_update = Skip.where(question_identifier: question_identifier_was)
       skips_to_update.update_all(question_identifier: question_identifier) unless skips_to_update.blank?
       options_to_update = Option.where(next_question: question_identifier_was)
