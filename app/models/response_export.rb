@@ -22,7 +22,22 @@ class ResponseExport < ActiveRecord::Base
   belongs_to :instrument
   has_one :response_images_export, dependent: :destroy  
   before_destroy :destroy_files
-  
+
+  def percent_complete(model)
+    total_surveys = model.surveys.where('surveys.created_at < ?', created_at).count * 3.0
+    remaining_surveys = Survey.get_export_count(id.to_s).to_i
+    if remaining_surveys > 0
+      percent = ((total_surveys - remaining_surveys.to_f) / total_surveys) * 100
+      percent = percent.round
+    else
+      percent = 100
+    end
+    if percent >= 100 && !wide_done && !short_done && !long_done
+      update_columns(short_done: true, long_done: true, wide_done: true)
+    end
+    percent
+  end
+
   private
   def destroy_files
     if long_format_url
