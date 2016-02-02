@@ -12,6 +12,7 @@
         <th>Wide format</th>
         <th>Short format</th>
         <th>Pictures</th>
+        <th>% Complete</th>
       </tr>
       </thead>
       <tbody>
@@ -45,6 +46,7 @@
                   <%= link_to 'pictures', project_response_images_project_response_export_path(current_project, export.id) %>
               <% end %>
             </td>
+            <td><%= "#{ export.percent_complete(export.project) } %" %></td>
           </tr>
       <% end %>
       </tbody>
@@ -66,6 +68,7 @@
         <th>Wide format</th>
         <th>Short format</th>
         <th>Pictures</th>
+        <th>% Complete</th>
       </tr>
       </thead>
       <tbody>
@@ -105,6 +108,7 @@
                   <%= link_to 'pictures', instrument_response_images_project_response_export_path(current_project, export.id) %>
               <% end %>
             </td>
+            <td> <%= "#{ export.percent_complete(export.instrument) } %" %> </td>
           </tr>
       <% end %>
       </tbody>
