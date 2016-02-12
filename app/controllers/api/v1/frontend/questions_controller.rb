@@ -95,8 +95,8 @@ module Api
         def question_params
           params.require(:question).permit(:text, :question_type, :question_identifier, :instrument_id, :follow_up_position,
                                            :following_up_question_identifier, :reg_ex_validation, :child_update_count,
-                                           :number_in_instrument, :reg_ex_validation_message, :identifies_survey,
-                                           :instructions, :grid_id, :first_in_grid, :instrument_version_number)
+                                           :number_in_instrument, :reg_ex_validation_message, :identifies_survey, :grid_id,
+                                           :instructions, :first_in_grid, :instrument_version_number, :critical)
         end
 
       end

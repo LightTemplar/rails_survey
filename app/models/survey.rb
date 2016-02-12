@@ -17,6 +17,7 @@
 #  completion_rate           :string(3)
 #  device_label              :string(255)
 #  deleted_at                :datetime
+#  has_critical_responses    :boolean
 #
 
 class Survey < ActiveRecord::Base

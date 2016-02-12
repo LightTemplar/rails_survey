@@ -1,6 +1,8 @@
-<div class="block-header text-center text-capitalize" xmlns="http://www.w3.org/1999/html">
+<div class="block-header text-center" xmlns="http://www.w3.org/1999/html">
   <h2><i class="md-language c-indigo"> <%= link_to @instrument.title, project_instrument_path(current_project, @instrument) %><span class="text-lowercase"> in <%= @instrument_translation.language %></span></i></h2>
   <strong>Translated Title:</strong> <%= @instrument.translated_for(@instrument_translation.language, :title) %>
+  <br>
+  <strong>Translated Critical Message:</strong> <%= @instrument.translated_for(@instrument_translation.language, :critical_message) %>
 </div>
 
 <div class="card">

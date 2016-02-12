@@ -125,7 +125,7 @@ class InstrumentsController < ApplicationController
   def instrument_params
     params.require(:instrument).permit(:title, :language, :alignment, :previous_question_count, :child_update_count,
                                        :published, :show_instructions, :project_id, :show_sections_page,
-                                       :navigate_to_review_page, special_options: [])
+                                       :navigate_to_review_page, :critical_message, special_options: [])
   end
 
 end

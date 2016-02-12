@@ -1,4 +1,24 @@
 <div class="tab-advanced tab-pane" role="tabpanel">
+  <fieldset ng-show="criticalTypeQuestions(question.question_type)" class="m-10">
+    <legend class="text-capitalize text-center">
+      <strong>Critical Question</strong>
+    </legend>
+    <p class="text-muted">A critical question is a question that requires the administrator of the survey to notify
+      someone in a position of authority if a particular response is given to a question. An example would be if a
+      question asks if a participant is feeling suicidal and the participant answers yes. </p>
+
+    <div class="form-group">
+      <label for="follow-up" class="col-sm-3 control-label">Critical Question</label>
+      <div class="col-sm-9">
+        <input type="checkbox" ng-model="question.critical" name="question-critical">
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <div ng-show="question.critical == true" ng-repeat="option in options">
+      <label for="option-critical"> {{option.text}} </label>
+      <input type="checkbox" name="option-critical" class="m-l-10" ng-model="option.critical">
+    </div>
+  </fieldset>
   <fieldset class="m-10">
     <legend class="text-center text-capitalize">
       <strong>Regular Expression Match</strong>
