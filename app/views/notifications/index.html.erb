@@ -2,7 +2,8 @@
   <div class="block-header text-center text-capitalize">
     <h2><i class="md-notifications-on c-indigo"> notifications </i></h2>
   </div>
-  <div class="card">
+  <div class="card col-sm-6">
+    <div class="card-header"><h2> Unsynced Devices</h2></div>
     <div class="card-body card-padding">
       <table class="table table-hover">
         <tbody>
@@ -24,4 +25,19 @@
       </table>
     </div>
   </div>
+  <div class="card col-sm-6">
+    <div class="card-header"><h2>Critical Responses Surveys</h2></div>
+    <div class="card-body card-padding">
+      <table class="table table-hover">
+        <tbody>
+        <% @critical_surveys.each do |survey| %>
+            <tr>
+              <td>Survey <%= link_to survey.uuid, project_survey_path(current_project, survey) %> has critical responses</td>
+            </tr>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 </section>

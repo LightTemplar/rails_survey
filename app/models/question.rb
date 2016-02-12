@@ -22,6 +22,7 @@
 #  first_in_grid                    :boolean          default(FALSE)
 #  instrument_version_number        :integer          default(-1)
 #  section_id                       :integer
+#  critical                         :boolean
 #
 
 class Question < ActiveRecord::Base

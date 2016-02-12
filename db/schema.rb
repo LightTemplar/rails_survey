@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151112183913) do
+ActiveRecord::Schema.define(version: 20160211155616) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -122,6 +122,7 @@ ActiveRecord::Schema.define(version: 20151112183913) do
     t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "critical_message"
   end
 
   create_table "instruments", force: true do |t|
@@ -139,6 +140,7 @@ ActiveRecord::Schema.define(version: 20151112183913) do
     t.text     "special_options"
     t.boolean  "show_sections_page",      default: false
     t.boolean  "navigate_to_review_page", default: false
+    t.text     "critical_message"
   end
 
   create_table "metrics", force: true do |t|
@@ -169,6 +171,7 @@ ActiveRecord::Schema.define(version: 20151112183913) do
     t.datetime "deleted_at"
     t.integer  "instrument_version_number", default: -1
     t.boolean  "special",                   default: false
+    t.boolean  "critical"
   end
 
   create_table "project_device_users", force: true do |t|
@@ -223,6 +226,7 @@ ActiveRecord::Schema.define(version: 20151112183913) do
     t.boolean  "first_in_grid",                    default: false
     t.integer  "instrument_version_number",        default: -1
     t.integer  "section_id"
+    t.boolean  "critical"
   end
 
   add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true
@@ -373,6 +377,7 @@ ActiveRecord::Schema.define(version: 20151112183913) do
     t.string   "completion_rate",           limit: 3
     t.string   "device_label"
     t.datetime "deleted_at"
+    t.boolean  "has_critical_responses"
   end
 
   add_index "surveys", ["deleted_at"], name: "index_surveys_on_deleted_at"

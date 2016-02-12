@@ -12,6 +12,7 @@
 #  deleted_at                :datetime
 #  instrument_version_number :integer          default(-1)
 #  special                   :boolean          default(FALSE)
+#  critical                  :boolean
 #
 
 class Option < ActiveRecord::Base
@@ -27,6 +28,7 @@ class Option < ActiveRecord::Base
   before_destroy :update_instrument_version
   after_save :record_instrument_version_number
   after_save :sanitize_next_question
+  after_save :check_parent_criticality
   has_paper_trail
   acts_as_paranoid
   has_many :skips, dependent: :destroy 
@@ -94,5 +96,9 @@ class Option < ActiveRecord::Base
   def record_instrument_version_number
     update_column(:instrument_version_number, instrument.current_version_number) 
     question.update_column(:instrument_version_number, instrument.current_version_number)
+  end
+
+  def check_parent_criticality
+    update_columns(critical: nil) if critical && !question.critical
   end
 end

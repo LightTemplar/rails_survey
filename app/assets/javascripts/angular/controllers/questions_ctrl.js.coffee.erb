@@ -139,6 +139,9 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', '$filter', 
   $scope.questionTypesWithMultipleSkipPatterns = (questionType) ->
     questionType in <%= Settings.question_with_multiple_skips %>
 
+  $scope.criticalTypeQuestions = (questionType) ->
+    questionType in <%= Settings.critical_type_questions %>
+
   $scope.repositionQuestion = (question) ->
     question.project_id = $scope.project_id
     question.$update({},

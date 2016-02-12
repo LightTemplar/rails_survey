@@ -12,6 +12,7 @@
 #  deleted_at                :datetime
 #  instrument_version_number :integer          default(-1)
 #  special                   :boolean          default(FALSE)
+#  critical                  :boolean
 #
 
 require "spec_helper"
