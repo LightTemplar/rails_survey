@@ -18,6 +18,7 @@ class Section < ActiveRecord::Base
   before_save :update_instrument_version, if: Proc.new { |section| section.changed? }
   before_save :update_section_translation, if: Proc.new { |section| section.title_changed? }
   before_destroy :update_instrument_version
+  before_destroy :unset_section_questions
   acts_as_paranoid
   validates :title, presence: true
 
@@ -40,6 +41,10 @@ class Section < ActiveRecord::Base
   private
   def update_instrument_version
     instrument.update_instrument_version
+  end
+
+  def unset_section_questions
+    questions.update_all(section_id: nil)
   end
 
 end
