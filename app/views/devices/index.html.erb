@@ -4,26 +4,20 @@
 
 <div class="card">
   <div class="table-responsive">
-    <table class="table table-striped">
+    <table class="table table-bordered">
       <thead>
       <tr>
         <th>Device</th>
-        <th>Uptodate?</th>
       </tr>
       </thead>
       <tbody>
-      <% @devices.each do |device| %>
-          <% if device.uptodate?(current_project) %>
-              <tr class="success">
-                <td><%= link_to (device.label.blank? ? device.identifier : device.label), project_device_path(current_project, device) %></td>
-                <td>YES</td>
-              </tr>
-          <% else %>
-              <tr class="danger">
-                <td><%= link_to (device.label.blank? ? device.identifier : device.label), project_device_path(current_project, device) %></td>
-                <td>NO</td>
-              </tr>
-          <% end %>
+      <% @devices.each do |device_label, devices_array| %>
+          <tr class=<%= devices_array.first.uptodate?(current_project) ? 'success' : 'danger' %>>
+            <td>
+              <%= link_to (devices_array.first.label.blank? ? devices_array.first.identifier : devices_array.first
+                  .label), project_device_path(current_project, devices_array.first) %>
+            </td>
+          </tr>
       <% end %>
       </tbody>
     </table>
