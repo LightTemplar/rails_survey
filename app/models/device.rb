@@ -15,7 +15,12 @@ class Device < ActiveRecord::Base
   has_many :device_sync_entries, foreign_key: :device_uuid, primary_key: :identifier, dependent: :destroy
   has_many :device_device_users
   has_many :device_users, through: :device_device_users
+  after_create :format_label
   validates :identifier, uniqueness: true, presence: true, allow_blank: false
+
+  def format_label
+    update_columns(label: label.downcase.tr(' ', '')) unless label.blank?
+  end
 
   def danger_zone?(project)
     if device_sync_entries && last_sync_entry(project)

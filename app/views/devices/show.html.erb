@@ -47,3 +47,14 @@
     <% end %>
   </div>
 </div>
+
+<% if @previous_devices.size > 1 %>
+    <div class="card">
+      <p class="m-10"><strong>Devices with device label <%= @device.label %></strong></p>
+      <% @previous_devices.each do |device| %>
+          <div class="m-10">
+            <%= link_to device.identifier, project_device_path(current_project, device) %>
+          </div>
+      <% end %>
+    </div>
+<% end %>
