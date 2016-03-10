@@ -17,6 +17,25 @@ ActiveAdmin.register Survey do
   filter :metadata
   actions :all, except: :new
 
+  collection_action :calculate_completion_rates, method: :get do
+    redirect_to admin_instrument_surveys_path(params[:instrument_id]), notice: 'Completion rates recalculation successfully
+      started!'
+  end
+
+  action_item :calculate_completion_rates, only: :index do
+    link_to 'Recalculate Completion Rates', calculate_completion_rates_admin_instrument_surveys_path(params[:instrument_id])
+  end
+
+  controller do
+    def calculate_completion_rates
+      instrument = Instrument.find(params[:instrument_id])
+      instrument.surveys.each do |survey|
+        SurveyPercentWorker.perform_async(survey.id)
+      end
+      render :index
+    end
+  end
+
   index do
     selectable_column
     column :id do |survey|
