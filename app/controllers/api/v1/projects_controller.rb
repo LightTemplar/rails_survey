@@ -7,6 +7,10 @@ module Api
         respond_with Project.all
       end
 
+      def current_time
+        respond_with Time.now.utc
+      end
+
       def show
         respond_with Project.find(params[:id])
       end

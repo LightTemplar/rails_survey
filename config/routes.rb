@@ -53,6 +53,9 @@ RailsSurvey::Application.routes.draw do
         resources :device_sync_entries, only: [:create]
         resources :grids, only: [:index]
         resources :grid_labels, only: [:index]
+        member do
+          get :current_time
+        end
       end
     end
   end
