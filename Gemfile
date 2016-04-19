@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '2.0.0'
+ruby '2.2.1'
 gem 'rails', '4.1.13'
 gem 'sass-rails', '~> 4.0.0'
 gem 'uglifier', '>= 1.3.0'
@@ -37,6 +37,7 @@ gem 'sshkit', '~> 1.5.1'
 gem 'prawn'
 gem 'newrelic_rpm'
 gem 'gollum_rails', '~> 2.0.0'
+gem 'roo', '~> 2.0.1'
 
 group :production do
   gem 'rails_12factor'
@@ -44,7 +45,7 @@ group :production do
 end
 
 group :development do
-  gem 'debugger'
+  gem 'byebug'
   gem 'better_errors'
   gem 'binding_of_caller'
   gem 'capistrano', '~> 3.2.1'
