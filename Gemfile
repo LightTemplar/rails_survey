@@ -26,7 +26,6 @@ gem 'groupdate', github: 'mieko/groupdate', :branch => 'sqlite3'
 gem 'paperclip', '~> 4.1.0'
 gem 'redis', '~> 3.0.7'
 gem 'sidekiq', '~> 3.0.0'
-gem 'mandrill-api', '~> 1.0.51'
 gem 'kaminari'
 gem 'sinatra', '~> 1.4.5', :require => nil
 gem 'sanitize', '~> 3.0.0'
