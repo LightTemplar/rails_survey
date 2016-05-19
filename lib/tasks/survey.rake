@@ -10,6 +10,7 @@ require 'scoring/schemes/calculation_scheme'
 require 'scoring/schemes/matching_scheme'
 require 'scoring/scores/score'
 require 'scoring/scores/group_score'
+require 'scoring/crib_bed'
 
 # Example run: rake survey:score['/path/to/base/dir/']
 namespace :survey do
@@ -19,6 +20,36 @@ namespace :survey do
     group_score_schemes = []
     book = Roo::Spreadsheet.open(base_dir + 'NonObsScoring-ForLeo.xlsx', extension: :xlsx)
     sheet1 = book.sheet('Scoring')
+
+    # === Rosters ===
+    # previous_care_terms = []
+    # Dir.glob(base_dir + 'Rosters_Phase_II/*.xlsx').each do |filename|
+    #   center_id = filename.split('/').last.gsub(/[^\d]/, '')
+    #   puts center_id
+    #   roster_book = Roo::Spreadsheet.open(filename, extension: :xlsx)
+    #   staff_sheet = roster_book.sheet('Personal')
+    #   children_sheet = roster_book.sheet('Niños y Niñas')
+    #
+    #   # child section
+    #   children_sheet.drop(3).each do |row|
+    #     if !row[1].blank? && !row[10].blank?
+    #       row[10].class == Float ? previous_care = row[10].round.to_s : previous_care = row[10]
+    #         unless previous_care_terms.include?(previous_care.strip)
+    #           previous_care_terms.push(previous_care.strip)
+    #         end
+    #     end
+    #   end
+    #
+    #   # staff section
+    #   staff_sheet.drop(3).each do |row|
+    #
+    #   end
+    # end
+    # puts previous_care_terms.inspect
+    # next  # TODO Temporary
+
+    # Initialize crib beds
+    CribBed.initialize_cribs(base_dir + 'NonObsScoring-ForLeo.xlsx')
 
     # Generate scoring schemes
     sheet1.drop(1).each do |row|
@@ -31,20 +62,24 @@ namespace :survey do
       elsif row[6].strip == 'Matching'
         scoring_scheme = MatchingScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7])
         parse_qids(scoring_scheme, row)
-      elsif row[6].strip == 'Indexed' && row[5]
+      elsif row[6].strip == 'Indexed' && row[2].strip != 'Roster'
         scoring_scheme = IndexedScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7])
-        parse_qids(scoring_scheme, row) if row[5].include?(',')
-        scoring_scheme.ref_option_index_raw_score = row[5]
-        #TODO what if row[5] is blank?
-        #TODO use index for non SELECT_ONE
-      elsif row[6].strip == 'Simple search'
+        parse_qids(scoring_scheme, row)
+        if row[5].include?('exclude')
+          white_space_index = row[5].index(' ')
+          scoring_scheme.exclude_index = row[5][0..white_space_index].split(';')[1]
+          scoring_scheme.ref_option_index_raw_score = row[5][white_space_index+1..row[5].length-1]
+        else
+          scoring_scheme.ref_option_index_raw_score = row[5]
+        end
+        scoring_scheme.relevant_index = row[1] if row[1]
+      elsif row[6].strip == 'Simple search' && row[2].strip != 'Roster'
         scoring_scheme = SearchScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7])
         white_space_index = row[5].index(' ')
         scoring_scheme.word_bank = row[5][0..white_space_index]
         scoring_scheme.key_score_mapping = row[5][white_space_index+1..row[5].length-1]
       elsif row[6].strip == 'Lookup'
         scoring_scheme = LookupScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7])
-        scoring_scheme.initialize_cribs(base_dir + 'NonObsScoring-ForLeo.xlsx')
       elsif row[6].strip == 'Sum'
         scoring_scheme = SumScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7])
         exclude_index = row[5].index('exclude')
@@ -63,7 +98,7 @@ namespace :survey do
         scoring_scheme.qids = row[0].strip.split
         scoring_scheme.key_score_mapping = row[5] unless row[5].blank?
         group_score_schemes.push(scoring_scheme)
-        next #TODO What was this for?
+        # next #TODO What was this for?
       end
       scoring_schemes.push(scoring_scheme) unless scoring_scheme.nil?
     end
@@ -102,23 +137,30 @@ namespace :survey do
 
     # Score individual responses
     response_scores.each do |sc|
-      scheme = scoring_schemes.find{|obj| obj.qid == sc.qid}
+      scheme = scoring_schemes.find{|obj| obj.qid == sc.qid && obj.question_type == sc.question_type}
       if scheme #Only score those that have scoring schemes
-        reference = response_scores.find {|obj| obj.qid == scheme.reference_qid && obj.center_id == sc.center_id} if
-            scheme.reference_qid #TODO Why is it nil on some instances
         if scheme.description == 'Indexed' || scheme.description == 'Matching'
+          reference = nil
+          if scheme.reference_qid
+            reference = response_scores.find{|obj| obj.qid == scheme.reference_qid && obj.center_id == sc.center_id}
+            if reference.nil?
+              #TODO Why is it nil on some instances
+            end
+          end
           sc.raw_score = scheme.score(sc, reference)
-          # puts scheme.description + ': ' + sc.raw_score.to_s
         else
           sc.raw_score = scheme.score(sc)
-          # === beging tests ===
-          if scheme.description == 'Bank scoring'
-            puts sc.raw_score
-          end
-          # === end tests ===
         end
         sc.scheme_description = scheme.description
+        sc.weight = scheme.assign_weight(sc.center_id)
         scores.push(sc)
+
+        # === beging tests ===
+        # if scheme.description == 'Lookup'
+        #   puts sc.raw_score
+        # end
+        # === end tests ===
+
       elsif group_identifiers.find{|ob| ob == sc.qid}
         group_response_scores.push(sc)
       end
@@ -133,6 +175,7 @@ namespace :survey do
                                      center_grs.try(:first).try(:question_type))
         score_group.raw_score = group_scheme.score(center_grs, centers)
         score_group.scheme_description = group_scheme.name
+        score_group.weight = group_scheme.assign_weight
         scores.push(score_group)
       end
     end
@@ -143,12 +186,12 @@ namespace :survey do
     csv_file = base_dir + 'scores.csv'
     CSV.open(csv_file, 'wb') do |csv|
       header = %w[center_id instrument_id survey_id survey_uuid device_label device_user qid question_type
-                scoring_description response raw_score]
+                scoring_description response weight raw_score weighted_score]
       csv << header
       scores.each do |score|
         row = [score.center_id, score.instrument_id, score.survey_id, score.survey_uuid, score.device_label,
                score.device_user, score.qid, score.question_type, score.scheme_description, score.response,
-               score.raw_score]
+               score.weight, score.raw_score, score.weighted_score]
         csv << row
         # puts row.inspect
       end
@@ -158,8 +201,12 @@ namespace :survey do
 
   def parse_qids(score, row)
     qids = row[0].strip.split
-    score.qid = qids[1]
-    score.reference_qid = qids[0]
+    if qids.size > 1
+      score.qid = qids[1].strip
+      score.reference_qid = qids[0].strip
+    else
+      score.qid = qids[0]
+    end
   end
 
 end

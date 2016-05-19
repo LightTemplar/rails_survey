@@ -1,12 +1,16 @@
 class ScoringScheme
   attr :qid, :reference_qid, :question_type, :description, :weight, :key_score_mapping,
-       :ref_option_index_raw_score, :word_bank, :exclude_index
+       :ref_option_index_raw_score, :word_bank, :exclude_index, :relevant_index
 
   def initialize(q_id, q_type, desc, weight)
     @qid = q_id
     @question_type = q_type
     @description = desc
     @weight = weight
+  end
+
+  def relevant_index=(num)
+    @relevant_index = num.to_i
   end
 
   def key_score_mapping=(str)
@@ -61,6 +65,24 @@ class ScoringScheme
   # Catchall scorer
   def score(response)
     response.blank? ? nil : 0
+  end
+
+  def assign_weight(center_id = nil)
+    assigned_weight = weight
+    if center_id && center_id != 0
+      center_code = CalculationScheme.centers.find{|ctr| ctr.id == center_id}.code
+      if weight.class == String && weight.include?(':')
+        residential_weights = weight.split
+        weight_one = residential_weights[0].split(':')
+        weight_two = residential_weights[1].split(':')
+        if weight_one[0] == center_code.to_s
+          assigned_weight = weight_one[1]
+        else
+          assigned_weight = weight_two[1]
+        end
+      end
+    end
+    assigned_weight
   end
 
   def is_number(string)

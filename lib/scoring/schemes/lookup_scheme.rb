@@ -1,35 +1,60 @@
 require 'scoring/crib_bed'
 
 class LookupScheme < ScoringScheme
-  attr :crib_beds
 
-  def initialize_cribs(file)
-    @crib_beds = []
-    book = Roo::Spreadsheet.open(file, extension: :xlsx)
-    crib_bed_sheet = book.sheet('CribBed')
-    row_one = crib_bed_sheet.row(1)
-    crib_bed_sheet.drop(1).each do |crib_row|
-      (1..8).each do |n|
-        @crib_beds.push(CribBed.new(row_one[n], n-1, crib_row[0], crib_row[n]))
-      end
-    end
-  end
+  MANUAL_LOOKUP = 'manual lookup'
 
   def score(obj)
     return nil if obj.response.blank?
     scores = []
     obj.response.split(',').each_with_index { |res, index|
       if is_number(res)
-        crib_score = @crib_beds.find {|crib| crib.age_index == index && crib.hours_in_bed == res.to_f}
+        crib_score = CribBed.get_crib_beds.find{|crib| crib.age_index == index && crib.hours_in_bed == res.to_f}
         scores.push(crib_score.raw_score) if crib_score
       else
-        #TODO process non nil & non-number responses
+        num_of_hours = parse_response(res)
+        if num_of_hours.class == String
+          scores.push(num_of_hours)
+        else
+          crib_score = CribBed.get_crib_beds.find{|crib| crib.age_index == index && crib.hours_in_bed == num_of_hours}
+          scores.push(crib_score.raw_score) if crib_score
+        end
       end
     }
-    if scores.size > 0
-      (scores.compact.reduce(:+) / scores.size).round(2)
+    if scores.size > 0 && !scores.include?(MANUAL_LOOKUP)
+      scores = scores.compact
+      (scores.reduce(:+) / scores.size).round(2)
     else
-      'Lookup manual' #TODO ???
+      MANUAL_LOOKUP
     end
   end
+
+  def parse_response(str)
+    return nil if str.blank?
+    if str.include?('hora') && str.include?('min')
+      str = str.gsub('con', '')
+      hours_and_minutes = str.split('hora')
+      minutes = hours_and_minutes[1].to_i
+      hours = hours_and_minutes[0].to_i
+      (hours + minutes/60.0).round
+    elsif str.include?('hora')
+      hours_arr = str.split('hora')
+      hours = hours_arr[0].to_i
+      if hours_arr[0].include?('dos')
+        hours = 2
+      elsif hours_arr[0].include?('una')
+        hours = 1
+      elsif str.include?('hora y media')
+        hours = 1.5
+      end
+      hours.round
+    elsif str.include?('min')
+      minutes = str.split('min')
+      (minutes[0].to_i / 60.0).round
+    else
+      # TODO No automatic conversion
+      MANUAL_LOOKUP
+    end
+  end
+
 end
