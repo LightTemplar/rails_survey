@@ -1,6 +1,4 @@
-require 'scoring/schemes/calculation_scheme'
-
-class IntegerScheme < CalculationScheme
+class IntegerScheme < ScoringScheme
   def score(obj)
     return nil if obj.response.blank? || key_score_mapping.blank?
     if obj.response.to_f < 0.5

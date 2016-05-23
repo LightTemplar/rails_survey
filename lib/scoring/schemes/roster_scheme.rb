@@ -1,0 +1,2 @@
+class RosterScheme < ScoringScheme
+end

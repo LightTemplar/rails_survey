@@ -9,7 +9,7 @@ class BankScheme < ScoringScheme
       return 3 if scores.include?('3')
       raw_score = (scores.map(&:to_f).reduce(:+) / scores.size).round(2) if scores.size > 0
     else
-      center_code = CalculationScheme.centers.find{|ctr| ctr.id == obj.center_id}.code
+      center_code = Center.get_centers.find{|ctr| ctr.id == obj.center_id}.code
       scores = individual_scores(obj, ref_option_index_raw_score[center_code.to_s])
       raw_score = (scores.map(&:to_f).reduce(:+) / scores.size).round(2) if scores.size > 0
     end

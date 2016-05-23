@@ -1,14 +1,14 @@
-require 'scoring/schemes/calculation_scheme'
-
-class GroupAverageScheme < CalculationScheme
+class GroupAverageScheme < ScoringScheme
   attr :index, :name, :qids
 
-  def initialize(name, index, q_type, desc, weight)
+  def initialize(name, index, q_type, desc, weight, domain, sub_domain)
     @name = name
     @index = index
     @question_type = q_type
     @description = desc
     @weight = weight
+    @domain = domain
+    @sub_domain = format_sub_domain(sub_domain)
   end
 
   def qids=(ids)
@@ -53,7 +53,7 @@ class GroupAverageScheme < CalculationScheme
     end
   end
 
-  def score(center_responses, centers)
+  def score(center_responses)
     return nil if center_responses.blank? || key_score_mapping.blank?
     scores = []
     center_responses.each do |res|
@@ -63,7 +63,7 @@ class GroupAverageScheme < CalculationScheme
         response = list_responses[indexes[0].to_i]
         if is_number(response)
           if key_score_mapping.values.first.class == Hash
-            center_code = centers.find{|ctr| ctr.id == res.center_id}.code
+            center_code = Center.get_centers.find{|ctr| ctr.id == res.center_id}.code
             resp_score_hash = key_score_mapping[center_code].select{|range| range === response.to_f}
             scores << resp_score_hash.values.first unless resp_score_hash.blank?
           else

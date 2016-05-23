@@ -1,12 +1,14 @@
 class ScoringScheme
   attr :qid, :reference_qid, :question_type, :description, :weight, :key_score_mapping,
-       :ref_option_index_raw_score, :word_bank, :exclude_index, :relevant_index
+       :ref_option_index_raw_score, :word_bank, :exclude_index, :relevant_index, :domain, :sub_domain
 
-  def initialize(q_id, q_type, desc, weight)
+  def initialize(q_id, q_type, desc, weight, domain, sub_domain)
     @qid = q_id
     @question_type = q_type
     @description = desc
     @weight = weight
+    @domain = domain
+    @sub_domain = format_sub_domain(sub_domain)
   end
 
   def relevant_index=(num)
@@ -70,7 +72,7 @@ class ScoringScheme
   def assign_weight(center_id = nil)
     assigned_weight = weight
     if center_id && center_id != 0
-      center_code = CalculationScheme.centers.find{|ctr| ctr.id == center_id}.code
+      center_code = Center.get_centers.find{|ctr| ctr.id == center_id}.code
       if weight.class == String && weight.include?(':')
         residential_weights = weight.split
         weight_one = residential_weights[0].split(':')
@@ -82,6 +84,7 @@ class ScoringScheme
         end
       end
     end
+    assigned_weight = assigned_weight.to_i if assigned_weight.class == String
     assigned_weight
   end
 
@@ -89,6 +92,10 @@ class ScoringScheme
     Integer(string || '')
   rescue ArgumentError
     nil
+  end
+
+  def format_sub_domain(str)
+    str.class == Float ? str.round.to_s : str
   end
 
 end

@@ -49,7 +49,7 @@ class IndexedScheme < ScoringScheme
         return selected.values.first
       end
       if ref_option_index_raw_score[obj.response].class == Hash
-        center_code = CalculationScheme.centers.find { |ctr| ctr.id == obj.center_id }.code
+        center_code = Center.get_centers.find { |ctr| ctr.id == obj.center_id }.code
         return ref_option_index_raw_score[center_code.to_s][obj.response]
       end
       ref_option_index_raw_score[obj.response]

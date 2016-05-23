@@ -1,6 +1,6 @@
 class Score
   attr :qid, :survey_id, :survey_uuid, :device_label, :device_user, :center_id, :instrument_id, :question_type,
-       :raw_score, :response, :scheme_description, :weight
+       :raw_score, :response, :scheme_description, :weight, :domain, :sub_domain
 
   def initialize(qid, s_id, s_uuid, d_label, d_user, c_id, i_id, q_type, res)
     @qid = qid
@@ -24,6 +24,14 @@ class Score
 
   def scheme_description=(name)
     @scheme_description = name
+  end
+
+  def domain=(dm)
+    @domain = dm
+  end
+
+  def sub_domain=(sdm)
+    @sub_domain = sdm
   end
 
   def weighted_score
