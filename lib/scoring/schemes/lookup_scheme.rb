@@ -2,7 +2,7 @@ require 'scoring/crib_bed'
 
 class LookupScheme < ScoringScheme
 
-  MANUAL_LOOKUP = 'manual lookup'
+  MANUAL_LOOKUP = 'manual'
 
   def score(obj)
     return nil if obj.response.blank?

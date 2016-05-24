@@ -1,17 +1,9 @@
-require 'scoring/schemes/scoring_scheme'
-require 'scoring/schemes/bank_scheme'
-require 'scoring/schemes/sum_scheme'
-require 'scoring/schemes/search_scheme'
-require 'scoring/schemes/lookup_scheme'
-require 'scoring/schemes/indexed_scheme'
-require 'scoring/schemes/integer_scheme'
-require 'scoring/schemes/group_average_scheme'
-require 'scoring/schemes/matching_scheme'
 require 'scoring/scores/score'
 require 'scoring/scores/group_score'
 require 'scoring/scores/roster_score'
 require 'scoring/crib_bed'
 require 'scoring/center'
+require 'scoring/scheme_generator'
 
 # Example run: rake survey:score['/path/to/base/dir/']
 namespace :survey do
@@ -29,7 +21,16 @@ namespace :survey do
 
     # Generate scoring schemes
     sheet1.drop(1).each do |row|
-      scoring_scheme = nil
+      scoring_scheme = SchemeGenerator.generate(row)
+      if scoring_scheme.nil?
+        next
+      elsif scoring_scheme.question_type == 'Roster'
+        roster_schemes.push(scoring_scheme)
+      elsif scoring_scheme.description == 'Group average'
+        group_score_schemes.push(scoring_scheme)
+      else
+        scoring_schemes.push(scoring_scheme)
+      end
 
       # === Begin Roster ===
       # if row[2].strip == 'Roster' && row[6].strip == 'Simple search'
@@ -43,62 +44,6 @@ namespace :survey do
       # end
       # === End Roster ===
 
-      if row[6].strip == 'Bank scoring'
-        scoring_scheme = BankScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
-        white_space_index = row[5].index(' ')
-        scoring_scheme.exclude_index = row[5][0..white_space_index].split(';')[1]
-        scoring_scheme.ref_option_index_raw_score = row[5][white_space_index+1..row[5].length-1]
-      elsif row[6].strip == 'Matching'
-        scoring_scheme = MatchingScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
-        parse_qids(scoring_scheme, row)
-      elsif row[6].strip == 'Indexed' && row[2].strip != 'Roster'
-        scoring_scheme = IndexedScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
-        parse_qids(scoring_scheme, row)
-        if row[5].include?('exclude')
-          white_space_index = row[5].index(' ')
-          scoring_scheme.exclude_index = row[5][0..white_space_index].split(';')[1]
-          scoring_scheme.ref_option_index_raw_score = row[5][white_space_index+1..row[5].length-1]
-        else
-          scoring_scheme.ref_option_index_raw_score = row[5]
-        end
-        scoring_scheme.relevant_index = row[1] if row[1]
-      elsif row[6].strip == 'Simple search' && row[2].strip != 'Roster'
-        scoring_scheme = SearchScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
-        white_space_index = row[5].index(' ')
-        scoring_scheme.word_bank = row[5][0..white_space_index]
-        scoring_scheme.key_score_mapping = row[5][white_space_index+1..row[5].length-1]
-      elsif row[6].strip == 'Lookup'
-        scoring_scheme = LookupScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
-      elsif row[6].strip == 'Sum'
-        scoring_scheme = SumScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
-        exclude_index = row[5].index('exclude')
-        white_space_index = row[5].index(' ')
-        if exclude_index && white_space_index
-          scoring_scheme.exclude_index = row[5][0..white_space_index].split(';')[1]
-          scoring_scheme.key_score_mapping = row[5][white_space_index+1..row[5].length-1]
-        else
-          scoring_scheme.key_score_mapping = row[5]
-        end
-      elsif row[6].strip == 'Calculation' && row[2] == 'INTEGER'
-        scoring_scheme = IntegerScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
-        scoring_scheme.key_score_mapping = row[5] unless row[5].blank?
-      elsif row[6].strip == 'Group average'
-        scoring_scheme = GroupAverageScheme.new(row[9].strip, row[1].to_s, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
-        scoring_scheme.qids = row[0].strip.split
-        scoring_scheme.key_score_mapping = row[5] unless row[5].blank?
-        group_score_schemes.push(scoring_scheme)
-        scoring_scheme = nil
-      elsif row[2].strip == 'Roster' && row[6].strip == 'Simple search'
-          scoring_scheme = SearchScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
-          white_space_index = row[5].index(' ')
-          scoring_scheme.word_bank = row[5][0..white_space_index].strip
-          scoring_scheme.key_score_mapping = row[5][white_space_index+1..row[5].length-1]
-          roster_schemes.push(scoring_scheme)
-          scoring_scheme = nil
-      end
-      unless scoring_scheme.nil?
-        scoring_schemes.push(scoring_scheme)
-      end
     end
 
     # Parse responses and create score objects
@@ -194,10 +139,6 @@ namespace :survey do
 
     # puts scores.size
 
-    #====
-    # next
-    #====
-
     # Export scores to csv file
     csv_file = base_dir + 'scores.csv'
     CSV.open(csv_file, 'wb') do |csv|
@@ -239,20 +180,6 @@ namespace :survey do
       end
     end
 
-  end
-
-  def parse_qids(score, row)
-    qids = row[0].strip.split
-    if qids.size > 1
-      score.qid = qids[1].strip
-      score.reference_qid = qids[0].strip
-    else
-      score.qid = qids[0]
-    end
-  end
-
-  def is_correct_id(id)
-    (id != 999.0 && id != '0')
   end
 
   def calculate_score(domain_scores)

@@ -20,4 +20,8 @@ class SearchScheme < ScoringScheme
     roster_score
   end
 
+  def is_correct_id(id)
+    (id != 999.0 && id != '0')
+  end
+
 end
