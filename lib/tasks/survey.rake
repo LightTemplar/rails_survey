@@ -13,17 +13,19 @@ namespace :survey do
     group_score_schemes = []
     roster_schemes = []
     book = Roo::Spreadsheet.open(base_dir + 'NonObsScoring-ForLeo.xlsx', extension: :xlsx)
-    sheet1 = book.sheet('Scoring')
+    scoring_sheet = book.sheet('Scoring')
 
     # Initialize crib beds and centers
     CribBed.initialize_cribs(base_dir + 'NonObsScoring-ForLeo.xlsx')
     Center.initialize_centers(base_dir + 'NonObsScoring-ForLeo.xlsx')
 
     # Generate scoring schemes
-    sheet1.drop(1).each do |row|
+    scoring_sheet.drop(1).each do |row|
       scoring_scheme = SchemeGenerator.generate(row)
       if scoring_scheme.nil?
         next
+      elsif scoring_scheme.class == Array
+        scoring_schemes.concat(scoring_scheme)
       elsif scoring_scheme.question_type == 'Roster'
         roster_schemes.push(scoring_scheme)
       elsif scoring_scheme.description == 'Group average'
@@ -122,22 +124,39 @@ namespace :survey do
     Dir.glob(base_dir + 'Rosters_Phase_II/*.xlsx').each do |filename|
       center_id = filename.split('/').last.gsub(/[^\d]/, '')
       roster_book = Roo::Spreadsheet.open(filename, extension: :xlsx)
-      staff_sheet = roster_book.sheet('Personal')
       children_sheet = roster_book.sheet('Niños y Niñas')
 
       # child section
       previous_care_scheme = roster_schemes.find{|scheme| scheme.description == 'Simple search' &&
           scheme.question_type == 'Roster'}
-      roster_score = previous_care_scheme.generate_previous_care_score(children_sheet, center_id.to_i)
-      scores << roster_score
+      scores.push(previous_care_scheme.generate_previous_care_score(children_sheet, center_id.to_i))
+      age_and_school_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+          scheme.question_text == 'School'}
+      scores.push(age_and_school_scheme.get_age_school_score(children_sheet, center_id.to_i))
+      vaccination_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+          scheme.question_text == 'Vaccinations'}
+      scores.push(vaccination_scheme.get_vaccination_score(children_sheet, center_id.to_i))
 
       # staff section
-      staff_sheet.drop(3).each do |row|
-
-      end
+      staff_sheet = roster_book.sheet('Personal') #TODO Might not support opening sheets concurrently
+      group_assignment_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+        scheme.question_text == 'Group Assignment'}
+      scores << group_assignment_scheme.calculate_staff_score(staff_sheet, center_id.to_i, 14)
+      shift_per_week = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+          scheme.question_text == '# Shifts/Week'}
+      scores << shift_per_week.calculate_staff_score(staff_sheet, center_id.to_i, 11)
+      number_of_groups = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+        scheme.question_text == '# Groups worked with'}
+      scores << number_of_groups.calculate_staff_score(staff_sheet, center_id.to_i, 14, 15)
+      hours_per_week_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+          scheme.question_text == '# Hours/Week'}
+      scores << hours_per_week_scheme.get_weekly_hours_score(staff_sheet, center_id.to_i, 12)
     end
 
-    # puts scores.size
+    # TODO
+    # next
+
+    puts scores.size
 
     # Export scores to csv file
     csv_file = base_dir + 'scores.csv'
@@ -147,7 +166,6 @@ namespace :survey do
                 sub_domain_1_score sub_domain_2_score sub_domain_3_score sub_domain_4_score
                 sub_domain_5_score sub_domain_6_score sub_domain_7_score sub_domain_8_score]
       csv << header
-      scores = scores.sort{|center_a, center_b| center_a.center_id <=> center_b.center_id}
       Center.get_centers.each do |center|
         center_scores = scores.find_all{|score| score.center_id == center.id}
         domains = center_scores.map(&:domain).uniq.compact.sort

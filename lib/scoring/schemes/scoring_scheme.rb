@@ -98,4 +98,23 @@ class ScoringScheme
     str.class == Float ? str.round.to_s : str
   end
 
+  def is_correct_id(id)
+    (id != 999.0 && id != '0')
+  end
+
+  def get_roster_score(scores_array, center_id)
+    scores_array = scores_array.compact
+    if scores_array.size > 0
+      computed_score = (scores_array.map(&:to_f).reduce(:+) / scores_array.size).round(2)
+    else
+      computed_score = nil
+    end
+    roster_score = RosterScore.new(qid, question_type, center_id, description)
+    roster_score.raw_score = computed_score
+    roster_score.weight = assign_weight(center_id)
+    roster_score.domain = domain
+    roster_score.sub_domain = sub_domain
+    roster_score
+  end
+
 end

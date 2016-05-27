@@ -8,13 +8,23 @@ require 'scoring/schemes/integer_scheme'
 require 'scoring/schemes/group_average_scheme'
 require 'scoring/schemes/matching_scheme'
 require 'scoring/schemes/manual_scheme'
+require 'scoring/schemes/roster_scheme'
+require 'scoring/schemes/staff_roster_scheme'
 
 class SchemeGenerator
 
   def self.generate(row)
     scoring_scheme = nil
     if row[6].strip == 'Manual'
-      scoring_scheme = ManualScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
+      question_identifiers = row[0].strip.split(/\r?\n/)
+      if question_identifiers.length > 1 && !row[2].include?('Roster')
+        scoring_scheme = []
+        question_identifiers.each do |identifier|
+          scoring_scheme << ManualScheme.new(identifier.strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
+        end
+      else
+        scoring_scheme = ManualScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
+      end
     elsif row[6].strip == 'Bank scoring'
       scoring_scheme = BankScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
       white_space_index = row[5].index(' ')
@@ -63,6 +73,13 @@ class SchemeGenerator
       white_space_index = row[5].index(' ')
       scoring_scheme.word_bank = row[5][0..white_space_index].strip
       scoring_scheme.key_score_mapping = row[5][white_space_index+1..row[5].length-1]
+    elsif row[2].strip == 'Roster' && (row[3].strip == 'School' || row[3].strip == 'Vaccinations')
+      scoring_scheme = RosterScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
+      scoring_scheme.question_text = row[3].strip
+    elsif row[2].strip == 'Roster' && row[6].strip == 'Calculation'
+      scoring_scheme = StaffRosterScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
+      scoring_scheme.ref_option_index_raw_score = row[5] unless row[5].blank?
+      scoring_scheme.question_text = row[3].strip
     end
     scoring_scheme
   end

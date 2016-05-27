@@ -17,11 +17,9 @@ class SearchScheme < ScoringScheme
     roster_score = RosterScore.new(qid, question_type, center_id, description)
     roster_score.raw_score = (previous_care_scores.map(&:to_f).reduce(:+) / previous_care_scores.size).round(2)
     roster_score.weight = assign_weight(center_id)
+    roster_score.domain = domain
+    roster_score.sub_domain = sub_domain
     roster_score
-  end
-
-  def is_correct_id(id)
-    (id != 999.0 && id != '0')
   end
 
 end
