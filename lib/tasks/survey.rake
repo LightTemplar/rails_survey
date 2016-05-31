@@ -12,12 +12,12 @@ namespace :survey do
     scoring_schemes = []
     group_score_schemes = []
     roster_schemes = []
-    book = Roo::Spreadsheet.open(base_dir + 'NonObsScoring-ForLeo.xlsx', extension: :xlsx)
+    book = Roo::Spreadsheet.open(base_dir + 'QCUALS Scoring/NonObsScoringScheme.xlsx', extension: :xlsx)
     scoring_sheet = book.sheet('Scoring')
 
     # Initialize crib beds and centers
-    CribBed.initialize_cribs(base_dir + 'NonObsScoring-ForLeo.xlsx')
-    Center.initialize_centers(base_dir + 'NonObsScoring-ForLeo.xlsx')
+    CribBed.initialize_cribs(base_dir + 'QCUALS Scoring/NonObsScoringScheme.xlsx')
+    Center.initialize_centers(base_dir + 'QCUALS Scoring/NonObsScoringScheme.xlsx')
 
     # Generate scoring schemes
     scoring_sheet.drop(1).each do |row|
@@ -33,26 +33,13 @@ namespace :survey do
       else
         scoring_schemes.push(scoring_scheme)
       end
-
-      # === Begin Roster ===
-      # if row[2].strip == 'Roster' && row[6].strip == 'Simple search'
-      #   scoring_scheme = SearchScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7])
-      #   white_space_index = row[5].index(' ')
-      #   scoring_scheme.word_bank = row[5][0..white_space_index].strip
-      #   scoring_scheme.key_score_mapping = row[5][white_space_index+1..row[5].length-1]
-      #   roster_schemes.push(scoring_scheme)
-      #   puts scoring_scheme.inspect
-      #   scoring_scheme = nil
-      # end
-      # === End Roster ===
-
     end
 
     # Parse responses and create score objects
     header = []
     response_scores = []
     scores = []
-    Dir.glob(base_dir + 'surveys/*.csv').each do |filename|
+    Dir.glob(base_dir + 'QCUALS Scoring/surveys/*.csv').each do |filename|
       CSV.foreach(filename) do |row|
         if $. == 1
           header = row
@@ -103,6 +90,7 @@ namespace :survey do
         group_response_scores.push(sc)
       end
     end
+    puts 'individual scores added: ' + scores.size.to_s
 
     # Score group responses
     Center.get_centers.each do |center|
@@ -119,47 +107,49 @@ namespace :survey do
         scores.push(score_group)
       end
     end
+    puts 'group scores added: ' + scores.size.to_s
 
     # === Rosters ===
-    Dir.glob(base_dir + 'Rosters_Phase_II/*.xlsx').each do |filename|
+    Dir.glob(base_dir + 'QCUALS Rosters (child & staff)/Rosters Phase II/*.xlsx').each do |filename|
       center_id = filename.split('/').last.gsub(/[^\d]/, '')
-      roster_book = Roo::Spreadsheet.open(filename, extension: :xlsx)
-      children_sheet = roster_book.sheet('Niños y Niñas')
+      unless center_id.blank?
+        roster_book = Roo::Spreadsheet.open(filename, extension: :xlsx)
+        children_sheet = roster_book.sheet('Niños y Niñas')
 
-      # child section
-      previous_care_scheme = roster_schemes.find{|scheme| scheme.description == 'Simple search' &&
-          scheme.question_type == 'Roster'}
-      scores.push(previous_care_scheme.generate_previous_care_score(children_sheet, center_id.to_i))
-      age_and_school_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
-          scheme.question_text == 'School'}
-      scores.push(age_and_school_scheme.get_age_school_score(children_sheet, center_id.to_i))
-      vaccination_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
-          scheme.question_text == 'Vaccinations'}
-      scores.push(vaccination_scheme.get_vaccination_score(children_sheet, center_id.to_i))
+        # child section
+        previous_care_scheme = roster_schemes.find{|scheme| scheme.description == 'Simple search' &&
+            scheme.question_type == 'Roster'}
+        scores.push(previous_care_scheme.generate_previous_care_score(children_sheet, center_id.to_i))
+        age_and_school_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+            scheme.question_text == 'School'}
+        scores.push(age_and_school_scheme.get_age_school_score(children_sheet, center_id.to_i))
+        vaccination_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+            scheme.question_text == 'Vaccinations'}
+        scores.push(vaccination_scheme.get_vaccination_score(children_sheet, center_id.to_i))
+        #TODO Score arrival-assignment lag time
 
-      # staff section
-      staff_sheet = roster_book.sheet('Personal') #TODO Might not support opening sheets concurrently
-      group_assignment_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
-        scheme.question_text == 'Group Assignment'}
-      scores << group_assignment_scheme.calculate_staff_score(staff_sheet, center_id.to_i, 14)
-      shift_per_week = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
-          scheme.question_text == '# Shifts/Week'}
-      scores << shift_per_week.calculate_staff_score(staff_sheet, center_id.to_i, 11)
-      number_of_groups = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
-        scheme.question_text == '# Groups worked with'}
-      scores << number_of_groups.calculate_staff_score(staff_sheet, center_id.to_i, 14, 15)
-      hours_per_week_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
-          scheme.question_text == '# Hours/Week'}
-      scores << hours_per_week_scheme.get_weekly_hours_score(staff_sheet, center_id.to_i, 12)
+        # staff section
+        staff_sheet = roster_book.sheet('Personal') #TODO Might not support opening sheets concurrently
+        group_assignment_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+          scheme.question_text == 'Group Assignment'}
+        scores << group_assignment_scheme.calculate_staff_score(staff_sheet, center_id.to_i, 14)
+        shift_per_week = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+            scheme.question_text == '# Shifts/Week'}
+        scores << shift_per_week.calculate_staff_score(staff_sheet, center_id.to_i, 11)
+        number_of_groups = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+          scheme.question_text == '# groups they have worked with in time at center'}
+        scores << number_of_groups.calculate_staff_score(staff_sheet, center_id.to_i, 14, 15)
+        hours_per_week_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+            scheme.question_text == '# Hours/Week'}
+        scores << hours_per_week_scheme.get_weekly_hours_score(staff_sheet, center_id.to_i, 12)
+      end
     end
+    puts 'roster scores added: ' + scores.size.to_s
 
-    # TODO
-    # next
-
-    puts scores.size
+    #TODO Score Name of Role
 
     # Export scores to csv file
-    csv_file = base_dir + 'scores.csv'
+    csv_file = base_dir + 'QCUALS Scoring/NonObsScores.csv'
     CSV.open(csv_file, 'wb') do |csv|
       header = %w[center_id instrument_id survey_id survey_uuid device_label device_user qid question_type
                 scoring_description domain sub_domain response weight raw_score weighted_score domain_score

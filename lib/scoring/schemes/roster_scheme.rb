@@ -12,7 +12,7 @@ class RosterScheme < ScoringScheme
     age_and_school_scores = []
     children_sheet.drop(3).each do |row|
       if !row[1].blank? && is_correct_id(row[1]) && !row[2].blank? && !row[17].blank?
-        if row[2] >= MIN_AGE  && row[2] <= MAX_AGE
+        if row[2].class == Float && row[2] >= MIN_AGE  && row[2] <= MAX_AGE
           if row[17].strip.downcase == 'si'
             age_and_school_scores << 7
           elsif row[17].strip.downcase == 'no'

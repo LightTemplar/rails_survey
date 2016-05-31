@@ -59,8 +59,12 @@ class StaffRosterScheme < ScoringScheme
         elsif !row[first_column].blank?
           if row[first_column].class == Float
             scores_array << ref_option_index_raw_score.select { |value| value === row[first_column].to_i }.values.first
+          elsif row[first_column] == '-'
+            scores_array << ref_option_index_raw_score.select { |value| value === 0 }.values.first
+          elsif row[first_column].class == String && row[first_column].strip.downcase == 'unico' && !row[13].blank?
+            scores_array << ref_option_index_raw_score.select { |value| value === row[13].to_i }.values.first
           else
-            scores_array << nil #TODO Fix #323, #turnos/semana, extra columns
+            scores_array << nil #TODO check when new files are added
           end
         end
       end
