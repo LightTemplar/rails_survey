@@ -1,4 +1,4 @@
-class RosterScheme < ScoringScheme
+class ChildRosterScheme < ScoringScheme
   attr :question_text
 
   MIN_AGE = 84.0

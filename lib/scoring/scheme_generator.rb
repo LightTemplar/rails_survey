@@ -8,8 +8,9 @@ require 'scoring/schemes/integer_scheme'
 require 'scoring/schemes/group_average_scheme'
 require 'scoring/schemes/matching_scheme'
 require 'scoring/schemes/manual_scheme'
-require 'scoring/schemes/roster_scheme'
+require 'scoring/schemes/child_roster_scheme'
 require 'scoring/schemes/staff_roster_scheme'
+require 'scoring/schemes/staff_role_scheme'
 
 class SchemeGenerator
 
@@ -74,11 +75,18 @@ class SchemeGenerator
       scoring_scheme.word_bank = row[5][0..white_space_index].strip
       scoring_scheme.key_score_mapping = row[5][white_space_index+1..row[5].length-1]
     elsif row[2].strip == 'Roster' && (row[3].strip == 'School' || row[3].strip == 'Vaccinations')
-      scoring_scheme = RosterScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
+      scoring_scheme = ChildRosterScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
       scoring_scheme.question_text = row[3].strip
     elsif row[2].strip == 'Roster' && row[6].strip == 'Calculation'
       scoring_scheme = StaffRosterScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
       scoring_scheme.ref_option_index_raw_score = row[5] unless row[5].blank?
+      scoring_scheme.question_text = row[3].strip
+    elsif row[2].strip.include?('Roster') && row[6].strip == 'Roster Matching'
+      qids = row[0].strip.split(/\r?\n/)
+      qids = qids.take(qids.size - 1)
+      scoring_scheme = StaffRoleScheme.new(qids.join(','), row[2].strip.split(/\r?\n/).join(','), row[6].strip, row[7],
+                                           row[10].to_i, row[11])
+      scoring_scheme.relevant_index = row[1].to_i
       scoring_scheme.question_text = row[3].strip
     end
     scoring_scheme

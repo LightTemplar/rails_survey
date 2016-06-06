@@ -15,7 +15,9 @@ class SearchScheme < ScoringScheme
       end
     end
     roster_score = RosterScore.new(qid, question_type, center_id, description)
-    roster_score.raw_score = (previous_care_scores.map(&:to_f).reduce(:+) / previous_care_scores.size).round(2)
+    raw_score = previous_care_scores.size > 0 ?
+        (previous_care_scores.map(&:to_f).reduce(:+) / previous_care_scores.size).round(2) : nil
+    roster_score.raw_score = raw_score
     roster_score.weight = assign_weight(center_id)
     roster_score.domain = domain
     roster_score.sub_domain = sub_domain
