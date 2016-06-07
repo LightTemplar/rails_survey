@@ -74,9 +74,11 @@ class SchemeGenerator
       white_space_index = row[5].index(' ')
       scoring_scheme.word_bank = row[5][0..white_space_index].strip
       scoring_scheme.key_score_mapping = row[5][white_space_index+1..row[5].length-1]
-    elsif row[2].strip == 'Roster' && (row[3].strip == 'School' || row[3].strip == 'Vaccinations')
+    elsif row[2].strip == 'Roster' && (row[3].strip == 'School' || row[3].strip == 'Vaccinations' || row[3].strip ==
+        'Arrival-Assignment lag time')
       scoring_scheme = ChildRosterScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
       scoring_scheme.question_text = row[3].strip
+      scoring_scheme.key_score_mapping = row[5] if !row[5].blank?
     elsif row[2].strip == 'Roster' && row[6].strip == 'Calculation'
       scoring_scheme = StaffRosterScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
       scoring_scheme.ref_option_index_raw_score = row[5] unless row[5].blank?

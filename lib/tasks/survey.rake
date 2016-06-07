@@ -121,7 +121,6 @@ namespace :survey do
     Dir.glob(base_dir + 'QCUALS Rosters (child & staff)/Rosters Phase II/*.xlsx').each do |filename|
       center_id = filename.split('/').last.gsub(/[^\d]/, '')
       unless center_id.blank?
-        puts center_id
         roster_book = Roo::Spreadsheet.open(filename, extension: :xlsx)
         children_sheet = roster_book.sheet(roster_book.sheets[1]) #roster_book.sheet('Niños y Niñas')
 
@@ -135,7 +134,9 @@ namespace :survey do
         vaccination_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
             scheme.question_text == 'Vaccinations'}
         scores.push(vaccination_scheme.get_vaccination_score(children_sheet, center_id.to_i))
-        #TODO Score arrival-assignment lag time
+        lag_time_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+          scheme.question_text == 'Arrival-Assignment lag time'}
+        scores.push(lag_time_scheme.get_lag_time_score(children_sheet, center_id.to_i))
 
         # staff section
         staff_sheet = roster_book.sheet('Personal') #TODO Might not support opening sheets concurrently
@@ -161,8 +162,6 @@ namespace :survey do
       end
     end
     puts 'roster scores added: ' + scores.size.to_s
-
-    #TODO Score Name of Role
 
     # Integrate manually scored ones
     manual_score_book =  Roo::Spreadsheet.open(base_dir + 'QCUALS Scoring/Manual_Scoring_V1.xlsx', extension: :xlsx)
