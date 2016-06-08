@@ -12,6 +12,8 @@
 #  instrument_versions :text
 #  wide_format_url     :string(255)
 #  wide_done           :boolean          default(FALSE)
+#  short_format_url    :string(255)
+#  short_done          :boolean          default(FALSE)
 #
 
 class ResponseExport < ActiveRecord::Base

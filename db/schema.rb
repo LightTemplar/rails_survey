@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150702175804) do
+ActiveRecord::Schema.define(version: 20160608214448) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -27,31 +27,6 @@ ActiveRecord::Schema.define(version: 20150702175804) do
   add_index "active_admin_comments", ["author_type", "author_id"], name: "index_active_admin_comments_on_author_type_and_author_id"
   add_index "active_admin_comments", ["namespace"], name: "index_active_admin_comments_on_namespace"
   add_index "active_admin_comments", ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource_type_and_resource_id"
-
-  create_table "admin_users", force: true do |t|
-    t.string   "email",                  default: "",  null: false
-    t.string   "encrypted_password",     default: "",  null: false
-    t.string   "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          default: 0,   null: false
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
-    t.string   "current_sign_in_ip"
-    t.string   "last_sign_in_ip"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "failed_attempts",        default: 0
-    t.string   "unlock_token"
-    t.datetime "locked_at"
-    t.string   "gauth_secret"
-    t.string   "gauth_enabled",          default: "f"
-    t.string   "gauth_tmp"
-    t.datetime "gauth_tmp_datetime"
-  end
-
-  add_index "admin_users", ["email"], name: "index_admin_users_on_email", unique: true
-  add_index "admin_users", ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
 
   create_table "android_updates", force: true do |t|
     t.integer  "version"
@@ -69,10 +44,17 @@ ActiveRecord::Schema.define(version: 20150702175804) do
     t.datetime "updated_at"
   end
 
+  create_table "device_device_users", force: true do |t|
+    t.integer  "device_id"
+    t.integer  "device_user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "device_sync_entries", force: true do |t|
     t.string   "latitude"
     t.string   "longitude"
-    t.integer  "num_surveys"
+    t.integer  "num_complete_surveys"
     t.string   "current_language"
     t.string   "current_version_code"
     t.text     "instrument_versions"
@@ -82,6 +64,9 @@ ActiveRecord::Schema.define(version: 20150702175804) do
     t.string   "api_key"
     t.string   "timezone"
     t.string   "current_version_name"
+    t.string   "os_build_number"
+    t.integer  "project_id"
+    t.integer  "num_incomplete_surveys"
   end
 
   create_table "device_users", force: true do |t|
@@ -89,10 +74,8 @@ ActiveRecord::Schema.define(version: 20150702175804) do
     t.string   "name"
     t.string   "password_digest"
     t.boolean  "active",          default: false
-    t.integer  "device_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "project_id"
   end
 
   create_table "devices", force: true do |t|
@@ -139,6 +122,7 @@ ActiveRecord::Schema.define(version: 20150702175804) do
     t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "critical_message"
   end
 
   create_table "instruments", force: true do |t|
@@ -153,6 +137,19 @@ ActiveRecord::Schema.define(version: 20150702175804) do
     t.boolean  "published"
     t.datetime "deleted_at"
     t.boolean  "show_instructions",       default: false
+    t.text     "special_options"
+    t.boolean  "show_sections_page",      default: false
+    t.boolean  "navigate_to_review_page", default: false
+    t.text     "critical_message"
+  end
+
+  create_table "metrics", force: true do |t|
+    t.integer  "instrument_id"
+    t.string   "name"
+    t.integer  "expected"
+    t.string   "key_name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "option_translations", force: true do |t|
@@ -173,6 +170,15 @@ ActiveRecord::Schema.define(version: 20150702175804) do
     t.integer  "number_in_question"
     t.datetime "deleted_at"
     t.integer  "instrument_version_number", default: -1
+    t.boolean  "special",                   default: false
+    t.boolean  "critical"
+  end
+
+  create_table "project_device_users", force: true do |t|
+    t.integer  "project_id"
+    t.integer  "device_user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "project_devices", force: true do |t|
@@ -197,6 +203,7 @@ ActiveRecord::Schema.define(version: 20150702175804) do
     t.datetime "updated_at"
     t.string   "reg_ex_validation_message"
     t.boolean  "question_changed",          default: false
+    t.text     "instructions"
   end
 
   create_table "questions", force: true do |t|
@@ -218,6 +225,8 @@ ActiveRecord::Schema.define(version: 20150702175804) do
     t.integer  "grid_id"
     t.boolean  "first_in_grid",                    default: false
     t.integer  "instrument_version_number",        default: -1
+    t.integer  "section_id"
+    t.boolean  "critical"
   end
 
   add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true
@@ -232,6 +241,8 @@ ActiveRecord::Schema.define(version: 20150702175804) do
     t.text     "instrument_versions"
     t.string   "wide_format_url"
     t.boolean  "wide_done",           default: false
+    t.string   "short_format_url"
+    t.boolean  "short_done",          default: false
   end
 
   create_table "response_images", force: true do |t|
@@ -266,8 +277,10 @@ ActiveRecord::Schema.define(version: 20150702175804) do
     t.string   "uuid"
     t.integer  "device_user_id"
     t.integer  "question_version",    default: -1
+    t.datetime "deleted_at"
   end
 
+  add_index "responses", ["deleted_at"], name: "index_responses_on_deleted_at"
   add_index "responses", ["uuid"], name: "index_responses_on_uuid"
 
   create_table "roles", force: true do |t|
@@ -310,7 +323,6 @@ ActiveRecord::Schema.define(version: 20150702175804) do
 
   create_table "sections", force: true do |t|
     t.string   "title"
-    t.string   "start_question_identifier"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "instrument_id"
@@ -328,6 +340,15 @@ ActiveRecord::Schema.define(version: 20150702175804) do
   end
 
   add_index "skips", ["deleted_at"], name: "index_skips_on_deleted_at"
+
+  create_table "stats", force: true do |t|
+    t.integer  "metric_id"
+    t.string   "key_value"
+    t.integer  "count"
+    t.string   "percent"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "survey_scores", force: true do |t|
     t.datetime "created_at"
@@ -353,9 +374,13 @@ ActiveRecord::Schema.define(version: 20150702175804) do
     t.string   "latitude"
     t.string   "longitude"
     t.text     "metadata"
-    t.decimal  "completion_rate",           precision: 3, scale: 2
+    t.string   "completion_rate",           limit: 3
+    t.string   "device_label"
+    t.datetime "deleted_at"
+    t.boolean  "has_critical_responses"
   end
 
+  add_index "surveys", ["deleted_at"], name: "index_surveys_on_deleted_at"
   add_index "surveys", ["uuid"], name: "index_surveys_on_uuid"
 
   create_table "unit_scores", force: true do |t|
@@ -375,6 +400,8 @@ ActiveRecord::Schema.define(version: 20150702175804) do
     t.datetime "updated_at"
     t.integer  "weight"
     t.integer  "score_sub_section_id"
+    t.string   "domain"
+    t.string   "sub_domain"
   end
 
   create_table "user_projects", force: true do |t|

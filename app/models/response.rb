@@ -16,6 +16,7 @@
 #  uuid                :string(255)
 #  device_user_id      :integer
 #  question_version    :integer          default(-1)
+#  deleted_at          :datetime
 #
 
 class Response < ActiveRecord::Base

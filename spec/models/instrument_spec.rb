@@ -14,6 +14,10 @@
 #  published               :boolean
 #  deleted_at              :datetime
 #  show_instructions       :boolean          default(FALSE)
+#  special_options         :text
+#  show_sections_page      :boolean          default(FALSE)
+#  navigate_to_review_page :boolean          default(FALSE)
+#  critical_message        :text
 #
 
 require "spec_helper"

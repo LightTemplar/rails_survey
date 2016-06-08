@@ -11,7 +11,7 @@
 #
 
 class Unit < ActiveRecord::Base
-  attr_accessible :name, :weight, :score_sub_section_id
+  attr_accessible :name, :weight, :score_sub_section_id, :domain, :sub_domain
   has_many :variables, dependent: :destroy
   has_many :unit_scores, dependent: :destroy
   has_many :survey_scores, through: :unit_scores

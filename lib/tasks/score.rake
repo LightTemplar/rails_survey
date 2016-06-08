@@ -1,7 +1,7 @@
 namespace :score do
   
   task initialize: :environment do
-    book = Roo::Spreadsheet.open('/Users/leonardngeno/Desktop/Scoring/Scoring-ObservationSection-v4.xlsx', extension: :xlsx)
+    book = Roo::Spreadsheet.open('/Users/leonardngeno/Desktop/Scoring/ObsScoringScheme.xlsx', extension: :xlsx)
     sheet1 = book.sheet('Sheet1')
     current_unit = Unit.new
     current_section = ScoreSection.new
@@ -19,12 +19,54 @@ namespace :score do
             current_section = ScoreSection.create(name: row[7], instrument_id: row[9])
             current_sub_section = ScoreSubSection.create(name: row[8], score_section_id: current_section.id)
           end 
-          unit = Unit.create(name: row[0], weight: row[6], score_sub_section_id: current_sub_section.id)
+          unit = Unit.create(name: row[0], weight: row[6], score_sub_section_id: current_sub_section.id, domain: row[10])
           variable = Variable.create(result: row[1], name: row[2], value: row[3], next_variable: row[4], next_unit_name: row[5], unit_id: unit.id)
           current_unit = unit
         end
       end
     end 
+  end
+
+  # Sort long files by survey_id before running this task
+  task flip_file_format: :environment do
+    Dir.glob('/Users/leonardngeno/Desktop/Scoring/surveys/merged_long/*.csv').each do |filename|
+      header = []
+      CSV.foreach(filename, encoding:'iso-8859-1:utf-8') do |row|
+        if $. == 1
+          header = row
+          header.delete('qid')
+          header.delete('short_qid')
+          header.delete('instrument_version_number')
+          header.delete('question_version_number')
+          header.delete('instrument_title')
+          header.delete('response_labels')
+          header.delete('special_response')
+          header.delete('other_response')
+          header.delete('survey_label')
+        else
+          header << row[0] unless header.index(row[0])
+        end
+      end
+
+      csv_file = '/Users/leonardngeno/Desktop/Scoring/surveys/merged_wide/' + filename.split('/').last
+      CSV.open(csv_file, 'wb') do |csv|
+        csv << header
+        current_survey = nil
+        data_row = Array.new(header.size, nil)
+        CSV.foreach(filename, encoding:'iso-8859-1:utf-8') do |row|
+          if $. != 1
+            instrument_id = header.index('instrument_id')
+            if row[6] == current_survey
+              data_row = update_data_row(data_row, header, row)
+            else
+              csv << data_row if data_row.compact.size != 0
+              data_row = update_data_row(Array.new(header.size, nil), header, row)
+              current_survey = row[6]
+            end
+          end
+        end
+      end
+    end
   end
   
   task score: :environment do
@@ -48,7 +90,7 @@ namespace :score do
           instrument_id_index = header.index('instrument_id') 
           instrument_id = row[instrument_id_index] if instrument_id_index
           current_sections = ScoreSection.where(instrument_id: instrument_id) if instrument_id
-          current_variable = current_sections[0].variables.first        
+          current_variable = current_sections[0].variables.first #if current_sections.size > 0 #TODO Addition
           current_unit = current_variable.unit if current_variable
           previous_unit = nil
           
@@ -116,7 +158,8 @@ namespace :score do
     CSV.open(csv_file, "wb") do |csv|
       header = ['survey_id', 'survey_uuid', 'device_label', 'device_user', 'survey_start_time', 'survey_end_time', 'parent_unit_name', 
         'variable_name', 'center_id', 'score_section_name', 'score_sub_section_name' , 'unit_score_value', 'unit_score_weight', 
-        'score_X_weight', 'sum_unit_score_weight', 'sum_score_X_weight', 'sub_section_score', 'section_score', 'center_section_subsection', 'center_section']
+        'score_X_weight', 'sum_unit_score_weight', 'sum_score_X_weight', 'sub_section_score', 'section_score', 'center_section_subsection',
+                'center_section', 'domain']
       
       csv << header
       unit_scores = UnitScore.all.order('center_section_sub_section_name')
@@ -126,7 +169,7 @@ namespace :score do
           unit_score.survey_score.device_user, unit_score.survey_score.survey_start_time, unit_score.survey_score.survey_end_time,
           unit_score.unit.name, unit_score.variable.name, unit_score.survey_score.center_id,
           unit_score.unit.score_sub_section.score_section.name, unit_score.unit.score_sub_section.name, unit_score.value, unit_score.unit.weight,
-          unit_score.score_weight_product, '', '', '', '', '', '']
+          unit_score.score_weight_product, '', '', '', '', '', '', unit_score.unit.domain]
         if index + 1 < unit_scores.length
           if unit_score.center_section_sub_section_name != unit_scores[index+1].center_section_sub_section_name
             row[header.index('center_section_subsection')] = unit_score.center_section_sub_section_name
@@ -143,6 +186,24 @@ namespace :score do
         index += 1
       end
     end
+  end
+
+  def update_data_row(data_row, header, row)
+    data_row[header.index(row[0])] = row[13]
+    data_row[header.index('instrument_id')] = row[2]
+    data_row[header.index('survey_id')] = row[6]
+    data_row[header.index('survey_uuid')] = row[7]
+    data_row[header.index('device_id')] = row[8]
+    data_row[header.index('device_uuid')] = row[9]
+    data_row[header.index('device_label')] = row[10]
+    data_row[header.index('question_type')] = row[11]
+    data_row[header.index('question_text')] = row[12]
+    data_row[header.index('device_user_id')] = row[19]
+    data_row[header.index('device_user_username')] = row[20]
+    data_row[header.index('Center ID')] = row[23]
+    data_row[header.index('response_time_started')] = row[17]
+    data_row[header.index('response_time_ended')] = row[18]
+    data_row
   end
   
 end

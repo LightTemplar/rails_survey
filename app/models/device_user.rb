@@ -7,10 +7,8 @@
 #  name            :string(255)
 #  password_digest :string(255)
 #  active          :boolean          default(FALSE)
-#  device_id       :integer
 #  created_at      :datetime
 #  updated_at      :datetime
-#  project_id      :integer
 #
 
 class DeviceUser < ActiveRecord::Base

@@ -2,13 +2,14 @@
 #
 # Table name: instrument_translations
 #
-#  id            :integer          not null, primary key
-#  instrument_id :integer
-#  language      :string(255)
-#  alignment     :string(255)
-#  title         :string(255)
-#  created_at    :datetime
-#  updated_at    :datetime
+#  id               :integer          not null, primary key
+#  instrument_id    :integer
+#  language         :string(255)
+#  alignment        :string(255)
+#  title            :string(255)
+#  created_at       :datetime
+#  updated_at       :datetime
+#  critical_message :text
 #
 
 class InstrumentTranslation < ActiveRecord::Base
