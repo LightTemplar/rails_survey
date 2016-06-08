@@ -19,6 +19,29 @@ namespace :survey do
     CribBed.initialize_cribs(base_dir + 'QCUALS Scoring/NonObsScoringScheme.xlsx')
     Center.initialize_centers(base_dir + 'QCUALS Scoring/NonObsScoringScheme.xlsx')
 
+
+    CSV.foreach(base_dir + 'QCUALS Scoring/ObsScores.csv') do |row|
+      if $. == 1
+        header = row
+      else
+        qid = header.index('variable_name') ? row[header.index('variable_name')] : nil
+        survey_id = header.index('survey_id') ? row[header.index('survey_id')] : nil
+        survey_uuid = header.index('survey_uuid') ? row[header.index('survey_uuid')] : nil
+        device_label = header.index('device_label') ? row[header.index('device_label')] : nil
+        device_user = header.index('device_user_username') ? row[header.index('device_user_username')] : nil
+        center_id = header.index('center_id') ? row[header.index('center_id')] : nil
+        instrument_id = header.index('instrument_id') ? row[header.index('instrument_id')] : nil
+        raw_score = header.index('unit_score_value') ? row[header.index('unit_score_value')] : nil
+        weight = header.index('unit_score_weight') ? row[header.index('unit_score_weight')] : nil
+        domain = header.index('domain') ? row[header.index('domain')] : nil
+        # question_type = header.index('question_type') ? row[header.index('question_type')] : nil
+        # response = header.index('response') ? row[header.index('response')] : nil
+      end
+    end
+
+    # TODO
+    next
+
     # Generate scoring schemes
     scoring_sheet.drop(1).each do |row|
       scoring_scheme = SchemeGenerator.generate(row)
@@ -176,26 +199,31 @@ namespace :survey do
       end
     end
 
+    # Integrate observational scores
+
+
     # Export scores to csv file
     csv_file = base_dir + 'QCUALS Scoring/NonObsScores.csv'
     CSV.open(csv_file, 'wb') do |csv|
       header = %w[center_id instrument_id survey_id survey_uuid device_label device_user qid question_type
                 scoring_description domain sub_domain response weight raw_score weighted_score domain_score
                 sub_domain_1_score sub_domain_2_score sub_domain_3_score sub_domain_4_score
-                sub_domain_5_score sub_domain_6_score sub_domain_7_score sub_domain_8_score]
+                sub_domain_5_score sub_domain_6_score sub_domain_7_score sub_domain_8_score center_score]
       csv << header
       Center.get_centers.each do |center|
         center_scores = scores.find_all{|score| score.center_id == center.id}
         domains = center_scores.map(&:domain).uniq.compact.sort
-        domains.each do |domain|
+        center_score = 0
+        domains.each_with_index { |domain, index|
           domain_scores = center_scores.find_all{|score| score.domain == domain}
           domain_scores.each do |score|
             row = [score.center_id, score.instrument_id, score.survey_id, score.survey_uuid, score.device_label,
                    score.device_user, score.qid, score.question_type, score.scheme_description, score.domain,
                    score.sub_domain, score.response, score.weight, score.raw_score, score.weighted_score,
-                   '', '', '', '', '', '', '', '', '']
+                   '', '', '', '', '', '', '', '', '', '']
             if score == domain_scores.last
               domain_score = calculate_score(domain_scores)
+              center_score += domain_score
               domain_score_index = header.index('domain_score')
               row[domain_score_index] = domain_score if domain_score != 0
               sub_domains = []
@@ -210,9 +238,13 @@ namespace :survey do
                 row[sub_domain_score_index] = sub_domain_score if sub_domain_score_index != nil && sub_domain_score != 0
               end
             end
+            if index == domains.size - 1 && score == domain_scores.last
+              center_score_index = header.index('center_score')
+              row[center_score_index] = (center_score/domains.size).round(2) if center_score_index
+            end
             csv << row
           end
-        end
+          }
       end
     end
 
