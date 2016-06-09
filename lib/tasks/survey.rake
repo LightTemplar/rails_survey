@@ -1,6 +1,7 @@
 require 'scoring/scores/score'
 require 'scoring/scores/group_score'
 require 'scoring/scores/roster_score'
+require 'scoring/scores/observational_score'
 require 'scoring/crib_bed'
 require 'scoring/center'
 require 'scoring/scheme_generator'
@@ -12,35 +13,13 @@ namespace :survey do
     scoring_schemes = []
     group_score_schemes = []
     roster_schemes = []
+    scores = []
     book = Roo::Spreadsheet.open(base_dir + 'QCUALS Scoring/NonObsScoringScheme.xlsx', extension: :xlsx)
     scoring_sheet = book.sheet('Scoring')
 
     # Initialize crib beds and centers
     CribBed.initialize_cribs(base_dir + 'QCUALS Scoring/NonObsScoringScheme.xlsx')
     Center.initialize_centers(base_dir + 'QCUALS Scoring/NonObsScoringScheme.xlsx')
-
-
-    CSV.foreach(base_dir + 'QCUALS Scoring/ObsScores.csv') do |row|
-      if $. == 1
-        header = row
-      else
-        qid = header.index('variable_name') ? row[header.index('variable_name')] : nil
-        survey_id = header.index('survey_id') ? row[header.index('survey_id')] : nil
-        survey_uuid = header.index('survey_uuid') ? row[header.index('survey_uuid')] : nil
-        device_label = header.index('device_label') ? row[header.index('device_label')] : nil
-        device_user = header.index('device_user_username') ? row[header.index('device_user_username')] : nil
-        center_id = header.index('center_id') ? row[header.index('center_id')] : nil
-        instrument_id = header.index('instrument_id') ? row[header.index('instrument_id')] : nil
-        raw_score = header.index('unit_score_value') ? row[header.index('unit_score_value')] : nil
-        weight = header.index('unit_score_weight') ? row[header.index('unit_score_weight')] : nil
-        domain = header.index('domain') ? row[header.index('domain')] : nil
-        # question_type = header.index('question_type') ? row[header.index('question_type')] : nil
-        # response = header.index('response') ? row[header.index('response')] : nil
-      end
-    end
-
-    # TODO
-    next
 
     # Generate scoring schemes
     scoring_sheet.drop(1).each do |row|
@@ -61,9 +40,8 @@ namespace :survey do
     # Parse responses and create score objects
     header = []
     response_scores = []
-    scores = []
     Dir.glob(base_dir + 'QCUALS Scoring/surveys/*.csv').each do |filename|
-      CSV.foreach(filename) do |row|
+      CSV.foreach(filename, encoding:'iso-8859-1:utf-8') do |row|
         if $. == 1
           header = row
         else
@@ -200,47 +178,79 @@ namespace :survey do
     end
 
     # Integrate observational scores
-
+    options = {:encoding => 'UTF-8', :skip_blanks => true}
+    csv_header = []
+    CSV.foreach(base_dir + 'QCUALS Scoring/ObsScores.csv', options).with_index do |row, line|
+      if line == 0
+        csv_header = row
+      end
+      qid = csv_header.index('variable_name') ? row[csv_header.index('variable_name')] : nil
+      survey_id = csv_header.index('survey_id') ? row[csv_header.index('survey_id')] : nil
+      survey_uuid = csv_header.index('survey_uuid') ? row[csv_header.index('survey_uuid')] : nil
+      device_label = csv_header.index('device_label') ? row[csv_header.index('device_label')] : nil
+      device_user = csv_header.index('device_user') ? row[csv_header.index('device_user')] : nil
+      center_id = csv_header.index('center_id') ? row[csv_header.index('center_id')] : nil
+      raw_score = csv_header.index('unit_score_value') ? row[csv_header.index('unit_score_value')] : nil
+      weight = csv_header.index('unit_score_weight') ? row[csv_header.index('unit_score_weight')] : nil
+      domain = csv_header.index('domain') ? row[csv_header.index('domain')] : nil
+      if qid && center_id
+        scores << ObservationalScore.new(qid, survey_id, survey_uuid, device_label, device_user, center_id, raw_score,
+                                         weight, domain)
+      end
+    end
+    puts 'observational scores added: ' + scores.size.to_s
 
     # Export scores to csv file
-    csv_file = base_dir + 'QCUALS Scoring/NonObsScores.csv'
+    csv_file = base_dir + 'QCUALS Scoring/QCUALS_SCORES.csv'
     CSV.open(csv_file, 'wb') do |csv|
       header = %w[center_id instrument_id survey_id survey_uuid device_label device_user qid question_type
-                scoring_description domain sub_domain response weight raw_score weighted_score domain_score
-                sub_domain_1_score sub_domain_2_score sub_domain_3_score sub_domain_4_score
-                sub_domain_5_score sub_domain_6_score sub_domain_7_score sub_domain_8_score center_score]
+                scoring_description domain weight raw_score weighted_score domain_score domain_weight
+                weighted_domain_score center_score]
+                # subdomain sub_domain_1_score sub_domain_2_score sub_domain_3_score sub_domain_4_score
+                # sub_domain_5_score sub_domain_6_score sub_domain_7_score sub_domain_8_score]
       csv << header
       Center.get_centers.each do |center|
         center_scores = scores.find_all{|score| score.center_id == center.id}
         domains = center_scores.map(&:domain).uniq.compact.sort
-        center_score = 0
+        weighted_center_score_sum = 0
+        weights_sum = 0
+        domain_weights = { 1 => 2, 2 => 3, 3 => 4, 4 => 4, 5 => 3, 6 => 5, 7 => 5, 8 => 5, 9 => 3, 10 => 3 }
         domains.each_with_index { |domain, index|
           domain_scores = center_scores.find_all{|score| score.domain == domain}
           domain_scores.each do |score|
+            reported_score = (score.raw_score.class == String && score.raw_score == 'manual') ? nil : score.raw_score
             row = [score.center_id, score.instrument_id, score.survey_id, score.survey_uuid, score.device_label,
                    score.device_user, score.qid, score.question_type, score.scheme_description, score.domain,
-                   score.sub_domain, score.response, score.weight, score.raw_score, score.weighted_score,
-                   '', '', '', '', '', '', '', '', '', '']
+                   score.weight, reported_score, score.weighted_score, '', '', '', '']
+                   #score.sub_domain, '', '', '', '', '', '', '', '', '', '']
             if score == domain_scores.last
               domain_score = calculate_score(domain_scores)
-              center_score += domain_score
-              domain_score_index = header.index('domain_score')
-              row[domain_score_index] = domain_score if domain_score != 0
-              sub_domains = []
-              domain_scores.each do |dm|
-                sub_domains << dm.sub_domain.split(',')
+              if domain_score && domain_score != 0
+                row[header.index('domain_score')] = domain_score
+                row[header.index('domain_weight')] = domain_weights[domain]
+                row[header.index('weighted_domain_score')] = (domain_score * domain_weights[domain]).round(2)
+                weighted_center_score_sum += (domain_score * domain_weights[domain])
+                weights_sum += domain_weights[domain]
               end
-              sub_domains = sub_domains.flatten.compact.uniq.sort
-              sub_domains.each do |sub_domain|
-                sub_domain_scores = domain_scores.find_all{|sub_score| sub_score.sub_domain.include?(sub_domain)}
-                sub_domain_score = calculate_score(sub_domain_scores)
-                sub_domain_score_index = header.index('sub_domain_' + sub_domain.strip + '_score')
-                row[sub_domain_score_index] = sub_domain_score if sub_domain_score_index != nil && sub_domain_score != 0
-              end
+
+              # TODO Will be added later
+              # sub_domains = []
+              # domain_scores.each do |dm|
+              #   sub_domains << dm.sub_domain.split(',')
+              # end
+              # sub_domains = sub_domains.flatten.compact.uniq.sort
+              # sub_domains.each do |sub_domain|
+              #   sub_domain_scores = domain_scores.find_all{|sub_score| sub_score.sub_domain.include?(sub_domain)}
+              #   sub_domain_score = calculate_score(sub_domain_scores)
+              #   sub_domain_score_index = header.index('sub_domain_' + sub_domain.strip + '_score')
+              #   row[sub_domain_score_index] = sub_domain_score if sub_domain_score_index != nil && sub_domain_score != 0
+              # end
+
             end
             if index == domains.size - 1 && score == domain_scores.last
               center_score_index = header.index('center_score')
-              row[center_score_index] = (center_score/domains.size).round(2) if center_score_index
+              row[center_score_index] = (weighted_center_score_sum/weights_sum).round(2) if center_score_index &&
+                  weights_sum != 0
             end
             csv << row
           end

@@ -26,7 +26,7 @@ class IndexedScheme < ScoringScheme
     end
     #TODO quick and dirty
     if question_type == 'SELECT_ONE' && !relevant_index.nil?
-      if ref_score.response.include?(relevant_index.to_s)
+      if ref_score.response && ref_score.response.include?(relevant_index.to_s)
         return ref_option_index_raw_score[obj.response]
       else
         return 1

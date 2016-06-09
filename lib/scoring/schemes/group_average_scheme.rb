@@ -57,6 +57,7 @@ class GroupAverageScheme < ScoringScheme
     return nil if center_responses.blank? || key_score_mapping.blank?
     scores = []
     center_responses.each do |res|
+      if res.response #TODO ??
       list_responses = res.response.split(',')
       indexes = index.split(',')
       if indexes.size == 1
@@ -81,6 +82,7 @@ class GroupAverageScheme < ScoringScheme
         else
           #TODO deal with non-numbers
         end
+      end
       end
     end
     (scores.map(&:to_f).reduce(:+) / scores.size).round(2) unless scores.blank?
