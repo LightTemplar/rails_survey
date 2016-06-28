@@ -26,7 +26,6 @@ gem 'groupdate', github: 'mieko/groupdate', :branch => 'sqlite3'
 gem 'paperclip', '~> 4.1.0'
 gem 'redis', '~> 3.0.7'
 gem 'sidekiq', '~> 3.0.0'
-gem 'mandrill-api', '~> 1.0.51'
 gem 'kaminari'
 gem 'sinatra', '~> 1.4.5', :require => nil
 gem 'sanitize', '~> 3.0.0'
@@ -38,6 +37,7 @@ gem 'prawn'
 gem 'newrelic_rpm'
 gem 'gollum_rails', '~> 2.0.0'
 gem 'roo', '~> 2.0.1'
+gem 'seed_dump'
 
 group :production do
   gem 'rails_12factor'

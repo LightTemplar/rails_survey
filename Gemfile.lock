@@ -137,7 +137,6 @@ GEM
     exception_notification (4.0.1)
       actionmailer (>= 3.0.4)
       activesupport (>= 3.0.4)
-    excon (0.39.5)
     execjs (2.2.1)
     factory_girl (4.4.0)
       activesupport (>= 3.0.0)
@@ -195,9 +194,6 @@ GEM
     libv8 (3.16.14.3)
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
-    mandrill-api (1.0.52)
-      excon (>= 0.16.0, < 1.0)
-      json (>= 1.7.7, < 2.0)
     mime-types (2.6.1)
     mini_portile (0.6.0)
     minitest (5.8.0)
@@ -312,6 +308,9 @@ GEM
     sdoc (0.4.1)
       json (~> 1.7, >= 1.7.7)
       rdoc (~> 4.0)
+    seed_dump (3.1.0)
+      activerecord
+      activesupport
     selenium-webdriver (2.42.0)
       childprocess (>= 0.5.0)
       multi_json (~> 1.0)
@@ -399,7 +398,6 @@ DEPENDENCIES
   jbuilder (~> 1.2)
   jquery-rails
   kaminari
-  mandrill-api (~> 1.0.51)
   newrelic_rpm
   paper_trail (~> 3.0.8)
   paperclip (~> 4.1.0)
@@ -419,6 +417,7 @@ DEPENDENCIES
   sanitize (~> 3.0.0)
   sass-rails (~> 4.0.0)
   sdoc
+  seed_dump
   selenium-webdriver (~> 2.39)
   sidekiq (~> 3.0.0)
   sinatra (~> 1.4.5)
