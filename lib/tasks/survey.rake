@@ -201,11 +201,14 @@ namespace :survey do
     puts 'observational scores added: ' + scores.size.to_s
 
     # Export scores to csv file
+    all_center_scores = []
+    all_domain_scores = {1 => [], 2 => [], 3 => [], 4 => [], 5 => [], 6 => [], 7 => [], 8 => [], 9 => [], 10 => []}
     csv_file = base_dir + 'QCUALS Scoring/QCUALS_SCORES.csv'
     CSV.open(csv_file, 'wb') do |csv|
       header = %w[center_id instrument_id survey_id survey_uuid device_label device_user qid question_type
                 scoring_description domain weight raw_score weighted_score domain_score domain_weight
-                weighted_domain_score center_score]
+                weighted_domain_score center_score domain_1_avg domain_2_avg domain_3_avg domain_4_avg domain_5_avg
+                domain_6_avg domain_7_avg domain_8_avg domain_9_avg domain_10_avg center_score_avg]
                 # subdomain sub_domain_1_score sub_domain_2_score sub_domain_3_score sub_domain_4_score
                 # sub_domain_5_score sub_domain_6_score sub_domain_7_score sub_domain_8_score]
       csv << header
@@ -221,7 +224,8 @@ namespace :survey do
             reported_score = (score.raw_score.class == String && score.raw_score == 'manual') ? nil : score.raw_score
             row = [score.center_id, score.instrument_id, score.survey_id, score.survey_uuid, score.device_label,
                    score.device_user, score.qid, score.question_type, score.scheme_description, score.domain,
-                   score.weight, reported_score, score.weighted_score, '', '', '', '']
+                   score.weight, reported_score, score.weighted_score, '', '', '', '', '', '', '', '', '', '', '',
+                   '', '', '', '']
                    #score.sub_domain, '', '', '', '', '', '', '', '', '', '']
             if score == domain_scores.last
               domain_score = calculate_score(domain_scores)
@@ -231,6 +235,8 @@ namespace :survey do
                 row[header.index('weighted_domain_score')] = (domain_score * domain_weights[domain]).round(2)
                 weighted_center_score_sum += (domain_score * domain_weights[domain])
                 weights_sum += domain_weights[domain]
+                old_value = all_domain_scores[domain]
+                all_domain_scores[domain] = old_value << domain_score
               end
 
               # TODO Will be added later
@@ -249,13 +255,22 @@ namespace :survey do
             end
             if index == domains.size - 1 && score == domain_scores.last
               center_score_index = header.index('center_score')
-              row[center_score_index] = (weighted_center_score_sum/weights_sum).round(2) if center_score_index &&
-                  weights_sum != 0
+              if center_score_index && weights_sum != 0
+                cnt_score = (weighted_center_score_sum/weights_sum).round(2)
+                row[center_score_index] =  cnt_score
+                all_center_scores << cnt_score
+              end
             end
             csv << row
           end
           }
       end
+      row = Array.new(28, '')
+      row[header.index('center_score_avg')] = (all_center_scores.inject(0, &:+) / all_center_scores.size).round(2)
+      all_domain_scores.each do |key, array|
+        row[header.index('domain_' + key.to_s + '_avg')] = (array.inject(0, &:+) / array.size).round(2)
+      end
+      csv << row
     end
 
   end
