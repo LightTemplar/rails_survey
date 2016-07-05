@@ -168,7 +168,7 @@ namespace :survey do
     manual_score_book =  Roo::Spreadsheet.open(base_dir + 'QCUALS Scoring/Manual_Scoring_V1.xlsx', extension: :xlsx)
     manual_score_sheet = manual_score_book.sheet('ManualScores')
     manual_score_sheet.drop(1).each do |row|
-      if row[0] && row[2] && row[6] && row[13] != 'manual'
+      if row[0] && row[2] && row[6] && row[13] != 'manual' && !row[13].blank?
         selected_score = scores.find_all{ |score| score.center_id == row[0].to_i && score.survey_id ==
             row[2].to_i.to_s && score.qid == row[6] && score.raw_score == 'manual' }
         selected_score.each do |score|
@@ -261,9 +261,10 @@ namespace :survey do
   end
 
   def calculate_score(domain_scores)
-    sum_of_weights = domain_scores.map(&:weight).inject(0, &:+)
-    sum_of_weighted_scores = domain_scores.reject { |score| score.weighted_score == nil }.map(&:weighted_score)
-                                 .inject(0, &:+)
+    sanitized_scores = domain_scores.reject { |score| score.weighted_score == nil }
+    return nil if sanitized_scores.size == 0
+    sum_of_weights = sanitized_scores.map(&:weight).inject(0, &:+)
+    sum_of_weighted_scores = sanitized_scores.map(&:weighted_score).inject(0, &:+)
     (sum_of_weighted_scores / sum_of_weights).round(2)
   end
 
