@@ -9,7 +9,7 @@ class SearchScheme < ScoringScheme
   def generate_previous_care_score(children_sheet, center_id)
     previous_care_scores = []
     children_sheet.drop(3).each do |row|
-      if !row[1].blank? && is_correct_id(row[1]) && !row[10].blank?
+      if is_correct_id(row[1]) && !row[10].blank?
         row[10].class == Float ? previous_care = row[10].round.to_s : previous_care = row[10]
         previous_care_scores << score(previous_care)
       end

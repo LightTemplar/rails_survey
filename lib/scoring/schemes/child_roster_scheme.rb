@@ -30,7 +30,7 @@ class ChildRosterScheme < ScoringScheme
   def get_age_school_score(children_sheet, center_id)
     age_and_school_scores = []
     children_sheet.drop(3).each do |row|
-      if !row[1].blank? && is_correct_id(row[1]) && !row[2].blank? && !row[17].blank?
+      if is_correct_id(row[1]) && !row[2].blank? && !row[17].blank?
         if row[2].class == Float && row[2] >= MIN_AGE  && row[2] <= MAX_AGE
           if row[17].strip.downcase == 'si'
             age_and_school_scores << 7
@@ -47,7 +47,7 @@ class ChildRosterScheme < ScoringScheme
     vaccination_scores = []
     center_code = Center.get_centers.find{|ctr| ctr.id == center_id}.code
     children_sheet.drop(3).each do |row|
-      if !row[1].blank? && is_correct_id(row[1]) && !row[2].blank? && !row[18].blank?
+      if is_correct_id(row[1]) && !row[2].blank? && !row[18].blank?
         if row[18].strip.downcase == 'si'
           vaccination_scores << 7
         else
@@ -64,7 +64,7 @@ class ChildRosterScheme < ScoringScheme
     roster_date = children_sheet.row(1)[11] if roster_date.blank?
     roster_date = children_sheet.row(1)[9] if roster_date.class != Date
     children_sheet.drop(3).each do |row|
-      if !row[1].blank? && is_correct_id(row[1]) && !row[12].blank?
+      if is_correct_id(row[1]) && !row[12].blank?
         arrival_date = row[4]
         days_in_center = nil
         if row[12].class == String
@@ -87,7 +87,7 @@ class ChildRosterScheme < ScoringScheme
             days_in_center = row[12].scan(/\d+/)[0].to_i * DAYS_PER_MONTH
           elsif row[12].downcase.include?('sem')
             days_in_center = row[12].scan(/\d+/)[0].to_i * DAYS_PER_WEEK
-          elsif row[12].include?('dia')
+          elsif row[12].include?('dia') || row[12].include?('día')
             days_in_center = row[12].scan(/\d+/)[0].to_i
           else
             # TODO

@@ -9,9 +9,8 @@ class StaffRoleScheme < ScoringScheme
     roster_roles = []
     response_roles = []
     parsed_roles = []
-    # puts center_id
     staff_sheet.drop(3).each do |row|
-      if !row[1].blank? && is_correct_id(row[1]) && !row[role_column].blank?
+      if is_correct_id(row[1]) && !row[role_column].blank?
         if row[role_column].include?('/')
           roster_roles.concat(row[role_column].split('/').map(&:downcase))
         else
@@ -58,7 +57,9 @@ class StaffRoleScheme < ScoringScheme
 
     role_union = roster_roles & parsed_roles
 
-    if parsed_roles.size < 2
+    if role_responses.size == 0
+      raw_score = nil
+    elsif parsed_roles.size < 2
       raw_score = 1
     elsif role_union.size == parsed_roles.size
       raw_score = 7
@@ -66,8 +67,6 @@ class StaffRoleScheme < ScoringScheme
       raw_score = 1
     else
       #TODO Inspect
-      # puts roster_roles.inspect
-      # puts parsed_roles.inspect
       raw_score = 4
     end
     roster_score = RosterScore.new(qid, question_type, center_id, description)

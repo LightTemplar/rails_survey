@@ -41,11 +41,14 @@ class StaffRosterScheme < ScoringScheme
   def calculate_staff_score(staff_sheet, center_id, first_column, second_column = nil)
     scores_array = []
     staff_sheet.drop(3).each do |row|
-      if !row[1].blank? && is_correct_id(row[1])
+      if is_correct_id(row[1])
         if !row[first_column].blank? && second_column && !row[second_column].blank?
           total = nil
           if row[first_column].class == Float && row[second_column].class == Float
             total = row[first_column] + row[second_column]
+          elsif row[first_column].class == Float && row[second_column].class == String &&
+              row[second_column].downcase != 'xx'
+            total = row[first_column] + 1
           else
             current = row[first_column] == '-' ? 0 : row[first_column]
             past = row[second_column] == '-' ? 0 : row[second_column]
@@ -54,7 +57,7 @@ class StaffRosterScheme < ScoringScheme
           if total
             scores_array << ref_option_index_raw_score.select { |value| value === total }.values.first
           else
-            scores_array << nil
+            scores_array << nil #TODO check when new files are added
           end
         elsif !row[first_column].blank?
           if row[first_column].class == Float
@@ -63,6 +66,10 @@ class StaffRosterScheme < ScoringScheme
             scores_array << ref_option_index_raw_score.select { |value| value === 0 }.values.first
           elsif row[first_column].class == String && row[first_column].strip.downcase == 'unico' && !row[13].blank?
             scores_array << ref_option_index_raw_score.select { |value| value === row[13].to_i }.values.first
+          elsif row[first_column].class == String && row[first_column].include?(' o ')
+            shifts_arr = row[first_column].split(' o ')
+            shifts = (shifts_arr[0].to_i + shifts_arr[1].to_i) / 2
+            scores_array << ref_option_index_raw_score.select { |value| value === shifts }.values.first
           else
             scores_array << nil #TODO check when new files are added
           end
@@ -75,10 +82,20 @@ class StaffRosterScheme < ScoringScheme
   def get_weekly_hours_score(staff_sheet, center_id, column_index)
     scores_array = []
     staff_sheet.drop(3).each do |row|
-      if !row[1].blank? && is_correct_id(row[1]) && !row[column_index].blank?
+      if is_correct_id(row[1]) && !row[column_index].blank?
         if row[column_index].class == Float
           time = row[column_index]
-        elsif row[column_index].include?('m')
+        elsif row[column_index].include?('Siempre')
+            #TODO need to update scheme
+          if row[6] && row[6].downcase == 'no'
+            score = 5
+          else
+            score = 7
+          end
+        elsif row[column_index].include?(' o ')
+          hours = row[column_index].split(' o ')
+          time = ((hours[0].to_i + hours[1].to_i) / 2)
+        elsif row[column_index].include?('m') && row[column_index].include?('h')
           hours_minutes = row[column_index].split('h')
           hours = hours_minutes[0].to_i
           minutes = hours_minutes[1].scan(/\d/).join('')
@@ -86,8 +103,12 @@ class StaffRosterScheme < ScoringScheme
         else
           time = row[column_index].to_i
         end
-        center_code = Center.get_centers.find{|ctr| ctr.id == center_id}.code
-        scores_array << ref_option_index_raw_score[center_code.to_s].select{|value| value === time.round.to_i }.values.first
+        if score
+          scores_array << score
+        else
+          center_code = Center.get_centers.find{|ctr| ctr.id == center_id}.code
+          scores_array << ref_option_index_raw_score[center_code.to_s].select{|value| value === time.round.to_i }.values.first
+        end
       end
     end
     get_roster_score(scores_array, center_id)

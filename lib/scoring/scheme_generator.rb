@@ -78,7 +78,7 @@ class SchemeGenerator
         'Arrival-Assignment lag time')
       scoring_scheme = ChildRosterScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
       scoring_scheme.question_text = row[3].strip
-      scoring_scheme.key_score_mapping = row[5] if !row[5].blank?
+      scoring_scheme.key_score_mapping = row[5] unless row[5].blank?
     elsif row[2].strip == 'Roster' && row[6].strip == 'Calculation'
       scoring_scheme = StaffRosterScheme.new(row[0].strip, row[2].strip, row[6].strip, row[7], row[10].to_i, row[11])
       scoring_scheme.ref_option_index_raw_score = row[5] unless row[5].blank?

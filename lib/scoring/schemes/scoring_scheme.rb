@@ -99,7 +99,7 @@ class ScoringScheme
   end
 
   def is_correct_id(id)
-    (id != 999.0 && id != '0')
+    (!id.blank? && id != '0')
   end
 
   def get_roster_score(scores_array, center_id)
