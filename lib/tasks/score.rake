@@ -71,11 +71,18 @@ namespace :score do
   
   task score: :environment do
     header = []
-    Dir.glob("/Users/leonardngeno/Desktop/Scoring/surveys/*.csv").each do |filename|
-      CSV.foreach(filename) do |row|
+    Dir.glob('/Users/leonardngeno/Desktop/Scoring/surveys/*.csv').each do |filename|
+      puts filename
+      line_counter = 0
+      CSV.foreach(filename, encoding:'iso-8859-1:utf-8') do |row|
+        puts 'row #: ' + line_counter.to_s + ' with ID: ' + row[0]
+        line_counter += 1
         if $. == 1
           header = row
         else
+          if row[0].blank?
+            next
+          end
           survey_id_index = header.index('survey_id')
           survey_id = row[survey_id_index] if survey_id_index
           survey_uuid = row[header.index('survey_uuid')] if header.index('survey_uuid')
@@ -90,13 +97,17 @@ namespace :score do
           instrument_id_index = header.index('instrument_id') 
           instrument_id = row[instrument_id_index] if instrument_id_index
           current_sections = ScoreSection.where(instrument_id: instrument_id) if instrument_id
-          current_variable = current_sections[0].variables.first #if current_sections.size > 0 #TODO Addition
+          current_variable = current_sections[0].variables.first if current_sections.size > 0
           current_unit = current_variable.unit if current_variable
-          previous_unit = nil
-          
+
           while current_unit do
-            variable_identifier = current_variable.name
-            variable_index = header.index(variable_identifier)
+            if current_variable
+              variable_identifier = current_variable.name
+              variable_index = header.index(variable_identifier)
+            else
+              current_unit = nil
+              break
+            end
             chosen_variable = nil
             chosen_variable_result = 0
             navigation_result = false
@@ -104,7 +115,7 @@ namespace :score do
                if variable_index
                  break if row[variable_index].blank?
                  variable_response = row[variable_index].to_i
-                 chosen_variable = current_unit.variables.where("name = ? AND value = ?", variable_identifier, variable_response).try(:first) if variable_response       
+                 chosen_variable = current_unit.variables.where('name = ? AND value = ?', variable_identifier, variable_response).try(:first) if variable_response
                  chosen_variable_result = chosen_variable.result.to_i if chosen_variable
                  break unless chosen_variable
                  if chosen_variable_result == 0
@@ -117,7 +128,6 @@ namespace :score do
                end
             end
             if chosen_variable_result == 0
-              previous_unit = current_unit
               current_variable = current_variable.last_variable_in_unit unless navigation_result
               if current_variable.next_variables
                 current_variable = current_variable.next_variables.first
@@ -127,22 +137,14 @@ namespace :score do
                 current_variable = nil
               end
             else
-              three_name = (center_id.to_i).to_s + "_" + chosen_variable.unit.score_sub_section.score_section.name + "_" + (chosen_variable.unit.score_sub_section.name.to_i).to_s
-              two_name = (center_id.to_i).to_s + "_" + chosen_variable.unit.score_sub_section.score_section.name
+              three_name = (center_id.to_i).to_s + '_' + chosen_variable.unit.score_sub_section.score_section.name + '_' + (chosen_variable.unit.score_sub_section.name.to_i).to_s
+              two_name = (center_id.to_i).to_s + '_' + chosen_variable.unit.score_sub_section.score_section.name
               UnitScore.create(survey_score_id: score.id, unit_id: current_unit.id, value: chosen_variable.result.to_i, 
                 variable_id: chosen_variable.id, center_section_sub_section_name: three_name, center_section_name: two_name)
               if chosen_variable.next_variables
-                previous_unit = current_unit
                 current_variable = chosen_variable.next_variables.first
-                current_unit = current_variable.unit
+                current_unit = current_variable.unit if current_variable
               else
-                previous_unit = current_unit
-                current_unit = nil
-                current_variable = nil
-              end
-            end
-            if current_unit && current_unit.score_sub_section.score_section != previous_unit.score_sub_section.score_section
-              unless current_unit.score_sub_section.score_section.name == "D"
                 current_unit = nil
                 current_variable = nil
               end
@@ -154,7 +156,7 @@ namespace :score do
   end
   
   task export_scores: :environment do
-    csv_file = "/Users/leonardngeno/Desktop/Scoring/scores.csv"
+    csv_file = '/Users/leonardngeno/Desktop/Scoring/scores.csv'
     CSV.open(csv_file, "wb") do |csv|
       header = ['survey_id', 'survey_uuid', 'device_label', 'device_user', 'survey_start_time', 'survey_end_time', 'parent_unit_name', 
         'variable_name', 'center_id', 'score_section_name', 'score_sub_section_name' , 'unit_score_value', 'unit_score_weight', 
