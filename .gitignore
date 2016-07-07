@@ -41,3 +41,6 @@ dump.rdb
 
 #Ignore public assets - generate by Capistrano on deploy
 public/assets/
+
+*.DS_Store
+exports.csv
