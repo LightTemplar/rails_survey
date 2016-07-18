@@ -3,7 +3,6 @@ ActiveAdmin.register Project do
   sidebar 'Project Associations', only: :show do
     ul do
       li link_to 'Instruments', admin_project_instruments_path(params[:id])
-      li link_to 'Device Users', admin_project_device_users_path(params[:id])
     end
   end
   permit_params :name, :description
