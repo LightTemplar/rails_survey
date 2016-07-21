@@ -1,0 +1,45 @@
+<div class="card card-padding" ng-controller="SEScoreSchemesCtrl" ng-init="initialize(
+  <%= current_project.id %>, <%= @scheme.id %>)">
+
+  <%= render 'new_score_unit' %>
+
+  <div class="block-header text-center"><h2><i class="md-sort c-indigo">{{score_scheme.title}}</i></h2></div>
+  <div class="card-body m-10" ng-repeat="unit in score_units">
+    <div class="listview lv-bordered lv-lg" ng-controller="ScoreUnitsCtrl" ng-init="initialize(
+      <%= current_project.id %>, <%= @scheme.id %>, unit.id)">
+      <div class="lv-item media">
+        <div class="row">
+          <div class="col-xs-1 text-center bgm-blue c-white">{{$index + 1}}</div>
+          <div class="col-xs-6">
+            <div class="row">
+              <label class="col-md-6 text-right" for="unit-question-type">Question Type</label>
+              <div class="col-md-6 text-left">{{unit.question_type}}</div>
+            </div>
+            <div class="row">
+              <label class="col-md-6 text-right" for="unit-min-score">Minimum Score</label>
+              <div class="col-md-6 text-left">{{unit.min}}</div>
+            </div>
+            <div class="row">
+              <label class="col-md-6 text-right" for="unit-max-score">Maximum Score</label>
+              <div class="col-md-6 text-left">{{unit.max}}</div>
+            </div>
+            <div class="row">
+              <label class="col-md-6 text-right" for="unit-score-weight">Score Weight</label>
+              <div class="col-md-6 text-left">{{unit.weight}}</div>
+            </div>
+          </div>
+          <div class="col-xs-5">
+            <label class="row">Question Identifiers</label>
+            <div ng-repeat="question in questions">
+              <ul>{{question.question_identifier}}</ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="btn btn-success pull-right m-b-25 m-r-25" id="add-score-unit" ng-click="newScoreUnit()">
+    <i class="md-add">New Score Unit</i>
+  </a>
+  <div class="clearfix"></div>
+</div>

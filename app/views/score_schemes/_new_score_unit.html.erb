@@ -1,0 +1,38 @@
+<script type="text/ng-template" id="newScoreUnit.html" xmlns="http://www.w3.org/1999/html">
+  <div class="modal-header">
+    <h3 class="modal-title text-center">Creating a new Score Unit</h3>
+  </div>
+  <div class="modal-body">
+    <div class="m-10">
+      <label for="score-unit-question-type">Question Type</label>
+      <select ng-model="scoreUnit.question_type"
+              ng-options="questionType for questionType in scorableQuestionTypes" ></select>
+    </div>
+    <div class="m-10">
+      <label for="score-unit-min">Min Score</label>
+      <input type="number" ng-model="scoreUnit.min" />
+    </div>
+    <div class="m-10">
+      <label for="score-unit-max">Max Score</label>
+      <input type="number" ng-model="scoreUnit.max" />
+    </div>
+
+    <div class="m-10">
+      <label for="score-unit-weight">Score Weight</label>
+      <input type="number" ng-model="scoreUnit.weight" min="1" />
+    </div>
+
+    <div class="questions-modal-box">
+      <h3 class="text-center">Select Questions for this Score Unit</h3>
+      <div class="col-sm-6" ng-repeat="question in questions">
+        <input type="checkbox" ng-model="question.checked">
+        <span> {{question.question_identifier}}</span></input>
+      </div>
+    </div>
+
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="ok()">Save</button>
+    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+  </div>
+</script>

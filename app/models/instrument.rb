@@ -38,6 +38,7 @@ class Instrument < ActiveRecord::Base
   has_many :rules, dependent: :destroy
   has_many :grids, dependent: :destroy
   has_many :metrics, dependent: :destroy
+  has_many :score_schemes, dependent: :destroy
   has_paper_trail :on => [:update, :destroy]
   acts_as_paranoid
   before_save :update_question_count

@@ -28,6 +28,7 @@
 //= require sortable
 //= require socket.io.min
 //= require theme-functions
+//= require ui-bootstrap-tpls
 //= require app
 //= require loading-bar.min
 //= require d3
