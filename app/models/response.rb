@@ -65,12 +65,17 @@ class Response < ActiveRecord::Base
 
   def option_labels
     labels = [] 
-    if question and versioned_question and versioned_question.has_options? 
-      text.split(Settings.list_delimiter).each do |option_index|
-        if versioned_question.has_other? and option_index.to_i == versioned_question.other_index
-          labels << 'Other'
-        else
-          labels << versioned_question.options[option_index.to_i].to_s
+    if question and versioned_question and versioned_question.has_options?
+      if Settings.list_question_types.include?(question.question_type)
+        text.split(Settings.list_delimiter).each_with_index { |val, index|
+          labels << versioned_question.options[index] }
+      else
+        text.split(Settings.list_delimiter).each do |option_index|
+          if versioned_question.has_other? and option_index.to_i == versioned_question.other_index
+            labels << 'Other'
+          else
+            labels << versioned_question.options[option_index.to_i].to_s
+          end
         end
       end
     end

@@ -87,12 +87,19 @@ class Survey < ActiveRecord::Base
     @chronicled_question[question_identifier]
   end
 
+  #TODO Refactor this plus the method with same signature in response.rb
   def option_labels(response)
     labels = []
     versioned_question = chronicled_question(response.question_identifier)
     if response.question and versioned_question and versioned_question.has_options?
-      response.text.split(Settings.list_delimiter).each do |option_index|
-        (versioned_question.has_other? and option_index.to_i == versioned_question.other_index) ? labels << "Other" : labels << versioned_question.options[option_index.to_i].to_s
+      if Settings.list_question_types.include?(response.question.question_type)
+        response.text.split(Settings.list_delimiter).each_with_index { |val, index|
+          labels << versioned_question.options[index] }
+      else
+        response.text.split(Settings.list_delimiter).each do |option_index|
+          (versioned_question.has_other? and option_index.to_i == versioned_question.other_index) ?
+              labels << 'Other' : labels << versioned_question.options[option_index.to_i].to_s
+        end
       end
     end
     labels.join(Settings.list_delimiter)
