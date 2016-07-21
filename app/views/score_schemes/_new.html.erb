@@ -1,0 +1,30 @@
+<div ng-show="!showIndex" class="card card-padding">
+  <div class="card-header">
+    <button ng-click="toggleViews()" class="btn btn-primary pull-right">
+      <i class="md-arrow-back">Back</i></button>
+  </div>
+
+  <div class="m-20">
+    <label for="scheme-title">Scoring Scheme Title</label>
+    <input type="text" ng-model="scheme.title" class="form-control" required>
+  </div>
+
+  <div class="m-20">
+    <label for="scheme-instrument-id">Select instrument to create a scoring scheme for</label>
+    <div class="form-group">
+      <div ng-repeat="instrument in instruments">
+        <label>
+          <input type="radio" required ng-model="scheme.instrument_id" ng-value="instrument.id"
+                 ng-change="handleSelectedInstrument(instrument.id)">
+          <span class="m-l-10"></span> {{ instrument.title }}
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <a class="btn btn-success pull-right m-b-25 m-r-25" id="create-scoring-scheme" ng-click="createScheme()">
+    <i class="md-add">New Scoring Scheme</i>
+  </a>
+  <div class="clearfix"></div>
+
+</div>

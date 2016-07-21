@@ -12,7 +12,7 @@ RailsSurvey::Application.routes.draw do
     namespace :v1 do
       namespace :frontend do
         resources :projects do
-          resources :instruments, only: :index do
+          resources :instruments, only: [:index, :show] do
             resources :questions do
               resources :question_translations, only: [:update]
               member do
@@ -29,6 +29,13 @@ RailsSurvey::Application.routes.draw do
             end
             resources :grids do
               resources :grid_labels
+            end
+          end
+          resources :score_schemes do
+            resources :score_units do
+              member do
+                get :questions
+              end
             end
           end
           get 'graphs/daily/' => 'graphs#daily'
@@ -59,6 +66,7 @@ RailsSurvey::Application.routes.draw do
 
   root to: 'projects#index'
   resources :projects do
+    resources :score_schemes, only: [:index, :show]
     resources :instruments do
       resources :versions, only: [:index, :show]
       resources :instrument_translations
@@ -117,7 +125,7 @@ RailsSurvey::Application.routes.draw do
     end
   end
   resources :request_roles, only: [:index]
-  get "/photos/:id/:style.:format", :controller => "api/v1/frontend/images", :action => "show"
-  get "/pictures/:id/:style.:format", :controller => "response_images", :action => "show"
+  get '/photos/:id/:style.:format', :controller => 'api/v1/frontend/images', :action => 'show'
+  get '/pictures/:id/:style.:format', :controller => 'response_images', :action => 'show'
 
 end

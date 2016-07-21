@@ -8,7 +8,7 @@ gem 'therubyracer', platforms: :ruby
 gem 'jquery-rails'
 gem 'turbolinks'
 gem 'jbuilder', '~> 1.2'
-gem 'angularjs-rails', '~> 1.3.15'
+gem 'angularjs-rails', '~> 1.4.8'
 gem 'angular_rails_csrf'
 gem 'twitter-bootstrap-rails'
 gem 'rubyzip', '~> 1.1.2'
