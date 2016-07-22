@@ -65,7 +65,8 @@ languages: [
              ['Khmer', 'km'],
              ['Spanish', 'es'],
              ['Swahili', 'sw'],
-             ['Telugu', 'te']
+             ['Telugu', 'te'],
+             ['Chinese', 'zh']
           ]
 
 # Special Responses
