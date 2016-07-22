@@ -22,6 +22,7 @@
 
 class Survey < ActiveRecord::Base
   include RedisJobTracker
+  include OptionLabels
   belongs_to :instrument
   belongs_to :device
   has_many :responses, foreign_key: :survey_uuid, primary_key: :uuid, dependent: :destroy
@@ -87,22 +88,8 @@ class Survey < ActiveRecord::Base
     @chronicled_question[question_identifier]
   end
 
-  #TODO Refactor this plus the method with same signature in response.rb
   def option_labels(response)
-    labels = []
-    versioned_question = chronicled_question(response.question_identifier)
-    if response.question and versioned_question and versioned_question.has_options?
-      if Settings.list_question_types.include?(response.question.question_type)
-        response.text.split(Settings.list_delimiter).each_with_index { |val, index|
-          labels << versioned_question.options[index] }
-      else
-        response.text.split(Settings.list_delimiter).each do |option_index|
-          (versioned_question.has_other? and option_index.to_i == versioned_question.other_index) ?
-              labels << 'Other' : labels << versioned_question.options[option_index.to_i].to_s
-        end
-      end
-    end
-    labels.join(Settings.list_delimiter)
+    generate_labels(response, chronicled_question(response.question_identifier))
   end
 
   def self.instrument_export(instrument)

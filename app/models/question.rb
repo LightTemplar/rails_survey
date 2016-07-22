@@ -85,7 +85,7 @@ class Question < ActiveRecord::Base
   end
 
   def non_special_options
-    options.where(special: false)
+    options.select {|option| !option.special}
   end
 
   def has_non_special_options?
@@ -119,7 +119,7 @@ class Question < ActiveRecord::Base
   end
 
   def other_index
-    options.length
+    non_special_options.length
   end
 
   def update_question_translation(status = true)
