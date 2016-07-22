@@ -47,14 +47,6 @@
                 <% end %>
               </li>
 
-              <!--<li class="sub-menu">
-           <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#side-nav" href="#stats-collapse"><i class="md-insert-chart"></i> <span class="name">Statistics</span></a>
-           <ul id="stats-collapse" class="panel-collapse collapse">
-             <li><%#= link_to 'Response Charts', project_graphs_daily_path(current_project) %> </li>
-             <li><%#= link_to 'Realtime Charts', project_graphs_path(current_project) %></li>
-           </ul>
-        </li>-->
-
               <li class="sub-menu">
                 <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#side-nav" href="#exports-collapse"><i class="md-cloud-download"></i>
                   <span class="name">Exports</span></a>
@@ -67,6 +59,12 @@
               <li>
                 <%= link_to project_rules_path(current_project) do %>
                     <i class="md-check-box"></i><span class="name">Rules</span>
+                <% end %>
+              </li>
+
+              <li>
+                <%= link_to sidekiq_web_path do %>
+                  <i class="md-group-work"></i><span class="name">Sidekiq</span>
                 <% end %>
               </li>
 
