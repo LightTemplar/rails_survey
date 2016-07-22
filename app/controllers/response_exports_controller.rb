@@ -1,7 +1,7 @@
 class ResponseExportsController < ApplicationController
   after_action :verify_authorized, :except =>
-                                     [:index, :show, :project_long_format_responses, :project_wide_format_responses, :instrument_long_format_responses, :project_short_format_responses,
-                                      :instrument_wide_format_responses, :instrument_short_format_responses, :project_response_images, :instrument_response_images]
+      [:index, :show, :project_responses_long, :project_responses_wide, :instrument_responses_long, :project_responses_short,
+       :instrument_responses_wide, :instrument_responses_short, :project_response_images, :instrument_response_images]
 
   def index
     @project_exports = current_project.response_exports.order('created_at DESC').limit(10)
@@ -51,64 +51,65 @@ class ResponseExportsController < ApplicationController
     render text: '', notice: 'Successfully destroyed export.'
   end
 
-  def project_long_format_responses
+  def project_responses_long
     export = current_project.response_exports.find params[:id]
-    send_file export.long_format_url, :type => 'text/csv', :disposition => 'attachment', :filename => "#{ current_project.name.gsub(/\s+/, '_') }.csv"
+    download_file(export.long_format_url, 'text/csv', export_name(current_project.name, 'long', '.csv'))
   end
 
-  def project_wide_format_responses
+  def project_responses_wide
     export = current_project.response_exports.find params[:id]
-    send_file export.wide_format_url, :type => 'text/csv', :disposition => 'attachment', :filename => "#{ current_project.name.gsub(/\s+/, '_') }.csv"
+    download_file(export.wide_format_url, 'text/csv', export_name(current_project.name, 'wide', '.csv'))
   end
 
-  def project_short_format_responses
+  def project_responses_short
     export = current_project.response_exports.find params[:id]
-    send_file export.short_format_url, :type => 'text/csv', :disposition => 'attachment', :filename => "#{ current_project.name.gsub(/\s+/, '_') }.csv"
+    download_file(export.short_format_url, 'text/csv', export_name(current_project.name, 'short', '.csv'))
   end
 
-  def instrument_long_format_responses
+  def instrument_responses_long
     export = ResponseExport.find(params[:id])
     instrument = current_project.instruments.find(export.instrument_id)
-    if instrument
-      instrument_download(export.long_format_url, 'text/csv', "#{ instrument.title.gsub(/\s+/, '_') }.csv")
-    end
+    download_file(export.long_format_url, 'text/csv', export_name(instrument.title, 'long', '.csv')) if instrument
   end
 
-  def instrument_wide_format_responses
+  def instrument_responses_wide
     export = ResponseExport.find(params[:id])
     instrument = current_project.instruments.find(export.instrument_id)
-    if instrument
-      instrument_download(export.wide_format_url, 'text/csv', "#{ instrument.title.gsub(/\s+/, '_') }.csv")
-    end
+    download_file(export.wide_format_url, 'text/csv', export_name(instrument.title, 'wide', '.csv')) if instrument
   end
 
-  def instrument_short_format_responses
+  def instrument_responses_short
     export = ResponseExport.find(params[:id])
     instrument = current_project.instruments.find(export.instrument_id)
-    if instrument
-      instrument_download(export.short_format_url, 'text/csv', "#{ instrument.title.gsub(/\s+/, '_') }" + '_short_' + '.csv')
-    end
+    download_file(export.short_format_url, 'text/csv', export_name(instrument.title, 'short', '.csv')) if instrument
   end
 
   def project_response_images
     export = current_project.response_exports.find(params[:id])
-    send_file export.response_images_export.download_url, :type => 'application/zip', :disposition => 'attachment', :filename => "#{ current_project.name.gsub(/\s+/, '_') }.zip"
+    download_file(export.response_images_export.download_url, 'application/zip',
+                  export_name(current_project.name, '', '.zip'))
   end
 
   def instrument_response_images
     export = ResponseExport.find(params[:id])
-    instrument_download(export.response_images_export.download_url, 'application/zip', "#{ current_project.instruments.find_by_id(export.instrument_id).title.gsub(/\s+/, '_') }")
+    instrument = current_project.instruments.find(export.instrument_id)
+    download_file(export.response_images_export.download_url, 'application/zip',
+                  export_name(instrument.title, '', '.zip'))
   end
 
   private
 
-  def instrument_download(url, type, filename)
-    send_file url, :type => type, :disposition => 'attachment', :filename => filename
-  end
+    def download_file(url, type, filename)
+      send_file url, type: type, disposition: 'attachment', filename: filename
+    end
 
-  def response_export_params
-    params.require(:response_export).permit(:long_format_url, :wide_format_url, :project_id, :instrument_id,
-                                            :instrument_versions, :long_done, :wide_done, :short_format_url, :short_done)
-  end
+    def response_export_params
+      params.require(:response_export).permit(:long_format_url, :wide_format_url, :project_id, :instrument_id,
+                                              :instrument_versions, :long_done, :wide_done, :short_format_url, :short_done)
+    end
+
+    def export_name(str, format, extension)
+      "#{ str.gsub(/\s+/, '_') }" + '_' + format + '_' + Time.now.strftime('%Y_%m_%d_%H_%M_%S') + extension
+    end
 
 end

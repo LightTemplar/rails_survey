@@ -95,12 +95,12 @@ RailsSurvey::Application.routes.draw do
     resources :graphs, only: [:index]
     resources :response_exports do
       member do
-        get :project_long_format_responses
-        get :project_wide_format_responses
-        get :project_short_format_responses
-        get :instrument_long_format_responses
-        get :instrument_wide_format_responses
-        get :instrument_short_format_responses
+        get :project_responses_long
+        get :project_responses_wide
+        get :project_responses_short
+        get :instrument_responses_long
+        get :instrument_responses_wide
+        get :instrument_responses_short
         get :project_response_images
         get :instrument_response_images
       end
