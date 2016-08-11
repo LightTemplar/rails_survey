@@ -36,3 +36,8 @@ div.follow-up-explanation {
   max-height: 200px;
   overflow: auto;
 }
+
+.option-label {
+  white-space: nowrap;
+  overflow: hidden;
+}

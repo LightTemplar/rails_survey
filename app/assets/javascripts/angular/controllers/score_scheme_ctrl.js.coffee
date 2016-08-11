@@ -44,9 +44,9 @@ App.controller 'SEScoreSchemesCtrl', ['$scope', '$uibModal', 'ScoreScheme', 'Sco
       $scope.score_units = ScoreUnit.query({"project_id": project_id, "score_scheme_id": score_scheme_id})
 
     $scope.newScoreUnit = (size) ->
-      modalInstance = $uibModal.open(
+      firstModalView = $uibModal.open(
         animation: $scope.animationsEnabled,
-        templateUrl: 'newScoreUnit.html',
+        templateUrl: 'newScoreUnitFirstPage.html',
         controller: 'ModalInstanceCtrl',
         size: size,
         resolve:
@@ -57,50 +57,83 @@ App.controller 'SEScoreSchemesCtrl', ['$scope', '$uibModal', 'ScoreScheme', 'Sco
           )
       )
 
-      modalInstance.result.then ((scoreUnit) ->
-        scoreUnit.$save({},
-          (data, headers) ->
-            $scope.score_units.push(scoreUnit)
-            return
-          (result, headers) ->
-            angular.forEach result.data.errors, (error, field) ->
-              alert error
+      firstModalView.result.then ((scoreUnit) ->
+        secondModalView = $uibModal.open(
+          animation: $scope.animationsEnabled,
+          templateUrl: 'newScoreUnitSecondPage.html',
+          controller: 'ModalInstanceCtrl',
+          size: size,
+          resolve:
+            scoreUnit: -> scoreUnit
         )
+
+        secondModalView.result.then ((scoreUnit) ->
+          scoreUnit.$save({},
+            (data, headers) ->
+              $scope.score_units.push(scoreUnit)
+              return
+            (result, headers) ->
+              angular.forEach result.data.errors, (error, field) ->
+                alert error
+          )
+        ), ->
+        return
       ), ->
         return
 
 ]
 
-App.controller 'ModalInstanceCtrl', ['$scope', '$uibModalInstance', 'scoreUnit', 'Question',
-  ($scope, $uibModalInstance, scoreUnit, Question) ->
+App.controller 'ModalInstanceCtrl', ['$scope', '$uibModalInstance', 'scoreUnit', 'Question', 'ScoreUnitOptions',
+  ($scope, $uibModalInstance, scoreUnit, Question, ScoreUnitOptions) ->
     $scope.scorableQuestionTypes = ['SELECT_ONE', 'SELECT_ONE_WRITE_OTHER']
     $scope.scoreUnit = scoreUnit
     $scope.questions = Question.query({
       "project_id": scoreUnit.project_id,
       "instrument_id": scoreUnit.instrument_id
     })
-    $scope.scoreUnit.question_ids = []
 
-    $scope.ok = () ->
-      console.log "ok"
+    $scope.next = () ->
+      question_ids = []
       angular.forEach $scope.questions, (question, index) ->
         if question.checked
-          $scope.scoreUnit.question_ids.push(question.id)
-      $uibModalInstance.close($scope.scoreUnit)
+          question_ids.push(question.id)
+      $scope.scoreUnit.question_ids = question_ids
+      options = ScoreUnitOptions.query({
+        project_id: $scope.scoreUnit.project_id,
+        score_scheme_id: $scope.scoreUnit.score_scheme_id,
+        'question_ids[]': $scope.scoreUnit.question_ids
+      }, ->
+        option_scores = []
+        angular.forEach options, (option, index) ->
+          option_scores.push({text: option.text, option_id: option.id, score: ''})
+        $scope.scoreUnit.option_scores = option_scores
+        $uibModalInstance.close($scope.scoreUnit)
+      )
 
     $scope.cancel = () ->
-      console.log "cancel"
       $uibModalInstance.dismiss('cancel')
+
+    $scope.save = () ->
+      $uibModalInstance.close($scope.scoreUnit)
 
 ]
 
-App.controller 'ScoreUnitsCtrl', ['$scope', 'ScoreUnit', 'ScoreUnitQuestions', ($scope, ScoreUnit, ScoreUnitQuestions) ->
-
-  $scope.initialize = (project_id, score_scheme_id, unit_id) ->
-    $scope.project_id = project_id
-    $scope.score_scheme_id = score_scheme_id
-    $scope.score_unit_id = unit_id
-    $scope.score_unit = ScoreUnit.get({project_id: project_id, score_scheme_id: score_scheme_id, id: unit_id})
-    $scope.questions = ScoreUnitQuestions.query({project_id: project_id, score_scheme_id: score_scheme_id, id: unit_id})
+App.controller 'ScoreUnitsCtrl', ['$scope', 'ScoreUnit', 'ScoreUnitQuestions', 'OptionScore',
+  ($scope, ScoreUnit, ScoreUnitQuestions, OptionScore) ->
+    $scope.initialize = (project_id, score_scheme_id, score_unit_id) ->
+      $scope.project_id = project_id
+      $scope.score_scheme_id = score_scheme_id
+      $scope.score_unit_id = score_unit_id
+      $scope.score_unit = ScoreUnit.get({project_id: project_id, score_scheme_id: score_scheme_id, id: score_unit_id})
+      $scope.questions = ScoreUnitQuestions.query({
+        project_id: project_id,
+        score_scheme_id: score_scheme_id,
+        id: score_unit_id
+      })
+      $scope.option_scores = OptionScore.query({
+        project_id: project_id,
+        score_scheme_id: score_scheme_id,
+        score_unit_id: score_unit_id
+      })
 
 ]
