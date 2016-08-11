@@ -36,6 +36,10 @@ RailsSurvey::Application.routes.draw do
               member do
                 get :questions
               end
+              collection do
+                get :options
+              end
+              resources :option_scores
             end
           end
           get 'graphs/daily/' => 'graphs#daily'

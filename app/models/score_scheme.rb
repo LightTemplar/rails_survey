@@ -11,6 +11,6 @@
 
 class ScoreScheme < ActiveRecord::Base
   belongs_to :instrument
-  has_many :score_units
+  has_many :score_units, dependent: :destroy
   validates :title, presence: true, allow_blank: false
 end

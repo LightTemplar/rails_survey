@@ -13,4 +13,13 @@
 class OptionScore < ActiveRecord::Base
   belongs_to :option
   belongs_to :score_unit
+
+  def label
+    option.text
+  end
+
+  def as_json(options={})
+    super((options || {}).merge({ methods: [:label] }))
+  end
+
 end
