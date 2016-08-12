@@ -1,5 +1,4 @@
-App.controller 'ICScoreSchemesCtrl', ['$scope', 'ScoreScheme', 'Instrument', ($scope, ScoreScheme,
-  Instrument) ->
+App.controller 'ICScoreSchemesCtrl', ['$scope', 'ScoreScheme', 'Instrument', ($scope, ScoreScheme, Instrument) ->
   $scope.showIndex = true
 
   $scope.initialize = (project_id) ->
@@ -84,13 +83,19 @@ App.controller 'SEScoreSchemesCtrl', ['$scope', '$uibModal', 'ScoreScheme', 'Sco
 ]
 
 App.controller 'ModalInstanceCtrl', ['$scope', '$uibModalInstance', 'scoreUnit', 'Question', 'ScoreUnitOptions',
-  ($scope, $uibModalInstance, scoreUnit, Question, ScoreUnitOptions) ->
+  '$filter', ($scope, $uibModalInstance, scoreUnit, Question, ScoreUnitOptions, $filter) ->
     $scope.scorableQuestionTypes = ['SELECT_ONE', 'SELECT_ONE_WRITE_OTHER']
+    $scope.all_questions = []
     $scope.scoreUnit = scoreUnit
     $scope.questions = Question.query({
       "project_id": scoreUnit.project_id,
       "instrument_id": scoreUnit.instrument_id
-    })
+    }, ->
+      angular.copy($scope.questions, $scope.all_questions)
+    )
+
+    $scope.questionTypeChanged = () ->
+      $scope.questions = $filter('filter')($scope.all_questions, question_type: $scope.scoreUnit.question_type, true)
 
     $scope.next = () ->
       question_ids = []

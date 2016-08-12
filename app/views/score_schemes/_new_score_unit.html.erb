@@ -1,29 +1,29 @@
 <script type="text/ng-template" id="newScoreUnitFirstPage.html" xmlns="http://www.w3.org/1999/html">
   <div class="modal-header">
-    <h3 class="modal-title text-center">Creating a new Score Unit</h3>
+    <h3 class="modal-title text-center c-blue">Creating a new Score Unit</h3>
   </div>
   <div class="modal-body">
-    <div class="m-10">
-      <label for="score-unit-question-type">Question Type</label>
-      <select ng-model="scoreUnit.question_type"
+    <div class="row">
+      <label for="score-unit-question-type" class="col-xs-4">Question Type</label>
+      <select class="col-xs-8" ng-model="scoreUnit.question_type" ng-change="questionTypeChanged()"
               ng-options="questionType for questionType in scorableQuestionTypes" ></select>
     </div>
-    <div class="m-10">
-      <label for="score-unit-min">Min Score</label>
-      <input type="number" ng-model="scoreUnit.min" />
+    <div class="row">
+      <label for="score-unit-min" class="col-xs-4">Minimum Score</label>
+      <input type="number" ng-model="scoreUnit.min" class="col-xs-8" />
     </div>
-    <div class="m-10">
-      <label for="score-unit-max">Max Score</label>
-      <input type="number" ng-model="scoreUnit.max" />
+    <div class="row">
+      <label for="score-unit-max" class="col-xs-4">Maximum Score</label>
+      <input type="number" ng-model="scoreUnit.max" class="col-xs-8" />
     </div>
 
-    <div class="m-10">
-      <label for="score-unit-weight">Score Weight</label>
-      <input type="number" ng-model="scoreUnit.weight" min="1" />
+    <div class="row">
+      <label for="score-unit-weight" class="col-xs-4">Score Weight</label>
+      <input type="number" ng-model="scoreUnit.weight" min="1" class="col-xs-8" />
     </div>
 
     <div class="questions-modal-box">
-      <h3 class="text-center">Select Questions for this Score Unit</h3>
+      <h3 class="text-center c-blue">Select Questions for this Score Unit</h3>
       <div class="col-sm-6" ng-repeat="question in questions">
         <input type="checkbox" ng-model="question.checked">
         <span> {{question.question_identifier}}</span></input>
@@ -39,7 +39,7 @@
 
 <script type="text/ng-template" id="newScoreUnitSecondPage.html" xmlns="http://www.w3.org/1999/html">
   <div class="modal-header">
-    <h3 class="modal-title text-center">Creating a new Score Unit</h3>
+    <h3 class="modal-title text-center c-blue">Creating a new Score Unit</h3>
   </div>
 
   <div class="modal-body">
@@ -47,9 +47,12 @@
       <label class="col-xs-8">Option Text</label>
       <label class="col-xs-4">Score if selected</label>
     </div>
-    <div class="row" ng-repeat="option in scoreUnit.option_scores">
+    <p>{{scoreUnit.min}}</p>
+    <p>{{scoreUnit.max}}</p>
+    <div class="row" ng-repeat="option in scoreUnit.option_scores | orderBy: 'option_id'">
       <div class="col-xs-8 text-left">{{option.text}}</div>
-      <input type="number" class="col-xs-4 text-left" ng-model="option.score"/>
+      <input type="number" class="col-xs-4 text-left" ng-model="option.score" min="{{scoreUnit.min}}"
+             max="{{scoreUnit.max}}" required />
     </div>
   </div>
 
