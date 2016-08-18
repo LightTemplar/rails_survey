@@ -29,6 +29,7 @@
 //= require socket.io.min
 //= require theme-functions
 //= require ui-bootstrap-tpls
+//= require angular-messages
 //= require app
 //= require loading-bar.min
 //= require d3
