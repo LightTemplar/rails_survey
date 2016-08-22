@@ -53,6 +53,7 @@ App.controller 'SEScoreSchemesCtrl', ['$scope', '$uibModal', 'ScoreScheme', 'Sco
             project_id: $scope.project_id,
             score_scheme_id: $scope.score_scheme_id,
             instrument_id: $scope.score_scheme.instrument_id
+            question_ids: []
           )
       )
 
@@ -98,11 +99,6 @@ App.controller 'ModalInstanceCtrl', ['$scope', '$uibModalInstance', 'scoreUnit',
       $scope.questions = $filter('filter')($scope.all_questions, question_type: $scope.scoreUnit.question_type, true)
 
     $scope.next = () ->
-      question_ids = []
-      angular.forEach $scope.questions, (question, index) ->
-        if question.checked
-          question_ids.push(question.id)
-      $scope.scoreUnit.question_ids = question_ids
       options = ScoreUnitOptions.query({
         project_id: $scope.scoreUnit.project_id,
         score_scheme_id: $scope.scoreUnit.score_scheme_id,
@@ -120,6 +116,9 @@ App.controller 'ModalInstanceCtrl', ['$scope', '$uibModalInstance', 'scoreUnit',
 
     $scope.save = () ->
       $uibModalInstance.close($scope.scoreUnit)
+
+    $scope.someQuestionSelected = () ->
+      return $scope.scoreUnit.question_ids.length > 0 ? true : false
 
 ]
 

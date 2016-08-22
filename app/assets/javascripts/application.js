@@ -30,6 +30,7 @@
 //= require theme-functions
 //= require ui-bootstrap-tpls
 //= require angular-messages
+//= require checklist-model
 //= require app
 //= require loading-bar.min
 //= require d3
