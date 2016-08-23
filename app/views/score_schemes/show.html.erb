@@ -9,7 +9,12 @@
       <%= current_project.id %>, <%= @scheme.id %>, unit.id)">
       <div class="lv-item media">
         <div class="row">
-          <div class="col-xs-1 text-center bgm-blue c-white">{{$index + 1}}</div>
+          <div class="col-xs-1">
+            <div class="btn btn-block text-center bgm-blue c-white">{{$index + 1}} </div>
+            <div class="btn btn-block text-center bgm-red c-white" ng-click="deleteScoreUnit(unit)">
+              <i class="md-delete"></i>
+            </div>
+          </div>
           <div class="col-xs-5">
             <div class="row">
               <label class="col-md-6 text-right" for="unit-question-type">Question Type</label>

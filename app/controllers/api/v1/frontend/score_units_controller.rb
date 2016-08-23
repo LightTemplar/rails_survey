@@ -34,6 +34,18 @@ module Api
           end
         end
 
+        def destroy
+          if current_user
+            scheme = current_project.score_schemes.find params[:score_scheme_id]
+            unit = scheme.score_units.find params[:id]
+            if unit.destroy
+              render nothing: true, status: :ok
+            else
+              render json: {errors: unit.errors.full_messages}, status: :unprocessable_entity
+            end
+          end
+        end
+
         def questions
           if current_user
             score_scheme = current_project.score_schemes.find params[:score_scheme_id]
