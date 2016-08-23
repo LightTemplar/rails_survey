@@ -81,6 +81,17 @@ App.controller 'SEScoreSchemesCtrl', ['$scope', '$uibModal', 'ScoreScheme', 'Sco
       ), ->
         return
 
+    $scope.deleteScoreUnit = (unit) ->
+      if confirm("Are you sure you want to delete this score unit?")
+        unit.project_id = $scope.project_id
+        unit.$delete({},
+          (data) ->
+            $scope.score_units.splice($scope.score_units.indexOf(unit), 1)
+        ,
+          (data) ->
+            alert "Failed to delete score unit"
+        )
+
 ]
 
 App.controller 'ModalInstanceCtrl', ['$scope', '$uibModalInstance', 'scoreUnit', 'Question', 'ScoreUnitOptions',
