@@ -4,7 +4,8 @@ App.factory 'ScoreScheme', ['$resource', ($resource) ->
 
 App.factory 'ScoreUnit', ['$resource', ($resource) ->
   $resource('/api/v1/frontend/projects/:project_id/score_schemes/:score_scheme_id/score_units/:id',
-    {project_id: '@project_id', score_scheme_id: '@score_scheme_id', id: '@id'}
+    {project_id: '@project_id', score_scheme_id: '@score_scheme_id', id: '@id'},
+    {update: {method: 'PUT'}}
   )
 ]
 

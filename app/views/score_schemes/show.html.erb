@@ -1,4 +1,4 @@
-<div class="card card-padding" ng-controller="SEScoreSchemesCtrl" ng-init="initialize(
+<div class="card card-padding" ng-controller="ScoreSchemesEditorCtrl" ng-init="initialize(
   <%= current_project.id %>, <%= @scheme.id %>)">
 
   <%= render 'new_score_unit' %>
@@ -10,7 +10,7 @@
       <div class="lv-item media">
         <div class="row">
           <div class="col-xs-1">
-            <div class="btn btn-block text-center bgm-blue c-white">{{$index + 1}} </div>
+            <div class="btn btn-block text-center bgm-blue c-white" ng-click="editScoreUnit(unit)">{{$index + 1}} </div>
             <div class="btn btn-block text-center bgm-red c-white" ng-click="deleteScoreUnit(unit)">
               <i class="md-delete"></i>
             </div>
