@@ -1,4 +1,4 @@
-App.controller 'ICScoreSchemesCtrl', ['$scope', 'ScoreScheme', 'Instrument', ($scope, ScoreScheme, Instrument) ->
+App.controller 'ScoreSchemesCtrl', ['$scope', 'ScoreScheme', 'Instrument', ($scope, ScoreScheme, Instrument) ->
   $scope.showIndex = true
 
   $scope.initialize = (project_id) ->
@@ -32,10 +32,8 @@ App.controller 'ICScoreSchemesCtrl', ['$scope', 'ScoreScheme', 'Instrument', ($s
 
 ]
 
-App.controller 'SEScoreSchemesCtrl', ['$scope', '$uibModal', 'ScoreScheme', 'ScoreUnit',
-  ($scope, $uibModal, ScoreScheme, ScoreUnit) ->
-    $scope.animationsEnabled = true
-
+App.controller 'ScoreSchemesEditorCtrl', ['$scope', '$uibModal', '$filter', 'ScoreScheme', 'ScoreUnit', 'OptionScore',
+  'ScoreUnitQuestions', ($scope, $uibModal, $filter, ScoreScheme, ScoreUnit, OptionScore, ScoreUnitQuestions) ->
     $scope.initialize = (project_id, score_scheme_id) ->
       $scope.project_id = project_id
       $scope.score_scheme_id = score_scheme_id
@@ -44,9 +42,8 @@ App.controller 'SEScoreSchemesCtrl', ['$scope', '$uibModal', 'ScoreScheme', 'Sco
 
     $scope.newScoreUnit = (size) ->
       firstModalView = $uibModal.open(
-        animation: $scope.animationsEnabled,
         templateUrl: 'newScoreUnitFirstPage.html',
-        controller: 'ModalInstanceCtrl',
+        controller: 'ScoreUnitModalCtrl',
         size: size,
         resolve:
           scoreUnit: -> new ScoreUnit(
@@ -59,9 +56,8 @@ App.controller 'SEScoreSchemesCtrl', ['$scope', '$uibModal', 'ScoreScheme', 'Sco
 
       firstModalView.result.then ((scoreUnit) ->
         secondModalView = $uibModal.open(
-          animation: $scope.animationsEnabled,
           templateUrl: 'newScoreUnitSecondPage.html',
-          controller: 'ModalInstanceCtrl',
+          controller: 'ScoreUnitModalCtrl',
           size: size,
           resolve:
             scoreUnit: -> scoreUnit
@@ -92,9 +88,55 @@ App.controller 'SEScoreSchemesCtrl', ['$scope', '$uibModal', 'ScoreScheme', 'Sco
             alert "Failed to delete score unit"
         )
 
+    $scope.editScoreUnit = (unit) ->
+      unit.project_id = $scope.project_id
+      unit.instrument_id = $scope.score_scheme.instrument_id
+      scoreUnitQuestions = ScoreUnitQuestions.query({
+        project_id: $scope.project_id,
+        score_scheme_id: unit.score_scheme_id,
+        id: unit.id
+      }, ->
+        unit.question_ids = scoreUnitQuestions.map((question) -> question.id)
+        editModalView = $uibModal.open(
+          templateUrl: 'newScoreUnitFirstPage.html',
+          controller: 'ScoreUnitModalCtrl',
+          resolve: scoreUnit: -> unit
+        )
+
+        editModalView.result.then ((scoreUnit) ->
+          optionScores = OptionScore.query({
+            project_id: $scope.project_id,
+            score_scheme_id: scoreUnit.score_scheme_id,
+            score_unit_id: scoreUnit.id
+          }, ->
+            angular.forEach optionScores, (optionScore, index) ->
+              savedOptionScore = $filter('filter')(scoreUnit.option_scores, option_id: optionScore.option_id, true)[0]
+              savedOptionScoreIndex = scoreUnit.option_scores.indexOf(savedOptionScore)
+              if savedOptionScoreIndex != -1
+                scoreUnit.option_scores[savedOptionScoreIndex] = optionScore
+          )
+
+          secondEditModalView = $uibModal.open(
+            templateUrl: 'newScoreUnitSecondPage.html',
+            controller: 'ScoreUnitModalCtrl',
+            resolve: scoreUnit: -> scoreUnit
+          )
+
+          secondEditModalView.result.then ((unit) ->
+            unit.$update({},
+              (data, headers) ->
+                $scope.$broadcast('UNIT_UPDATED', data.id)
+              (result, headers) ->
+            )
+          ), ->
+          return
+        ), ->
+        return
+      )
+
 ]
 
-App.controller 'ModalInstanceCtrl', ['$scope', '$uibModalInstance', 'scoreUnit', 'Question', 'ScoreUnitOptions',
+App.controller 'ScoreUnitModalCtrl', ['$scope', '$uibModalInstance', 'scoreUnit', 'Question', 'ScoreUnitOptions',
   '$filter', ($scope, $uibModalInstance, scoreUnit, Question, ScoreUnitOptions, $filter) ->
     $scope.scorableQuestionTypes = ['SELECT_ONE', 'SELECT_ONE_WRITE_OTHER']
     $scope.all_questions = []
@@ -117,7 +159,7 @@ App.controller 'ModalInstanceCtrl', ['$scope', '$uibModalInstance', 'scoreUnit',
       }, ->
         option_scores = []
         angular.forEach options, (option, index) ->
-          option_scores.push({text: option.text, option_id: option.id, score: ''})
+          option_scores.push({label: option.text, option_id: option.id, value: ''})
         $scope.scoreUnit.option_scores = option_scores
         $uibModalInstance.close($scope.scoreUnit)
       )
@@ -129,7 +171,7 @@ App.controller 'ModalInstanceCtrl', ['$scope', '$uibModalInstance', 'scoreUnit',
       $uibModalInstance.close($scope.scoreUnit)
 
     $scope.someQuestionSelected = () ->
-      return $scope.scoreUnit.question_ids.length > 0 ? true : false
+      return $scope.scoreUnit.question_ids.length > 0 ? true: false
 
 ]
 
@@ -140,15 +182,23 @@ App.controller 'ScoreUnitsCtrl', ['$scope', 'ScoreUnit', 'ScoreUnitQuestions', '
       $scope.score_scheme_id = score_scheme_id
       $scope.score_unit_id = score_unit_id
       $scope.score_unit = ScoreUnit.get({project_id: project_id, score_scheme_id: score_scheme_id, id: score_unit_id})
+      $scope.getQuestionsAndOptionScores()
+
+    $scope.getQuestionsAndOptionScores = () ->
       $scope.questions = ScoreUnitQuestions.query({
-        project_id: project_id,
-        score_scheme_id: score_scheme_id,
-        id: score_unit_id
+        project_id: $scope.project_id,
+        score_scheme_id: $scope.score_scheme_id,
+        id: $scope.score_unit_id
       })
       $scope.option_scores = OptionScore.query({
-        project_id: project_id,
-        score_scheme_id: score_scheme_id,
-        score_unit_id: score_unit_id
+        project_id: $scope.project_id,
+        score_scheme_id: $scope.score_scheme_id,
+        score_unit_id: $scope.score_unit_id
       })
+
+    $scope.$on('UNIT_UPDATED', (event, id) ->
+      if (id? && id == $scope.score_unit_id)
+        $scope.getQuestionsAndOptionScores()
+    )
 
 ]
