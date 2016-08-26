@@ -17,5 +17,4 @@ class ScoreUnit < ActiveRecord::Base
   has_many :score_unit_questions, dependent: :destroy
   has_many :questions, through: :score_unit_questions
   has_many :option_scores, dependent: :destroy
-  accepts_nested_attributes_for :option_scores
 end

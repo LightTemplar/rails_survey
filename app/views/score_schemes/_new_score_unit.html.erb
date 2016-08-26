@@ -58,8 +58,8 @@
     </div>
 
     <div class="modal-footer">
-      <button class="btn btn-primary" type="submit">Next</button>
-      <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+      <button class="btn btn-warning" type="button" ng-click="cancel()"><i class="md-cancel">Cancel</i></button>
+      <button class="btn btn-success" type="submit"><i class="md-navigate-next">Next</i></button>
     </div>
   </form>
 </script>
@@ -89,8 +89,9 @@
   </div>
 
   <div class="modal-footer">
-    <button class="btn btn-primary" type="submit">Save</button>
-    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-warning" type="button" ng-click="cancel()"><i class="md-cancel">Cancel</i></button>
+    <button class="btn btn-primary" type="button" ng-click="back()"><i class="md-navigate-before">Back</i></button>
+    <button class="btn btn-success" type="submit"><i class="md-navigate-next">Next</i></button>
   </div>
   </form>
 </script>
