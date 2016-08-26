@@ -34,31 +34,33 @@ App.controller 'ScoreSchemesCtrl', ['$scope', 'ScoreScheme', 'Instrument', ($sco
 
 App.controller 'ScoreSchemesEditorCtrl', ['$scope', '$uibModal', '$filter', 'ScoreScheme', 'ScoreUnit', 'OptionScore',
   'ScoreUnitQuestions', ($scope, $uibModal, $filter, ScoreScheme, ScoreUnit, OptionScore, ScoreUnitQuestions) ->
+
     $scope.initialize = (project_id, score_scheme_id) ->
       $scope.project_id = project_id
       $scope.score_scheme_id = score_scheme_id
       $scope.score_scheme = ScoreScheme.get({"project_id": project_id, "id": score_scheme_id})
       $scope.score_units = ScoreUnit.query({"project_id": project_id, "score_scheme_id": score_scheme_id})
 
-    $scope.newScoreUnit = (size) ->
+    createScoreUnit = () ->
+      return new ScoreUnit(
+        project_id: $scope.project_id,
+        score_scheme_id: $scope.score_scheme_id,
+        instrument_id: $scope.score_scheme.instrument_id
+        question_ids: []
+      )
+
+    $scope.newScoreUnit = (unit = createScoreUnit()) ->
       firstModalView = $uibModal.open(
         templateUrl: 'newScoreUnitFirstPage.html',
         controller: 'ScoreUnitModalCtrl',
-        size: size,
         resolve:
-          scoreUnit: -> new ScoreUnit(
-            project_id: $scope.project_id,
-            score_scheme_id: $scope.score_scheme_id,
-            instrument_id: $scope.score_scheme.instrument_id
-            question_ids: []
-          )
+          scoreUnit: -> unit
       )
 
       firstModalView.result.then ((scoreUnit) ->
         secondModalView = $uibModal.open(
           templateUrl: 'newScoreUnitSecondPage.html',
           controller: 'ScoreUnitModalCtrl',
-          size: size,
           resolve:
             scoreUnit: -> scoreUnit
         )
@@ -72,8 +74,10 @@ App.controller 'ScoreSchemesEditorCtrl', ['$scope', '$uibModal', '$filter', 'Sco
               angular.forEach result.data.errors, (error, field) ->
                 alert error
           )
-        ), ->
-        return
+        ), (reason) ->
+          if reason.constructor.name == 'Resource'
+            $scope.newScoreUnit(reason)
+          return
       ), ->
         return
 
@@ -128,7 +132,9 @@ App.controller 'ScoreSchemesEditorCtrl', ['$scope', '$uibModal', '$filter', 'Sco
                 $scope.$broadcast('UNIT_UPDATED', data.id)
               (result, headers) ->
             )
-          ), ->
+          ), (reason) ->
+            if reason.constructor.name == 'Resource'
+              $scope.editScoreUnit(reason)
           return
         ), ->
         return
@@ -146,6 +152,8 @@ App.controller 'ScoreUnitModalCtrl', ['$scope', '$uibModalInstance', 'scoreUnit'
       "instrument_id": scoreUnit.instrument_id
     }, ->
       angular.copy($scope.questions, $scope.all_questions)
+      if $scope.scoreUnit.question_type?
+        $scope.questionTypeChanged()
     )
 
     $scope.questionTypeChanged = () ->
@@ -163,6 +171,9 @@ App.controller 'ScoreUnitModalCtrl', ['$scope', '$uibModalInstance', 'scoreUnit'
         $scope.scoreUnit.option_scores = option_scores
         $uibModalInstance.close($scope.scoreUnit)
       )
+
+    $scope.back = () ->
+      $uibModalInstance.dismiss($scope.scoreUnit)
 
     $scope.cancel = () ->
       $uibModalInstance.dismiss('cancel')
