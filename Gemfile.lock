@@ -1,11 +1,3 @@
-GIT
-  remote: git://github.com/mieko/groupdate.git
-  revision: f75a3d47a27a7351998555a5bfe532a7be9248ed
-  branch: sqlite3
-  specs:
-    groupdate (0.1.6)
-      activerecord (>= 3.0.0)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -77,6 +69,9 @@ GEM
       sass (~> 3.2)
       thor
     builder (3.2.2)
+    bullet (5.4.2)
+      activesupport (>= 3.0.0)
+      uniform_notifier (~> 1.10.0)
     capistrano (3.2.1)
       i18n
       rake (>= 10.0.0)
@@ -212,6 +207,8 @@ GEM
       mini_portile (= 0.6.0)
     nokogumbo (1.1.9)
       nokogiri
+    oj (2.17.5)
+    oj_mimic_json (1.0.1)
     orm_adapter (0.5.0)
     paper_trail (3.0.8)
       activerecord (>= 3.0, < 5.0)
@@ -230,6 +227,7 @@ GEM
     prawn (2.0.0)
       pdf-core (~> 0.5.0)
       ttfunk (~> 1.4.0)
+    puma (3.6.0)
     pundit (0.3.0)
       activesupport (>= 3.0.0)
     quiet_assets (1.1.0)
@@ -363,6 +361,7 @@ GEM
     uglifier (2.5.3)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
+    uniform_notifier (1.10.0)
     warden (1.2.3)
       rack (>= 1.0)
     websocket (1.0.7)
@@ -383,6 +382,7 @@ DEPENDENCIES
   bcrypt (~> 3.1.7)
   better_errors
   binding_of_caller
+  bullet
   capistrano (~> 3.2.1)
   capistrano-bundler (~> 1.1.2)
   capistrano-rails (~> 1.1.1)
@@ -397,16 +397,18 @@ DEPENDENCIES
   exception_notification
   factory_girl_rails (~> 4.0)
   gollum_rails (~> 2.0.0)
-  groupdate!
   jbuilder (~> 1.2)
   jquery-rails
   kaminari
   newrelic_rpm
+  oj
+  oj_mimic_json
   paper_trail (~> 3.0.8)
   paperclip (~> 4.1.0)
   paranoia (~> 2.0)
   pg
   prawn
+  puma
   pundit
   quiet_assets
   rails (= 4.1.13)
@@ -430,3 +432,9 @@ DEPENDENCIES
   twitter-bootstrap-rails
   uglifier (>= 1.3.0)
   zip-zip
+
+RUBY VERSION
+   ruby 2.0.0p195
+
+BUNDLED WITH
+   1.13.6
