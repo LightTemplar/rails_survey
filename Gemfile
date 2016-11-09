@@ -22,7 +22,7 @@ gem 'sqlite3'
 gem 'activeadmin', '~> 1.0.0.pre1'
 gem 'paranoia', '~> 2.0'
 gem 'pundit'
-gem 'groupdate', github: 'mieko/groupdate', :branch => 'sqlite3'
+# gem 'groupdate', github: 'mieko/groupdate', :branch => 'sqlite3'
 gem 'paperclip', '~> 4.1.0'
 gem 'redis', '~> 3.0.7'
 gem 'sidekiq', '~> 3.0.0'
@@ -37,6 +37,9 @@ gem 'prawn'
 gem 'newrelic_rpm'
 gem 'gollum_rails', '~> 2.0.0'
 gem 'seed_dump'
+gem 'puma'
+gem 'oj'
+gem 'oj_mimic_json'
 
 group :production do
   gem 'rails_12factor'
@@ -53,6 +56,7 @@ group :development do
   gem 'capistrano-rvm', '~> 0.1.1'
   gem 'capistrano-sidekiq', '~> 0.3.5'
   gem 'quiet_assets'
+  gem 'bullet'
 end
 
 group :test do
