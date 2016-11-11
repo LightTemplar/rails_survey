@@ -1,13 +1,12 @@
 module Api
   module V2
     class RulesController < ApiApplicationController
-      include Syncable
 
       def index
         project = Project.find(params[:project_id])
-        rules = to_sync(project.rules, 'rules', params[:last_sync_time])
-        render json: rules
+        render json: project.paranoid_synch_models('rules', params[:last_sync_time])
       end
+
     end 
   end
 end

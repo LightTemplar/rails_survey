@@ -58,21 +58,21 @@ RailsSurvey::Application.routes.draw do
 
     namespace :v2 do
       resources :projects do
-        resources :instruments, only: [:index, :show]
-        resources :device_users, only: [:index, :show]
-        resources :questions, only: [:index, :show]
-        resources :options, only: [:index, :show]
+        resources :instruments, only: :index
+        resources :device_users, only: :index
+        resources :questions, only: :index
+        resources :options, only: :index
         resources :images, only: [:index, :show]
         resources :surveys, only: [:create]
         resources :responses, only: [:create]
         resources :response_images, only: [:create]
-        resources :sections, only: [:index, :show]
+        resources :sections, only: :index
         resources :android_updates, only: [:index, :show]
-        resources :skips, only: [:index, :show]
-        resources :rules, only: [:index]
+        resources :skips, only: :index
+        resources :rules, only: :index
         resources :device_sync_entries, only: [:create]
-        resources :grids, only: [:index]
-        resources :grid_labels, only: [:index]
+        resources :grids, only: :index
+        resources :grid_labels, only: :index
       end
     end
 

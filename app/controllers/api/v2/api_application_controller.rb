@@ -9,6 +9,10 @@ module Api
       include ActionController::RequestForgeryProtection
       include ActionController::Cookies
       include ActionController::Instrumentation
+      include ActionController::Caching
+      include ActionController::UrlFor
+      include ActionController::MimeResponds
+      include ActionView::Layouts
       protect_from_forgery with: :null_session
       before_filter :restrict_access
       before_filter :check_version_code

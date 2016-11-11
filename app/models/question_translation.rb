@@ -14,6 +14,8 @@
 #
 
 class QuestionTranslation < ActiveRecord::Base
+  include CacheWarmAble
+  include AsJsonAble
   belongs_to :question
   before_save :touch_question
   validates :text, presence: true, allow_blank: false
@@ -21,4 +23,5 @@ class QuestionTranslation < ActiveRecord::Base
   def touch_question
     question.touch if question && changed?
   end
+
 end

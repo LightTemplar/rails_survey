@@ -11,6 +11,7 @@
 #
 
 class Section < ActiveRecord::Base
+  include CacheWarmAble
   include Translatable
   belongs_to :instrument
   has_many :questions #Do not put dependent destroy - want questions to remain whenever section is deleted
@@ -29,9 +30,9 @@ class Section < ActiveRecord::Base
   end
 
   def as_json(options={})
-    super((options || {}).merge({
-                                    methods: [:first_question_number]
-                                }))
+    Rails.cache.fetch("#{cache_key}/as_json") do
+      super((options || {}).merge({methods: [:first_question_number]}))
+    end
   end
 
   def first_question_number
