@@ -15,6 +15,7 @@
 #
 
 class Image < ActiveRecord::Base
+  include CacheWarmAble
   has_attached_file :photo, :styles => {:small => '200x200>', :medium => '300x300>'},
                     :url => '/:attachment/:id/:basename.:extension', :path => 'files/:attachment/:id/:style/:basename.:extension'
   validates_attachment_content_type :photo, :content_type => /\Aimage\/.*\Z/
@@ -22,9 +23,9 @@ class Image < ActiveRecord::Base
   validates_with AttachmentSizeValidator, :attributes => :photo, :less_than => 1.megabytes
 
   def as_json(options={})
-    super((options || {}).merge({
-                                    methods: [:photo_url]
-                                }))
+    Rails.cache.fetch("#{cache_key}/as_json") do
+      super((options || {}).merge({methods: [:photo_url]}))
+    end
   end
 
   def photo_url

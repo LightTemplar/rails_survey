@@ -4,13 +4,9 @@ module Api
 
       def index
         project = Project.find(params[:project_id])
-        render json: project.device_users
+        render json: project.synch_models('device_users', params[:last_sync_time])
       end
 
-      def show
-        project = Project.find(params[:project_id])
-        render json: project.device_users.find(params[:id])
-      end
     end
   end
 end

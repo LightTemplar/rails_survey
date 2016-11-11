@@ -4,7 +4,7 @@ module Api
 
       def index
         project = Project.find(params[:project_id])
-        render json: project.images
+        render json: project.synch_models('images', params[:last_sync_time])
       end   
       
       def show

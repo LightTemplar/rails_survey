@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '2.0.0'
+ruby '2.3.1'
 gem 'rails', '4.1.13'
 gem 'sass-rails', '~> 4.0.0'
 gem 'uglifier', '>= 1.3.0'
@@ -14,7 +14,7 @@ gem 'twitter-bootstrap-rails'
 gem 'rubyzip', '~> 1.1.2'
 gem 'zip-zip'
 gem 'annotate', '>=2.5.0'
-gem 'rails_config'
+gem 'config'
 gem 'devise'
 gem 'paper_trail', '~> 3.0.8'
 gem 'exception_notification'
@@ -22,9 +22,7 @@ gem 'sqlite3'
 gem 'activeadmin', '~> 1.0.0.pre1'
 gem 'paranoia', '~> 2.0'
 gem 'pundit'
-# gem 'groupdate', github: 'mieko/groupdate', :branch => 'sqlite3'
 gem 'paperclip', '~> 4.1.0'
-gem 'redis', '~> 3.0.7'
 gem 'sidekiq', '~> 3.0.0'
 gem 'kaminari'
 gem 'sinatra', '~> 1.4.5', :require => nil
@@ -32,7 +30,6 @@ gem 'sanitize', '~> 3.0.0'
 gem 'amoeba'
 gem 'devise_google_authenticator', '0.3.14'
 gem 'bcrypt', '~> 3.1.7'
-gem 'sshkit', '~> 1.5.1'
 gem 'prawn'
 gem 'newrelic_rpm'
 gem 'gollum_rails', '~> 2.0.0'
@@ -40,6 +37,8 @@ gem 'seed_dump'
 gem 'puma'
 gem 'oj'
 gem 'oj_mimic_json'
+gem 'redis', '~> 3.0.7'
+gem 'redis-rails'
 
 group :production do
   gem 'rails_12factor'
@@ -47,7 +46,7 @@ group :production do
 end
 
 group :development do
-  gem 'debugger'
+  gem 'byebug', '~> 9.0', '>= 9.0.6'
   gem 'better_errors'
   gem 'binding_of_caller'
   gem 'capistrano', '~> 3.2.1'
@@ -57,6 +56,7 @@ group :development do
   gem 'capistrano-sidekiq', '~> 0.3.5'
   gem 'quiet_assets'
   gem 'bullet'
+  # gem 'sshkit', '~> 1.5.1'
 end
 
 group :test do

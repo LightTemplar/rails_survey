@@ -26,6 +26,7 @@
 #
 
 class Question < ActiveRecord::Base
+  include CacheWarmAble
   include Translatable
   default_scope { order('number_in_instrument ASC') }
   belongs_to :instrument
@@ -85,7 +86,7 @@ class Question < ActiveRecord::Base
   end
 
   def non_special_options
-    options.select {|option| !option.special}
+    options.select { |option| !option.special }
   end
 
   def has_non_special_options?
@@ -105,12 +106,12 @@ class Question < ActiveRecord::Base
   end
 
   def as_json(options={})
-    if options[:only].blank?
-      super((options || {}).merge({
-        methods: [:option_count, :instrument_version, :image_count, :question_version]
-      }))
-    else
-      super(options)
+    Rails.cache.fetch("#{cache_key}/as_json") do
+      if options[:only].blank?
+        super((options || {}).merge({methods: [:option_count, :instrument_version, :image_count, :question_version]}))
+      else
+        super(options)
+      end
     end
   end
 

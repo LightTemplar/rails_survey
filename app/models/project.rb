@@ -10,6 +10,7 @@
 #
 
 class Project < ActiveRecord::Base
+  include SynchAble
   has_many :instruments, dependent: :destroy
   has_many :surveys, through: :instruments
   has_many :project_devices, dependent: :destroy
@@ -18,7 +19,7 @@ class Project < ActiveRecord::Base
   has_many :response_images, through: :responses
   has_many :user_projects
   has_many :users, through: :user_projects
-  has_many :response_exports 
+  has_many :response_exports
   has_many :response_images_exports, through: :response_exports
   has_many :questions, through: :instruments
   has_many :images, through: :questions
@@ -26,12 +27,12 @@ class Project < ActiveRecord::Base
   has_many :sections, through: :instruments
   has_many :project_device_users
   has_many :device_users, through: :project_device_users
-  has_many :skips, through: :options 
+  has_many :skips, through: :options
   has_many :rules, through: :instruments
   has_many :grids, through: :instruments
   has_many :grid_labels, through: :grids
   has_many :metrics, through: :instruments
-  
+
   validates :name, presence: true, allow_blank: false
   validates :description, presence: true, allow_blank: true
 
@@ -43,20 +44,20 @@ class Project < ActiveRecord::Base
     ResponseExport.where(instrument_id: instrument_ids).order('created_at desc')
   end
 
-  def daily_response_count 
+  def daily_response_count
     count_per_day = {}
     array = []
     response_count_per_period(:group_responses_by_day).each do |day, count|
-      count_per_day[day.to_s[5..9]] = count.inject{|sum,x| sum + x}
+      count_per_day[day.to_s[5..9]] = count.inject { |sum, x| sum + x }
     end
     array << count_per_day
   end
-  
+
   def hourly_response_count
     count_per_hour = {}
     array = []
     response_count_per_period(:group_responses_by_hour).each do |hour, count|
-      count_per_hour[hour.to_s] = count.inject{|sum,x| sum + x}
+      count_per_hour[hour.to_s] = count.inject { |sum, x| sum + x }
     end
     puts sanitize(count_per_hour)
     array << sanitize(count_per_hour)
@@ -96,7 +97,7 @@ class Project < ActiveRecord::Base
     end
     hash
   end
-  
+
   def response_count_per_period(method)
     grouped_responses = []
     self.instruments.each do |instrument|
@@ -106,9 +107,9 @@ class Project < ActiveRecord::Base
     end
     merge_period_counts(grouped_responses)
   end
-  
+
   def merge_period_counts(grouped_responses)
-    grouped_responses.map(&:to_a).flatten(1).reduce({}) {|h,(k,v)| (h[k] ||= []) << v; h}
+    grouped_responses.map(&:to_a).flatten(1).reduce({}) { |h, (k, v)| (h[k] ||= []) << v; h }
   end
-  
+
 end

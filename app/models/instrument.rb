@@ -24,6 +24,7 @@ class Instrument < ActiveRecord::Base
   include Translatable
   include Alignable
   include LanguageAssignable
+  include CacheWarmAble
   serialize :special_options, Array
   scope :published, -> { where(published: true) }
   belongs_to :project
@@ -59,10 +60,7 @@ class Instrument < ActiveRecord::Base
   end
 
   def version_by_version_number(version_number)
-    InstrumentVersion.build(
-        instrument_id: id,
-        version_number: version_number
-    )
+    InstrumentVersion.build(instrument_id: id, version_number: version_number)
   end
 
   def completion_rate
@@ -82,9 +80,9 @@ class Instrument < ActiveRecord::Base
   end
 
   def as_json(options={})
-    super((options || {}).merge({
-                                    methods: [:current_version_number, :question_count]
-                                }))
+    Rails.cache.fetch("#{cache_key}/as_json") do
+      super((options || {}).merge({methods: [:current_version_number, :question_count]}))
+    end
   end
 
   def survey_instrument_versions
