@@ -1,11 +1,14 @@
+require 'sidekiq/web'
 RailsSurvey::Application.routes.draw do
 
-  require 'sidekiq/web'
   authenticate :user, lambda { |u| u.admin? } do
-    mount Sidekiq::Web => '/sidekiq'
+    mount Sidekiq::Web, at: '/sidekiq'
   end
+
   mount GollumRails::Engine => '/wiki'
+
   ActiveAdmin.routes(self)
+
   devise_for :users
 
   namespace :api, defaults: {format: 'json'} do
