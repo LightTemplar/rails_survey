@@ -12,6 +12,7 @@ module Api
       include ActionController::Caching
       include ActionController::UrlFor
       include ActionController::MimeResponds
+      include ActionController::DataStreaming
       include ActionView::Layouts
       protect_from_forgery with: :null_session
       before_filter :restrict_access
@@ -20,12 +21,12 @@ module Api
       private
       def restrict_access
         api_key = ApiKey.find_by_access_token(params[:access_token])
-        head :unauthorized unless api_key
+        render status: :unauthorized unless api_key
       end
 
       def check_version_code
         if params[:version_code]
-          head :upgrade_required unless params[:version_code].to_i >= Settings.minimum_android_version_code
+          render status: :upgrade_required unless params[:version_code].to_i >= Settings.minimum_android_version_code
         end
       end
 
