@@ -80,8 +80,9 @@ namespace :deploy do
   after :finishing, :compile_assets
   after :finishing, :cleanup
   after :finishing, :restart
-  # TODO restart sidekiq workers
 end
+
+#TODO Add script to restart Puma & Nginx on server reboot
 
 # When using Phusion Passenger App Server
 # namespace :deploy do

@@ -1,5 +1,5 @@
 workers 4
-threads 0,32
+threads 1,1 #having more than one thread causes circular dependency errors when auto-loading controllers
 preload_app!
 
 before_fork do
