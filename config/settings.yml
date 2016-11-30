@@ -86,3 +86,5 @@ maximum_number_of_links: 15
 danger_zone_days: 3
 
 metric_keys: ['device_uuid', 'Participant ID', 'Center ID']
+
+roster_types: ['STAFF','CHILD']

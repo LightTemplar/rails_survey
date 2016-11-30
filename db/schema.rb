@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160211155616) do
+ActiveRecord::Schema.define(version: 20161130151938) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -141,6 +141,8 @@ ActiveRecord::Schema.define(version: 20160211155616) do
     t.boolean  "show_sections_page",      default: false
     t.boolean  "navigate_to_review_page", default: false
     t.text     "critical_message"
+    t.boolean  "roster",                  default: false
+    t.string   "roster_type"
   end
 
   create_table "metrics", force: true do |t|
@@ -148,6 +150,14 @@ ActiveRecord::Schema.define(version: 20160211155616) do
     t.string   "name"
     t.integer  "expected"
     t.string   "key_name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "option_scores", force: true do |t|
+    t.integer  "score_unit_id"
+    t.integer  "option_id"
+    t.float    "value"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -298,6 +308,13 @@ ActiveRecord::Schema.define(version: 20160211155616) do
     t.time     "deleted_at"
   end
 
+  create_table "score_schemes", force: true do |t|
+    t.string   "instrument_id"
+    t.string   "title"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "score_sections", force: true do |t|
     t.string   "name"
     t.datetime "created_at"
@@ -308,6 +325,23 @@ ActiveRecord::Schema.define(version: 20160211155616) do
   create_table "score_sub_sections", force: true do |t|
     t.string   "name"
     t.integer  "score_section_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "score_unit_questions", force: true do |t|
+    t.integer  "score_unit_id"
+    t.integer  "question_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "score_units", force: true do |t|
+    t.integer  "score_scheme_id"
+    t.string   "question_type"
+    t.float    "min"
+    t.float    "max"
+    t.float    "weight"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -400,6 +434,8 @@ ActiveRecord::Schema.define(version: 20160211155616) do
     t.datetime "updated_at"
     t.integer  "weight"
     t.integer  "score_sub_section_id"
+    t.string   "domain"
+    t.string   "sub_domain"
   end
 
   create_table "user_projects", force: true do |t|
