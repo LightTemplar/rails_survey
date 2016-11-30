@@ -18,6 +18,8 @@
 #  show_sections_page      :boolean          default(FALSE)
 #  navigate_to_review_page :boolean          default(FALSE)
 #  critical_message        :text
+#  roster                  :boolean          default(FALSE)
+#  roster_type             :string(255)
 #
 
 class Instrument < ActiveRecord::Base
@@ -141,7 +143,7 @@ class Instrument < ActiveRecord::Base
   def translations_for_object(obj)
     text_translations = []
     obj.translations.each do |translation|
-      if (instrument_translation_languages.include? translation.language)
+      if instrument_translation_languages.include? translation.language
         text_translations << Sanitize.fragment(translation.text)
       end
     end
