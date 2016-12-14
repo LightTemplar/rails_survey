@@ -96,9 +96,6 @@ GEM
     capistrano-sidekiq (0.5.4)
       capistrano
       sidekiq (>= 3.4)
-    capistrano3-puma (1.2.1)
-      capistrano (~> 3.0)
-      puma (>= 2.6)
     capybara (2.10.1)
       addressable
       mime-types (>= 1.16)
@@ -245,7 +242,6 @@ GEM
       pdf-core (~> 0.6.1)
       ttfunk (~> 1.4.0)
     public_suffix (2.0.4)
-    puma (3.6.0)
     pundit (1.1.0)
       activesupport (>= 3.0.0)
     quiet_assets (1.1.0)
@@ -414,7 +410,6 @@ DEPENDENCIES
   capistrano-rails (~> 1.1, >= 1.1.7)
   capistrano-rvm (~> 0.1.2)
   capistrano-sidekiq (~> 0.5.4)
-  capistrano3-puma (~> 1.2, >= 1.2.1)
   capybara
   coffee-rails (~> 4.0.0)
   config
@@ -435,7 +430,6 @@ DEPENDENCIES
   paranoia (~> 2.0)
   pg
   prawn
-  puma
   pundit
   quiet_assets
   rails (= 4.1.13)
