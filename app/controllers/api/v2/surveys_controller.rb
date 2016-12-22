@@ -30,7 +30,7 @@ module Api
       def survey_params
         params.require(:survey).permit(:instrument_id, :instrument_version_number, :uuid, :device_id,
                                        :instrument_title, :device_uuid, :latitude, :longitude, :metadata,
-                                       :completion_rate, :device_label, :has_critical_responses)
+                                       :completion_rate, :device_label, :has_critical_responses, :roster_uuid)
       end
     end
   end
