@@ -35,10 +35,12 @@
                 </ul>
               </li>
 
-              <li>
-                <%= link_to project_surveys_path(current_project) do %>
-                    <i class="md-file-download"></i><span class="name">Survey Results</span>
-                <% end %>
+              <li class="sub-menu">
+                <a href=""><i class="md md-file-download"></i>Results</a>
+                <ul>
+                  <li><%= link_to 'Surveys', project_surveys_path(current_project) %></li>
+                  <li><%= link_to 'Rosters', project_rosters_path(current_project) %></li>
+                </ul>
               </li>
 
               <li>
@@ -64,7 +66,7 @@
 
               <li>
                 <%= link_to '/sidekiq' do %>
-                  <i class="md-group-work"></i><span class="name">Sidekiq</span>
+                    <i class="md-group-work"></i><span class="name">Sidekiq</span>
                 <% end %>
               </li>
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161130151938) do
+ActiveRecord::Schema.define(version: 20161222153410) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -299,6 +299,17 @@ ActiveRecord::Schema.define(version: 20161130151938) do
     t.datetime "updated_at"
   end
 
+  create_table "rosters", force: true do |t|
+    t.integer  "project_id"
+    t.string   "uuid"
+    t.integer  "instrument_id"
+    t.string   "identifier"
+    t.string   "instrument_title"
+    t.integer  "instrument_version_number"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "rules", force: true do |t|
     t.string   "rule_type"
     t.integer  "instrument_id"
@@ -412,6 +423,7 @@ ActiveRecord::Schema.define(version: 20161130151938) do
     t.string   "device_label"
     t.datetime "deleted_at"
     t.boolean  "has_critical_responses"
+    t.string   "roster_uuid"
   end
 
   add_index "surveys", ["deleted_at"], name: "index_surveys_on_deleted_at"

@@ -2,7 +2,12 @@ class SurveysController < ApplicationController
   after_action :verify_authorized
   
   def index
-    @surveys = current_project.surveys.order('created_at DESC').page params[:page]
+    if params[:roster_id]
+      roster = current_project.rosters.find params[:roster_id]
+      @surveys = roster.surveys.order('created_at DESC').page params[:page]
+    else
+      @surveys = current_project.surveys.non_roster.order('created_at DESC').page params[:page]
+    end
     authorize @surveys
   end
 

@@ -18,6 +18,7 @@
 #  device_label              :string(255)
 #  deleted_at                :datetime
 #  has_critical_responses    :boolean
+#  roster_uuid               :string(255)
 #
 
 class Survey < ActiveRecord::Base
@@ -25,6 +26,7 @@ class Survey < ActiveRecord::Base
   include OptionLabels
   belongs_to :instrument
   belongs_to :device
+  belongs_to :roster, foreign_key: :roster_uuid, primary_key: :uuid
   has_many :responses, foreign_key: :survey_uuid, primary_key: :uuid, dependent: :destroy
   acts_as_paranoid
   delegate :project, to: :instrument
@@ -34,6 +36,7 @@ class Survey < ActiveRecord::Base
   validates :instrument_version_number, presence: true, allow_blank: false
   paginates_per 50
   after_create :calculate_percentage
+  scope :non_roster, -> { where(roster_uuid: nil) }
 
   def calculate_percentage
     SurveyPercentWorker.perform_in(5.hours, id)
