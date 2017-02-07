@@ -1,0 +1,34 @@
+<div class="block-header text-center text-capitalize">
+  <h2>
+    <i class="md-question-answer c-indigo">
+      Scores for survey
+      <%= @score.survey.instrument.title + ' : ' + @score.survey.uuid %>
+    </i>
+  </h2>
+  <div class="card">
+    <label class="col-md-6 text-right">Total Raw Survey Score</label>
+    <div class="col-md-6 text-left"><%= @score.raw_score_sum %></div>
+    <div class="card-body card-padding">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <td>Score Unit Questions</td>
+              <td>Score Unit Responses</td>
+              <td>Raw Score</td>
+            </tr>
+          </thead>
+          <tbody>
+            <% @score.raw_scores.each do |raw_score| %>
+            <tr>
+              <td><%= raw_score.question_identifiers %></td>
+              <td><%= raw_score.response_texts %></td>
+              <td><%= raw_score.value %></td>
+            </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

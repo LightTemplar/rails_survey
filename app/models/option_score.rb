@@ -18,8 +18,7 @@ class OptionScore < ActiveRecord::Base
     option.text
   end
 
-  def as_json(options={})
-    super((options || {}).merge({ methods: [:label] }))
+  def as_json(options = {})
+    super((options || {}).merge(methods: [:label]))
   end
-
 end
