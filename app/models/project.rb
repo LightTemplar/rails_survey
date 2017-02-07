@@ -18,7 +18,7 @@ class Project < ActiveRecord::Base
   has_many :response_images, through: :responses
   has_many :user_projects
   has_many :users, through: :user_projects
-  has_many :response_exports 
+  has_many :response_exports
   has_many :response_images_exports, through: :response_exports
   has_many :questions, through: :instruments
   has_many :images, through: :questions
@@ -26,7 +26,7 @@ class Project < ActiveRecord::Base
   has_many :sections, through: :instruments
   has_many :project_device_users
   has_many :device_users, through: :project_device_users
-  has_many :skips, through: :options 
+  has_many :skips, through: :options
   has_many :rules, through: :instruments
   has_many :grids, through: :instruments
   has_many :grid_labels, through: :grids
@@ -34,7 +34,8 @@ class Project < ActiveRecord::Base
   has_many :score_schemes, through: :instruments
   has_many :score_units, through: :score_schemes
   has_many :option_scores, through: :score_units
-  
+  has_many :scores, through: :score_schemes
+
   validates :name, presence: true, allow_blank: false
   validates :description, presence: true, allow_blank: true
 
@@ -46,20 +47,20 @@ class Project < ActiveRecord::Base
     ResponseExport.where(instrument_id: instrument_ids).order('created_at desc')
   end
 
-  def daily_response_count 
+  def daily_response_count
     count_per_day = {}
     array = []
     response_count_per_period(:group_responses_by_day).each do |day, count|
-      count_per_day[day.to_s[5..9]] = count.inject{|sum,x| sum + x}
+      count_per_day[day.to_s[5..9]] = count.inject { |sum, x| sum + x }
     end
     array << count_per_day
   end
-  
+
   def hourly_response_count
     count_per_hour = {}
     array = []
     response_count_per_period(:group_responses_by_hour).each do |hour, count|
-      count_per_hour[hour.to_s] = count.inject{|sum,x| sum + x}
+      count_per_hour[hour.to_s] = count.inject { |sum, x| sum + x }
     end
     puts sanitize(count_per_hour)
     array << sanitize(count_per_hour)
@@ -73,7 +74,7 @@ class Project < ActiveRecord::Base
     long_csv.close
     wide_csv.close
     short_csv.close
-    export = ResponseExport.create(:project_id => id, :short_format_url => short_csv.path, :wide_format_url => wide_csv.path, :long_format_url => long_csv.path)
+    export = ResponseExport.create(project_id: id, short_format_url: short_csv.path, wide_format_url: wide_csv.path, long_format_url: long_csv.path)
     Survey.write_short_header(short_csv)
     Survey.write_long_header(long_csv, self)
     Survey.write_wide_header(wide_csv, self)
@@ -92,26 +93,26 @@ class Project < ActiveRecord::Base
   end
 
   private
+
   def sanitize(hash)
     (0..23).each do |h|
       hour = sprintf '%02d', h
-      hash[hour] = 0 unless hash.has_key?(hour)
+      hash[hour] = 0 unless hash.key?(hour)
     end
     hash
   end
-  
+
   def response_count_per_period(method)
     grouped_responses = []
-    self.instruments.each do |instrument|
+    instruments.each do |instrument|
       instrument.surveys.each do |survey|
         grouped_responses << survey.send(method)
       end
     end
     merge_period_counts(grouped_responses)
   end
-  
+
   def merge_period_counts(grouped_responses)
-    grouped_responses.map(&:to_a).flatten(1).reduce({}) {|h,(k,v)| (h[k] ||= []) << v; h}
+    grouped_responses.map(&:to_a).flatten(1).each_with_object({}) { |(k, v), h| (h[k] ||= []) << v; }
   end
-  
 end

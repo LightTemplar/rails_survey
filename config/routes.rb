@@ -1,14 +1,13 @@
 RailsSurvey::Application.routes.draw do
-
   require 'sidekiq/web'
-  authenticate :user, lambda { |u| u.admin? } do
+  authenticate :user, ->(u) { u.admin? } do
     mount Sidekiq::Web => '/sidekiq'
   end
   mount GollumRails::Engine => '/wiki'
   ActiveAdmin.routes(self)
   devise_for :users
 
-  namespace :api, defaults: {format: 'json'} do
+  namespace :api, defaults: { format: 'json' } do
     namespace :v1 do
       namespace :frontend do
         resources :projects do
@@ -70,7 +69,12 @@ RailsSurvey::Application.routes.draw do
 
   root to: 'projects#index'
   resources :projects do
-    resources :score_schemes, only: [:index, :show]
+    resources :score_schemes, only: [:index, :show] do
+      member do
+        get 'score/:survey_id', action: 'score', as: 'score'
+      end
+    end
+    resources :scores
     resources :instruments do
       resources :versions, only: [:index, :show]
       resources :instrument_translations
@@ -96,9 +100,9 @@ RailsSurvey::Application.routes.draw do
     resources :device_users
     resources :responses
     concern :paginatable do
-      get '(page/:page)', :action => :index, :on => :collection, :as => ''
+      get '(page/:page)', action: :index, on: :collection, as: ''
     end
-    resources :surveys, :concerns => :paginatable
+    resources :surveys, concerns: :paginatable
     resources :notifications, only: [:index]
     resources :devices, only: [:index, :show] do
       resources :device_sync_entries, only: [:index]
@@ -129,7 +133,6 @@ RailsSurvey::Application.routes.draw do
     end
   end
   resources :request_roles, only: [:index]
-  get '/photos/:id/:style.:format', :controller => 'api/v1/frontend/images', :action => 'show'
-  get '/pictures/:id/:style.:format', :controller => 'response_images', :action => 'show'
-
+  get '/photos/:id/:style.:format', controller: 'api/v1/frontend/images', action: 'show'
+  get '/pictures/:id/:style.:format', controller: 'response_images', action: 'show'
 end

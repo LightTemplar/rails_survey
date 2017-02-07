@@ -25,6 +25,7 @@ class Survey < ActiveRecord::Base
   belongs_to :instrument
   belongs_to :device
   has_many :responses, foreign_key: :survey_uuid, primary_key: :uuid, dependent: :destroy
+  has_many :scores, dependent: :destroy
   acts_as_paranoid
   delegate :project, to: :instrument
   validates :device_id, presence: true, allow_blank: false
@@ -39,25 +40,27 @@ class Survey < ActiveRecord::Base
   end
 
   def calculate_completion_rate
-    valid_response_count = responses.where.not('text = ? AND other_response = ? AND special_response = ?',
-                                               nil || '', nil || '', nil || '').pluck(:question_id).uniq.count
+    valid_response_count = responses.where.not(
+      'text = ? AND other_response = ? AND special_response = ?', nil || '', nil || '', nil || ''
+    ).pluck(:question_id).uniq.count
     valid_question_count = instrument.version_by_version_number(instrument_version_number)
-                               .questions.select{|question| question.question_type != 'INSTRUCTIONS'}.count
-    rate = (valid_response_count.to_f / valid_question_count.to_f).round(2) if (valid_response_count &&
-        valid_question_count && valid_question_count != 0)
+                                     .questions.select { |question| question.question_type != 'INSTRUCTIONS' }.count
+    if valid_response_count && valid_question_count && valid_question_count != 0
+      rate = (valid_response_count.to_f / valid_question_count.to_f).round(2)
+    end
     update_columns(completion_rate: rate.to_s) if rate
   end
 
   def location
-    "#{latitude} / #{longitude}" if latitude and longitude
+    "#{latitude} / #{longitude}" if latitude && longitude
   end
 
   def group_responses_by_day
-    self.responses.group_by_day(:created_at).count
+    responses.group_by_day(:created_at).count
   end
 
   def group_responses_by_hour
-    self.responses.group_by_hour_of_day(:created_at).count
+    responses.group_by_hour_of_day(:created_at).count
   end
 
   def instrument_version
@@ -65,7 +68,7 @@ class Survey < ActiveRecord::Base
   end
 
   def location_link
-    "https://www.google.com/maps/place/#{latitude}+#{longitude}" if latitude and longitude
+    "https://www.google.com/maps/place/#{latitude}+#{longitude}" if latitude && longitude
   end
 
   def metadata
@@ -90,9 +93,9 @@ class Survey < ActiveRecord::Base
   def option_labels(response)
     labels = []
     versioned_question = chronicled_question(response.question_identifier)
-    if response.question and versioned_question and versioned_question.has_options?
+    if response.question && versioned_question && versioned_question.has_options?
       response.text.split(Settings.list_delimiter).each do |option_index|
-        (versioned_question.has_other? and option_index.to_i == versioned_question.other_index) ? labels << "Other" : labels << versioned_question.options[option_index.to_i].to_s
+        versioned_question.has_other? && (option_index.to_i == versioned_question.other_index) ? labels << 'Other' : labels << versioned_question.options[option_index.to_i].to_s
       end
     end
     labels.join(Settings.list_delimiter)
@@ -106,8 +109,8 @@ class Survey < ActiveRecord::Base
     long_csv.close
     wide_csv.close
     short_csv.close
-    export = ResponseExport.create(:instrument_id => instrument.id, :instrument_versions => instrument.survey_instrument_versions,
-              :short_format_url => short_csv.path, :wide_format_url => wide_csv.path, :long_format_url => long_csv.path)
+    export = ResponseExport.create(instrument_id: instrument.id, instrument_versions: instrument.survey_instrument_versions,
+                                   short_format_url: short_csv.path, wide_format_url: wide_csv.path, long_format_url: long_csv.path)
     write_short_header(short_csv)
     write_long_header(long_csv, instrument)
     write_wide_header(wide_csv, instrument)
@@ -127,7 +130,7 @@ class Survey < ActiveRecord::Base
 
   def self.write_short_header(short_csv)
     CSV.open(short_csv, 'wb') do |csv|
-      csv << %w[identifier survey_id question_identifier question_text response_text response_label special_response other_response]
+      csv << %w(identifier survey_id question_identifier question_text response_text response_label special_response other_response)
     end
   end
 
@@ -155,7 +158,7 @@ class Survey < ActiveRecord::Base
 
   def self.write_wide_header(wide_csv, model)
     variable_identifiers = []
-    question_identifier_variables = %w[_short_qid _question_type _label _special _other _version _text _start_time _end_time]
+    question_identifier_variables = %w(_short_qid _question_type _label _special _other _version _text _start_time _end_time)
     model.questions.each do |question|
       variable_identifiers << question.question_identifier unless variable_identifiers.include? question.question_identifier
       question_identifier_variables.each do |variable|
@@ -164,12 +167,13 @@ class Survey < ActiveRecord::Base
     end
     metadata_keys = []
     model.surveys.each do |survey|
+      next unless survey.metadata
       survey.metadata.keys.each do |key|
         metadata_keys << key unless metadata_keys.include? key
-      end if survey.metadata
+      end
     end
-    header = %w[survey_id survey_uuid device_identifier device_label latitude longitude instrument_id instrument_version_number
-              instrument_title survey_start_time survey_end_time device_user_id device_user_username] + metadata_keys + variable_identifiers
+    header = %w(survey_id survey_uuid device_identifier device_label latitude longitude instrument_id instrument_version_number
+                instrument_title survey_start_time survey_end_time device_user_id device_user_username) + metadata_keys + variable_identifiers
     CSV.open(wide_csv, 'wb') do |csv|
       csv << header
     end
@@ -183,10 +187,12 @@ class Survey < ActiveRecord::Base
              survey.instrument_version_number, survey.instrument.title, survey.responses.order('time_started').try(:first).try(:time_started),
              survey.responses.order('time_ended').try(:last).try(:time_ended)]
 
-      survey.metadata.each do |k, v|
-        key_index = headers.index {|h| h == k}
-        row[key_index] = v
-      end if survey.metadata
+      if survey.metadata
+        survey.metadata.each do |k, v|
+          key_index = headers.index { |h| h == k }
+          row[key_index] = v
+        end
+      end
 
       survey.responses.each do |response|
         identifier_index = headers.index(response.question_identifier)
@@ -214,8 +220,8 @@ class Survey < ActiveRecord::Base
       device_user_username_index = headers.index('device_user_username')
       device_user_ids = survey.responses.pluck(:device_user_id).uniq.compact
       unless device_user_ids.empty?
-        row[device_user_id_index] = device_user_ids.join(",")
-        row[device_user_username_index] = DeviceUser.find(device_user_ids).map(&:username).uniq.join(",")
+        row[device_user_id_index] = device_user_ids.join(',')
+        row[device_user_username_index] = DeviceUser.find(device_user_ids).map(&:username).uniq.join(',')
       end
       csv << row
     end
@@ -224,7 +230,7 @@ class Survey < ActiveRecord::Base
 
   def self.get_headers(file)
     @headers ||= Hash.new do |hash, filename|
-      hash[filename] = CSV.open(filename, 'r'){|csv| csv.first}
+      hash[filename] = CSV.open(filename, 'r', &:first)
     end
     @headers[file]
   end
@@ -238,14 +244,15 @@ class Survey < ActiveRecord::Base
   def self.write_long_header(long_csv, model)
     metadata_keys = []
     model.surveys.each do |survey|
+      next unless survey.metadata
       survey.metadata.keys.each do |key|
         metadata_keys << key unless metadata_keys.include? key
-      end if survey.metadata
+      end
     end
-    header = %w[qid short_qid instrument_id instrument_version_number question_version_number
-              instrument_title survey_id survey_uuid device_id device_uuid device_label question_type question_text
-              response response_labels special_response other_response response_time_started response_time_ended
-              device_user_id device_user_username] + metadata_keys
+    header = %w(qid short_qid instrument_id instrument_version_number question_version_number
+                instrument_title survey_id survey_uuid device_id device_uuid device_label question_type question_text
+                response response_labels special_response other_response response_time_started response_time_ended
+                device_user_id device_user_username) + metadata_keys
     CSV.open(long_csv, 'wb') do |csv|
       csv << header
     end
@@ -263,13 +270,28 @@ class Survey < ActiveRecord::Base
                response.versioned_question.try(:question_type), Sanitize.fragment(response.versioned_question.try(:text)),
                response.text, response.option_labels, response.special_response, response.other_response, response.time_started,
                response.time_ended, response.device_user.try(:id), response.device_user.try(:username)]
-        survey.metadata.each do |k, v|
-          row[headers.index(k)] = v if headers.index(k)
-        end if survey.metadata
+        if survey.metadata
+          survey.metadata.each do |k, v|
+            row[headers.index(k)] = v if headers.index(k)
+          end
+        end
         csv << row
       end
     end
     decrement_export_count(export_id.to_s)
   end
 
+  def score
+    scheme = instrument.score_schemes.first
+    scheme.score_survey(self)
+  end
+
+  def response(question)
+    responses.where(question_identifier: question.question_identifier).try(:first)
+  end
+
+  def option(question)
+    response = response(question)
+    question.non_special_options[response.text.to_i] if response
+  end
 end
