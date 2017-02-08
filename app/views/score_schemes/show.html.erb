@@ -1,16 +1,26 @@
+<div class="block-header text-center text-capitalize">
+  <h2>
+    <i class="md-sort c-indigo"><%= @scheme.title %></i>
+    <%= link_to edit_project_score_scheme_path(current_project, @scheme), class: 'btn btn-primary pull-right m-b-5' do %>
+    <i class="md-edit"></i>
+    Edit Scoring Scheme
+    <% end %>
+  </h2>
+</div>
+
 <div class="card card-padding" ng-controller="ScoreSchemesEditorCtrl" ng-init="initialize(
   <%= current_project.id %>, <%= @scheme.id %>)">
 
   <%= render 'new_score_unit' %>
 
-  <div class="block-header text-center"><h2><i class="md-sort c-indigo">{{score_scheme.title}}</i></h2></div>
   <div class="card-body m-10" ng-repeat="unit in score_units">
     <div class="listview lv-bordered lv-lg" ng-controller="ScoreUnitsCtrl" ng-init="initialize(
       <%= current_project.id %>, <%= @scheme.id %>, unit.id)">
       <div class="lv-item media">
         <div class="row">
           <div class="col-xs-1">
-            <div class="btn btn-block text-center bgm-blue c-white" ng-click="editScoreUnit(unit)">{{$index + 1}} </div>
+            <div class="btn btn-block text-center bgm-blue c-white" ng-click="editScoreUnit(unit)">{{$index + 1}}
+            </div>
             <div class="btn btn-block text-center bgm-red c-white" ng-click="deleteScoreUnit(unit)">
               <i class="md-delete"></i>
             </div>

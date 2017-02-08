@@ -18,4 +18,12 @@ class Score < ActiveRecord::Base
   def raw_score_sum
     raw_scores.sum(:value)
   end
+
+  def weighted_score_sum
+    raw_scores.inject(0) { |sum, item| sum + weighted_score(item) }
+  end
+
+  def weighted_score(raw_score)
+    raw_score.value * raw_score.score_unit.weight
+  end
 end

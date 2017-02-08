@@ -69,7 +69,7 @@ RailsSurvey::Application.routes.draw do
 
   root to: 'projects#index'
   resources :projects do
-    resources :score_schemes, only: [:index, :show] do
+    resources :score_schemes do
       member do
         get 'score/:survey_id', action: 'score', as: 'score'
       end
