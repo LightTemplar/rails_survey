@@ -286,12 +286,7 @@ class Survey < ActiveRecord::Base
     scheme.score_survey(self)
   end
 
-  def response(question)
+  def response_for_question(question)
     responses.where(question_identifier: question.question_identifier).try(:first)
-  end
-
-  def option(question)
-    response = response(question)
-    question.non_special_options[response.text.to_i] if response
   end
 end

@@ -21,7 +21,7 @@ class RawScore < ActiveRecord::Base
   def response_texts
     responses = []
     score_unit.questions.each do |question|
-      responses << score.survey.response(question).try(:text)
+      responses << score.survey.response_for_question(question).try(:text)
     end
     responses.join(', ')
   end

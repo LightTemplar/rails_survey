@@ -13,7 +13,7 @@
 class Score < ActiveRecord::Base
   belongs_to :survey
   belongs_to :score_scheme
-  has_many :raw_scores
+  has_many :raw_scores, dependent: :destroy
 
   def raw_score_sum
     raw_scores.sum(:value)
