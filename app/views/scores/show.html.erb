@@ -6,8 +6,14 @@
     </i>
   </h2>
   <div class="card">
-    <label class="col-md-6 text-right">Total Raw Survey Score</label>
-    <div class="col-md-6 text-left"><%= @score.raw_score_sum %></div>
+    <div class="row">
+      <label class="col-md-6 text-right">Total Raw Survey Score</label>
+      <div class="col-md-6 text-left"><%= @score.raw_score_sum %></div>
+    </div>
+    <div class="row">
+      <label class="col-md-6 text-right">Total Weighted Survey Score</label>
+      <div class="col-md-6 text-left"><%= @score.weighted_score_sum %></div>
+    </div>
     <div class="card-body card-padding">
       <div class="table-responsive">
         <table class="table table-hover">
@@ -15,6 +21,7 @@
             <tr>
               <td>Score Unit Questions</td>
               <td>Score Unit Responses</td>
+              <td>Score Unit Weight</td>
               <td>Raw Score</td>
             </tr>
           </thead>
@@ -23,6 +30,7 @@
             <tr>
               <td><%= raw_score.question_identifiers %></td>
               <td><%= raw_score.response_texts %></td>
+              <td><%= raw_score.score_unit.weight %></td>
               <td><%= raw_score.value %></td>
             </tr>
             <% end %>
