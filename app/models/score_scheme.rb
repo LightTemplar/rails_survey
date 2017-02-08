@@ -43,15 +43,23 @@ class ScoreScheme < ActiveRecord::Base
     question.non_special_options[response.text.to_i]
   end
 
-  # TODO: Score properly when unit has more than one question
   def assign_unit_scores(survey, unit, unit_raw_score)
-    puts "Num of questions: #{unit.questions.size}"
+    if unit.question_type == 'SELECT_ONE' || unit.question_type == 'SELECT_ONE_WRITE_OTHER'
+      score_single_select(survey, unit, unit_raw_score)
+    elsif unit.question_type == 'SELECT_MULTIPLE'
+      # TODO: Implement
+    end
+  end
+
+  def score_single_select(survey, unit, unit_raw_score)
+    selected_options = []
     unit.questions.each do |question|
       response = survey.response_for_question(question)
       next unless response
       option = option_at_index(question, response)
-      option_score = unit.option_scores.where(option_id: option.id).try(:first)
-      unit_raw_score.update(value: option_score.value)
+      selected_options << unit.option_scores.where(option_id: option.id).try(:first)
     end
+    option_score = selected_options.max_by(&:value)
+    unit_raw_score.update(value: option_score.value) if option_score
   end
 end
