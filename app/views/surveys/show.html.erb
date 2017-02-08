@@ -1,104 +1,111 @@
 <div class="block-header text-center text-capitalize">
-    <% if @survey.instrument %>
-    <h2>
-        <i class="md-question-answer c-indigo">
-            Survey Results for
-            <%= @survey.instrument.title + ' : ' + @survey.uuid %>
-        </i>
-    </h2>
-    <% end %>
+  <% if @survey.instrument %>
+  <h2>
+    <i class="md-question-answer c-indigo">
+      Survey Results for
+      <%= @survey.instrument.title + ' : ' + @survey.uuid %>
+    </i>
+  </h2>
+  <% end %>
 </div>
 
 <div class="card">
-    <% if @survey.instrument.score_schemes.size > 0 %>
-    <div class="card-body card-padding">
-        <% @survey.instrument.score_schemes.each do |scheme| %>
-        <label class="col-md-6">
-            <%= scheme.title %>
-        </label>
-        <div class="col-md-6">
-            <%= link_to 'Score', score_project_score_scheme_path(current_project, scheme.id, @survey.id), class: 'btn btn-primary waves-effect' %>
-        </div>
-        <% end %>
+  <div class="card-header">
+    <h2 class="text-center">Score Schemes</h2>
+  </div>
+  <div class="card-body card-padding">
+    <% @survey.instrument.score_schemes.each do |scheme| %>
+    <div class="row m-5">
+      <label class="col-md-6"><%= scheme.title %></label>
+      <div class="col-md-6">
+        <%= link_to 'Score', score_project_score_scheme_path(current_project, scheme.id, @survey.id), class: 'btn btn-primary waves-effect' %>
+      </div>
     </div>
     <% end %>
-    <% if @survey.metadata %>
-    <div class="card-header">
-        <h2 class="text-center">
-            <i class="md-info-outline">
-                Survey Metadata
-            </i>
-        </h2>
+  </div>
+</div>
 
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% @survey.metadata.each_pair do |key, value| %>
-                    <tr>
-                        <td><%= key %></td>
-                        <td><%= value %></td>
-                    </tr>
-                    <% end %>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <% end %>
+<div class="card">
+  <div class="card-header">
+    <h2 class="text-center">Survey Responses</h2>
+  </div>
+  <% if @survey.metadata %>
+  <div class="card-header">
+    <h2 class="text-center">
+      <i class="md-info-outline">
+        Survey Metadata
+      </i>
+    </h2>
 
-    <div class="card-body card-padding">
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Question Type</th>
-                        <th>Question Identifier</th>
-                        <th>Question Text</th>
-                        <th>Response</th>
-                        <th>Special Response</th>
-                        <th>Other Response</th>
-                        <th>Created at</th>
-                        <th>Time taken(sec)</th>
-                        <th>Response Image</th>
-                        <th>Device User</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% @survey.responses.each do |response| %>
-                    <% if response.question %>
-                    <tr>
-                        <td><%= response.question.question_type %></td>
-                        <td><%= response.question.question_identifier %></td>
-                        <td>
-                            <%= raw @instrument_version.versioned(response.question).text %>
-                        </td>
-                        <td><%= response.text %>
-                        </td>
-                        <td><%= response.special_response %></td>
-                        <td><%= response.other_response %></td>
-                        <td><%= response.created_at %>
-                        </td>
-                        <td><%= response.time_taken_in_seconds %></td>
-                        <td>
-                            <% if response.response_image %>
-                            <%= link_to 'View Image', project_response_image_path(current_project, response.response_image.id) %>
-                            <% end %>
-                        </td>
-                        <td>
-                            <% if response.device_user %>
-                            <%= response.device_user.name %>
-                            <% end %>
-                        </td>
-                    </tr>
-                    <% end %>
-                    <% end %>
-                </tbody>
-            </table>
-        </div>
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Key</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @survey.metadata.each_pair do |key, value| %>
+          <tr>
+            <td><%= key %></td>
+            <td><%= value %></td>
+          </tr>
+          <% end %>
+        </tbody>
+      </table>
     </div>
+  </div>
+  <% end %>
+
+  <div class="card-body card-padding">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Question Type</th>
+            <th>Question Identifier</th>
+            <th>Question Text</th>
+            <th>Response</th>
+            <th>Special Response</th>
+            <th>Other Response</th>
+            <th>Created at</th>
+            <th>Time taken(sec)</th>
+            <th>Response Image</th>
+            <th>Device User</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @survey.responses.each do |response| %>
+          <% if response.question %>
+          <tr>
+            <td><%= response.question.question_type %></td>
+            <td><%= response.question.question_identifier %></td>
+            <td>
+              <%= raw @instrument_version.versioned(response.question).text %>
+            </td>
+            <td><%= response.text %>
+            </td>
+            <td><%= response.special_response %></td>
+            <td><%= response.other_response %></td>
+            <td><%= response.created_at %>
+            </td>
+            <td><%= response.time_taken_in_seconds %></td>
+            <td>
+              <% if response.response_image %>
+              <%= link_to 'View Image', project_response_image_path(current_project, response.response_image.id) %>
+              <% end %>
+            </td>
+            <td>
+              <% if response.device_user %>
+              <%= response.device_user.name %>
+              <% end %>
+            </td>
+          </tr>
+          <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>

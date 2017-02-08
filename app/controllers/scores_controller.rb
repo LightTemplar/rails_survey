@@ -1,6 +1,6 @@
 class ScoresController < ApplicationController
   def index
-    @scores = current_project.scores
+    @scores = current_project.scores.order(created_at: :desc)
   end
 
   def show
