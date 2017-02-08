@@ -24,6 +24,7 @@ class Score < ActiveRecord::Base
   end
 
   def weighted_score(raw_score)
+    return 0 unless raw_score.value
     raw_score.value * raw_score.score_unit.weight
   end
 end
