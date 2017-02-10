@@ -16,17 +16,18 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
 
     $scope.newScoreUnit = (unit = createScoreUnit()) ->
       newScoreUnitModalView = $uibModal.open(
-        templateUrl: 'newScoreUnit.html',
+        templateUrl: 'scoreUnit.html',
         controller: 'ScoreUnitModalCtrl',
         resolve:
           scoreUnit: -> unit
       )
 
       newScoreUnitModalView.result.then ((scoreUnit) ->
-        if scoreUnit.question_type == 'SELECT_ONE' || scoreUnit.question_type == 'SELECT_ONE_WRITE_OTHER'
+        if singleSelect(scoreUnit)
           templateUrl = 'singleSelect.html'
-        else if scoreUnit.question_type == 'SELECT_MULTIPLE'
+        else if multipleSelect(scoreUnit)
           templateUrl = 'multipleSelect.html'
+          scoreUnit.option_scores = multipleOptions(scoreUnit)
         selectModalView = $uibModal.open(
           templateUrl: templateUrl,
           controller: 'ScoreUnitModalCtrl',
@@ -71,7 +72,7 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
       } , ->
         unit.question_ids = scoreUnitQuestions.map((question) -> question.id)
         editModalView = $uibModal.open(
-          templateUrl: 'newScoreUnit.html',
+          templateUrl: 'scoreUnit.html',
           controller: 'ScoreUnitModalCtrl',
           resolve: scoreUnit: -> unit
         )
@@ -82,15 +83,29 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
             score_scheme_id: scoreUnit.score_scheme_id,
             score_unit_id: scoreUnit.id
           } , ->
-            angular.forEach optionScores, (optionScore, index) ->
-              savedOptionScore = $filter('filter')(scoreUnit.option_scores, option_id: optionScore.option_id, true)[0]
-              savedOptionScoreIndex = scoreUnit.option_scores.indexOf(savedOptionScore)
-              if savedOptionScoreIndex != - 1
-                scoreUnit.option_scores[savedOptionScoreIndex] = optionScore
+            if singleSelect(scoreUnit)
+              angular.forEach optionScores, (optionScore, index) ->
+                savedOptionScore = $filter('filter')(scoreUnit.option_scores, option_id: optionScore.option_id, true)[0]
+                savedOptionScoreIndex = scoreUnit.option_scores.indexOf(savedOptionScore)
+                if savedOptionScoreIndex != - 1
+                  scoreUnit.option_scores[savedOptionScoreIndex] = optionScore
+            else if multipleSelect(scoreUnit)
+              allOptions = multipleOptions(scoreUnit)
+              for option, index in allOptions
+                existingOption = $filter('filter')(optionScores, option_id: option.option_id, value: option.value, true)[0]
+                if existingOption?
+                  existingOption.selected = true
+                  allOptions[index] = existingOption
+              scoreUnit.option_scores = allOptions
           )
 
+          if singleSelect(scoreUnit)
+            templateFile = 'singleSelect.html'
+          else if multipleSelect(scoreUnit)
+            templateFile = 'multipleSelect.html'
+
           secondEditModalView = $uibModal.open(
-            templateUrl: 'singleSelect.html',
+            templateUrl: templateFile,
             controller: 'ScoreUnitModalCtrl',
             resolve: scoreUnit: -> scoreUnit
           )
@@ -108,5 +123,18 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
         ), ->
         return
       )
+
+    multipleOptions = (scoreUnit) ->
+      multipleOptionScores = []
+      for number in [scoreUnit.min..scoreUnit.max]
+        for option in scoreUnit.option_scores
+          multipleOptionScores.push({label: option.label, option_id: option.option_id, value: number} )
+      multipleOptionScores
+
+    singleSelect = (scoreUnit) ->
+       scoreUnit.question_type == 'SELECT_ONE' || scoreUnit.question_type == 'SELECT_ONE_WRITE_OTHER'
+
+    multipleSelect = (scoreUnit) ->
+       scoreUnit.question_type == 'SELECT_MULTIPLE' || scoreUnit.question_type == 'SELECT_MULTIPLE_WRITE_OTHER'
 
 ]
