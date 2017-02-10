@@ -1,0 +1,32 @@
+<script type="text/ng-template" id="multipleSelect.html">
+  <form name="multipleSelectForm" ng-submit="save()">
+    <div class="modal-header">
+      <h3 class="modal-title text-center c-blue">Multiple Select Score Unit</h3>
+    </div>
+
+    <div class="modal-body">
+      <div class="row" ng-repeat="num in scoreRange">
+        <div class="row">
+          <label class="col-xs-10 text-right">Check all the options below needed to get a score of:</label>
+          <label class="col-xs-2 text-left">{{num.value}}</label>
+        </div>
+        <div class="col-xs-6" ng-repeat="option in scoreUnit.option_scores | filter: {value: num.value}">
+          <input type="checkbox" name="{{option.label}}_{{option.value}}" ng-model="option.selected"/>
+          {{option.label}}
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-warning" type="button" ng-click="cancel()">
+        <i class="md-cancel">Cancel</i>
+      </button>
+      <button class="btn btn-primary" type="button" ng-click="back()">
+        <i class="md-navigate-before">Back</i>
+      </button>
+      <button class="btn btn-success" type="submit">
+        <i class="md-navigate-next">Save</i>
+      </button>
+    </div>
+  </form>
+</script>

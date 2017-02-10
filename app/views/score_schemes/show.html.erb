@@ -8,10 +8,11 @@
   </h2>
 </div>
 
-<div class="card card-padding" ng-controller="ScoreSchemesEditorCtrl" ng-init="initialize(
-  <%= current_project.id %>, <%= @scheme.id %>)">
+<div class="card card-padding" ng-controller="ScoreSchemeEditorCtrl" ng-init="initialize(<%= current_project.id %>, <%= @scheme.id %>)">
 
   <%= render 'new_score_unit' %>
+  <%= render 'single_select' %>
+  <%= render 'multiple_select' %>
 
   <div class="card-body m-10" ng-repeat="unit in score_units">
     <div class="listview lv-bordered lv-lg" ng-controller="ScoreUnitsCtrl" ng-init="initialize(

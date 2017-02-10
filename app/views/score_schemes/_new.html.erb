@@ -1,7 +1,8 @@
 <div ng-show="!showIndex" class="card card-padding">
   <div class="card-header">
     <button ng-click="toggleViews()" class="btn btn-primary pull-right">
-      <i class="md-arrow-back">Back</i></button>
+      <i class="md-arrow-back">Back</i>
+    </button>
   </div>
 
   <div class="m-20">
@@ -14,9 +15,9 @@
     <div class="form-group">
       <div ng-repeat="instrument in instruments">
         <label>
-          <input type="radio" required ng-model="scheme.instrument_id" ng-value="instrument.id"
-                 ng-change="handleSelectedInstrument(instrument.id)">
-          <span class="m-l-10"></span> {{ instrument.title }}
+          <input type="radio" required ng-model="scheme.instrument_id" ng-value="instrument.id" ng-change="handleSelectedInstrument(instrument.id)">
+          <span class="m-l-10"></span>
+          {{ instrument.title }}
         </label>
       </div>
     </div>
