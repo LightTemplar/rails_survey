@@ -6,7 +6,7 @@ module Api
 
         def index
           if current_user
-            respond_with current_project.score_schemes.order('title')
+            respond_with current_project.score_schemes.order(updated_at: :desc)
           end
         end
 
@@ -20,15 +20,15 @@ module Api
           if scheme.save
             render json: scheme, status: :created
           else
-            render json: {errors: scheme.errors.full_messages}, status: :unprocessable_entity
+            render json: { errors: scheme.errors.full_messages }, status: :unprocessable_entity
           end
         end
 
         private
+
         def score_scheme_params
           params.require(:score_scheme).permit(:instrument_id, :title)
         end
-
       end
     end
   end

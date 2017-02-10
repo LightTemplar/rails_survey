@@ -1,0 +1,36 @@
+<script type="text/ng-template" id="singleSelect.html">
+  <form name="singleSelectForm" ng-submit="save()">
+    <div class="modal-header">
+      <h3 class="modal-title text-center c-blue">Single Select Score Unit</h3>
+    </div>
+
+    <div class="modal-body">
+      <div class="row">
+        <label class="col-xs-6">Text</label>
+        <label class="col-xs-2">Score</label>
+        <div class="col-xs-4"></div>
+      </div>
+      <div class="row" ng-repeat="option in scoreUnit.option_scores | orderBy: 'option_id'">
+        <div class="col-xs-6 text-left">{{option.label}}</div>
+        <input type="number" class="col-xs-2 text-left" ng-model="option.value" min="{{scoreUnit.min}}" max="{{scoreUnit.max}}" name="optionScoreValue{{$index}}" required/>
+        <div class="col-xs-4" ng-messages="singleSelectForm['optionScoreValue' + $index].$error">
+          <div class="c-red" ng-message="required">Score value is required!</div>
+          <div class="c-red" ng-message="min">Value is below allowed minimum!</div>
+          <div class="c-red" ng-message="max">Value is above allowed maximum!</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-warning" type="button" ng-click="cancel()">
+        <i class="md-cancel">Cancel</i>
+      </button>
+      <button class="btn btn-primary" type="button" ng-click="back()">
+        <i class="md-navigate-before">Back</i>
+      </button>
+      <button class="btn btn-success" type="submit">
+        <i class="md-navigate-next">Save</i>
+      </button>
+    </div>
+  </form>
+</script>
