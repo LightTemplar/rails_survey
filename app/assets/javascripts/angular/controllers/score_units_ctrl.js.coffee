@@ -23,4 +23,10 @@ App.controller 'ScoreUnitsCtrl', ['$scope', 'ScoreUnit', 'ScoreUnitQuestions', '
         $scope.getQuestionsAndOptionScores()
     )
 
+    $scope.isSingleSelect = (unit) ->
+      unit.question_type == 'SELECT_ONE' || unit.question_type == 'SELECT_ONE_WRITE_OTHER'
+
+    $scope.isMultipleSelect = (unit) ->
+      unit.question_type == 'SELECT_MULTIPLE' || unit.question_type == 'SELECT_MULTIPLE_WRITE_OTHER'
+
 ]

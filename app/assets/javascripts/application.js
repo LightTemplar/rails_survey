@@ -24,6 +24,7 @@
 //= require angular-resource
 //= require angular-animate
 //= require angular-cookies
+//= require angular-filter.min
 //= require angular-ui-utils.min
 //= require sortable
 //= require socket.io.min
