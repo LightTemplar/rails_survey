@@ -18,6 +18,7 @@
 #  device_label              :string(255)
 #  deleted_at                :datetime
 #  has_critical_responses    :boolean
+#  roster_uuid               :string(255)
 #
 
 class Survey < ActiveRecord::Base

@@ -10,6 +10,7 @@
 #  weight          :float
 #  created_at      :datetime
 #  updated_at      :datetime
+#  score_type      :integer
 #
 
 class ScoreUnit < ActiveRecord::Base
@@ -18,4 +19,12 @@ class ScoreUnit < ActiveRecord::Base
   has_many :questions, through: :score_unit_questions
   has_many :option_scores, dependent: :destroy
   has_many :raw_scores
+  # Add new score_types to the end of the enum to maintain order
+  enum score_type: [:single_select, :multiple_select]
+
+  def self.score_types_to_a
+    ar = []
+    score_types.map { |key, value| ar << { key: key, value: value } }
+    ar
+  end
 end

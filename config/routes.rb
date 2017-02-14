@@ -37,6 +37,8 @@ RailsSurvey::Application.routes.draw do
               end
               collection do
                 get :options
+                get :score_types
+                get :question_types
               end
               resources :option_scores
             end

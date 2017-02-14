@@ -32,6 +32,10 @@
               <div class="col-md-6 text-left">{{unit.question_type}}</div>
             </div>
             <div class="row">
+              <label class="col-md-6 text-right" for="unit-score-type">Score Type</label>
+              <div class="col-md-6 text-left">{{unit.score_type}}</div>
+            </div>
+            <div class="row">
               <label class="col-md-6 text-right" for="unit-min-score">Minimum Score</label>
               <div class="col-md-6 text-left">{{unit.min}}</div>
             </div>
@@ -52,7 +56,7 @@
           </div>
           <div class="col-xs-3">
             <label class="text-center">Score Values and Their Options</label>
-            <div ng-show="isMultipleSelect(unit)" class="row" ng-repeat="(option_value, options) in option_scores | groupBy: 'value'">
+            <div ng-show="unit.score_type == 'multiple_select'" class="row" ng-repeat="(option_value, options) in option_scores | groupBy: 'value'">
               <label class="col-md-4">{{option_value}}</label>
               <div class="col-md-8">
                 <span ng-repeat="option in options">
@@ -60,7 +64,7 @@
                 </span>
               </div>
             </div>
-            <div ng-show="isSingleSelect(unit)" class="row" ng-repeat="option in option_scores">
+            <div ng-show="unit.score_type == 'single_select'" class="row" ng-repeat="option in option_scores">
               <label class="col-md-4">{{option.value}}</label>
               <div class="col-md-8">{{option.label}}</div>
             </div>

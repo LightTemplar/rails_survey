@@ -1,4 +1,4 @@
-App.controller 'ScoreUnitsCtrl', ['$scope', 'ScoreUnit', 'ScoreUnitQuestions', 'OptionScore', ($scope, ScoreUnit, ScoreUnitQuestions, OptionScore) ->
+App.controller 'ScoreUnitsCtrl', ['$scope', 'ScoreUnit', 'OptionScore', ($scope, ScoreUnit, OptionScore) ->
     $scope.initialize = (project_id, score_scheme_id, score_unit_id) ->
       $scope.project_id = project_id
       $scope.score_scheme_id = score_scheme_id
@@ -7,7 +7,7 @@ App.controller 'ScoreUnitsCtrl', ['$scope', 'ScoreUnit', 'ScoreUnitQuestions', '
       $scope.getQuestionsAndOptionScores()
 
     $scope.getQuestionsAndOptionScores = () ->
-      $scope.questions = ScoreUnitQuestions.query({
+      $scope.questions = ScoreUnit.questions({
         project_id: $scope.project_id,
         score_scheme_id: $scope.score_scheme_id,
         id: $scope.score_unit_id
@@ -22,11 +22,5 @@ App.controller 'ScoreUnitsCtrl', ['$scope', 'ScoreUnit', 'ScoreUnitQuestions', '
       if (id? && id == $scope.score_unit_id)
         $scope.getQuestionsAndOptionScores()
     )
-
-    $scope.isSingleSelect = (unit) ->
-      unit.question_type == 'SELECT_ONE' || unit.question_type == 'SELECT_ONE_WRITE_OTHER'
-
-    $scope.isMultipleSelect = (unit) ->
-      unit.question_type == 'SELECT_MULTIPLE' || unit.question_type == 'SELECT_MULTIPLE_WRITE_OTHER'
 
 ]
