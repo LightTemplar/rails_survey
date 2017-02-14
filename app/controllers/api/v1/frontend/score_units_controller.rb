@@ -30,13 +30,13 @@ module Api
             end
             render json: score_unit, status: :created
           else
-            render json: {errors: score_unit.errors.full_messages}, status: :unprocessable_entity
+            render json: { errors: score_unit.errors.full_messages }, status: :unprocessable_entity
           end
         end
 
         def update
           if current_user
-            #TODO do a differential update instead of delete/recreate cycle
+            # TODO: do a differential update instead of delete/recreate cycle
             score_scheme = current_project.score_schemes.find params[:score_scheme_id]
             score_unit = score_scheme.score_units.find params[:id]
             questions = score_scheme.instrument.questions.where(id: params[:question_ids])
@@ -66,7 +66,7 @@ module Api
             if unit.destroy
               render nothing: true, status: :ok
             else
-              render json: {errors: unit.errors.full_messages}, status: :unprocessable_entity
+              render json: { errors: unit.errors.full_messages }, status: :unprocessable_entity
             end
           end
         end
@@ -86,12 +86,19 @@ module Api
           end
         end
 
-        private
-        def score_unit_params
-          params.require(:score_unit).permit(:score_scheme_id, :question_type, :min, :max, :weight,
-          question_ids: [], option_scores: [])
+        def score_types
+          respond_with ScoreUnit.score_types_to_a if current_user
         end
 
+        def question_types
+          respond_with Settings.scoreable_question_types if current_user
+        end
+
+        private
+
+        def score_unit_params
+          params.require(:score_unit).permit(:score_scheme_id, :question_type, :min, :max, :weight, :score_type, question_ids: [], option_scores: [])
+        end
       end
     end
   end

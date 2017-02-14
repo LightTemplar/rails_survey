@@ -1,4 +1,4 @@
-App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'ScoreScheme', 'ScoreUnit', 'OptionScore', 'ScoreUnitQuestions', ($scope, $uibModal, $filter, ScoreScheme, ScoreUnit, OptionScore, ScoreUnitQuestions) ->
+App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'ScoreScheme', 'ScoreUnit', 'OptionScore', ($scope, $uibModal, $filter, ScoreScheme, ScoreUnit, OptionScore) ->
 
     $scope.initialize = (project_id, score_scheme_id) ->
       $scope.project_id = project_id
@@ -23,9 +23,9 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
       )
 
       newScoreUnitModalView.result.then ((scoreUnit) ->
-        if singleSelect(scoreUnit)
+        if scoreUnit.score_type == 'single_select'
           templateUrl = 'singleSelect.html'
-        else if multipleSelect(scoreUnit)
+        else if scoreUnit.score_type == 'multiple_select'
           templateUrl = 'multipleSelect.html'
           scoreUnit.option_scores = multipleOptions(scoreUnit)
         selectModalView = $uibModal.open(
@@ -65,7 +65,7 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
     $scope.editScoreUnit = (unit) ->
       unit.project_id = $scope.project_id
       unit.instrument_id = $scope.score_scheme.instrument_id
-      scoreUnitQuestions = ScoreUnitQuestions.query({
+      scoreUnitQuestions = ScoreUnit.questions({
         project_id: $scope.project_id,
         score_scheme_id: unit.score_scheme_id,
         id: unit.id
@@ -83,13 +83,13 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
             score_scheme_id: scoreUnit.score_scheme_id,
             score_unit_id: scoreUnit.id
           } , ->
-            if singleSelect(scoreUnit)
+            if scoreUnit.score_type == 'single_select'
               angular.forEach optionScores, (optionScore, index) ->
                 savedOptionScore = $filter('filter')(scoreUnit.option_scores, option_id: optionScore.option_id, true)[0]
                 savedOptionScoreIndex = scoreUnit.option_scores.indexOf(savedOptionScore)
                 if savedOptionScoreIndex != - 1
                   scoreUnit.option_scores[savedOptionScoreIndex] = optionScore
-            else if multipleSelect(scoreUnit)
+            else if scoreUnit.score_type == 'multiple_select'
               allOptions = multipleOptions(scoreUnit)
               for option, index in allOptions
                 existingOption = $filter('filter')(optionScores, option_id: option.option_id, value: option.value, true)[0]
@@ -99,9 +99,9 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
               scoreUnit.option_scores = allOptions
           )
 
-          if singleSelect(scoreUnit)
+          if scoreUnit.score_type == 'single_select'
             templateFile = 'singleSelect.html'
-          else if multipleSelect(scoreUnit)
+          else if scoreUnit.score_type == 'multiple_select'
             templateFile = 'multipleSelect.html'
 
           secondEditModalView = $uibModal.open(
@@ -130,11 +130,5 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
         for option in scoreUnit.option_scores
           multipleOptionScores.push({label: option.label, option_id: option.option_id, value: number} )
       multipleOptionScores
-
-    singleSelect = (scoreUnit) ->
-       scoreUnit.question_type == 'SELECT_ONE' || scoreUnit.question_type == 'SELECT_ONE_WRITE_OTHER'
-
-    multipleSelect = (scoreUnit) ->
-       scoreUnit.question_type == 'SELECT_MULTIPLE' || scoreUnit.question_type == 'SELECT_MULTIPLE_WRITE_OTHER'
 
 ]

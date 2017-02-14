@@ -1,21 +1,24 @@
-App.controller 'ScoreUnitModalCtrl', ['$scope', '$uibModalInstance', 'scoreUnit', 'Question', 'ScoreUnitOptions', '$filter',
-($scope, $uibModalInstance, scoreUnit, Question, ScoreUnitOptions, $filter) ->
-    $scope.scorableQuestionTypes = ['SELECT_ONE', 'SELECT_ONE_WRITE_OTHER', 'SELECT_MULTIPLE', 'SELECT_MULTIPLE_WRITE_OTHER']
+App.controller 'ScoreUnitModalCtrl', ['$scope', '$uibModalInstance', 'scoreUnit', 'Question', '$filter', 'ScoreUnit', ($scope, $uibModalInstance, scoreUnit, Question, $filter, ScoreUnit) ->
     $scope.all_questions = []
     $scope.scoreUnit = scoreUnit
+    $scope.scorableQuestionTypes = ScoreUnit.question_types({
+      'project_id': scoreUnit.project_id,
+      'score_scheme_id': scoreUnit.score_scheme_id
+    } )
     $scope.questions = Question.query({
-      "project_id": scoreUnit.project_id,
-      "instrument_id": scoreUnit.instrument_id
+      'project_id': scoreUnit.project_id,
+      'instrument_id': scoreUnit.instrument_id
     } , ->
       angular.copy($scope.questions, $scope.all_questions)
       if $scope.scoreUnit.question_type?
         $scope.questionTypeChanged()
     )
+    $scope.scoreTypes = ScoreUnit.score_types({
+      'project_id': scoreUnit.project_id,
+      'score_scheme_id': scoreUnit.score_scheme_id
+    } )
 
-    multipleSelect = (scoreUnit) ->
-      scoreUnit.question_type == 'SELECT_MULTIPLE' || scoreUnit.question_type == 'SELECT_MULTIPLE_WRITE_OTHER'
-
-    if multipleSelect($scope.scoreUnit)
+    if $scope.scoreUnit.score_type == 'multiple_select'
       $scope.scoreRange = []
       for number in [$scope.scoreUnit.min..$scope.scoreUnit.max]
         $scope.scoreRange.push( {value: number} )
@@ -24,9 +27,9 @@ App.controller 'ScoreUnitModalCtrl', ['$scope', '$uibModalInstance', 'scoreUnit'
       $scope.questions = $filter('filter')($scope.all_questions, question_type: $scope.scoreUnit.question_type, true)
 
     $scope.next = () ->
-      options = ScoreUnitOptions.query({
-        project_id: $scope.scoreUnit.project_id,
-        score_scheme_id: $scope.scoreUnit.score_scheme_id,
+      options = ScoreUnit.options({
+        'project_id': $scope.scoreUnit.project_id,
+        'score_scheme_id': $scope.scoreUnit.score_scheme_id,
         'question_ids[]': $scope.scoreUnit.question_ids
       } , ->
         option_scores = []
@@ -43,7 +46,7 @@ App.controller 'ScoreUnitModalCtrl', ['$scope', '$uibModalInstance', 'scoreUnit'
       $uibModalInstance.dismiss('cancel')
 
     $scope.save = () ->
-      if multipleSelect($scope.scoreUnit)
+      if $scope.scoreUnit.score_type == 'multiple_select'
         selected_options = $filter('filter')($scope.scoreUnit.option_scores, selected: true, true)
         $scope.scoreUnit.option_scores = selected_options
       $uibModalInstance.close($scope.scoreUnit)

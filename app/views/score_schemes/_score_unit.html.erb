@@ -13,6 +13,15 @@
           <div class="c-red" ng-message="required">Question type is required!</div>
         </div>
       </div>
+
+      <div class="row">
+        <label for="score-unit-score-type" class="col-xs-3">Score Type</label>
+        <select class="col-xs-5" ng-model="scoreUnit.score_type" ng-options="scoreType.key as scoreType.key for scoreType in scoreTypes" name="scoreUnitScoreType" required></select>
+        <div class="col-xs-4" ng-messages="newScoreUnitForm.scoreUnitScoreType.$error">
+          <div class="c-red" ng-message="required">Score type is required!</div>
+        </div>
+      </div>
+
       <div class="row">
         <label for="score-unit-min" class="col-xs-3">Minimum Score</label>
         <input type="number" name="scoreUnitMin" ng-model="scoreUnit.min" class="col-xs-5" required/>
