@@ -25,7 +25,8 @@ module RailsSurvey
     config.assets.paths << Rails.root.join('vendor', 'assets', 'fonts')
     I18n.enforce_available_locales = false
     config.assets.initialize_on_precompile = false
-    config.assets.precompile += %w( active_admin.js active_admin.css.scss )
+    config.assets.precompile += %w(active_admin.js active_admin.css.scss)
     config.wiki_path = 'wiki.git'
+    config.autoload_paths += Dir[Rails.root.join('app', 'scorers', '{*/}')]
   end
 end
