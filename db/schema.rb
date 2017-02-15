@@ -364,6 +364,7 @@ ActiveRecord::Schema.define(version: 20170214174448) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "score_type"
+    t.float    "score_per_selection"
   end
 
   create_table "scores", force: true do |t|

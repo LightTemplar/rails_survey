@@ -13,6 +13,7 @@
   <%= render 'score_unit' %>
   <%= render 'single_select' %>
   <%= render 'multiple_select' %>
+  <%= render 'multiple_select_sum' %>
 
   <div class="card-body m-10" ng-repeat="unit in score_units">
     <div class="listview lv-bordered lv-lg" ng-controller="ScoreUnitsCtrl" ng-init="initialize(
@@ -64,7 +65,7 @@
                 </span>
               </div>
             </div>
-            <div ng-show="unit.score_type == 'single_select'" class="row" ng-repeat="option in option_scores">
+            <div ng-show="unit.score_type == 'single_select' || unit.score_type == 'multiple_select_sum'" class="row" ng-repeat="option in option_scores">
               <label class="col-md-4">{{option.value}}</label>
               <div class="col-md-8">{{option.label}}</div>
             </div>

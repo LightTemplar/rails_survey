@@ -1,9 +1,6 @@
 <script type="text/ng-template" id="multipleSelect.html">
   <form name="multipleSelectForm" ng-submit="save()">
-    <div class="modal-header">
-      <h3 class="modal-title text-center c-blue">Multiple Select Score Unit</h3>
-    </div>
-
+    <%= render 'header', title: 'Multiple Select' %>
     <div class="modal-body">
       <div class="row" ng-repeat="num in scoreRange">
         <div class="row">
@@ -16,17 +13,6 @@
         </div>
       </div>
     </div>
-
-    <div class="modal-footer">
-      <button class="btn btn-warning" type="button" ng-click="cancel()">
-        <i class="md-cancel">Cancel</i>
-      </button>
-      <button class="btn btn-primary" type="button" ng-click="back()">
-        <i class="md-navigate-before">Back</i>
-      </button>
-      <button class="btn btn-success" type="submit">
-        <i class="md-navigate-next">Save</i>
-      </button>
-    </div>
+    <%= render 'footer' %>
   </form>
 </script>
