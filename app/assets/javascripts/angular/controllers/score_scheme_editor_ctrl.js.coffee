@@ -3,8 +3,8 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
     $scope.initialize = (project_id, score_scheme_id) ->
       $scope.project_id = project_id
       $scope.score_scheme_id = score_scheme_id
-      $scope.score_scheme = ScoreScheme.get({"project_id": project_id, "id": score_scheme_id} )
-      $scope.score_units = ScoreUnit.query({"project_id": project_id, "score_scheme_id": score_scheme_id} )
+      $scope.score_scheme = ScoreScheme.get({'project_id': project_id, 'id': score_scheme_id} )
+      $scope.score_units = ScoreUnit.query({'project_id': project_id, 'score_scheme_id': score_scheme_id} )
 
     createScoreUnit = () ->
       return new ScoreUnit(
@@ -15,26 +15,11 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
       )
 
     $scope.newScoreUnit = (unit = createScoreUnit()) ->
-      newScoreUnitModalView = $uibModal.open(
-        templateUrl: 'scoreUnit.html',
-        controller: 'ScoreUnitModalCtrl',
-        resolve:
-          scoreUnit: -> unit
-      )
-
+      newScoreUnitModalView = openModal(unit, 'scoreUnit.html')
       newScoreUnitModalView.result.then ((scoreUnit) ->
-        if scoreUnit.score_type == 'single_select'
-          templateUrl = 'singleSelect.html'
-        else if scoreUnit.score_type == 'multiple_select'
-          templateUrl = 'multipleSelect.html'
+        if scoreUnit.score_type == 'multiple_select'
           scoreUnit.option_scores = multipleOptions(scoreUnit)
-        selectModalView = $uibModal.open(
-          templateUrl: templateUrl,
-          controller: 'ScoreUnitModalCtrl',
-          resolve:
-            scoreUnit: -> scoreUnit
-        )
-
+        selectModalView = openModal(scoreUnit)
         selectModalView.result.then ((scoreUnit) ->
           scoreUnit.$save({} ,
             (data, headers) ->
@@ -52,14 +37,14 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
         return
 
     $scope.deleteScoreUnit = (unit) ->
-      if confirm("Are you sure you want to delete this score unit?")
+      if confirm('Are you sure you want to delete this score unit?')
         unit.project_id = $scope.project_id
         unit.$delete({} ,
           (data) ->
             $scope.score_units.splice($scope.score_units.indexOf(unit), 1)
         ,
           (data) ->
-            alert "Failed to delete score unit"
+            alert 'Failed to delete score unit'
         )
 
     $scope.editScoreUnit = (unit) ->
@@ -71,12 +56,7 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
         id: unit.id
       } , ->
         unit.question_ids = scoreUnitQuestions.map((question) -> question.id)
-        editModalView = $uibModal.open(
-          templateUrl: 'scoreUnit.html',
-          controller: 'ScoreUnitModalCtrl',
-          resolve: scoreUnit: -> unit
-        )
-
+        editModalView = openModal(unit, 'scoreUnit.html')
         editModalView.result.then ((scoreUnit) ->
           optionScores = OptionScore.query({
             project_id: $scope.project_id,
@@ -99,17 +79,7 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
               scoreUnit.option_scores = allOptions
           )
 
-          if scoreUnit.score_type == 'single_select'
-            templateFile = 'singleSelect.html'
-          else if scoreUnit.score_type == 'multiple_select'
-            templateFile = 'multipleSelect.html'
-
-          secondEditModalView = $uibModal.open(
-            templateUrl: templateFile,
-            controller: 'ScoreUnitModalCtrl',
-            resolve: scoreUnit: -> scoreUnit
-          )
-
+          secondEditModalView = openModal(scoreUnit)
           secondEditModalView.result.then ((unit) ->
             unit.$update({} ,
               (data, headers) ->
@@ -130,5 +100,23 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
         for option in scoreUnit.option_scores
           multipleOptionScores.push({label: option.label, option_id: option.option_id, value: number} )
       multipleOptionScores
+
+    openModal = (scoreUnit, file = null) ->
+      if file == null
+        file = getTemplate(scoreUnit)
+      $uibModal.open(
+        templateUrl: file,
+        controller: 'ScoreUnitModalCtrl',
+        resolve: scoreUnit: -> scoreUnit
+      )
+
+    getTemplate = (scoreUnit) ->
+      if scoreUnit.score_type == 'single_select'
+        templateFile = 'singleSelect.html'
+      else if scoreUnit.score_type == 'multiple_select'
+        templateFile = 'multipleSelect.html'
+      else if scoreUnit.score_type == 'multiple_select_sum'
+        templateFile = 'multipleSelectSum.html'
+      templateFile
 
 ]

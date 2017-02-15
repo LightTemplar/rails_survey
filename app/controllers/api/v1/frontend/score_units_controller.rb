@@ -97,7 +97,7 @@ module Api
         private
 
         def score_unit_params
-          params.require(:score_unit).permit(:score_scheme_id, :question_type, :min, :max, :weight, :score_type, question_ids: [], option_scores: [])
+          params.require(:score_unit).permit(:score_scheme_id, :question_type, :min, :max, :weight, :score_type, :score_per_selection, question_ids: [], option_scores: [])
         end
       end
     end

@@ -49,30 +49,26 @@ class ScoreScheme < ActiveRecord::Base
     unit.questions.each do |question|
       response = survey.response_for_question(question)
       next unless response
-      if multiple_select?(unit)
+      if unit.score_type == 'multiple_select'
         scores << get_scores_hash(unit).key(option_ids(question, response).sort)
-      elsif single_select?(unit)
+      elsif unit.score_type == 'single_select'
         option_id = option_ids(question, response)[0]
         scores << unit.option_scores.where(option_id: option_id).try(:first)
+      elsif unit.score_type == 'multiple_select_sum'
+        scores.concat(unit.option_scores.where(option_id: option_ids(question, response)))
       end
     end
     scores.compact
   end
 
   def update_raw_score(unit, score, scores)
-    if single_select?(unit)
+    if unit.score_type == 'single_select'
       score.update(value: scores.max_by(&:value).try(:value)) unless scores.empty?
-    elsif multiple_select?(unit)
+    elsif unit.score_type == 'multiple_select'
       score.update(value: scores.max)
+    elsif unit.score_type == 'multiple_select_sum'
+      score.update(value: scores.sum(&:value))
     end
-  end
-
-  def single_select?(unit)
-    unit.question_type == 'SELECT_ONE' || unit.question_type == 'SELECT_ONE_WRITE_OTHER'
-  end
-
-  def multiple_select?(unit)
-    unit.question_type == 'SELECT_MULTIPLE' || unit.question_type == 'SELECT_MULTIPLE_WRITE_OTHER'
   end
 
   def get_scores_hash(unit)
