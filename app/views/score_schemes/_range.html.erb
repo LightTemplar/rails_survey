@@ -1,0 +1,18 @@
+<script type="text/ng-template" id="range.html">
+  <form name="rangeForm" ng-submit="save()">
+    <%= render 'header', title: 'Number' %>
+    <div class="modal-body">
+      <div class="row">
+        <label class="col-xs-6">Range (inclusive)</label>
+        <label class="col-xs-2">Score</label>
+        <div class="col-xs-4"></div>
+      </div>
+      <div class="row" ng-repeat="option in scoreUnit.option_scores | orderBy: 'value'">
+        <input type="text" ng-pattern="/^(\d+(\.\d+)?)..(\d+(\.\d+)?)$/" class="col-xs-6" ng-model="option.label" placeholder="x..y where x, y are numbers" name="optionScoreLabel{{$index}}" required/>
+        <div class="col-xs-2" required>{{option.value}}</div>
+        <div class="col-xs-4 c-red" ng-show="rangeForm.optionScoreLabel{{$index}}.$error.pattern">Range not valid!</div>
+      </div>
+    </div>
+    <%= render 'footer' %>
+  </form>
+</script>

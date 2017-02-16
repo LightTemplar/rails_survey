@@ -19,6 +19,9 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
       newScoreUnitModalView.result.then ((scoreUnit) ->
         if scoreUnit.score_type == 'multiple_select'
           scoreUnit.option_scores = multipleOptions(scoreUnit)
+        else if scoreUnit.score_type == 'range'
+          scoreUnit.option_scores = rangeOptions(scoreUnit)
+
         selectModalView = openModal(scoreUnit)
         selectModalView.result.then ((scoreUnit) ->
           scoreUnit.$save({} ,
@@ -77,6 +80,8 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
                   existingOption.selected = true
                   allOptions[index] = existingOption
               scoreUnit.option_scores = allOptions
+            else
+              scoreUnit.option_scores = optionScores
           )
 
           secondEditModalView = openModal(scoreUnit)
@@ -101,6 +106,9 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
           multipleOptionScores.push({label: option.label, option_id: option.option_id, value: number} )
       multipleOptionScores
 
+    rangeOptions = (unit) ->
+      numOptions = ({label: '', value: num} for num in [unit.min..unit.max])
+
     openModal = (scoreUnit, file = null) ->
       if file == null
         file = getTemplate(scoreUnit)
@@ -117,6 +125,8 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
         templateFile = 'multipleSelect.html'
       else if scoreUnit.score_type == 'multiple_select_sum'
         templateFile = 'multipleSelectSum.html'
+      else if scoreUnit.score_type == 'range'
+        templateFile = 'range.html'
       templateFile
 
 ]

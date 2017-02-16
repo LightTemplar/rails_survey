@@ -2,18 +2,17 @@
 #
 # Table name: score_units
 #
-#  id                  :integer          not null, primary key
-#  score_scheme_id     :integer
-#  question_type       :string(255)
-#  min                 :float
-#  max                 :float
-#  weight              :float
-#  created_at          :datetime
-#  updated_at          :datetime
-#  score_type          :integer
-#  score_per_selection :float
+#  id              :integer          not null, primary key
+#  score_scheme_id :integer
+#  question_type   :string(255)
+#  min             :float
+#  max             :float
+#  weight          :float
+#  created_at      :datetime
+#  updated_at      :datetime
+#  score_type      :integer
 #
-# TODO: use/get rid of score_per_selection
+
 class ScoreUnit < ActiveRecord::Base
   belongs_to :score_scheme
   has_many :score_unit_questions, dependent: :destroy
@@ -21,7 +20,7 @@ class ScoreUnit < ActiveRecord::Base
   has_many :option_scores, dependent: :destroy
   has_many :raw_scores
   # Add new score_types to the end of the enum to maintain order
-  enum score_type: [:single_select, :multiple_select, :multiple_select_sum]
+  enum score_type: [:single_select, :multiple_select, :multiple_select_sum, :range]
 
   def self.score_types_to_a
     ar = []
