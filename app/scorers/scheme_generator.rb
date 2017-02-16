@@ -8,6 +8,8 @@ class SchemeGenerator
       Bank.new
     when 'multiple_select_sum'
       Sum.new
+    when 'range'
+      Span.new
     end
   end
 end

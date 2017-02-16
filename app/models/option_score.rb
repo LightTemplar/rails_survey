@@ -8,14 +8,16 @@
 #  value         :float
 #  created_at    :datetime
 #  updated_at    :datetime
+#  label         :string(255)
 #
 
 class OptionScore < ActiveRecord::Base
   belongs_to :option
   belongs_to :score_unit
 
+  # if self belongs_to option, return option.text
   def label
-    option.text
+    option ? option.text : read_attribute(:label)
   end
 
   def as_json(options = {})
