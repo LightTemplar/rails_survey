@@ -35,11 +35,11 @@ class Question < ActiveRecord::Base
   has_many :options, dependent: :destroy
   has_many :translations, foreign_key: 'question_id', class_name: 'QuestionTranslation', dependent: :destroy
   has_many :images, dependent: :destroy
-  has_many :skips, foreign_key: :question_identifier, primary_key: :question_identifier, dependent: :destroy #different from has_many :skips, through: :options
+  has_many :skips, foreign_key: :question_identifier, primary_key: :question_identifier, dependent: :destroy # different from has_many :skips, through: :options
   delegate :project, to: :instrument
-  before_save :update_instrument_version, if: Proc.new { |question| question.changed? and !question.child_update_count_changed? }
-  before_save :update_question_translation, if: Proc.new { |question| question.text_changed? }
-  before_save :update_first_in_grid, if: Proc.new { |question| question.first_in_grid_changed? }
+  before_save :update_instrument_version, if: proc { |question| question.changed? && !question.child_update_count_changed? }
+  before_save :update_question_translation, if: proc { |question| question.text_changed? }
+  before_save :update_first_in_grid, if: proc { |question| question.first_in_grid_changed? }
   after_save :record_instrument_version
   before_destroy :update_instrument_version
   after_update :update_dependent_records
@@ -59,7 +59,7 @@ class Question < ActiveRecord::Base
     nullify :number_in_instrument
     nullify :question_identifier
     nullify :following_up_question_identifier
-    set :follow_up_position => 0
+    set follow_up_position: 0
   end
 
   def create_special_options(special_options = instrument.special_options)
@@ -81,7 +81,7 @@ class Question < ActiveRecord::Base
   end
 
   def option_count
-    options.count
+    options.size
   end
 
   def non_special_options
@@ -93,7 +93,7 @@ class Question < ActiveRecord::Base
   end
 
   def image_count
-    images.count
+    images.size
   end
 
   def instrument_version
@@ -104,11 +104,9 @@ class Question < ActiveRecord::Base
     end
   end
 
-  def as_json(options={})
+  def as_json(options = {})
     if options[:only].blank?
-      super((options || {}).merge({
-        methods: [:option_count, :instrument_version, :image_count, :question_version]
-      }))
+      super((options || {}).merge(methods: [:option_count, :instrument_version, :image_count, :question_version]))
     else
       super(options)
     end
@@ -134,7 +132,7 @@ class Question < ActiveRecord::Base
   end
 
   def question_version
-    versions.count
+    versions.size
   end
 
   def starts_section?
@@ -142,11 +140,11 @@ class Question < ActiveRecord::Base
   end
 
   def select_one_variant?
-    self.question_type == 'SELECT_ONE' or self.question_type == 'SELECT_ONE_WRITE_OTHER'
+    (question_type == 'SELECT_ONE') || (question_type == 'SELECT_ONE_WRITE_OTHER')
   end
 
   def select_multiple_variant?
-    self.question_type == 'SELECT_MULTIPLE' or self.question_type == 'SELECT_MULTIPLE_WRITE_OTHER'
+    (question_type == 'SELECT_MULTIPLE') || (question_type == 'SELECT_MULTIPLE_WRITE_OTHER')
   end
 
   def update_first_in_grid
@@ -159,10 +157,9 @@ class Question < ActiveRecord::Base
   end
 
   private
+
   def update_instrument_version
-    unless instrument.nil?
-      instrument.update_instrument_version
-    end
+    instrument.update_instrument_version unless instrument.nil?
   end
 
   def record_instrument_version
@@ -181,7 +178,7 @@ class Question < ActiveRecord::Base
   end
 
   def create_special_option(option_text)
-    options.create(text: option_text, special: true, number_in_question: options.count + 1) if options.where(text: option_text).blank?
+    options.create(text: option_text, special: true, number_in_question: options.size + 1) if options.where(text: option_text).blank?
   end
 
   def skip_option_callbacks
@@ -195,5 +192,4 @@ class Question < ActiveRecord::Base
     Option.set_callback(:save, :before, :update_instrument_version)
     Option.set_callback(:save, :before, :update_option_translation)
   end
-
 end

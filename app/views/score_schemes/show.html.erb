@@ -16,13 +16,14 @@
   <%= render 'multiple_select_sum' %>
   <%= render 'range' %>
 
-  <div class="card-body m-10" ng-repeat="unit in score_units">
+  <div class="card-body m-10" dir-paginate="unit in score_units | itemsPerPage: setPerPage(<%= Settings.units_per_page %>)" current-page="pagination.current" total-items="totalItems">
     <div class="listview lv-bordered lv-lg" ng-controller="ScoreUnitsCtrl" ng-init="initialize(
     <%= current_project.id %>, <%= @scheme.id %>, unit.id)">
       <div class="lv-item media">
         <div class="row">
           <div class="col-xs-1">
-            <div class="btn btn-block text-center bgm-blue c-white" ng-click="editScoreUnit(unit)">{{$index + 1}}
+            <div class="btn btn-block text-center bgm-blue c-white" ng-click="editScoreUnit(unit)">
+              {{$index + 1 + offset()}}
             </div>
             <div class="btn btn-block text-center bgm-red c-white" ng-click="deleteScoreUnit(unit)">
               <i class="md-delete"></i>
@@ -78,5 +79,7 @@
   <a class="btn btn-success pull-right m-10" id="add-score-unit" ng-click="newScoreUnit()">
     <i class="md-add">New Score Unit</i>
   </a>
-  <div class="clearfix"></div>
+  <div class="text-center">
+    <dir-pagination-controls max-size="<%= Settings.maximum_number_of_links %>" direction-links="true" boundary-links="true" on-page-change="getScoreUnits(newPageNumber)"></dir-pagination-controls>
+  </div>
 </div>
