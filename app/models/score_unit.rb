@@ -20,7 +20,7 @@ class ScoreUnit < ActiveRecord::Base
   has_many :option_scores, dependent: :destroy
   has_many :raw_scores
   # Add new score_types to the end of the enum to maintain order
-  enum score_type: [:single_select, :multiple_select, :multiple_select_sum, :range]
+  enum score_type: [:single_select, :multiple_select, :multiple_select_sum, :range, :simple_search]
 
   def self.score_types_to_a
     ar = []

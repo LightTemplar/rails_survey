@@ -1,0 +1,24 @@
+<script type="text/ng-template" id="simpleSearch.html">
+  <%= render 'header', title: 'Simple Search' %>
+  <form name="simpleSearchForm" ng-submit="save()">
+    <div class="modal-body">
+      <div class="row">
+        <label class="col-xs-5">Phrases</label>
+        <label class="col-xs-2">Exists</label>
+        <label class="col-xs-2">Score</label>
+        <div class="col-xs-3"></div>
+      </div>
+      <div class="row" ng-repeat="option in scoreUnit.option_scores">
+        <label class="col-xs-5 text-left">{{option.label}}</label>
+        <label class="col-xs-2">{{option.exists}}</label>
+        <input class="col-xs-2 text-left" type="number" ng-model="option.value" min="{{scoreUnit.min}}" max="{{scoreUnit.max}}" name="optionScoreValue{{$index}}" required/>
+        <div class="col-xs-3" ng-messages="simpleSearchForm['optionScoreValue' + $index].$error">
+          <div class="c-red" ng-message="required">Score value required!</div>
+          <div class="c-red" ng-message="min">Value below minimum!</div>
+          <div class="c-red" ng-message="max">Value above maximum!</div>
+        </div>
+      </div>
+    </div>
+    <%= render 'footer' %>
+  </form>
+</script>

@@ -15,6 +15,7 @@
   <%= render 'multiple_select' %>
   <%= render 'multiple_select_sum' %>
   <%= render 'range' %>
+  <%= render 'simple_search' %>
 
   <div class="card-body m-10" dir-paginate="unit in score_units | itemsPerPage: setPerPage(<%= Settings.units_per_page %>)" current-page="pagination.current" total-items="totalItems">
     <div class="listview lv-bordered lv-lg" ng-controller="ScoreUnitsCtrl" ng-init="initialize(
@@ -67,7 +68,13 @@
                 </span>
               </div>
             </div>
-            <div ng-hide="unit.score_type == 'multiple_select'" class="row" ng-repeat="option in option_scores">
+            <div ng-show="unit.score_type == 'simple_search'" class="row" ng-repeat="option in option_scores">
+              <label class="col-md-3">{{option.value}}</label>
+              <div class="col-md-6">{{option.label}}</div>
+              <div class="col-md-3">{{option.exists}}</div>
+            </div>
+            <!-- Default view -->
+            <div ng-hide="unit.score_type == 'multiple_select' || unit.score_type == 'simple_search'" class="row" ng-repeat="option in option_scores">
               <label class="col-md-4">{{option.value}}</label>
               <div class="col-md-8">{{option.label}}</div>
             </div>

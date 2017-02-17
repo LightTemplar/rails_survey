@@ -34,6 +34,7 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
     )
 
   $scope.newScoreUnit = (unit = createScoreUnit()) ->
+    unit.option_scores = []
     newScoreUnitModalView = openModal(unit, 'scoreUnit.html')
     newScoreUnitModalView.result.then ((scoreUnit) ->
       if scoreUnit.score_type == 'multiple_select'
@@ -72,51 +73,57 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
   $scope.editScoreUnit = (unit) ->
     unit.project_id = $scope.project_id
     unit.instrument_id = $scope.score_scheme.instrument_id
+    if unit.score_type == 'simple_search'
+      unit.option_scores = OptionScore.query({
+        project_id: unit.project_id,
+        score_scheme_id: unit.score_scheme_id,
+        score_unit_id: unit.id
+      } )
     scoreUnitQuestions = ScoreUnit.questions({
       project_id: $scope.project_id,
       score_scheme_id: unit.score_scheme_id,
       id: unit.id
-    } , ->
-      unit.question_ids = scoreUnitQuestions.map((question) -> question.id)
-      editModalView = openModal(unit, 'scoreUnit.html')
-      editModalView.result.then ((scoreUnit) ->
-        optionScores = OptionScore.query({
-          project_id: $scope.project_id,
-          score_scheme_id: scoreUnit.score_scheme_id,
-          score_unit_id: scoreUnit.id
-        } , ->
-          if scoreUnit.score_type == 'single_select'
-            angular.forEach optionScores, (optionScore, index) ->
-              savedOptionScore = $filter('filter')(scoreUnit.option_scores, option_id: optionScore.option_id, true)[0]
-              savedOptionScoreIndex = scoreUnit.option_scores.indexOf(savedOptionScore)
-              if savedOptionScoreIndex != - 1
-                scoreUnit.option_scores[savedOptionScoreIndex] = optionScore
-          else if scoreUnit.score_type == 'multiple_select'
-            allOptions = multipleOptions(scoreUnit)
-            for option, index in allOptions
-              existingOption = $filter('filter')(optionScores, option_id: option.option_id, value: option.value, true)[0]
-              if existingOption?
-                existingOption.selected = true
-                allOptions[index] = existingOption
-            scoreUnit.option_scores = allOptions
-          else
-            scoreUnit.option_scores = optionScores
-        )
+    } )
+    unit.question_ids = scoreUnitQuestions.map((question) -> question.id)
+    editModalView = openModal(unit, 'scoreUnit.html')
 
-        secondEditModalView = openModal(scoreUnit)
-        secondEditModalView.result.then ((unit) ->
-          unit.$update({} ,
-            (data, headers) ->
-              $scope.$broadcast('UNIT_UPDATED', data.id)
-            (result, headers) ->
-          )
-        ), (reason) ->
-          if reason.constructor.name == 'Resource'
-            $scope.editScoreUnit(reason)
-        return
-      ), ->
+    editModalView.result.then ((scoreUnit) ->
+      optionScores = OptionScore.query({
+        project_id: $scope.project_id,
+        score_scheme_id: scoreUnit.score_scheme_id,
+        score_unit_id: scoreUnit.id
+      } , ->
+        if scoreUnit.score_type == 'single_select'
+          angular.forEach optionScores, (optionScore, index) ->
+            savedOptionScore = $filter('filter')(scoreUnit.option_scores, option_id: optionScore.option_id, true)[0]
+            savedOptionScoreIndex = scoreUnit.option_scores.indexOf(savedOptionScore)
+            if savedOptionScoreIndex != - 1
+              scoreUnit.option_scores[savedOptionScoreIndex] = optionScore
+        else if scoreUnit.score_type == 'multiple_select'
+          allOptions = multipleOptions(scoreUnit)
+          for option, index in allOptions
+            existingOption = $filter('filter')(optionScores, option_id: option.option_id, value: option.value, true)[0]
+            if existingOption?
+              existingOption.selected = true
+              allOptions[index] = existingOption
+          scoreUnit.option_scores = allOptions
+        else
+          scoreUnit.option_scores = optionScores
+      )
+
+      secondEditModalView = openModal(scoreUnit)
+      secondEditModalView.result.then ((unit) ->
+        unit.$update({} ,
+          (data, headers) ->
+            $scope.$broadcast('UNIT_UPDATED', data.id)
+          (result, headers) ->
+        )
+      ), (reason) ->
+        if reason.constructor.name == 'Resource'
+          $scope.editScoreUnit(reason)
       return
-    )
+    ), ->
+    return
 
   multipleOptions = (scoreUnit) ->
     multipleOptionScores = []
@@ -146,6 +153,8 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
       templateFile = 'multipleSelectSum.html'
     else if scoreUnit.score_type == 'range'
       templateFile = 'range.html'
+    else if scoreUnit.score_type == 'simple_search'
+      templateFile = 'simpleSearch.html'
     templateFile
 
 ]
