@@ -7,7 +7,7 @@ module Api
         def index
           if current_user
             score_scheme = current_project.score_schemes.find params[:score_scheme_id]
-            respond_with score_scheme.score_units.order('id ASC')
+            respond_with score_scheme.score_units.page(params[:page]).per(Settings.units_per_page)
           end
         end
 

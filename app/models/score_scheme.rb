@@ -15,6 +15,14 @@ class ScoreScheme < ActiveRecord::Base
   has_many :scores, dependent: :destroy
   validates :title, presence: true, allow_blank: false
 
+  def as_json(options = {})
+    super((options || {}).merge(methods: [:score_unit_count]))
+  end
+
+  def score_unit_count
+    score_units.size
+  end
+
   def score_survey(survey)
     score = get_score(survey)
     score_units.each do |unit|
