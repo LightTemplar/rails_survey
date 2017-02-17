@@ -9,6 +9,7 @@
 #  created_at    :datetime
 #  updated_at    :datetime
 #  label         :string(255)
+#  exists        :boolean
 #
 
 class OptionScore < ActiveRecord::Base
