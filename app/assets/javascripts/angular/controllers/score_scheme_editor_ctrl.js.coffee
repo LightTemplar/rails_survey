@@ -73,6 +73,7 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
   $scope.editScoreUnit = (unit) ->
     unit.project_id = $scope.project_id
     unit.instrument_id = $scope.score_scheme.instrument_id
+    unit.question_ids = []
     if unit.score_type == 'simple_search'
       unit.option_scores = OptionScore.query({
         project_id: unit.project_id,
@@ -83,8 +84,9 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
       project_id: $scope.project_id,
       score_scheme_id: unit.score_scheme_id,
       id: unit.id
-    } )
-    unit.question_ids = scoreUnitQuestions.map((question) -> question.id)
+    } , ->
+      unit.question_ids = scoreUnitQuestions.map((question) -> question.id)
+    )
     editModalView = openModal(unit, 'scoreUnit.html')
 
     editModalView.result.then ((scoreUnit) ->
