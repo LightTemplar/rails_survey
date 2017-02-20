@@ -10,6 +10,8 @@ class SchemeGenerator
       Sum.new
     when 'range'
       Span.new
+    when 'simple_search'
+      Search.new
     end
   end
 end

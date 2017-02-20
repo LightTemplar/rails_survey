@@ -47,7 +47,6 @@
         </div>
       </div>
 
-      <%# TODO: Show as checked when editing %>
       <div class="questions-modal-box">
         <h4 class="text-center c-blue">Select question(s) for this score unit</h3>
         <div class="col-sm-6" ng-repeat="question in questions">
@@ -64,9 +63,16 @@
         </div>
       </div>
 
-      <div ng-show="scoreUnit.score_type == 'simple_search'">
+      <div class="questions-modal-box" ng-show="scoreUnit.score_type == 'simple_search'">
         <h4 class="text-center c-blue">Phrase(s) to search for in response</h4>
-        <div class="row" ng-repeat="(option_label, options) in scoreUnit.option_scores | groupBy: 'label'">{{option_label}}</div>
+        <div ng-repeat="(option_label, options) in scoreUnit.option_scores | groupBy: 'label'">
+          <div ng-repeat="option in options">
+            <div class="row" ng-show="$index == 0">
+              <input class="col-xs-10" ng-model="option.label" ng-change="searchTermChanged(options, option.label)"/>
+              <button type="button" class="col-xs-2 btn btn-danger" ng-click="deleteSearchTerm(options)">Delete</button>
+            </div>
+          </div>
+        </div>
         <div class="row">
           <div class="col-xs-4">
             <input type="text" ng-init="searchTerm.label = ''" ng-model="searchTerm.label"/>

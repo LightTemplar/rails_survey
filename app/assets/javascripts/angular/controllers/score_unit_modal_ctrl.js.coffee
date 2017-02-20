@@ -60,7 +60,14 @@ App.controller 'ScoreUnitModalCtrl', ['$scope', '$uibModalInstance', 'scoreUnit'
     $scope.scoreUnit.option_scores.push({label: newTerm.label, value: '', exists: false} )
     term.label = ''
 
+  $scope.deleteSearchTerm = (options) ->
+    if confirm('Are you sure you want to delete this search term?')
+      option.$delete({} ) for option in options
+
+  $scope.searchTermChanged = (options, label) ->
+    option.label = label for option in options
+
   $scope.someQuestionSelected = () ->
-    if $scope.scoreUnit.question_ids.length > 0 then true else false
+    if $scope.scoreUnit.question_ids? && $scope.scoreUnit.question_ids.length > 0 then true else false
 
 ]
