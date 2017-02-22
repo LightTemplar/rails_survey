@@ -104,7 +104,14 @@ RailsSurvey::Application.routes.draw do
     concern :paginatable do
       get '(page/:page)', action: :index, on: :collection, as: ''
     end
-    resources :surveys, concerns: :paginatable
+    resources :surveys, concerns: :paginatable do
+      collection do
+        get 'instrument_surveys/:instrument_id', action: :instrument_surveys, as: 'instrument'
+      end
+      member do
+        get :identifier_surveys
+      end
+    end
     resources :notifications, only: [:index]
     resources :devices, only: [:index, :show] do
       resources :device_sync_entries, only: [:index]
