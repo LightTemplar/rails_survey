@@ -9,6 +9,14 @@ class SurveyPolicy < ApplicationPolicy
     @user.admin_user? || @user.manager? || @user.user? || @user.analyst?
   end
 
+  def instrument_surveys?
+    @user.admin_user? || @user.manager? || @user.user? || @user.analyst?
+  end
+
+  def identifier_surveys?
+    @user.admin_user? || @user.manager? || @user.user? || @user.analyst?
+  end
+
   def destroy?
     @user.admin_user?
   end
@@ -16,5 +24,4 @@ class SurveyPolicy < ApplicationPolicy
   def show?
     @user.admin_user? || @user.manager? || @user.analyst?
   end
-
 end

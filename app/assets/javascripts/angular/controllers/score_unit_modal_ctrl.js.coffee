@@ -27,7 +27,7 @@ App.controller 'ScoreUnitModalCtrl', ['$scope', '$uibModalInstance', 'scoreUnit'
     $scope.questions = $filter('filter')($scope.all_questions, question_type: $scope.scoreUnit.question_type, true)
 
   $scope.next = () ->
-    if scoreUnit.score_type == 'single_select' || scoreUnit.score_type == 'multiple_select' || scoreUnit.score_type == 'multiple_select_sum'
+    if $scope.scoreUnit.score_type == 'single_select' || $scope.scoreUnit.score_type == 'multiple_select' || $scope.scoreUnit.score_type == 'multiple_select_sum'
       options = ScoreUnit.options({
         'project_id': $scope.scoreUnit.project_id,
         'score_scheme_id': $scope.scoreUnit.score_scheme_id,
@@ -40,6 +40,7 @@ App.controller 'ScoreUnitModalCtrl', ['$scope', '$uibModalInstance', 'scoreUnit'
         $uibModalInstance.close($scope.scoreUnit)
       )
     else
+      console.log($scope.scoreUnit.option_scores)
       $uibModalInstance.close($scope.scoreUnit)
 
   $scope.back = () ->
@@ -62,12 +63,23 @@ App.controller 'ScoreUnitModalCtrl', ['$scope', '$uibModalInstance', 'scoreUnit'
 
   $scope.deleteSearchTerm = (options) ->
     if confirm('Are you sure you want to delete this search term?')
-      option.$delete({} ) for option in options
+      deleteOption(option) for option in options
 
   $scope.searchTermChanged = (options, label) ->
     option.label = label for option in options
 
   $scope.someQuestionSelected = () ->
     if $scope.scoreUnit.question_ids? && $scope.scoreUnit.question_ids.length > 0 then true else false
+
+  deleteOption = (option) ->
+    option.project_id = $scope.scoreUnit.project_id
+    option.score_scheme_id = $scope.scoreUnit.score_scheme_id
+    option.$delete({} ,
+    (data) ->
+      $scope.scoreUnit.option_scores.splice($scope.scoreUnit.option_scores.indexOf(option), 1)
+    ,
+    (data) ->
+      alert 'Failed to delete option score'
+    )
 
 ]

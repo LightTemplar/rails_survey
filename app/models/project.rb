@@ -2,11 +2,12 @@
 #
 # Table name: projects
 #
-#  id          :integer          not null, primary key
-#  name        :string(255)
-#  description :text
-#  created_at  :datetime
-#  updated_at  :datetime
+#  id                :integer          not null, primary key
+#  name              :string(255)
+#  description       :text
+#  created_at        :datetime
+#  updated_at        :datetime
+#  survey_aggregator :string(255)
 #
 
 class Project < ActiveRecord::Base
@@ -90,6 +91,46 @@ class Project < ActiveRecord::Base
 
   def device_surveys(device)
     surveys.where(device_uuid: device.identifier)
+  end
+
+  def aggregators
+    if survey_aggregator == 'device_uuid'
+      surveys.group('device_uuid')
+    elsif survey_aggregator == 'Center ID'
+      surveys.select(&:center_id).uniq
+    elsif survey_aggregator == 'Participant ID'
+      surveys.select(&:participant_id).uniq
+    else
+      surveys
+    end
+  end
+
+  def aggregator_label(aggregator)
+    if survey_aggregator == 'device_uuid'
+      devices.where(identifier: aggregator.device_uuid).try(:first).try(:label)
+    elsif survey_aggregator == 'Center ID'
+      aggregator.center_id
+    elsif survey_aggregator == 'Participant ID'
+      aggregator.participant_id
+    else
+      aggregator.uuid
+    end
+  end
+
+  def aggregator_survey_count(agg)
+    surveys_by_aggregator(agg).size
+  end
+
+  def surveys_by_aggregator(agg)
+    if survey_aggregator == 'device_uuid'
+      surveys.where(device_uuid: agg.device_uuid)
+    elsif survey_aggregator == 'Center ID'
+      surveys.select { |s| s.center_id == agg.center_id }
+    elsif survey_aggregator == 'Participant ID'
+      surveys.select { |s| s.participant_id == agg.participant_id }
+    else
+      surveys
+    end
   end
 
   private
