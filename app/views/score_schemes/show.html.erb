@@ -1,15 +1,25 @@
 <div class="block-header text-center text-capitalize">
   <h2>
     <i class="md-sort c-indigo"><%= @scheme.title %></i>
-    <%= link_to edit_project_score_scheme_path(current_project, @scheme), class: 'btn btn-primary pull-right m-b-5' do %>
-    <i class="md-edit"></i>
-    Edit Scoring Scheme
-    <% end %>
   </h2>
 </div>
 
 <div class="card card-padding" ng-controller="ScoreSchemeEditorCtrl" ng-init="initialize(<%= current_project.id %>, <%= @scheme.id %>)">
-
+  <div class="card-header">
+    <div class="row">
+      <div class="col-sm-6">
+        <%= link_to edit_project_score_scheme_path(current_project, @scheme), class: 'btn btn-primary pull-left m-b-5' do %>
+        <i class="md-edit"></i>
+        Edit Scoring Scheme
+        <% end %>
+      </div>
+      <div class="col-sm-6">
+        <a class="btn btn-success pull-right m-10" id="add-score-unit" ng-click="newScoreUnit()">
+          <i class="md-add">New Score Unit</i>
+        </a>
+      </div>
+    </div>
+  </div>
   <%= render 'score_unit' %>
   <%= render 'single_select' %>
   <%= render 'multiple_select' %>
@@ -83,9 +93,9 @@
       </div>
     </div>
   </div>
-  <a class="btn btn-success pull-right m-10" id="add-score-unit" ng-click="newScoreUnit()">
+  <!-- <a class="btn btn-success pull-right m-10" id="add-score-unit" ng-click="newScoreUnit()">
     <i class="md-add">New Score Unit</i>
-  </a>
+  </a> -->
   <div class="text-center">
     <dir-pagination-controls max-size="<%= Settings.maximum_number_of_links %>" direction-links="true" boundary-links="true" on-page-change="getScoreUnits(newPageNumber)"></dir-pagination-controls>
   </div>

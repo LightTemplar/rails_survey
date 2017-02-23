@@ -5,55 +5,85 @@
     </div>
 
     <div class="modal-body">
-      <div class="row">
-        <label for="score-unit-question-type" class="col-xs-3">Question Type</label>
-        <select class="col-xs-5" ng-model="scoreUnit.question_type" ng-change="questionTypeChanged()" ng-options="questionType for questionType in scorableQuestionTypes" name="scoreUnitQuestionType" required></select>
-        <!--TODO ensure required validation works -->
-        <div class="col-xs-4" ng-messages="newScoreUnitForm.scoreUnitQuestionType.$error">
-          <div class="c-red" ng-message="required">Question type is required!</div>
+      <div class="form-group">
+        <div class="row">
+          <label for="score-unit-question-type" class="col-md-3">Question Type</label>
+          <div class="col-md-5">
+            <div class="fg-line">
+              <div class="select">
+                <select class="form-control" ng-model="scoreUnit.question_type" ng-change="questionTypeChanged()" ng-options="questionType for questionType in scorableQuestionTypes" name="scoreUnitQuestionType" required></select>
+              </div>
+            </div>
+          </div>
+          <!--TODO ensure required validation works -->
+          <div class="col-md-4" ng-messages="newScoreUnitForm.scoreUnitQuestionType.$error">
+            <div class="c-red" ng-message="required">Question type is required!</div>
+          </div>
         </div>
       </div>
 
-      <div class="row">
-        <label for="score-unit-score-type" class="col-xs-3">Score Type</label>
-        <select class="col-xs-5" ng-model="scoreUnit.score_type" ng-options="scoreType.key as scoreType.key for scoreType in scoreTypes" name="scoreUnitScoreType" required></select>
-        <div class="col-xs-4" ng-messages="newScoreUnitForm.scoreUnitScoreType.$error">
-          <div class="c-red" ng-message="required">Score type is required!</div>
+      <div class="form-group">
+        <div class="row">
+          <label for="score-unit-score-type" class="col-md-3">Score Type</label>
+          <div class="col-md-5">
+            <div class="fg-line">
+              <div class="select">
+                <select class="form-control" ng-model="scoreUnit.score_type" ng-options="scoreType.key as scoreType.key for scoreType in scoreTypes" name="scoreUnitScoreType" required></select>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4" ng-messages="newScoreUnitForm.scoreUnitScoreType.$error">
+            <div class="c-red" ng-message="required">Score type is required!</div>
+          </div>
         </div>
       </div>
 
-      <div class="row">
-        <label for="score-unit-min" class="col-xs-3">Minimum Score</label>
-        <input type="number" name="scoreUnitMin" ng-model="scoreUnit.min" class="col-xs-5" required/>
-        <div class="col-xs-4" ng-messages="newScoreUnitForm.scoreUnitMin.$error">
-          <div class="c-red" ng-message="required">Minimum score is required!</div>
+      <div class="form-group">
+        <div class="row">
+          <label for="score-unit-min" class="col-md-3">Minimum Score</label>
+          <div class="col-md-5">
+            <input type="number" name="scoreUnitMin" ng-model="scoreUnit.min" class="form-control" required/>
+          </div>
+          <div class="col-md-4" ng-messages="newScoreUnitForm.scoreUnitMin.$error">
+            <div class="c-red" ng-message="required">Minimum score is required!</div>
+          </div>
         </div>
       </div>
 
-      <div class="row">
-        <label for="score-unit-max" class="col-xs-3">Maximum Score</label>
-        <input type="number" name="scoreUnitMax" ng-model="scoreUnit.max" class="col-xs-5" required/>
-        <div class="col-xs-4" ng-messages="newScoreUnitForm.scoreUnitMax.$error">
-          <div class="c-red" ng-message="required">Maximum score is required!</div>
+      <div class="form-group">
+        <div class="row">
+          <label for="score-unit-max" class="col-md-3">Maximum Score</label>
+          <div class="col-md-5">
+            <input type="number" name="scoreUnitMax" ng-model="scoreUnit.max" class="form-control" required/>
+          </div>
+          <div class="col-md-4" ng-messages="newScoreUnitForm.scoreUnitMax.$error">
+            <div class="c-red" ng-message="required">Maximum score is required!</div>
+          </div>
         </div>
       </div>
 
-      <div class="row">
-        <label for="score-unit-weight" class="col-xs-3">Score Weight</label>
-        <input type="number" name="scoreUnitWeight" ng-model="scoreUnit.weight" min="1" class="col-xs-5" required/>
-        <div class="col-xs-4" ng-messages="newScoreUnitForm.scoreUnitWeight.$error">
-          <div class="c-red" ng-message="required">Score weight is required!</div>
-          <div class="c-red" ng-message="min">Minimum weight is 1!</div>
+      <div class="form-group">
+        <div class="row">
+          <label for="score-unit-weight" class="col-md-3">Score Weight</label>
+          <div class="col-md-5">
+            <input type="number" name="scoreUnitWeight" ng-model="scoreUnit.weight" min="1" class="form-control" required/>
+          </div>
+          <div class="col-md-4" ng-messages="newScoreUnitForm.scoreUnitWeight.$error">
+            <div class="c-red" ng-message="required">Score weight is required!</div>
+            <div class="c-red" ng-message="min">Minimum weight is 1!</div>
+          </div>
         </div>
       </div>
 
       <div class="questions-modal-box">
         <h4 class="text-center c-blue">Select question(s) for this score unit</h3>
-        <div class="col-sm-6" ng-repeat="question in questions">
-          <input type="checkbox" checklist-model="scoreUnit.question_ids" checklist-value="question.id" name="scoreUnitQuestions">
-            <span>
-              {{question.question_identifier}}</span>
-          </input>
+        <div class="col-md-6" ng-repeat="question in questions">
+          <div class="checkbox m-b-15">
+            <label>
+              <input type="checkbox" checklist-model="scoreUnit.question_ids" checklist-value="question.id" name="scoreUnitQuestions"/>
+              <i class="input-helper"></i>{{question.question_identifier}}
+            </label>
+          </div>
         </div>
         <!--TODO ensure required validation works -->
         <div ng-messages="newScoreUnitForm.scoreUnitQuestions.$error">
@@ -63,32 +93,40 @@
         </div>
       </div>
 
-      <div class="row" ng-show="scoreUnit.score_type == 'simple_search'">
+      <div ng-show="scoreUnit.score_type == 'simple_search'">
         <h4 class="text-center c-blue">Phrase(s) to search for in response</h4>
-        <div ng-repeat="(option_label, options) in scoreUnit.option_scores | groupBy: 'label'">
-          <div ng-repeat="option in options">
-            <div class="row" ng-show="$index == 0">
-              <div class="col-md-10">
-                <input ng-model="option.label" ng-change="searchTermChanged(options, option.label)"/>
-              </div>
-              <div class="col-md-2">
-                <button type="button" class="btn btn-danger" ng-click="deleteSearchTerm(options)">Delete</button>
+        <div class="form-group">
+          <div ng-repeat="(option_label, options) in scoreUnit.option_scores | groupBy: 'label'">
+            <div ng-show="$index == 0" ng-repeat="option in options">
+              <div class="form-group">
+                <div class="row">
+                  <div class="col-md-10">{{option.label}}</div>
+                  <div class="col-md-2">
+                    <button type="button" class="btn btn-danger" ng-click="deleteSearchTerm(options)">
+                      <i class="md-delete"></i>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-md-4">
-            <input type="text" ng-init="searchTerm.label = ''" ng-model="searchTerm.label"/>
-          </div>
-          <div class="col-md-2 ">
-            <button type="button" class="btn btn-primary" data-ng-click="add(searchTerm)">Add</button>
-          </div>
-          <div class="col-md-6">
-            Use a , to separate phrases that have similar meaning e.g. ok, yes, yeah
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-10">
+              <div class="fg-line">
+                <input type="text" class="form-control" ng-init="searchTerm.label = ''" ng-model="searchTerm.label" placeholder="Use a , to separate phrases that have similar meaning e.g. ok, yes, yeah"/>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <button type="button" class="btn btn-primary" data-ng-click="add(searchTerm)">
+                <i class="md-add"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
     </div>
 
     <div class="modal-footer">

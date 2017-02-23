@@ -2,17 +2,21 @@
   <%= render 'header', title: 'Simple Search' %>
   <form name="simpleSearchForm" ng-submit="save()">
     <div class="modal-body">
-      <div class="row">
-        <label class="col-xs-5">Phrases</label>
-        <label class="col-xs-2">Exists</label>
-        <label class="col-xs-2">Score</label>
-        <div class="col-xs-3"></div>
-      </div>
+      <h4 class="row">
+        <label class="col-md-5">Search Phrases</label>
+        <label class="col-md-2">Exists</label>
+        <label class="col-md-2">Score</label>
+        <div class="col-md-3"></div>
+      </h4>
       <div class="row" ng-repeat="option in scoreUnit.option_scores">
-        <label class="col-xs-5 text-left">{{option.label}}</label>
-        <label class="col-xs-2">{{option.exists}}</label>
-        <input class="col-xs-2 text-left" type="number" ng-model="option.value" min="{{scoreUnit.min}}" max="{{scoreUnit.max}}" name="optionScoreValue{{$index}}" required/>
-        <div class="col-xs-3" ng-messages="simpleSearchForm['optionScoreValue' + $index].$error">
+        <label class="col-md-5 text-left">{{option.label}}</label>
+        <label class="col-md-2">{{option.exists}}</label>
+        <div class="col-md-2 form-group">
+          <div class="fg-line">
+            <input class="form-control text-left" type="number" ng-model="option.value" min="{{scoreUnit.min}}" max="{{scoreUnit.max}}" name="optionScoreValue{{$index}}" required/>
+          </div>
+        </div>
+        <div class="col-md-3" ng-messages="simpleSearchForm['optionScoreValue' + $index].$error">
           <div class="c-red" ng-message="required">Score value required!</div>
           <div class="c-red" ng-message="min">Value below minimum!</div>
           <div class="c-red" ng-message="max">Value above maximum!</div>

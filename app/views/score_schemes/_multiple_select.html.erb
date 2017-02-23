@@ -4,12 +4,16 @@
     <div class="modal-body">
       <div class="row" ng-repeat="num in scoreRange">
         <div class="row">
-          <label class="col-xs-10 text-right">Check all the options below needed to get a score of:</label>
-          <label class="col-xs-2 text-left">{{num.value}}</label>
+          <label class="col-md-10 text-right">Check all the options below needed to get a score of:</label>
+          <label class="col-md-2 text-left">{{num.value}}</label>
         </div>
-        <div class="col-xs-6" ng-repeat="option in scoreUnit.option_scores | filter: {value: num.value}">
-          <input type="checkbox" name="{{option.label}}_{{option.value}}" ng-model="option.selected"/>
-          {{option.label}}
+        <div class="col-md-6" ng-repeat="option in scoreUnit.option_scores | filter: {value: num.value}">
+          <div class="checkbox m-b-15">
+            <label>
+              <input type="checkbox" name="{{option.label}}_{{option.value}}" ng-model="option.selected"/>
+              <i class="input-helper"></i>{{option.label}}
+            </label>
+          </div>
         </div>
       </div>
     </div>
