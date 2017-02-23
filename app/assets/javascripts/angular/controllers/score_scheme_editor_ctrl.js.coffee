@@ -109,8 +109,7 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
               existingOption.selected = true
               allOptions[index] = existingOption
           scoreUnit.option_scores = allOptions
-        else if scoreUnit.score_type == 'range'
-          # TODO: Add fix for edits
+        else if scoreUnit.score_type == 'range' || scoreUnit.score_type == 'multiple_select_sum'
           scoreUnit.option_scores = optionScores
       )
 
