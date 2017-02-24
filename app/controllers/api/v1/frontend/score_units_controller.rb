@@ -26,7 +26,7 @@ module Api
           score_unit.questions << questions
           if score_unit.save
             params[:option_scores].each do |opt|
-              OptionScore.create(score_unit_id: score_unit.id, option_id: opt['option_id'], value: opt['value'], label: opt['label'], exists: opt['exists'])
+              OptionScore.create(score_unit_id: score_unit.id, option_id: opt['option_id'], value: opt['value'], label: opt['label'], exists: opt['exists'], next_question: opt['next_question'])
             end
             render json: score_unit, status: :created
           else
@@ -49,7 +49,7 @@ module Api
             if params[:option_scores]
               score_unit.option_scores.delete_all
               params[:option_scores].each do |option|
-                OptionScore.create(score_unit_id: score_unit.id, option_id: option['option_id'], value: option['value'], label: option['label'], exists: option['exists'])
+                OptionScore.create(score_unit_id: score_unit.id, option_id: option['option_id'], value: option['value'], label: option['label'], exists: option['exists'], next_question: option['next_question'])
               end
             else
               score_unit.option_scores.delete_all

@@ -162,6 +162,7 @@ ActiveRecord::Schema.define(version: 20170222160246) do
     t.datetime "updated_at"
     t.string   "label"
     t.boolean  "exists"
+    t.boolean  "next_question"
   end
 
   create_table "option_translations", force: true do |t|
