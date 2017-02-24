@@ -12,8 +12,7 @@ module Api
           elsif !params[:grid_id].blank?
             respond_with instrument.questions.where(grid_id: params[:grid_id])
           else
-            respond_with instrument.questions.select(:id, :question_identifier, :question_type).as_json(only: [:id,
-              :question_identifier, :question_type])
+            respond_with instrument.questions # TODO fix this - return only what is needed
           end
         end
 
@@ -94,10 +93,9 @@ module Api
         end
 
         def question_params
-          params.require(:question).permit(:text, :question_type, :question_identifier, :instrument_id, :follow_up_position,
-                                           :following_up_question_identifier, :reg_ex_validation, :child_update_count,
-                                           :number_in_instrument, :reg_ex_validation_message, :identifies_survey, :grid_id,
-                                           :instructions, :first_in_grid, :instrument_version_number, :critical)
+          params.require(:question).permit(:text, :question_type,     :question_identifier, :instrument_id, :follow_up_position,
+            :following_up_question_identifier, :reg_ex_validation, :child_update_count, :number_in_instrument, :reg_ex_validation_message, :identifies_survey, :grid_id,
+          :instructions, :first_in_grid, :instrument_version_number, :critical)
         end
 
       end

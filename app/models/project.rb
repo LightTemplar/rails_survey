@@ -11,6 +11,7 @@
 #
 
 class Project < ActiveRecord::Base
+  include SynchAble
   has_many :instruments, dependent: :destroy
   has_many :surveys, through: :instruments
   has_many :project_devices, dependent: :destroy
@@ -32,11 +33,11 @@ class Project < ActiveRecord::Base
   has_many :grids, through: :instruments
   has_many :grid_labels, through: :grids
   has_many :metrics, through: :instruments
+  has_many :rosters, dependent: :destroy
   has_many :score_schemes, through: :instruments
   has_many :score_units, through: :score_schemes
   has_many :option_scores, through: :score_units
   has_many :scores, through: :score_schemes
-
   validates :name, presence: true, allow_blank: false
   validates :description, presence: true, allow_blank: true
 
@@ -156,4 +157,5 @@ class Project < ActiveRecord::Base
   def merge_period_counts(grouped_responses)
     grouped_responses.map(&:to_a).flatten(1).each_with_object({}) { |(k, v), h| (h[k] ||= []) << v; }
   end
+
 end

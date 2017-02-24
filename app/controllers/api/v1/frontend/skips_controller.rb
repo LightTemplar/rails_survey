@@ -6,13 +6,12 @@ module Api
 
         def index
           option = current_project.options.find(params[:option_id])
-          skips = option.skips
-          respond_with skips
+          respond_with option.skips
         end
 
         def show
           option = current_project.options.find(params[:option_id])
-          skip = option.skips.find(params[:id])
+          respond_with option.skips.find(params[:id])
         end
 
         def create

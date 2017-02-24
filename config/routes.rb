@@ -1,11 +1,12 @@
+require 'sidekiq/web'
 RailsSurvey::Application.routes.draw do
-  require 'sidekiq/web'
-  authenticate :user, ->(u) { u.admin? } do
-    mount Sidekiq::Web => '/sidekiq'
+
+  devise_for :users
+  authenticate :user, lambda { |u| u.admin? } do
+    mount Sidekiq::Web, at: '/sidekiq'
   end
   mount GollumRails::Engine => '/wiki'
   ActiveAdmin.routes(self)
-  devise_for :users
 
   namespace :api, defaults: { format: 'json' } do
     namespace :v1 do
@@ -65,8 +66,33 @@ RailsSurvey::Application.routes.draw do
         resources :device_sync_entries, only: [:create]
         resources :grids, only: [:index]
         resources :grid_labels, only: [:index]
+        member do
+          get :current_time
+        end
       end
     end
+
+    namespace :v2 do
+      resources :projects do
+        resources :instruments, only: :index
+        resources :device_users, only: :index
+        resources :questions, only: :index
+        resources :options, only: :index
+        resources :images, only: [:index, :show]
+        resources :surveys, only: [:create]
+        resources :responses, only: [:create]
+        resources :response_images, only: [:create]
+        resources :sections, only: :index
+        resources :android_updates, only: [:index, :show]
+        resources :skips, only: :index
+        resources :rules, only: :index
+        resources :device_sync_entries, only: [:create]
+        resources :grids, only: :index
+        resources :grid_labels, only: :index
+        resources :rosters, only: [:create]
+      end
+    end
+
   end
 
   root to: 'projects#index'
@@ -120,12 +146,12 @@ RailsSurvey::Application.routes.draw do
     resources :graphs, only: [:index]
     resources :response_exports do
       member do
-        get :project_long_format_responses
-        get :project_wide_format_responses
-        get :project_short_format_responses
-        get :instrument_long_format_responses
-        get :instrument_wide_format_responses
-        get :instrument_short_format_responses
+        get :project_responses_long
+        get :project_responses_wide
+        get :project_responses_short
+        get :instrument_responses_long
+        get :instrument_responses_wide
+        get :instrument_responses_short
         get :project_response_images
         get :instrument_response_images
       end
@@ -140,8 +166,12 @@ RailsSurvey::Application.routes.draw do
         end
       end
     end
+    resources :rosters do
+      resources :surveys
+    end
   end
   resources :request_roles, only: [:index]
   get '/photos/:id/:style.:format', controller: 'api/v1/frontend/images', action: 'show'
   get '/pictures/:id/:style.:format', controller: 'response_images', action: 'show'
+
 end

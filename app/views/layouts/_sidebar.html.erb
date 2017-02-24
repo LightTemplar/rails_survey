@@ -4,13 +4,15 @@
   <% if current_user.admin_user? %>
   <li>
     <%= link_to admin_dashboard_path do %>
-    <i class="md md-verified-user"></i>Admin Dashboard
+    <i class="md md-verified-user"></i>
+    Admin Dashboard
     <% end %>
   </li>
   <% end %>
   <li>
     <%= link_to root_path do %>
-    <i class="md md-home"></i>Projects
+    <i class="md md-home"></i>
+    Projects
     <% end %>
   </li>
 
@@ -44,6 +46,12 @@
         <%= link_to project_surveys_path(current_project) do %>
         <i class="md-file-download"></i>
         <span class="name">Responses</span>
+        <% end %>
+      </li>
+      <li>
+        <%= link_to project_rosters_path(current_project) do %>
+        <i class="md-file-download"></i>
+        <span class="name">Rosters</span>
         <% end %>
       </li>
       <li>
@@ -91,6 +99,13 @@
     <%= link_to project_rules_path(current_project) do %>
     <i class="md-check-box"></i>
     <span class="name">Rules</span>
+    <% end %>
+  </li>
+
+  <li>
+    <%= link_to '/sidekiq' do %>
+    <i class="md-group-work"></i>
+    <span class="name">Sidekiq</span>
     <% end %>
   </li>
 

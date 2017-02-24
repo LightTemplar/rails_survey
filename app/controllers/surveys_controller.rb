@@ -4,7 +4,12 @@ class SurveysController < ApplicationController
   def index
     @instruments = current_project.instruments
     @aggregators = current_project.aggregators
-    @surveys = current_project.surveys.order(created_at: :desc).page(params[:page])
+    if params[:roster_id]
+      roster = current_project.rosters.find params[:roster_id]
+      @surveys = roster.surveys.order(created_at: :desc).page(params[:page])
+    else
+      @surveys = current_project.surveys.order(created_at: :desc).page(params[:page])
+    end
     authorize @surveys
   end
 

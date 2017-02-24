@@ -16,6 +16,7 @@
 #
 
 class Option < ActiveRecord::Base
+  include CacheWarmAble
   include Translatable
   default_scope { order('special ASC, number_in_question ASC') }
   scope :special_options, -> { where(special: true) }
@@ -31,7 +32,7 @@ class Option < ActiveRecord::Base
   after_save :check_parent_criticality
   has_paper_trail
   acts_as_paranoid
-  has_many :skips, dependent: :destroy 
+  has_many :skips, dependent: :destroy
   has_one :grid_label
 
   validates :text, presence: true, allow_blank: false
@@ -39,7 +40,7 @@ class Option < ActiveRecord::Base
   amoeba do
     enable
     include_field :translations
-    nullify :next_question 
+    nullify :next_question
   end
 
   def sanitize_next_question
@@ -63,7 +64,7 @@ class Option < ActiveRecord::Base
       read_attribute(:text)
     end
   end
-  
+
   def instrument_version
     if instrument && (read_attribute(:instrument_version_number) == -1)
       instrument.current_version_number
@@ -73,9 +74,9 @@ class Option < ActiveRecord::Base
   end
 
   def as_json(options={})
-    super((options || {}).merge({
-        methods: [:instrument_version]
-    }))
+    Rails.cache.fetch("#{cache_key}/as_json") do
+      super((options || {}).merge({methods: [:instrument_version]}))
+    end
   end
 
   def update_option_translation(status = true)
@@ -83,7 +84,7 @@ class Option < ActiveRecord::Base
       translation.update_attribute(:option_changed, status)
     end
   end
-  
+
   private
   def update_instrument_version
     unless instrument.nil? && question.nil?
@@ -92,9 +93,9 @@ class Option < ActiveRecord::Base
       question.update_column(:instrument_version_number, instrument.current_version_number)
     end
   end
-  
+
   def record_instrument_version_number
-    update_column(:instrument_version_number, instrument.current_version_number) 
+    update_column(:instrument_version_number, instrument.current_version_number)
     question.update_column(:instrument_version_number, instrument.current_version_number)
   end
 

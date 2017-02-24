@@ -9,6 +9,7 @@ ActiveAdmin.register Instrument do
       li link_to 'Translations', admin_instrument_instrument_translations_path(params[:id])
       li link_to 'Surveys', admin_instrument_surveys_path(params[:id])
       li link_to 'Response Exports', admin_instrument_response_exports_path(params[:id])
+      li link_to 'Rosters', admin_instrument_rosters_path(params[:id])
     end
   end
 
