@@ -143,6 +143,7 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
     $uibModal.open(
       templateUrl: file,
       controller: 'ScoreUnitModalCtrl',
+      size: 'lg',
       resolve: scoreUnit: -> scoreUnit
     )
 

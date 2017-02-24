@@ -35,12 +35,11 @@ App.controller 'ScoreUnitModalCtrl', ['$scope', '$uibModalInstance', 'scoreUnit'
       } , ->
         option_scores = []
         angular.forEach options, (option, index) ->
-          option_scores.push({label: option.text, option_id: option.id, value: ''} )
+          option_scores.push({label: option.text, option_id: option.id, value: '', question_id: option.question_id} )
         $scope.scoreUnit.option_scores = option_scores
         $uibModalInstance.close($scope.scoreUnit)
       )
     else
-      console.log($scope.scoreUnit.option_scores)
       $uibModalInstance.close($scope.scoreUnit)
 
   $scope.back = () ->
@@ -68,6 +67,9 @@ App.controller 'ScoreUnitModalCtrl', ['$scope', '$uibModalInstance', 'scoreUnit'
 
   $scope.someQuestionSelected = () ->
     if $scope.scoreUnit.question_ids? && $scope.scoreUnit.question_ids.length > 0 then true else false
+
+  $scope.getQuestion = (qid) ->
+    $filter('filter')($scope.questions, id: parseInt(qid), true)[0]
 
   deleteOption = (option) ->
     option.project_id = $scope.scoreUnit.project_id
