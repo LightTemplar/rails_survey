@@ -26,6 +26,7 @@
 #
 
 class Question < ActiveRecord::Base
+  include CacheWarmAble
   include Translatable
   default_scope { order('number_in_instrument ASC') }
   belongs_to :instrument
@@ -85,7 +86,7 @@ class Question < ActiveRecord::Base
   end
 
   def non_special_options
-    options.where(special: false)
+    options.select { |option| !option.special }
   end
 
   def has_non_special_options?
@@ -104,11 +105,13 @@ class Question < ActiveRecord::Base
     end
   end
 
-  def as_json(options = {})
-    if options[:only].blank?
-      super((options || {}).merge(methods: [:option_count, :instrument_version, :image_count, :question_version]))
-    else
-      super(options)
+  def as_json(options={})
+    Rails.cache.fetch("#{cache_key}/as_json") do
+      if options[:only].blank?
+        super((options || {}).merge({methods: [:option_count, :instrument_version, :image_count, :question_version]}))
+      else
+        super(options)
+      end
     end
   end
 
@@ -117,7 +120,7 @@ class Question < ActiveRecord::Base
   end
 
   def other_index
-    options.length
+    non_special_options.length
   end
 
   def update_question_translation(status = true)
@@ -192,4 +195,5 @@ class Question < ActiveRecord::Base
     Option.set_callback(:save, :before, :update_instrument_version)
     Option.set_callback(:save, :before, :update_option_translation)
   end
+
 end

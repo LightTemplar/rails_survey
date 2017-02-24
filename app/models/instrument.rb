@@ -26,6 +26,7 @@ class Instrument < ActiveRecord::Base
   include Translatable
   include Alignable
   include LanguageAssignable
+  include CacheWarmAble
   serialize :special_options, Array
   scope :published, -> { where(published: true) }
   belongs_to :project
@@ -40,7 +41,9 @@ class Instrument < ActiveRecord::Base
   has_many :rules, dependent: :destroy
   has_many :grids, dependent: :destroy
   has_many :metrics, dependent: :destroy
+  has_many :rosters
   has_many :score_schemes, dependent: :destroy
+
   has_paper_trail :on => [:update, :destroy]
   acts_as_paranoid
   before_save :update_question_count
@@ -62,10 +65,7 @@ class Instrument < ActiveRecord::Base
   end
 
   def version_by_version_number(version_number)
-    InstrumentVersion.build(
-        instrument_id: id,
-        version_number: version_number
-    )
+    InstrumentVersion.build(instrument_id: id, version_number: version_number)
   end
 
   def completion_rate
@@ -85,9 +85,9 @@ class Instrument < ActiveRecord::Base
   end
 
   def as_json(options={})
-    super((options || {}).merge({
-                                    methods: [:current_version_number, :question_count]
-                                }))
+    Rails.cache.fetch("#{cache_key}/as_json") do
+      super((options || {}).merge({methods: [:current_version_number, :question_count]}))
+    end
   end
 
   def survey_instrument_versions
@@ -109,21 +109,21 @@ class Instrument < ActiveRecord::Base
     format << ['number_in_instrument', 'question_identifier', 'question_type', 'question_instructions', 'question_text'] + instrument_translation_languages
     questions.each do |question|
       format << [question.number_in_instrument, question.question_identifier, question.question_type,
-                 Sanitize.fragment(question.instructions), Sanitize.fragment(question.text)] + translations_for_object(question)
+      Sanitize.fragment(question.instructions), Sanitize.fragment(question.text)] + translations_for_object(question)
       question.options.each {
-          |option| format << ['', '', '', "Option for question #{question.question_identifier}", option.text] + translations_for_object(option)
+        |option| format << ['', '', '', "Option for question #{question.question_identifier}", option.text] + translations_for_object(option)
         if option.next_question
           format << ['', '', '', "For option #{option}, SKIP TO question", option.next_question]
         end
         if option.skips
           option.skips.each {
-              |skip| format << ['', '', '', "For option #{option.text}, SKIP question", skip.question_identifier]
+            |skip| format << ['', '', '', "For option #{option.text}, SKIP question", skip.question_identifier]
           }
         end
       }
       if question.reg_ex_validation_message
         format << ['', '', '', "Regular expression failure message for #{question.question_identifier}",
-                   question.reg_ex_validation_message]
+        question.reg_ex_validation_message]
       end
       if question.following_up_question_identifier
         format << ['', '', '', "Following up on question", question.following_up_question_identifier]
@@ -146,7 +146,7 @@ class Instrument < ActiveRecord::Base
   def translations_for_object(obj)
     text_translations = []
     obj.translations.each do |translation|
-      if (instrument_translation_languages.include? translation.language)
+      if instrument_translation_languages.include? translation.language
         text_translations << Sanitize.fragment(translation.text)
       end
     end
