@@ -12,7 +12,7 @@ module Api
           elsif !params[:grid_id].blank?
             respond_with instrument.questions.where(grid_id: params[:grid_id])
           else
-            respond_with instrument.questions.select(:id, :question_identifier).as_json(only: [:id, :question_identifier])
+            respond_with instrument.questions #TODO relook at this
           end
         end
 

@@ -22,21 +22,21 @@
             <td><%= export.created_at.strftime("%Y-%m-%d %I:%M%p") %></td>
             <td>
               <% if export.long_done && export.long_format_url %>
-                  <%= link_to 'long csv', project_long_format_responses_project_response_export_path(current_project, export.id) %>
+                  <%= link_to 'long csv', project_responses_long_project_response_export_path(current_project, export.id) %>
               <% elsif export.long_format_url && !export.long_done %>
                   Processing...
               <% end %>
             </td>
             <td>
               <% if export.wide_done && export.wide_format_url %>
-                  <%= link_to 'wide csv', project_wide_format_responses_project_response_export_path(current_project, export.id) %>
+                  <%= link_to 'wide csv', project_responses_wide_project_response_export_path(current_project, export.id) %>
               <% elsif export.wide_format_url && !export.wide_done %>
                   Processing...
               <% end %>
             </td>
             <td>
               <% if export.short_done && export.short_format_url %>
-                  <%= link_to 'short csv', project_short_format_responses_project_response_export_path(current_project, export.id) %>
+                  <%= link_to 'short csv', project_responses_short_project_response_export_path(current_project, export.id) %>
               <% elsif export.short_format_url && !export.short_done %>
                   Processing..
               <% end %>
@@ -84,21 +84,21 @@
             <td><%= export.created_at.strftime("%Y-%m-%d %I:%M%p") %></td>
             <td>
               <% if export.long_done && export.long_format_url %>
-                  <%= link_to 'long csv', instrument_long_format_responses_project_response_export_path(current_project, export.id) %>
+                  <%= link_to 'long csv', instrument_responses_long_project_response_export_path(current_project, export.id) %>
               <% elsif export.long_format_url && !export.long_done %>
                   Processing...
               <% end %>
             </td>
             <td>
               <% if export.wide_done && export.wide_format_url %>
-                  <%= link_to 'wide csv', instrument_wide_format_responses_project_response_export_path(current_project, export.id) %>
+                  <%= link_to 'wide csv', instrument_responses_wide_project_response_export_path(current_project, export.id) %>
               <% elsif export.wide_format_url && !export.wide_done %>
                   Processing...
               <% end %>
             </td>
             <td>
               <% if export.short_done && export.short_format_url %>
-                  <%= link_to 'short csv', instrument_short_format_responses_project_response_export_path(current_project, export.id) %>
+                  <%= link_to 'short csv', instrument_responses_short_project_response_export_path(current_project, export.id) %>
               <% elsif !export.short_done && export.short_format_url %>
                   Processing...
               <% end %>

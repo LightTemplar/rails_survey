@@ -17,6 +17,7 @@ question_with_other: ['SELECT_ONE_WRITE_OTHER', 'SELECT_MULTIPLE_WRITE_OTHER']
 question_with_select_multiple: ['SELECT_MULTIPLE', 'SELECT_MULTIPLE_WRITE_OTHER', 'SELECT_MULTIPLE_IMAGE']
 question_with_multiple_skips: ['SELECT_ONE']
 question_without_options: ['FREE_RESPONSE', 'SLIDER', 'DATE', 'RATING', 'TIME', 'INTEGER', 'EMAIL_ADDRESS', 'DECIMAL_NUMBER', 'INSTRUCTIONS', 'MONTH_AND_YEAR', 'YEAR', 'PHONE_NUMBER', 'ADDRESS', 'REAR_PICTURE', 'FRONT_PICTURE']
+list_question_types: ['LIST_OF_INTEGER_BOXES', 'LIST_OF_TEXT_BOXES']
 
 rule_types: 
   instrument_survey_limit_rule:
@@ -64,7 +65,8 @@ languages: [
              ['Khmer', 'km'],
              ['Spanish', 'es'],
              ['Swahili', 'sw'],
-             ['Telugu', 'te']
+             ['Telugu', 'te'],
+             ['Chinese', 'zh']
           ]
 
 # Special Responses
@@ -84,3 +86,5 @@ maximum_number_of_links: 15
 danger_zone_days: 3
 
 metric_keys: ['device_uuid', 'Participant ID', 'Center ID']
+
+roster_types: ['STAFF','CHILD']

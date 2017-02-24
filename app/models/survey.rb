@@ -18,12 +18,15 @@
 #  device_label              :string(255)
 #  deleted_at                :datetime
 #  has_critical_responses    :boolean
+#  roster_uuid               :string(255)
 #
 
 class Survey < ActiveRecord::Base
   include RedisJobTracker
+  include OptionLabels
   belongs_to :instrument
   belongs_to :device
+  belongs_to :roster, foreign_key: :roster_uuid, primary_key: :uuid
   has_many :responses, foreign_key: :survey_uuid, primary_key: :uuid, dependent: :destroy
   acts_as_paranoid
   delegate :project, to: :instrument
@@ -33,6 +36,7 @@ class Survey < ActiveRecord::Base
   validates :instrument_version_number, presence: true, allow_blank: false
   paginates_per 50
   after_create :calculate_percentage
+  scope :non_roster, -> { where(roster_uuid: nil) }
 
   def calculate_percentage
     SurveyPercentWorker.perform_in(5.hours, id)
@@ -88,14 +92,7 @@ class Survey < ActiveRecord::Base
   end
 
   def option_labels(response)
-    labels = []
-    versioned_question = chronicled_question(response.question_identifier)
-    if response.question and versioned_question and versioned_question.has_options?
-      response.text.split(Settings.list_delimiter).each do |option_index|
-        (versioned_question.has_other? and option_index.to_i == versioned_question.other_index) ? labels << "Other" : labels << versioned_question.options[option_index.to_i].to_s
-      end
-    end
-    labels.join(Settings.list_delimiter)
+    generate_labels(response, chronicled_question(response.question_identifier))
   end
 
   def self.instrument_export(instrument)
@@ -120,10 +117,8 @@ class Survey < ActiveRecord::Base
   end
 
   def self.export_short_csv(short_csv, instrument, export_id)
-    interval = 0
     instrument.surveys.each do |survey|
-      interval += 10
-      ShortExportWorker.perform_in(interval.seconds, short_csv.path, survey.id, export_id)
+      ShortExportWorker.perform_in(30.seconds, short_csv.path, survey.id, export_id)
     end
   end
 
@@ -150,10 +145,8 @@ class Survey < ActiveRecord::Base
   end
 
   def self.export_wide_csv(wide_csv, instrument, export_id)
-    interval = 0
     instrument.surveys.each do |survey|
-      interval += 10
-      WideExportWorker.perform_in(interval.seconds, wide_csv.path, survey.id, export_id)
+      WideExportWorker.perform_in(30.seconds, wide_csv.path, survey.id, export_id)
     end
   end
 
@@ -234,10 +227,8 @@ class Survey < ActiveRecord::Base
   end
 
   def self.export_long_csv(long_csv, model, export_id)
-    interval = 0
     model.surveys.each do |survey|
-      interval += 10
-      LongExportWorker.perform_in(interval.seconds, long_csv.path, survey.id, export_id)
+      LongExportWorker.perform_in(30.seconds, long_csv.path, survey.id, export_id)
     end
   end
 
