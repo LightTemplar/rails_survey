@@ -20,6 +20,7 @@
 #
 
 class Response < ActiveRecord::Base
+  include OptionLabels
   belongs_to :question
   belongs_to :survey, foreign_key: :survey_uuid, primary_key: :uuid
   delegate :device, to: :survey 
@@ -64,17 +65,7 @@ class Response < ActiveRecord::Base
   end
 
   def option_labels
-    labels = [] 
-    if question and versioned_question and versioned_question.has_options? 
-      text.split(Settings.list_delimiter).each do |option_index|
-        if versioned_question.has_other? and option_index.to_i == versioned_question.other_index
-          labels << 'Other'
-        else
-          labels << versioned_question.options[option_index.to_i].to_s
-        end
-      end
-    end
-    labels.join(Settings.list_delimiter)
+    generate_labels(self, versioned_question)
   end
 
   def dictionary

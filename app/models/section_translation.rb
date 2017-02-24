@@ -12,6 +12,9 @@
 #
 
 class SectionTranslation < ActiveRecord::Base
+  include CacheWarmAble
+  include AsJsonAble
   belongs_to :section
   validates :text, presence: true, allow_blank: false
+
 end

@@ -10,11 +10,13 @@
 # Ignore the default SQLite database.
 /db/*.sqlite3
 /db/*.sqlite3-journal
+db/seeds
 
 # Ignore all logfiles and tempfiles.
 /log/*.log
 /tmp
 
+# Ignore config files
 config/settings.local.yml
 config/settings/*.local.yml
 config/environments/*.local.yml
@@ -23,11 +25,6 @@ config/newrelic.yml
 
 # Ignore Rubymine files
 scopes/scope_settings.xml
-encodings.xml
-misc.xml
-modules.xml
-rails_survey.iml
-vcs.xml
 .idea/
 .project
 .settings/
@@ -35,11 +32,14 @@ vcs.xml
 # Ignore modules for node
 node/node_modules
 
-#Ignore Redis files
+# Ignore Redis files
 dump.rdb
 
-#Ignore public assets - generate by Capistrano on deploy
+# Ignore public assets - generate by Capistrano on deploy
 public/assets/
 
-#Ignore capistrano files
+# Ignore capistrano files
 config/deploy/production.rb
+
+# Ignore OS files
+*.DS_Store

@@ -27,5 +27,6 @@ module RailsSurvey
     config.assets.initialize_on_precompile = false
     config.assets.precompile += %w( active_admin.js active_admin.css.scss )
     config.wiki_path = 'wiki.git'
+    config.cache_store = :redis_store, 'redis://localhost:6379/0/cache'
   end
 end

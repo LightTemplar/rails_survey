@@ -23,7 +23,13 @@ ActiveAdmin.register Survey do
   end
 
   action_item :calculate_completion_rates, only: :index do
-    link_to 'Recalculate Completion Rates', calculate_completion_rates_admin_instrument_surveys_path(params[:instrument_id])
+    if params[:roster_id]
+      roster = Roster.find params[:roster_id]
+      instrument_id = roster.instrument_id
+    else
+      instrument_id = params[:instrument_id]
+    end
+    link_to 'Recalculate Completion Rates', calculate_completion_rates_admin_instrument_surveys_path(instrument_id)
   end
 
   controller do

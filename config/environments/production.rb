@@ -50,7 +50,7 @@ RailsSurvey::Application.configure do
   config.force_ssl = true
 
   # Set to :debug to see everything in the log.
-  config.log_level = :info
+  config.log_level = :warn
 
   # Prepend all log lines with the following tags.
   # config.log_tags = [ :subdomain, :uuid ]
@@ -98,7 +98,7 @@ RailsSurvey::Application.configure do
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.smtp_settings = {
        :authentication => :plain,
-       :address => "smtp.mailgun.org",
+       :address => 'smtp.mailgun.org',
        :port => 587,
        :domain => ENV['SMTP_DOMAIN'],
        :user_name => ENV['SMTP_USERNAME'],

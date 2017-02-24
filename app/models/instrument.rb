@@ -18,12 +18,15 @@
 #  show_sections_page      :boolean          default(FALSE)
 #  navigate_to_review_page :boolean          default(FALSE)
 #  critical_message        :text
+#  roster                  :boolean          default(FALSE)
+#  roster_type             :string(255)
 #
 
 class Instrument < ActiveRecord::Base
   include Translatable
   include Alignable
   include LanguageAssignable
+  include CacheWarmAble
   serialize :special_options, Array
   scope :published, -> { where(published: true) }
   belongs_to :project
@@ -38,6 +41,7 @@ class Instrument < ActiveRecord::Base
   has_many :rules, dependent: :destroy
   has_many :grids, dependent: :destroy
   has_many :metrics, dependent: :destroy
+  has_many :rosters
   has_paper_trail :on => [:update, :destroy]
   acts_as_paranoid
   before_save :update_question_count
@@ -59,10 +63,7 @@ class Instrument < ActiveRecord::Base
   end
 
   def version_by_version_number(version_number)
-    InstrumentVersion.build(
-        instrument_id: id,
-        version_number: version_number
-    )
+    InstrumentVersion.build(instrument_id: id, version_number: version_number)
   end
 
   def completion_rate
@@ -82,9 +83,9 @@ class Instrument < ActiveRecord::Base
   end
 
   def as_json(options={})
-    super((options || {}).merge({
-                                    methods: [:current_version_number, :question_count]
-                                }))
+    Rails.cache.fetch("#{cache_key}/as_json") do
+      super((options || {}).merge({methods: [:current_version_number, :question_count]}))
+    end
   end
 
   def survey_instrument_versions
@@ -143,7 +144,7 @@ class Instrument < ActiveRecord::Base
   def translations_for_object(obj)
     text_translations = []
     obj.translations.each do |translation|
-      if (instrument_translation_languages.include? translation.language)
+      if instrument_translation_languages.include? translation.language
         text_translations << Sanitize.fragment(translation.text)
       end
     end

@@ -38,6 +38,21 @@
         </div>
 
         <div class="form-group">
+          <%= f.label :roster, class: 'col-sm-5 control-label' %>
+          <div class="col-sm-7">
+            <%= f.check_box :roster, class: 'checkbox' %>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :roster_type, class: 'col-sm-5 control-label' %>
+          <div class="col-sm-7">
+            <%= f.select(:roster_type, options_for_select(Settings.roster_types, @instrument.roster_type),
+                         include_blank: true) %>
+          </div>
+        </div>
+
+        <div class="form-group">
           <%= f.label :show_instructions, class: 'col-sm-5 control-label' %>
           <div class="col-sm-7">
             <%= f.check_box :show_instructions, class: 'checkbox' %>
@@ -63,8 +78,8 @@
           <div class="col-sm-7">
             <% Settings.special_responses.each do |option| %>
                 <div>
-                    <%= check_box_tag 'instrument[special_options][]', option, @instrument.special_options.include?(option) %>
-                    <%= option %>
+                  <%= check_box_tag 'instrument[special_options][]', option, @instrument.special_options.include?(option) %>
+                  <%= option %>
                 </div>
             <% end %>
             <strong>Where RF = Refused, DK = Don't Know, and NA = Not Applicable</strong>

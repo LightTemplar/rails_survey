@@ -35,10 +35,12 @@
                 </ul>
               </li>
 
-              <li>
-                <%= link_to project_surveys_path(current_project) do %>
-                    <i class="md-file-download"></i><span class="name">Survey Results</span>
-                <% end %>
+              <li class="sub-menu">
+                <a href=""><i class="md md-file-download"></i>Results</a>
+                <ul>
+                  <li><%= link_to 'Surveys', project_surveys_path(current_project) %></li>
+                  <li><%= link_to 'Rosters', project_rosters_path(current_project) %></li>
+                </ul>
               </li>
 
               <li>
@@ -46,14 +48,6 @@
                     <i class="md-notifications"></i><span class="name">Notifications</span>
                 <% end %>
               </li>
-
-              <!--<li class="sub-menu">
-           <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#side-nav" href="#stats-collapse"><i class="md-insert-chart"></i> <span class="name">Statistics</span></a>
-           <ul id="stats-collapse" class="panel-collapse collapse">
-             <li><%#= link_to 'Response Charts', project_graphs_daily_path(current_project) %> </li>
-             <li><%#= link_to 'Realtime Charts', project_graphs_path(current_project) %></li>
-           </ul>
-        </li>-->
 
               <li class="sub-menu">
                 <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#side-nav" href="#exports-collapse"><i class="md-cloud-download"></i>
@@ -67,6 +61,12 @@
               <li>
                 <%= link_to project_rules_path(current_project) do %>
                     <i class="md-check-box"></i><span class="name">Rules</span>
+                <% end %>
+              </li>
+
+              <li>
+                <%= link_to '/sidekiq' do %>
+                    <i class="md-group-work"></i><span class="name">Sidekiq</span>
                 <% end %>
               </li>
 
