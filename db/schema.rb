@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161222153410) do
+ActiveRecord::Schema.define(version: 20170222160246) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -160,6 +160,9 @@ ActiveRecord::Schema.define(version: 20161222153410) do
     t.float    "value"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "label"
+    t.boolean  "exists"
+    t.boolean  "next_question"
   end
 
   create_table "option_translations", force: true do |t|
@@ -203,6 +206,7 @@ ActiveRecord::Schema.define(version: 20161222153410) do
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "survey_aggregator"
   end
 
   create_table "question_translations", force: true do |t|
@@ -240,6 +244,14 @@ ActiveRecord::Schema.define(version: 20161222153410) do
   end
 
   add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true
+
+  create_table "raw_scores", force: true do |t|
+    t.integer  "score_unit_id"
+    t.integer  "score_id"
+    t.float    "value"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "response_exports", force: true do |t|
     t.string   "long_format_url"
@@ -353,6 +365,15 @@ ActiveRecord::Schema.define(version: 20161222153410) do
     t.float    "min"
     t.float    "max"
     t.float    "weight"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "score_type"
+  end
+
+  create_table "scores", force: true do |t|
+    t.integer  "survey_id"
+    t.integer  "score_scheme_id"
+    t.float    "score_sum"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
