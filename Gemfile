@@ -25,7 +25,7 @@ gem 'pundit'
 gem 'paperclip', '~> 4.1.0'
 gem 'sidekiq', '~> 4.2', '>= 4.2.5'
 gem 'kaminari'
-gem 'sinatra', '~> 1.4.5', :require => nil
+gem 'sinatra', '~> 1.4.5', require: nil
 gem 'sanitize', '~> 3.0.0'
 gem 'amoeba'
 gem 'devise_google_authenticator', '0.3.14'
@@ -61,7 +61,7 @@ end
 group :test do
   gem 'rspec-rails', '~> 2.0'
   gem 'rspec-mocks'
-  gem 'factory_girl_rails', '~> 4.0', :require => false
+  gem 'factory_girl_rails', '~> 4.0', require: false
   gem 'database_cleaner', '~> 1.0'
   gem 'capybara'
   gem 'selenium-webdriver', '~> 2.39'

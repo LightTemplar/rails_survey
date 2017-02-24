@@ -16,6 +16,7 @@ db/seeds
 /log/*.log
 /tmp
 
+# Ignore config files
 config/settings.local.yml
 config/settings/*.local.yml
 config/environments/*.local.yml
@@ -31,11 +32,14 @@ scopes/scope_settings.xml
 # Ignore modules for node
 node/node_modules
 
-#Ignore Redis files
+# Ignore Redis files
 dump.rdb
 
-#Ignore public assets - generate by Capistrano on deploy
+# Ignore public assets - generate by Capistrano on deploy
 public/assets/
 
-#Ignore capistrano files
+# Ignore capistrano files
 config/deploy/production.rb
+
+# Ignore OS files
+*.DS_Store
