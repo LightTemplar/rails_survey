@@ -1,27 +1,12 @@
-App.controller 'OptionsCtrl', ['$scope', 'Option', 'filterFilter', ($scope, Option, filterFilter) ->
-  $scope.options = []
-  $scope.defaultOptions = []
-  $scope.init = (project_id, instrument_id, question_id) ->
-    $scope.project_id = project_id
-    $scope.instrument_id = instrument_id
-    $scope.question_id = question_id
-    if $scope.instrument_id and $scope.question_id
-      $scope.options = $scope.queryOptions()
-
-  $scope.queryOptions = ->
-    Option.query(
-      {
-        "project_id": $scope.project_id,
-        "instrument_id": $scope.instrument_id,
-        "question_id": $scope.question_id
-      }, -> $scope.filterSpecialOptions()
-    )
-
-  $scope.filterSpecialOptions = () ->
-    $scope.defaultOptions = filterFilter($scope.options, special: false, true)
+App.controller 'OptionsCtrl', ['$scope', 'Option', '$filter', ($scope, Option, $filter) ->
+  $scope.project_id = $scope.question.project_id
+  $scope.instrument_id = $scope.question.instrument_id
+  $scope.question_id = $scope.question.id
+  $scope.options = (angular.copy(option, new Option) for option in $scope.question.options)
+  $scope.defaultOptions = $filter('filter')($scope.options, special: false, true)
 
   $scope.$on('SAVE_QUESTION', (event, id) ->
-    if ($scope.question_id == id or !$scope.question_id)
+    if ($scope.question_id == id or ! $scope.question_id)
       $scope.question_id = id
       angular.forEach $scope.options, (option, index) ->
         option.number_in_question = index + 1
@@ -29,24 +14,15 @@ App.controller 'OptionsCtrl', ['$scope', 'Option', 'filterFilter', ($scope, Opti
         option.instrument_id = $scope.instrument_id
         option.question_id = $scope.question_id
         if option.id
-          option.$update({},
-            (data, headers) -> $scope.options = $scope.queryOptions(),
+          option.$update({} ,
+            (data, headers) ->,
             (result, headers) -> alert "Error updating option"
           )
         else
-          option.$save({},
-            (data, headers) -> $scope.options = $scope.queryOptions(),
+          option.$save({} ,
+            (data, headers) ->,
             (result, headers) -> alert "Error saving option"
           )
-  )
- 
-  $scope.$on('CANCEL_QUESTION', ->
-    $scope.options = $scope.queryOptions()
-  )
-
-  $scope.$on('EDIT_QUESTION', (event, id) ->
-    if $scope.question_id == id
-      $scope.options = $scope.queryOptions()
   )
 
   $scope.removeOption = (option) ->
@@ -55,18 +31,25 @@ App.controller 'OptionsCtrl', ['$scope', 'Option', 'filterFilter', ($scope, Opti
       option.project_id = $scope.project_id
       option.instrument_id = $scope.instrument_id
       option.question_id = $scope.question_id
-      option.$delete({},
-        (data, headers) -> $scope.options = $scope.queryOptions(),
+      option.$delete({} ,
+        (data, headers) ->
+          $scope.question.options.splice($scope.question.options.indexOf(option), 1)
+          filterOptions()
+        ,
         (result, headers) -> alert "Error deleting option"
       )
 
   $scope.addOption = ->
+    $scope.options = [] if ! $scope.options?
     option = new Option
     option.project_id = $scope.project_id
     option.instrument_id = $scope.instrument_id
     option.question_id = $scope.question_id
     option.special = false
     $scope.options.push(option)
-    $scope.filterSpecialOptions()
-    
+    filterOptions()
+
+  filterOptions = () ->
+    $scope.defaultOptions = $filter('filter')($scope.options, special: false, true)
+
 ]

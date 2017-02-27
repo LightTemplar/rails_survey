@@ -105,14 +105,15 @@ class Question < ActiveRecord::Base
     end
   end
 
-  def as_json(options={})
+  # Clear the cache after change in the code within the caching block
+  def as_json(options = {})
     Rails.cache.fetch("#{cache_key}/as_json") do
-      if options[:only].blank?
-        super((options || {}).merge({methods: [:option_count, :instrument_version, :image_count, :question_version]}))
-      else
-        super(options)
-      end
+      super(options.merge(methods: [:option_count, :image_count, :instrument_version, :question_version]) { |_key, old_val, new_val| old_val.concat(new_val) })
     end
+  end
+
+  def project_id
+    instrument.project_id
   end
 
   def has_other?
@@ -195,5 +196,4 @@ class Question < ActiveRecord::Base
     Option.set_callback(:save, :before, :update_instrument_version)
     Option.set_callback(:save, :before, :update_option_translation)
   end
-
 end
