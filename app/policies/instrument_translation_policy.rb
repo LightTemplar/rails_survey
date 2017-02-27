@@ -8,11 +8,11 @@ class InstrumentTranslationPolicy < ApplicationPolicy
   def index?
     true
   end
-  
+
   def new?
     write_access
   end
-  
+
   def create?
     write_access
   end
@@ -25,6 +25,10 @@ class InstrumentTranslationPolicy < ApplicationPolicy
     true
   end
 
+  def show_original?
+    true
+  end
+
   def edit?
     write_access
   end
@@ -32,11 +36,10 @@ class InstrumentTranslationPolicy < ApplicationPolicy
   def update?
     write_access
   end
-  
+
   private
 
   def write_access
     @user.admin_user? || @user.translator?
   end
-
 end

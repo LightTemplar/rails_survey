@@ -1,8 +1,7 @@
 require 'sidekiq/web'
 RailsSurvey::Application.routes.draw do
-
   devise_for :users
-  authenticate :user, lambda { |u| u.admin? } do
+  authenticate :user, ->(u) { u.admin? } do
     mount Sidekiq::Web, at: '/sidekiq'
   end
   mount GollumRails::Engine => '/wiki'
@@ -92,7 +91,6 @@ RailsSurvey::Application.routes.draw do
         resources :rosters, only: [:create]
       end
     end
-
   end
 
   root to: 'projects#index'
@@ -105,7 +103,11 @@ RailsSurvey::Application.routes.draw do
     resources :scores
     resources :instruments do
       resources :versions, only: [:index, :show]
-      resources :instrument_translations
+      resources :instrument_translations do
+        member do
+          get :show_original
+        end
+      end
       resources :sections
       resources :grids
       member do
@@ -173,5 +175,4 @@ RailsSurvey::Application.routes.draw do
   resources :request_roles, only: [:index]
   get '/photos/:id/:style.:format', controller: 'api/v1/frontend/images', action: 'show'
   get '/pictures/:id/:style.:format', controller: 'response_images', action: 'show'
-
 end

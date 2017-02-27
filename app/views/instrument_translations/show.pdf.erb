@@ -1,4 +1,4 @@
-<div class="block-header text-center" xmlns="http://www.w3.org/1999/html">
+<div class="block-header text-center">
   <h2>
     <i class="md-language c-indigo">
       <%= link_to @instrument.title, project_instrument_path(current_project, @instrument) %>
@@ -15,41 +15,21 @@
 </div>
 
 <div class="card">
-  <div class="card-header">
-    <div class="pull-right">
-      <%= link_to show_original_project_instrument_instrument_translation_path(current_project, @instrument, @instrument_translation, format: :pdf), class: 'btn btn-primary' do %>
-      <i class="md-print">
-        PDF (en)
-      </i>
-      <% end %>
-      <%= link_to project_instrument_instrument_translation_path(current_project, @instrument, @instrument_translation, format: :pdf), class: 'btn btn-primary' do %>
-      <i class="md-print">
-        PDF
-      </i>
-      <% end %>
-      <%= link_to edit_project_instrument_instrument_translation_path(current_project, @instrument, @instrument_translation), class: 'btn btn-primary' do %>
-      <i class="md-language">
-        Edit Translation
-      </i>
-      <% end %>
-    </div>
-  </div>
-
   <div class="card-body card-padding">
     <div class="table-responsive">
       <table class="table table-hover fixed-wide">
-        <thead>
-          <tr>
+        <thead style="display: table-header-group">
+          <tr style="page-break-inside: avoid">
             <th>Questions</th>
             <th><%= @instrument.language %></th>
             <th><%= @instrument_translation.language %></th>
-            <th>Translation Status</th>
           </tr>
         </thead>
         <tbody>
           <% @instrument.questions.each do |question| %>
           <% if question.has_translation_for?(@instrument_translation.language) %>
           <tr
+            style="page-break-inside: avoid"
             ng-class="{danger: question_translation_changed}"
             ng-controller="QuestionTranslationsCtrl"
             ng-init="init(
@@ -62,24 +42,19 @@
             <td><%= question.question_identifier %></td>
             <td><%= raw question.text %></td>
             <td><%= raw (question.translated_for @instrument_translation.language, :text) %></td>
-            <td>
-              <button ng-show="<%= question.translated_for(@instrument_translation.language, :question_changed)  %>  && showOkButton" type="button" class="btn btn-sm btn-success" ng-click="setQuestionChanged(<%= @instrument_translation.language %>, false)">
-                Translation OK
-              </button>
-            </td>
           </tr>
         <% else %>
-          <tr>
+          <tr style="page-break-inside: avoid">
             <td><%= question.question_identifier %></td>
             <td><%= raw question.text %></td>
             <td><%= raw (question.translated_for @instrument_translation.language, :text) %></td>
-            <td></td>
           </tr>
           <% end %>
           <% if question.has_non_special_options? %>
           <% question.non_special_options.each do |option| %>
           <% if option.has_translation_for?(@instrument_translation.language) %>
           <tr
+            style="page-break-inside: avoid"
             ng-class="{danger: option_translation_changed}"
             ng-controller="OptionTranslationsCtrl"
             ng-init="init(
@@ -95,18 +70,12 @@
             <td><%= option.text %></td>
             <td><%= option.translated_for(@instrument_translation.language, :text) %>
             </td>
-            <td>
-              <button ng-show="<%= option.translated_for(@instrument_translation.language, :option_changed)  %>  && showOkButton" type="button" class="btn btn-sm btn-success" ng-click="setOptionChanged(<%= @instrument_translation.language %>, false)">
-                Translation OK
-              </button>
-            </td>
           </tr>
         <% else %>
-          <tr>
+          <tr style="page-break-inside: avoid">
             <td>Option for
               <%= question.question_identifier %></td>
             <td><%= option.text %></td>
-            <td></td>
             <td></td>
           </tr>
           <% end %>
@@ -116,6 +85,7 @@
           <% if question.starts_section? %>
           <% if question.section.has_translation_for?(@instrument_translation.language) %>
           <tr
+            style="page-break-inside: avoid"
             ng-class="{danger: section_translation_changed}"
             ng-controller="SectionTranslationsCtrl"
             ng-init="init(
@@ -129,28 +99,23 @@
               <%= question.question_identifier %></td>
             <td><%= question.section.title %></td>
             <td><%= question.section.translated_for(@instrument_translation.language, :text) %></td>
-            <td>
-              <button ng-show="<%= question.section.translated_for(@instrument_translation.language, :section_changed)  %>  && showOkButton" type="button" class="btn btn-sm btn-success" ng-click="setSectionChanged(<%= @instrument_translation.language %>, false)">
-                Translation OK
-              </button>
-            </td>
           </tr>
         <% else %>
-          <tr>
+          <tr style="page-break-inside: avoid">
             <td>Section starting with
               <%= question.question_identifier %></td>
             <td><%= question.section.title %></td>
-            <td></td>
             <td></td>
           </tr>
           <% end %>
           <% end %>
           <% if question.reg_ex_validation_message %>
-          <td>Regular expression failure message for
-            <%= question.question_identifier %></td>
-          <td><%= question.reg_ex_validation_message %></td>
-          <td><%= question.translated_for @instrument_translation.language, :reg_ex_validation_message %></td>
-          <td></td>
+          <tr style="page-break-inside: avoid">
+            <td>Regular expression failure message for
+              <%= question.question_identifier %></td>
+            <td><%= question.reg_ex_validation_message %></td>
+            <td><%= question.translated_for @instrument_translation.language, :reg_ex_validation_message %></td>
+          </tr>
           <% end %>
           <% end %>
         </tbody>

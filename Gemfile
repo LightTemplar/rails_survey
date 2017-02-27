@@ -38,6 +38,8 @@ gem 'oj'
 gem 'oj_mimic_json'
 gem 'redis', '~> 3.3', '>= 3.3.1'
 gem 'redis-rails'
+gem 'wkhtmltopdf-binary'
+gem 'wicked_pdf'
 
 group :production do
   gem 'rails_12factor'
