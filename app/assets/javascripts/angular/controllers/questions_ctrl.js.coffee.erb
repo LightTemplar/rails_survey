@@ -1,5 +1,5 @@
 App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', '$filter', ($scope, Question, Instrument, $filter) ->
-  $scope.questions = []
+  # $scope.questions = []
   $scope.all_questions = []
   $scope.selectedQuestions = []
   $scope.searchText = ""
@@ -18,16 +18,20 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', '$filter', 
     $scope.project_id = project_id
     $scope.instrument_id = instrument_id
     $scope.getQuestionsPerPage(1)
-    $scope.all_questions = Question.query({"project_id": project_id, "instrument_id": instrument_id})
-    $scope.instruments = Instrument.query({"project_id": project_id}, -> $scope.filterInstruments())
+    $scope.all_questions = Question.query({"project_id": project_id, "instrument_id": instrument_id} )
+    $scope.instruments = Instrument.query({"project_id": project_id} , -> $scope.filterInstruments())
 
   $scope.pagination = current: $scope.currentPaginationNumber
 
   $scope.getQuestionsPerPage = (pageNumber) ->
     $scope.currentPaginationNumber = pageNumber
-    $scope.questions = Question.query(
-            {"project_id": $scope.project_id, "instrument_id": $scope.instrument_id, "page": pageNumber}, ->
-            $scope.questions = $filter('orderBy')($scope.questions, 'number_in_instrument', false)
+    $scope.questions = Question.query({
+      "project_id": $scope.project_id,
+      "instrument_id": $scope.instrument_id,
+      "page": pageNumber
+      } , ->
+        console.log($scope.questions)
+        $scope.questions = $filter('orderBy')($scope.questions, 'number_in_instrument', false)
     )
 
   $scope.filterInstruments = () ->
@@ -74,12 +78,12 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', '$filter', 
 
   $scope.saveQuestion = ->
     if $scope.edit_question.id
-      $scope.edit_question.$update({},
+      $scope.edit_question.$update({} ,
         (data, headers) -> $scope.saveQuestionSuccess(data, headers),
         (result, headers) -> $scope.saveQuestionFailure(result, headers)
       )
     else
-      $scope.edit_question.$save({},
+      $scope.edit_question.$save({} ,
         (data, headers) -> $scope.saveQuestionSuccess(data, headers),
         (result, headers) -> $scope.saveQuestionFailure(result, headers)
       )
@@ -101,7 +105,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', '$filter', 
   $scope.deleteQuestion = (question) ->
     if confirm("Are you sure you want to delete this question?")
       question.project_id = $scope.project_id
-      question.$delete({},
+      question.$delete({} ,
         (data) ->
           question.id = null
         ,
@@ -121,7 +125,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', '$filter', 
         $scope.all_questions.slice(0, (question.number_in_instrument - 1))
 
   $scope.questionsAfter = (question) ->
-    if (question?)
+    if (question? )
       $scope.all_questions.slice(question.number_in_instrument, $scope.all_questions.length)
 
   $scope.questionTypes = ->
@@ -133,7 +137,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', '$filter', 
   $scope.questionTypesWithoutOptions = (questionType) ->
     questionType in <%= Settings.question_without_options %>
 
-  $scope.questionTypesWithImages = (questionType)->
+  $scope.questionTypesWithImages = (questionType) ->
     questionType in <%= Settings.question_with_images %>
 
   $scope.questionTypesWithMultipleSkipPatterns = (questionType) ->
@@ -144,7 +148,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', '$filter', 
 
   $scope.repositionQuestion = (question) ->
     question.project_id = $scope.project_id
-    question.$update({},
+    question.$update({} ,
       () ->
         $scope.questions = $scope.questions.filter (q) -> q isnt question
         if $scope.questionOnPage(question)
