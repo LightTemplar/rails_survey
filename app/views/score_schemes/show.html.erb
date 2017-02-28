@@ -27,7 +27,7 @@
   <%= render 'range' %>
   <%= render 'simple_search' %>
 
-  <div class="card-body m-10" dir-paginate="unit in score_units | itemsPerPage: setPerPage(<%= Settings.units_per_page %>)" current-page="pagination.current" total-items="totalItems">
+  <div class="card-body m-10" dir-paginate="unit in score_units | itemsPerPage: perPage" current-page="pagination.current" total-items="totalItems">
     <div class="listview lv-bordered lv-lg" ng-controller="ScoreUnitsCtrl" ng-init="initialize(
     <%= current_project.id %>, <%= @scheme.id %>, unit.id)">
       <div class="lv-item media">
@@ -94,6 +94,6 @@
     </div>
   </div>
   <div class="text-center">
-    <dir-pagination-controls max-size="<%= Settings.maximum_number_of_links %>" direction-links="true" boundary-links="true" on-page-change="getScoreUnits(newPageNumber)"></dir-pagination-controls>
+    <dir-pagination-controls max-size="maxNumOfLinks" direction-links="true" boundary-links="true" on-page-change="getScoreUnits(newPageNumber)"></dir-pagination-controls>
   </div>
 </div>

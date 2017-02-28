@@ -13,7 +13,6 @@ module Api
         def show
           respond_with current_project.instruments.find params[:id] if current_user
         end
-
       end
     end
   end
