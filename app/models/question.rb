@@ -36,7 +36,9 @@ class Question < ActiveRecord::Base
   has_many :options, dependent: :destroy
   has_many :translations, foreign_key: 'question_id', class_name: 'QuestionTranslation', dependent: :destroy
   has_many :images, dependent: :destroy
-  has_many :skips, foreign_key: :question_identifier, primary_key: :question_identifier, dependent: :destroy # different from has_many :skips, through: :options
+  # different from has_many :skips, through: :options
+  has_many :option_skips, through: :options, source: :skips
+  has_many :skips, foreign_key: :question_identifier, primary_key: :question_identifier, dependent: :destroy
   delegate :project, to: :instrument
   before_save :update_instrument_version, if: proc { |question| question.changed? && !question.child_update_count_changed? }
   before_save :update_question_translation, if: proc { |question| question.text_changed? }

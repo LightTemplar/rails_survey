@@ -18,7 +18,7 @@ module Api
           option = current_project.options.find(params[:option_id])
           @skip = option.skips.new(skip_params)
           if @skip.save
-            render nothing: true, status: :created
+            render json: @skip, status: :created
           else
             render nothing: true, status: :unprocessable_entity
           end
@@ -30,6 +30,7 @@ module Api
           respond_with skip.update_attributes(skip_params)
         end
 
+        # TODO: update cache
         def destroy
           option = current_project.options.find(params[:option_id])
           skip = option.skips.find(params[:id])
@@ -37,6 +38,7 @@ module Api
         end
 
         private
+
         def skip_params
           params.require(:skip).permit(:option_id, :question_identifier)
         end

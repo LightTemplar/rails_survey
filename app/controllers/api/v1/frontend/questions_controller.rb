@@ -9,7 +9,7 @@ module Api
           if !params[:page].blank?
             per_page = Settings.questions_per_page
             questions = instrument.questions.page(params[:page]).per(per_page)
-            respond_with questions.as_json(include: [:options], methods: [:project_id])
+            respond_with questions.as_json(include: [:options, :option_skips], methods: [:project_id])
           elsif !params[:grid_id].blank?
             respond_with instrument.questions.where(grid_id: params[:grid_id])
           else
