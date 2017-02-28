@@ -29,26 +29,33 @@
     </legend>
     <p class="text-muted">A skip pattern goes to a specific question based on if the user selects a specific option when responding to a question. Select the desired pattern for each option to this question.</p>
 
-    <div ng-repeat="option in options">
-      <div class="col-sm-7 control-label pull-left">
-        <label ng-if="option.text != 'ANY RESPONSE'" for="follow-up">If
+    <div class="row" ng-repeat="option in options">
+      <div class="col-md-7 control-label pull-left">
+        <div ng-if="option.text != 'ANY RESPONSE'" for="follow-up">If
           <strong>{{option.text}}</strong>
-          is selected, skip to:</label>
-        <label ng-if="option.text == 'ANY RESPONSE'" for="follow-up">If
+          is selected, skip to:</div>
+        <div ng-if="option.text == 'ANY RESPONSE'" for="follow-up">If
           <strong>{{option.text}}</strong>
-          is given, skip to:</label>
+          is given, skip to:</div>
       </div>
 
-      <div class="col-sm-5 pull-right">
-        <select
-          allow-single-deselect="true"
-          data-placeholder="Select a question identifier..."
-          no-results-text="'This does not match any valid question identifier'"
-          name="skip-pattern"
-          ng-model="option.next_question"
-          ng-options="q.question_identifier as q.question_identifier for q in questionsAfter(question)">
-          <option value="">None</option>
-        </select>
+      <div class="col-md-5 pull-right">
+        <div class="form-group">
+          <div class="fg-line">
+            <div class="fg-line">
+              <select
+                class="form-control"
+                allow-single-deselect="true"
+                data-placeholder="Select a question identifier..."
+                no-results-text="'This does not match any valid question identifier'"
+                name="skip-pattern"
+                ng-model="option.next_question"
+                ng-options="q.question_identifier as q.question_identifier for q in questionsAfter(question)">
+                <option value="">None</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
     </br>
   </div>
@@ -76,26 +83,31 @@
   <p class="text-muted">Use multi-skip patterns if you need to skip non-subsequent questions based on the option selected for this question.</p>
 
   <div ng-repeat="option in options">
-    <label for="follow-up" class="control-label">If
-      <strong>{{option.text}}</strong>
-      is selected, skip the questions with the following question identifiers:</label>
+    <div class="form-group">
+      <label for="follow-up" class="control-label">If
+        <strong>{{option.text}}</strong>
+        is selected, skip the questions with the following question identifiers:</label>
+    </div>
 
     <div ng-controller="SkipsCtrl">
-      <div class="col-sm-6" ng-repeat="skip in skips">
-        <div class="form-group">
-          <div class="col-sm-8">{{skip.question_identifier}}</div>
-          <div class="col-sm-4">
-            <button ng-click="removeSkip(skip)" class="btn btn-danger">
-              <i class="md-delete"></i>
-            </button>
+      <div class="row">
+        <div class="col-sm-6" ng-repeat="skip in skips">
+          <div class="form-group">
+            <label class="col-sm-8">{{skip.question_identifier}}</label>
+            <div class="col-sm-4">
+              <button ng-click="removeSkip(skip)" class="btn btn-danger">
+                <i class="md-delete"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
-      <div class="clearfix"></div>
-      <button type="submit" ng-click="addQuestionsToSkip()" class="btn  btn-primary pull-center">
-        <i class="md-add">Add Skips</i>
-      </button>
-      <div class="card card-padding" ng-show="showSkips">
+      <div class="form-group m-t-5">
+        <button type="submit" ng-click="addQuestionsToSkip()" class="btn  btn-primary pull-right">
+          <i class="md-add">Add Skips</i>
+        </button>
+      </div>
+      <div class="row" ng-show="showSkips">
         <div class="col-sm-6" ng-repeat="question in questions">
           <label>
             <input type="checkbox" ng-disabled="question.disabled" ng-model="question.checked">
@@ -103,10 +115,13 @@
             {{ question.question_identifier }}
           </label>
         </div>
-        <div class="clearfix"></div>
-        <button type="submit" ng-click="saveQuestionsToSkip()" class="btn btn-success btn-xs pull-center">
-          <i class="md-save">Save Skips</i>
-        </button>
+        <div class="form-group">
+          <div class="row m-l-10">
+            <button type="submit" ng-click="saveQuestionsToSkip()" class="btn btn-success pull-left">
+              <i class="md-save">Save Skips</i>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
