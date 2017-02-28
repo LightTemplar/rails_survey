@@ -1,9 +1,10 @@
 App.controller 'OptionsCtrl', ['$scope', 'Option', '$filter', ($scope, Option, $filter) ->
-  $scope.project_id = $scope.question.project_id
-  $scope.instrument_id = $scope.question.instrument_id
-  $scope.question_id = $scope.question.id
-  $scope.options = (angular.copy(option, new Option) for option in $scope.question.options)
-  $scope.defaultOptions = $filter('filter')($scope.options, special: false, true)
+  if $scope.question?
+    $scope.project_id = $scope.question.project_id
+    $scope.instrument_id = $scope.question.instrument_id
+    $scope.question_id = $scope.question.id
+    $scope.options = (angular.copy(option, new Option) for option in $scope.question.options) if $scope.question.options?
+    $scope.defaultOptions = $filter('filter')($scope.options, special: false, true)
 
   $scope.$on('SAVE_QUESTION', (event, id) ->
     if ($scope.question_id == id or ! $scope.question_id)
