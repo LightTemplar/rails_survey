@@ -17,7 +17,7 @@ App.controller 'FileUploadCtrl', ['$scope', '$fileUploader', 'Image', ($scope, $
       '|jpg|png|jpeg|'.indexOf(type) isnt - 1
 
   $scope.$watch 'question.images', ((newValue, oldValue, scope) ->
-    if $scope.question.images.length > 0
+    if $scope.question.images? && $scope.question.images.length > 0
       $scope.images = $scope.queryImages()
   ), true
 

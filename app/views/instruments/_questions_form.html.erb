@@ -90,7 +90,9 @@
       </div>
     </div>
 
-    <dir-pagination-controls on-page-change="getQuestionsPerPage(newPageNumber)" max-size="maxNumOfLinks"></dir-pagination-controls>
+    <div class="text-center">
+      <dir-pagination-controls max-size="maxNumOfLinks" direction-links="true" boundary-links="true" on-page-change="getQuestionsPerPage(newPageNumber)"></dir-pagination-controls>
+    </div>
 
     <div class="m-r-15" ng-show="questions.length == 0">
       <a class="btn btn-success pull-right" ng-click="newQuestion(null)" id="add-question-button">
