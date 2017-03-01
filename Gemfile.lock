@@ -246,6 +246,8 @@ GEM
       activesupport (>= 3.0.0)
     quiet_assets (1.1.0)
       railties (>= 3.1, < 5.0)
+    rabl (0.13.1)
+      activesupport (>= 2.3.14)
     rack (1.5.5)
     rack-protection (1.5.3)
       rack
@@ -432,6 +434,7 @@ DEPENDENCIES
   prawn
   pundit
   quiet_assets
+  rabl
   rails (= 4.1.13)
   rails_12factor
   redis (~> 3.3, >= 3.3.1)

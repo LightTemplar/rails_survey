@@ -108,11 +108,11 @@ class Question < ActiveRecord::Base
   end
 
   # Clear the cache after change in the code within the caching block
-  def as_json(options = {})
-    Rails.cache.fetch("#{cache_key}/as_json") do
-      super(options.merge(methods: [:option_count, :image_count, :instrument_version, :question_version]) { |_key, old_val, new_val| old_val.concat(new_val) })
-    end
-  end
+  # def as_json(options = {})
+  #   Rails.cache.fetch("#{cache_key}/as_json") do
+  #     super(options.merge(methods: [:option_count, :image_count, :instrument_version, :question_version]) { |_key, old_val, new_val| old_val.concat(new_val) })
+  #   end
+  # end
 
   def project_id
     instrument.project_id

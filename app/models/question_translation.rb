@@ -23,5 +23,4 @@ class QuestionTranslation < ActiveRecord::Base
   def touch_question
     question.touch if question && changed?
   end
-
 end

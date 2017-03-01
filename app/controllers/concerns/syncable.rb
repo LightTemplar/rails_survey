@@ -6,5 +6,4 @@ module Syncable
     previous_sync_time = DateTime.iso8601(last_sync_time)
     association.with_deleted.where("#{table_name}.updated_at >= ?", previous_sync_time)
   end
-
 end

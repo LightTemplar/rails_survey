@@ -4,16 +4,6 @@ module Api
       class SkipsController < ApiApplicationController
         respond_to :json
 
-        def index
-          option = current_project.options.find(params[:option_id])
-          respond_with option.skips
-        end
-
-        def show
-          option = current_project.options.find(params[:option_id])
-          respond_with option.skips.find(params[:id])
-        end
-
         def create
           option = current_project.options.find(params[:option_id])
           @skip = option.skips.new(skip_params)
@@ -30,7 +20,6 @@ module Api
           respond_with skip.update_attributes(skip_params)
         end
 
-        # TODO: update cache
         def destroy
           option = current_project.options.find(params[:option_id])
           skip = option.skips.find(params[:id])

@@ -3,24 +3,20 @@ module Api
     module Frontend
       class QuestionsController < ApiApplicationController
         respond_to :json
+        helper :api
 
         def index
           instrument = current_project.instruments.find(params[:instrument_id])
-          if !params[:page].blank?
-            per_page = Settings.questions_per_page
-            questions = instrument.questions.page(params[:page]).per(per_page)
-            respond_with questions.as_json(include: [:options, :option_skips, :images], methods: [:project_id])
-          elsif !params[:grid_id].blank?
-            respond_with instrument.questions.where(grid_id: params[:grid_id])
+          @page_num = params[:page]
+          if params[:grid_id].blank?
+            @questions = instrument.questions.page(@page_num).per(10)
           else
-            # TODO: select and return only the attributes that are needed
-            respond_with instrument.questions
+            @questions = instrument.questions.where(grid_id: params[:grid_id])
           end
         end
 
         def show
-          question = current_project.questions.find(params[:id])
-          respond_with question
+          @question = current_project.questions.find(params[:id])
         end
 
         def create
@@ -96,9 +92,7 @@ module Api
         end
 
         def question_params
-          params.require(:question).permit(:text, :question_type, :question_identifier, :instrument_id, :follow_up_position,
-                                           :following_up_question_identifier, :reg_ex_validation, :child_update_count, :number_in_instrument, :reg_ex_validation_message, :identifies_survey, :grid_id,
-                                           :instructions, :first_in_grid, :instrument_version_number, :critical)
+          params.require(:question).permit(:text, :question_type, :question_identifier, :instrument_id, :follow_up_position, :following_up_question_identifier, :reg_ex_validation, :child_update_count, :number_in_instrument, :reg_ex_validation_message, :identifies_survey, :grid_id, :instructions, :first_in_grid, :instrument_version_number, :critical)
         end
       end
     end
