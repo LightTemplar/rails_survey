@@ -3,19 +3,6 @@ module Api
     module Frontend
       class OptionsController < ApiApplicationController
         respond_to :json
-        
-        def index
-            question = current_project.questions.find(params[:question_id])
-            options = question.options
-            authorize options
-            respond_with options
-        end
-
-        def show
-          option = current_project.options.find(params[:id])
-          authorize option
-          respond_with option
-        end
 
         def create
           question = current_project.questions.find(params[:question_id])
@@ -41,11 +28,10 @@ module Api
         end
 
         private
-        def option_params
-          params.require(:option).permit(:question_id, :text, :next_question, :number_in_question,
-                                         :instrument_version_number, :critical)
-        end
 
+        def option_params
+          params.require(:option).permit(:question_id, :text, :next_question, :number_in_question, :instrument_version_number, :critical)
+        end
       end
     end
   end
