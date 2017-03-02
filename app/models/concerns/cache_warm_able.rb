@@ -14,6 +14,6 @@ module CacheWarmAble
   end
 
   def warm_cache
-    CacheWarmerWorker.perform_async(self.class.name, self.id)
+    CacheWarmerWorker.perform_async(self.class.name, id)
   end
 end

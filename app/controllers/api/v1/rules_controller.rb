@@ -6,9 +6,8 @@ module Api
 
       def index
         project = Project.find(params[:project_id])
-        rules = to_sync(project.rules, 'rules', params[:last_sync_time])
-        respond_with rules
+        @rules = to_sync(project.rules, 'rules', params[:last_sync_time])
       end
-    end 
+    end
   end
 end

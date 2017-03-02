@@ -12,7 +12,6 @@
 
 class GridLabel < ActiveRecord::Base
   include CacheWarmAble
-  include AsJsonAble
   belongs_to :grid
   belongs_to :option
   after_create :create_options
@@ -21,12 +20,9 @@ class GridLabel < ActiveRecord::Base
   def create_options
     if option_id.blank? && !grid.questions.blank?
       grid.questions.each do |question|
-        option = question.options.new(:text => label, :number_in_question => question.options.count + 1)
-        if option.save
-          option_id = option.id
-        end
+        option = question.options.new(text: label, number_in_question: question.options.count + 1)
+        option_id = option.id if option.save
       end
     end
   end
-
 end

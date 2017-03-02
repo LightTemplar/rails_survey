@@ -24,8 +24,8 @@ class Option < ActiveRecord::Base
   delegate :instrument, to: :question, allow_nil: true
   delegate :project, to: :question
   has_many :translations, foreign_key: 'option_id', class_name: 'OptionTranslation', dependent: :destroy
-  before_save :update_instrument_version, if: Proc.new { |option| option.changed? }
-  before_save :update_option_translation, if: Proc.new { |option| option.text_changed? }
+  before_save :update_instrument_version, if: proc { |option| option.changed? }
+  before_save :update_option_translation, if: proc { |option| option.text_changed? }
   before_destroy :update_instrument_version
   after_save :record_instrument_version_number
   after_save :sanitize_next_question
@@ -46,9 +46,7 @@ class Option < ActiveRecord::Base
   def sanitize_next_question
     unless next_question.blank?
       next_qst = instrument.questions.where(question_identifier: next_question)
-      if next_qst.blank?
-        update_columns(next_question: nil)
-      end
+      update_columns(next_question: nil) if next_qst.blank?
     end
   end
 
@@ -56,7 +54,7 @@ class Option < ActiveRecord::Base
     text
   end
 
-  #Return grid_label text if option has grid_label
+  # Return grid_label text if option has grid_label
   def text
     if grid_label
       grid_label.label
@@ -73,11 +71,11 @@ class Option < ActiveRecord::Base
     end
   end
 
-  def as_json(options={})
-    Rails.cache.fetch("#{cache_key}/as_json") do
-      super((options || {}).merge({methods: [:instrument_version]}))
-    end
-  end
+  # def as_json(options={})
+  #   Rails.cache.fetch("#{cache_key}/as_json") do
+  #     super((options || {}).merge({methods: [:instrument_version]}))
+  #   end
+  # end
 
   def update_option_translation(status = true)
     translations.each do |translation|
@@ -86,6 +84,7 @@ class Option < ActiveRecord::Base
   end
 
   private
+
   def update_instrument_version
     unless instrument.nil? && question.nil?
       instrument.update_instrument_version

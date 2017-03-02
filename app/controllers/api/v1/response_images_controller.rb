@@ -14,11 +14,10 @@ module Api
       end
 
       private
-      def response_image_params
-        params.require(:response_image).permit(:picture, :response_uuid, :picture_file_name, :picture_content_type,
-                                               :picture_file_size, :picture_updated_at, :picture_data)
-      end
 
+      def response_image_params
+        params.require(:response_image).permit(:picture, :response_uuid, :picture_file_name, :picture_content_type, :picture_file_size, :picture_updated_at, :picture_data)
+      end
     end
   end
 end

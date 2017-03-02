@@ -1,107 +1,126 @@
 <div class="block-header text-center text-capitalize">
-  <h2><i class="md-language c-indigo"> Translations for <%= @instrument.title %> </i></h2>
-
-  <div class="pull-left"> Instrument language: <%= @instrument.language %> </div>
+  <h2>
+    <i class="md-language c-indigo">
+      Translations for
+      <%= @instrument.title %>
+    </i>
+  </h2>
+  <div class="pull-left">
+    Instrument language:
+    <%= @instrument.language %>
+  </div>
 </div>
 
 <div class="card">
   <div class="body">
     <%= form_for [@project, @instrument, @instrument_translation] do |f| %>
-        <div class="card-header">
-          <% if @instrument_translation.errors.any? %>
-              <div class="error_messages">
-                <h2><%= pluralize(@instrument_translation.errors.count, "error") %> prohibited this translation from
-                  being
-                  saved:</h2>
-                <ul>
-                  <% @instrument_translation.errors.full_messages.each do |msg| %>
-                      <li><%= msg %></li>
-                  <% end %>
-                </ul>
-              </div>
+    <div class="card-header">
+      <% if @instrument_translation.errors.any? %>
+      <div class="error_messages">
+        <h2><%= pluralize(@instrument_translation.errors.count, "error") %>
+          prohibited this translation from being saved:</h2>
+        <ul>
+          <% @instrument_translation.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
           <% end %>
+        </ul>
+      </div>
+      <% end %>
 
-          <div class="form-group">
-            <%= f.label :language, 'Translation Language', class: 'col-sm-2 control-label' %>
-            <div class="col-sm-10">
-              <%= f.select(:language, options_for_select(Settings.languages, @instrument_translation.language)) %>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <%= f.label :title, 'Instrument Title', class: 'col-sm-2 control-label' %>
-            <div class="col-sm-10">
-              <%= f.text_field :title, class: 'fg-line form-control input-sm' %>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <%= f.label :critical_message, 'Instrument Critical Message', class: 'col-sm-2 control-label' %>
-            <div class="col-sm-10">
-              <%= f.text_area :critical_message, class: 'fg-line form-control input-sm' %>
-            </div>
-          </div>
-
-          <%= paginate @instrument.questions.page(params[:page]) %>
+      <div class="form-group">
+        <%= f.label :language, 'Translation Language', class: 'col-sm-2 control-label' %>
+        <div class="col-sm-10">
+          <%= f.select(:language, options_for_select(Settings.languages, @instrument_translation.language)) %>
         </div>
+      </div>
 
-        <div class="card-body card-padding">
-          <table class="table table-hover">
-            <thead>
-            <tr>
-              <th>Question Identifier</th>
-              <th><%= @instrument.language %></th>
-              <th>Translated Text</th>
-            </tr>
-            </thead>
-            <tbody>
-            <% @instrument.questions.page(params[:page]).each do |question| %>
-                <tr>
-                  <% unless question.instructions.blank? %>
-                      <td><%= question.question_identifier %></td>
-                      <td><%= raw question.instructions %></td>
-                      <td><%= text_area_tag "instructions_translations[#{question.id}]",
-                                            question.translated_for(@instrument_translation.language, :instructions), size: '70x5', class: 'wysihtml5' %>
-                      </td>
-                  <% end %>
-                </tr>
-                <tr class="<%= 'danger' if question.translated_for(@instrument_translation.language, :question_changed) %>">
-                  <td><%= question.question_identifier %></td>
-                  <td><%= raw question.text %></td>
-                  <td><%= text_area_tag "question_translations[#{question.id}]",
-                                        question.translated_for(@instrument_translation.language, :text), size: '70x5', class: 'wysihtml5' %></td>
-                </tr>
-                <% if question.has_non_special_options? %>
-                    <% question.non_special_options.each do |option| %>
-                        <tr class="<%= 'danger' if option.translated_for(@instrument_translation.language, :option_changed) %>">
-                          <td>Option for <%= question.question_identifier %></td>
-                          <td><%= option.text %></td>
-                          <td><%= text_area_tag "option_translations[#{option.id}]",
-                                                option.translated_for(@instrument_translation.language, :text), size: '70x5' %></td>
-                        </tr>
-                    <% end %>
-                <% end %>
-                <% if question.starts_section? %>
-                    <tr class="<%= 'danger' if question.section.translated_for(@instrument_translation.language, :section_changed) %>">
-                      <td>Section starting with <%= question.question_identifier %></td>
-                      <td><%= question.section.title %></td>
-                      <td><%= text_area_tag "section_translations[#{question.section.id}]",
-                                            question.section.translated_for(@instrument_translation.language, :text), size: '70x5' %></td>
-                    </tr>
-                <% end %>
-                <% if question.reg_ex_validation_message %>
-                    <td>Regular expression failure message for <%= question.question_identifier %></td>
-                    <td><%= question.reg_ex_validation_message %></td>
-                    <td><%= text_area_tag "validation_translations[#{question.id}]",
-                                          question.translated_for(@instrument_translation.language, :reg_ex_validation_message), size: '70x5' %></td>
-                <% end %>
+      <div class="form-group">
+        <%= f.label :title, 'Instrument Title', class: 'col-sm-2 control-label' %>
+        <div class="col-sm-10">
+          <%= f.text_field :title, class: 'fg-line form-control input-sm' %>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :critical_message, 'Instrument Critical Message', class: 'col-sm-2 control-label' %>
+        <div class="col-sm-10">
+          <%= f.text_area :critical_message, class: 'fg-line form-control input-sm' %>
+        </div>
+      </div>
+
+      <%#= paginate @instrument.questions.page(params[:page]) %>
+    </div>
+
+    <div class="card-body card-padding">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Question Identifier</th>
+            <th><%= @instrument.language %></th>
+            <th>Translated Text</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @instrument.questions.page(params[:page]).each do |question| %>
+          <tr>
+            <% unless question.instructions.blank? %>
+            <td><%= question.question_identifier %></td>
+            <td><%= raw question.instructions %></td>
+            <td>
+              <%= text_area_tag "instructions_translations[#{question.id}]", question.translated_for(@instrument_translation.language, :instructions), size: '70x5', class: 'wysihtml5' %>
+            </td>
             <% end %>
-            </tbody>
-          </table>
+          </tr>
+          <tr class="<%= 'danger' if question.translated_for(@instrument_translation.language, :question_changed) %>">
+            <td><%= question.question_identifier %></td>
+            <td><%= raw question.text %></td>
+            <td>
+              <%= text_area_tag "question_translations[#{question.id}]", question.translated_for(@instrument_translation.language, :text), size: '70x5', class: 'wysihtml5' %>
+            </td>
+          </tr>
+          <% if question.has_non_special_options? %>
+          <% question.non_special_options.each do |option| %>
+          <tr class="<%= 'danger' if option.translated_for(@instrument_translation.language, :option_changed) %>">
+            <td>Option for
+              <%= question.question_identifier %></td>
+            <td><%= option.text %></td>
+            <td>
+              <%= text_area_tag "option_translations[#{option.id}]", option.translated_for(@instrument_translation.language, :text), size: '70x5' %>
+            </td>
+          </tr>
+          <% end %>
+          <% end %>
+          <% if question.starts_section? %>
+          <tr class="<%= 'danger' if question.section.translated_for(@instrument_translation.language, :section_changed) %>">
+            <td>
+              Section starting with
+              <%= question.question_identifier %>
+            </td>
+            <td><%= question.section.title %></td>
+            <td>
+              <%= text_area_tag "section_translations[#{question.section.id}]", question.section.translated_for(@instrument_translation.language, :text), size: '70x5' %>
+            </td>
+          </tr>
+          <% end %>
+          <% if question.reg_ex_validation_message %>
+          <td>Regular expression failure message for
+            <%= question.question_identifier %></td>
+          <td><%= question.reg_ex_validation_message %></td>
+          <td>
+            <%= text_area_tag "validation_translations[#{question.id}]", question.translated_for(@instrument_translation.language, :reg_ex_validation_message), size: '70x5' %>
+          </td>
+          <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="pull-right m-20">
+          <%= f.submit class: 'btn btn-success' %>
         </div>
-        <div class="pull-right">
-          <%= f.submit class: 'btn btn-success btn-large' %>
-        </div>
+      </div>
+    </div>
     <% end %>
   </div>
 </div>

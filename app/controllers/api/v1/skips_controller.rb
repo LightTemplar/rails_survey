@@ -6,14 +6,13 @@ module Api
 
       def index
         project = Project.find(params[:project_id])
-        skips = to_sync(project.skips, 'skips', params[:last_sync_time])
-        respond_with skips
+        @skips = to_sync(project.skips, 'skips', params[:last_sync_time])
       end
 
       def show
-        respond_with Skip.find(params[:id])
+        project = Project.find(params[:project_id])
+        @skip = project.skips.find(params[:id])
       end
-
-    end 
+    end
   end
 end

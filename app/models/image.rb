@@ -23,12 +23,6 @@ class Image < ActiveRecord::Base
   validates_with AttachmentSizeValidator, attributes: :photo, less_than: 1.megabytes
   validates :question_id, presence: true, allow_blank: false
 
-  def as_json(options = {})
-    Rails.cache.fetch("#{cache_key}/as_json") do
-      super((options || {}).merge(methods: [:photo_url]))
-    end
-  end
-
   def photo_url
     photo.url(:medium)
   end

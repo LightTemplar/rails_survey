@@ -6,13 +6,15 @@ module Api
         helper :api
 
         def index
-          instrument = current_project.instruments.find(params[:instrument_id])
+          @instrument = current_project.instruments.find(params[:instrument_id])
           @page_num = params[:page]
-          if params[:grid_id].blank?
-            @questions = instrument.questions.page(@page_num).per(10)
-          else
-            @questions = instrument.questions.where(grid_id: params[:grid_id])
-          end
+          @questions = if !@page_num.blank?
+                         @instrument.questions.page(@page_num).per(10)
+                       elsif !params[:grid_id].blank?
+                         @instrument.questions.where(grid_id: params[:grid_id])
+                       else
+                         @instrument.questions
+                       end
         end
 
         def show

@@ -5,12 +5,13 @@ module Api
       respond_to :json
 
       def index
-        project = Project.find(params[:project_id])
-        @questions = to_sync(project.questions, 'questions', params[:last_sync_time])
+        @project = Project.find(params[:project_id])
+        @questions = to_sync(@project.questions, 'questions', params[:last_sync_time])
       end
 
       def show
-        @question = Question.find(params[:id])
+        project = Project.find(params[:project_id])
+        @question = project.questions.find(params[:id])
       end
     end
   end
