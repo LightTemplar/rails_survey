@@ -5,9 +5,8 @@ module Api
 
       def index
         project = Project.find(params[:project_id])
-        respond_with project.grids
+        @grids = project.grids
       end
-      
-    end 
+    end
   end
 end

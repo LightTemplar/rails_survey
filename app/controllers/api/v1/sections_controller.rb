@@ -6,13 +6,12 @@ module Api
 
       def index
         project = Project.find(params[:project_id])
-        sections = to_sync(project.sections, 'sections', params[:last_sync_time])
-        respond_with sections, include: :translations
+        @sections = to_sync(project.sections, 'sections', params[:last_sync_time])
       end
 
       def show
         project = Project.find(params[:project_id])
-        respond_with project.sections.find(params[:id])
+        @section = project.sections.find(params[:id])
       end
     end
   end

@@ -5,12 +5,12 @@ module Api
 
       def index
         project = Project.find(params[:project_id])
-        respond_with project.device_users
+        @device_users = project.device_users
       end
 
       def show
         project = Project.find(params[:project_id])
-        respond_with project.device_users.find(params[:id])
+        @device_user = project.device_users.find(params[:id])
       end
     end
   end

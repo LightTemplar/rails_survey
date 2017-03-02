@@ -6,13 +6,12 @@ module Api
 
       def index
         project = Project.find(params[:project_id])
-        instruments = to_sync(project.instruments, 'instruments', params[:last_sync_time])
-        respond_with instruments, include: :translations
+        @instruments = to_sync(project.instruments, 'instruments', params[:last_sync_time])
       end
 
       def show
         project = Project.find(params[:project_id])
-        respond_with project.instruments.find(params[:id])
+        @instrument = project.instruments.find(params[:id])
       end
     end
   end

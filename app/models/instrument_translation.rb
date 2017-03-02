@@ -16,12 +16,10 @@ class InstrumentTranslation < ActiveRecord::Base
   include CacheWarmAble
   include Alignable
   include LanguageAssignable
-  include AsJsonAble
   belongs_to :instrument
   before_save :touch_instrument
 
   def touch_instrument
     instrument.touch if instrument && changed?
   end
-
 end

@@ -1,5 +1,5 @@
 App.controller 'FileUploadCtrl', ['$scope', '$fileUploader', 'Image', ($scope, $fileUploader, Image) ->
-
+# TODO: Uploaded images are not showing up
   if $scope.question.id
     uploader = $scope.uploader = $fileUploader.create({
       scope: $scope,
