@@ -71,12 +71,6 @@ class Option < ActiveRecord::Base
     end
   end
 
-  # def as_json(options={})
-  #   Rails.cache.fetch("#{cache_key}/as_json") do
-  #     super((options || {}).merge({methods: [:instrument_version]}))
-  #   end
-  # end
-
   def update_option_translation(status = true)
     translations.each do |translation|
       translation.update_attribute(:option_changed, status)
