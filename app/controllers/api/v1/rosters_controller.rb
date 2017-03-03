@@ -1,6 +1,7 @@
 module Api
-  module V2
+  module V1
     class RostersController < ApiApplicationController
+      respond_to :json
 
       def create
         roster = Roster.create(roster_params)
@@ -13,9 +14,9 @@ module Api
       end
 
       private
+
       def roster_params
-        params.require(:roster).permit(:instrument_id, :instrument_version_number, :uuid, :instrument_title,
-                                       :identifier)
+        params.require(:roster).permit(:instrument_id, :uuid, :instrument_version_number, :instrument_title, :identifier)
       end
     end
   end

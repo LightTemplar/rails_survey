@@ -1,11 +1,12 @@
 module Api
   module V1
     class ImagesController < ApiApplicationController
+      include Syncable
       respond_to :json
 
       def index
         project = Project.find(params[:project_id])
-        @images = project.images
+        @images = to_sync(project.images, 'images', params[:last_sync_time])
       end
 
       def show

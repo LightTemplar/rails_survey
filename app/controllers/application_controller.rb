@@ -11,13 +11,13 @@ class ApplicationController < ActionController::Base
   before_filter :set_project
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
-  def after_sign_in_path_for(resource_or_scope)
+  def after_sign_in_path_for(_resource_or_scope)
     set_current_project_id(session[:previous_url])
     session[:previous_url] || root_path
   end
-  
-  def after_update_path_for(resource)
-    session[:previous_url] || root_path 
+
+  def after_update_path_for(_resource)
+    session[:previous_url] || root_path
   end
 
   def respond_to_ajax
@@ -29,11 +29,7 @@ class ApplicationController < ActionController::Base
   end
 
   def wiki_user
-    if user_signed_in?
-      GollumRails::WikiUser.new(current_user.email, current_user.email, true)
-    else
-      nil
-    end
+    GollumRails::WikiUser.new(current_user.email, current_user.email, true) if user_signed_in?
   end
 
   def authenticate_active_admin_user!
@@ -45,6 +41,7 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
   def authenticate_user_from_token!
     user_email = params[:user_email].presence
     user = user_email && User.find_by_email(user_email)
@@ -58,9 +55,9 @@ class ApplicationController < ActionController::Base
     flash[:alert] = 'You are not authorized to perform this action.'
     flash.keep
     request_path = request.fullpath.split('/')
-    if (request_path[1] == 'api')
+    if request_path[1] == 'api'
       redirect_to request.referrer, status: 303
-    elsif (request.fullpath == root_path || request.fullpath == '/users/sign_in')
+    elsif request.fullpath == root_path || request.fullpath == '/users/sign_in'
       redirect_to request_roles_path
     else
       redirect_to (request.referrer || root_path)
@@ -73,5 +70,4 @@ class ApplicationController < ActionController::Base
       set_current_project(project)
     end
   end
-
 end
