@@ -107,10 +107,6 @@ class Question < ActiveRecord::Base
     end
   end
 
-  def project_id
-    instrument.project_id
-  end
-
   def has_other?
     Settings.question_with_other.include? question_type
   end
