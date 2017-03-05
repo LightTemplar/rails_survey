@@ -12,7 +12,6 @@
 #
 
 class Rule < ActiveRecord::Base
-  include CacheWarmAble
   Rules = [:instrument_survey_limit_rule, :instrument_timing_rule, :instrument_survey_limit_per_minute_rule, :instrument_launch_rule, :participant_type_rule, :participant_age_rule].freeze
   belongs_to :instrument
   validates :rule_type, presence: true

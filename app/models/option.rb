@@ -16,7 +16,6 @@
 #
 
 class Option < ActiveRecord::Base
-  include CacheWarmAble
   include Translatable
   default_scope { order('special ASC, number_in_question ASC') }
   scope :special_options, -> { where(special: true) }

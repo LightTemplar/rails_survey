@@ -11,7 +11,6 @@
 #
 
 class GridLabel < ActiveRecord::Base
-  include CacheWarmAble
   belongs_to :grid
   belongs_to :option
   after_create :create_options

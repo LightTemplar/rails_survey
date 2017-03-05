@@ -11,7 +11,6 @@
 #
 
 class Section < ActiveRecord::Base
-  include CacheWarmAble
   include Translatable
   belongs_to :instrument
   # Questions should not be deleted whenever a section is deleted

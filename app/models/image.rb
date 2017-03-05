@@ -16,7 +16,6 @@
 #
 
 class Image < ActiveRecord::Base
-  include CacheWarmAble
   belongs_to :question
   has_attached_file :photo, styles: { small: '200x200>', medium: '300x300>' }, url: '/:attachment/:id/:basename.:extension', path: 'files/:attachment/:id/:style/:basename.:extension'
   before_save :touch_question

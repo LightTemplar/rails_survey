@@ -12,7 +12,6 @@
 #
 
 class DeviceUser < ActiveRecord::Base
-  include CacheWarmAble
   has_secure_password
   has_many :device_device_users
   has_many :devices, through: :device_device_users

@@ -13,7 +13,6 @@
 #
 
 class InstrumentTranslation < ActiveRecord::Base
-  include CacheWarmAble
   include Alignable
   include LanguageAssignable
   belongs_to :instrument

@@ -12,7 +12,6 @@
 #
 
 class OptionTranslation < ActiveRecord::Base
-  include CacheWarmAble
   belongs_to :option
   before_save :touch_option
   validates :text, presence: true, allow_blank: false

@@ -26,7 +26,6 @@
 #
 
 class Question < ActiveRecord::Base
-  include CacheWarmAble
   include Translatable
   default_scope { order('number_in_instrument ASC') }
   belongs_to :instrument

@@ -11,7 +11,6 @@
 #
 
 class Skip < ActiveRecord::Base
-  include CacheWarmAble
   belongs_to :option
   belongs_to :question, foreign_key: :question_identifier, primary_key: :question_identifier
   before_save :touch_parents

@@ -11,7 +11,6 @@
 #
 
 class Grid < ActiveRecord::Base
-  include CacheWarmAble
   belongs_to :instrument
   has_many :questions, dependent: :destroy
   has_many :grid_labels, dependent: :destroy

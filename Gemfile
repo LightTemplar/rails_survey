@@ -39,6 +39,8 @@ gem 'oj_mimic_json'
 gem 'redis', '~> 3.3', '>= 3.3.1'
 gem 'redis-rails'
 gem 'rabl'
+gem 'whenever', require: false
+gem 'sidekiq-client-cli'
 
 group :production do
   gem 'rails_12factor'

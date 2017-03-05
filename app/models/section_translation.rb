@@ -12,7 +12,6 @@
 #
 
 class SectionTranslation < ActiveRecord::Base
-  include CacheWarmAble
   belongs_to :section
   before_save :touch_section
   validates :text, presence: true, allow_blank: false
