@@ -27,12 +27,10 @@ module Api
       end
 
       private
-      def device_sync_entry_params
-        params.require(:device_sync_entry).permit(:latitude, :longitude, :num_complete_surveys, :current_language,
-                                                  :current_version_code, :instrument_versions, :api_key, :device_uuid, :timezone,
-                                                  :current_version_name, :os_build_number, :project_id, :num_incomplete_surveys)
-      end
 
+      def device_sync_entry_params
+        params.require(:device_sync_entry).permit(:latitude, :longitude, :num_complete_surveys, :current_language, :current_version_code, :instrument_versions, :api_key, :device_uuid, :timezone, :current_version_name, :os_build_number, :project_id, :num_incomplete_surveys)
+      end
     end
   end
 end

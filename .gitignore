@@ -28,7 +28,6 @@ scopes/scope_settings.xml
 .idea/
 .project
 .settings/
-*.DS_Store
 
 # Ignore modules for node
 node/node_modules

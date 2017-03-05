@@ -1,11 +1,15 @@
 <div class="block-header text-center text-capitalize">
-  <h2><i class="md-edit c-indigo"> Instruments </i></h2>
+  <h2>
+    <i class="md-edit c-indigo">
+      Instruments
+    </i>
+  </h2>
 </div>
 
 <div class="card" ng-controller="InstrumentsCtrl" ng-init="initialize(<%= current_project.id %>)">
   <div class="card-header">
     <%= link_to new_project_instrument_path(current_project), class: 'btn btn-primary pull-right' do %>
-        <i class="md-add">New Instrument</i>
+    <i class="md-add">New Instrument</i>
     <% end %>
   </div>
 
@@ -15,24 +19,26 @@
     <div class="table-responsive">
       <table class="table table-hover">
         <thead>
-        <tr>
-          <th>Title</th>
-          <th>Instrument Id</th>
-          <th>Current Version</th>
-          <th># questions</th>
-          <th>Created at</th>
-          <th>Last updated</th>
-        </tr>
+          <tr>
+            <th>Title</th>
+            <th>Instrument Id</th>
+            <th>Current Version</th>
+            <th># questions</th>
+            <th>Created at</th>
+            <th>Last updated</th>
+          </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="instrument in instruments | filter:q">
-          <td><a href="/projects/<%= current_project.id %>/instruments/{{instrument.id}}">{{instrument.title}}</a></td>
-          <td>{{instrument.id}}</td>
-          <td>{{instrument.current_version_number}}</td>
-          <td>{{instrument.question_count}}</td>
-          <td>{{instrument.created_at | date:'short'}}</td>
-          <td>{{instrument.updated_at | date:'short'}}</td>
-        </tr>
+          <tr ng-repeat="instrument in instruments | filter:q">
+            <td>
+              <a href="/projects/<%= current_project.id %>/instruments/{{instrument.id}}">{{instrument.title}}</a>
+            </td>
+            <td>{{instrument.id}}</td>
+            <td>{{instrument.current_version_number}}</td>
+            <td>{{instrument.question_count}}</td>
+            <td>{{instrument.created_at | date:'short'}}</td>
+            <td>{{instrument.updated_at | date:'short'}}</td>
+          </tr>
         </tbody>
       </table>
     </div>

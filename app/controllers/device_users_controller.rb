@@ -40,8 +40,8 @@ class DeviceUsersController < ApplicationController
   end
 
   private
+
   def device_user_params
     params.require(:device_user).permit(:name, :username, :password, :password_confirmation, :active, :device_ids, :project_ids)
   end
-
 end

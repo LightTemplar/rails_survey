@@ -3,20 +3,20 @@ module Api
     module Frontend
       class GridLabelsController < ApiApplicationController
         respond_to :json
-        
+
         def index
           instrument = current_project.instruments.find(params[:instrument_id])
           grid = instrument.grids.find(params[:grid_id])
           respond_with grid.grid_labels
         end
-        
+
         def show
           instrument = current_project.instruments.find(params[:instrument_id])
           grid = instrument.grids.find(params[:grid_id])
           grid_label = grid.grid_labels.find(params[:id])
-          respond_with grid_label 
+          respond_with grid_label
         end
-        
+
         def create
           instrument = current_project.instruments.find(params[:instrument_id])
           grid = instrument.grids.find(params[:grid_id])
@@ -27,7 +27,7 @@ module Api
             render json: { errors: grid_label.errors.full_messages }, status: :unprocessable_entity
           end
         end
-        
+
         def update
           instrument = current_project.instruments.find(params[:instrument_id])
           grid = instrument.grids.find(params[:grid_id])
@@ -35,7 +35,7 @@ module Api
           grid_label.update_attributes(grid_label_params)
           respond_with grid_label
         end
-        
+
         def destroy
           instrument = current_project.instruments.find(params[:instrument_id])
           grid = instrument.grids.find(params[:grid_id])
@@ -44,10 +44,10 @@ module Api
         end
 
         private
+
         def grid_label_params
           params.require(:grid_label).permit(:label, :grid_id, :option_id)
         end
-
       end
     end
   end

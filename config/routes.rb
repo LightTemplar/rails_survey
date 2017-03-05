@@ -65,30 +65,10 @@ RailsSurvey::Application.routes.draw do
         resources :device_sync_entries, only: [:create]
         resources :grids, only: [:index]
         resources :grid_labels, only: [:index]
+        resources :rosters, only: [:create]
         member do
           get :current_time
         end
-      end
-    end
-
-    namespace :v2 do
-      resources :projects do
-        resources :instruments, only: :index
-        resources :device_users, only: :index
-        resources :questions, only: :index
-        resources :options, only: :index
-        resources :images, only: [:index, :show]
-        resources :surveys, only: [:create]
-        resources :responses, only: [:create]
-        resources :response_images, only: [:create]
-        resources :sections, only: :index
-        resources :android_updates, only: [:index, :show]
-        resources :skips, only: :index
-        resources :rules, only: :index
-        resources :device_sync_entries, only: [:create]
-        resources :grids, only: :index
-        resources :grid_labels, only: :index
-        resources :rosters, only: [:create]
       end
     end
   end

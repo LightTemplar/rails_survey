@@ -4,21 +4,11 @@ module Api
       class SkipsController < ApiApplicationController
         respond_to :json
 
-        def index
-          option = current_project.options.find(params[:option_id])
-          respond_with option.skips
-        end
-
-        def show
-          option = current_project.options.find(params[:option_id])
-          respond_with option.skips.find(params[:id])
-        end
-
         def create
           option = current_project.options.find(params[:option_id])
           @skip = option.skips.new(skip_params)
           if @skip.save
-            render nothing: true, status: :created
+            render json: @skip, status: :created
           else
             render nothing: true, status: :unprocessable_entity
           end
@@ -37,6 +27,7 @@ module Api
         end
 
         private
+
         def skip_params
           params.require(:skip).permit(:option_id, :question_identifier)
         end

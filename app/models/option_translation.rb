@@ -12,8 +12,6 @@
 #
 
 class OptionTranslation < ActiveRecord::Base
-  include CacheWarmAble
-  include AsJsonAble
   belongs_to :option
   before_save :touch_option
   validates :text, presence: true, allow_blank: false
@@ -21,5 +19,4 @@ class OptionTranslation < ActiveRecord::Base
   def touch_option
     option.touch if option && changed?
   end
-
 end

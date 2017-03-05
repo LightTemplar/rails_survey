@@ -12,8 +12,6 @@
 #
 
 class DeviceUser < ActiveRecord::Base
-  include CacheWarmAble
-  include AsJsonAble
   has_secure_password
   has_many :device_device_users
   has_many :devices, through: :device_device_users
@@ -22,5 +20,4 @@ class DeviceUser < ActiveRecord::Base
   validates :username, presence: true, uniqueness: true, allow_blank: false
   validates :name, presence: true
   validates :password_digest, presence: true
-
 end

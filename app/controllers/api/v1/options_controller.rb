@@ -6,12 +6,12 @@ module Api
 
       def index
         project = Project.find(params[:project_id])
-        options = to_sync(project.options, 'options', params[:last_sync_time])
-        respond_with options, include: :translations
+        @options = to_sync(project.options, 'options', params[:last_sync_time])
       end
 
       def show
-        respond_with Option.find(params[:id])
+        project = Project.find(params[:project_id])
+        @option = project.options.find(params[:id])
       end
     end
   end

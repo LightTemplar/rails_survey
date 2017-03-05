@@ -5,15 +5,12 @@ module Api
         respond_to :json
 
         def index
-          if current_user
-            respond_with current_project.instruments.order('title')
-          end
+          @instruments = current_project.instruments.order('title') if current_user
         end
 
         def show
-          respond_with current_project.instruments.find params[:id] if current_user
+          @instrument = current_project.instruments.find(params[:id]) if current_user
         end
-
       end
     end
   end

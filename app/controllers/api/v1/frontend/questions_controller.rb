@@ -3,22 +3,22 @@ module Api
     module Frontend
       class QuestionsController < ApiApplicationController
         respond_to :json
+        helper :api
 
         def index
-          instrument = current_project.instruments.find(params[:instrument_id])
-          if !params[:page].blank?
-            questions = instrument.questions.page(params[:page]).per(Settings.questions_per_page)
-            respond_with questions
-          elsif !params[:grid_id].blank?
-            respond_with instrument.questions.where(grid_id: params[:grid_id])
-          else
-            respond_with instrument.questions # TODO fix this - return only what is needed
-          end
+          @instrument = current_project.instruments.find(params[:instrument_id])
+          @page_num = params[:page]
+          @questions = if !@page_num.blank?
+                         @instrument.questions.page(@page_num).per(10)
+                       elsif !params[:grid_id].blank?
+                         @instrument.questions.where(grid_id: params[:grid_id])
+                       else
+                         @instrument.questions
+                       end
         end
 
         def show
-          question = current_project.questions.find(params[:id])
-          respond_with question
+          @question = current_project.questions.find(params[:id])
         end
 
         def create
@@ -28,7 +28,7 @@ module Api
             ReorderQuestionsWorker.perform_async(instrument.id, instrument.questions.last.number_in_instrument, question.number_in_instrument)
             render json: question, status: :created
           else
-            render json: {errors: question.errors.full_messages}, status: :unprocessable_entity
+            render json: { errors: question.errors.full_messages }, status: :unprocessable_entity
           end
         end
 
@@ -51,7 +51,7 @@ module Api
             DeleteQuestionWorker.perform_async(instrument.id, question_number)
             render nothing: true, status: :ok
           else
-            render json: {errors: question.errors.full_messages}, status: :unprocessable_entity
+            render json: { errors: question.errors.full_messages }, status: :unprocessable_entity
           end
         end
 
@@ -81,23 +81,21 @@ module Api
         end
 
         private
+
         def create_instrument_translations(question, instrument)
           question.translations.each do |translation|
             if instrument.translations
               existing_translation = instrument.translations.find_by_language(translation.language)
-              instrument.translations.create(:language => translation.language) unless existing_translation
+              instrument.translations.create(language: translation.language) unless existing_translation
             else
-              instrument.translations.create(:language => translation.language)
+              instrument.translations.create(language: translation.language)
             end
           end
         end
 
         def question_params
-          params.require(:question).permit(:text, :question_type,     :question_identifier, :instrument_id, :follow_up_position,
-            :following_up_question_identifier, :reg_ex_validation, :child_update_count, :number_in_instrument, :reg_ex_validation_message, :identifies_survey, :grid_id,
-          :instructions, :first_in_grid, :instrument_version_number, :critical)
+          params.require(:question).permit(:text, :question_type, :question_identifier, :instrument_id, :follow_up_position, :following_up_question_identifier, :reg_ex_validation, :child_update_count, :number_in_instrument, :reg_ex_validation_message, :identifies_survey, :grid_id, :instructions, :first_in_grid, :instrument_version_number, :critical)
         end
-
       end
     end
   end

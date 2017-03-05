@@ -12,9 +12,11 @@
 #
 
 class SectionTranslation < ActiveRecord::Base
-  include CacheWarmAble
-  include AsJsonAble
   belongs_to :section
+  before_save :touch_section
   validates :text, presence: true, allow_blank: false
 
+  def touch_section
+    section.touch if section && changed?
+  end
 end

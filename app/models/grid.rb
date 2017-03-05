@@ -11,17 +11,14 @@
 #
 
 class Grid < ActiveRecord::Base
-  include CacheWarmAble
-  include AsJsonAble
   belongs_to :instrument
   has_many :questions, dependent: :destroy
   has_many :grid_labels, dependent: :destroy
-  after_save :update_question_types, if: Proc.new { |grid| grid.question_type_changed? }
+  after_save :update_question_types, if: proc { |grid| grid.question_type_changed? }
 
   def update_question_types
     questions.each do |question|
-      question.update_attribute(:question_type, self.question_type)
+      question.update_attribute(:question_type, question_type)
     end
   end
-
 end

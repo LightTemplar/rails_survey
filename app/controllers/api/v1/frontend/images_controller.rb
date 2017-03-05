@@ -11,7 +11,7 @@ module Api
 
         def show
           @image = current_project.images.find(params[:id])
-          send_file @image.photo.path(:medium), :type => @image.photo_content_type, :disposition => 'inline'
+          send_file @image.photo.path(:medium), type: @image.photo_content_type, disposition: 'inline'
         end
 
         def create
@@ -39,10 +39,10 @@ module Api
         end
 
         private
+
         def image_params
           params.permit(:photo, :photo_file_name, :photo_content_type, :photo_file_size, :photo_updated_at, :question_id, :description, :number)
         end
-
       end
     end
   end

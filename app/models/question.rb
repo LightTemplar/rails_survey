@@ -26,7 +26,6 @@
 #
 
 class Question < ActiveRecord::Base
-  include CacheWarmAble
   include Translatable
   default_scope { order('number_in_instrument ASC') }
   belongs_to :instrument
@@ -36,7 +35,9 @@ class Question < ActiveRecord::Base
   has_many :options, dependent: :destroy
   has_many :translations, foreign_key: 'question_id', class_name: 'QuestionTranslation', dependent: :destroy
   has_many :images, dependent: :destroy
-  has_many :skips, foreign_key: :question_identifier, primary_key: :question_identifier, dependent: :destroy # different from has_many :skips, through: :options
+  # different from has_many :skips, through: :options
+  has_many :option_skips, through: :options, source: :skips
+  has_many :skips, foreign_key: :question_identifier, primary_key: :question_identifier, dependent: :destroy
   delegate :project, to: :instrument
   before_save :update_instrument_version, if: proc { |question| question.changed? && !question.child_update_count_changed? }
   before_save :update_question_translation, if: proc { |question| question.text_changed? }
@@ -102,16 +103,6 @@ class Question < ActiveRecord::Base
       instrument.current_version_number
     else
       read_attribute(:instrument_version_number)
-    end
-  end
-
-  def as_json(options={})
-    Rails.cache.fetch("#{cache_key}/as_json") do
-      if options[:only].blank?
-        super((options || {}).merge({methods: [:option_count, :instrument_version, :image_count, :question_version]}))
-      else
-        super(options)
-      end
     end
   end
 
@@ -195,5 +186,4 @@ class Question < ActiveRecord::Base
     Option.set_callback(:save, :before, :update_instrument_version)
     Option.set_callback(:save, :before, :update_option_translation)
   end
-
 end

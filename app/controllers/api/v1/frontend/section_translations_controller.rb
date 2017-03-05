@@ -11,6 +11,7 @@ module Api
         end
 
         private
+
         def section_translation_params
           params.require(:section_translation).permit(:language, :text, :section_changed)
         end

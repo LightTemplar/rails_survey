@@ -83,10 +83,7 @@ exception_notifications:
   sender: 'noreply@chpir.org'
   recipients: ['leonard@chpir.org']
 
-questions_per_page: 15
-maximum_number_of_links: 15
 danger_zone_days: 3
-units_per_page: 5
 
 metric_keys: ['device_uuid', 'Participant ID', 'Center ID']
 

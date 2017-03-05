@@ -40,6 +40,9 @@ gem 'redis', '~> 3.3', '>= 3.3.1'
 gem 'redis-rails'
 gem 'wkhtmltopdf-binary'
 gem 'wicked_pdf'
+gem 'rabl'
+gem 'whenever', require: false
+gem 'sidekiq-client-cli'
 
 group :production do
   gem 'rails_12factor'

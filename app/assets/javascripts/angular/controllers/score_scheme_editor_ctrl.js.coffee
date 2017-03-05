@@ -1,5 +1,6 @@
 App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'ScoreScheme', 'ScoreUnit', 'OptionScore', ($scope, $uibModal, $filter, ScoreScheme, ScoreUnit, OptionScore) ->
-  $scope.perPage = 0
+  $scope.perPage = 5
+  $scope.maxNumOfLinks = 10
   $scope.initialize = (project_id, score_scheme_id) ->
     $scope.project_id = project_id
     $scope.score_scheme_id = score_scheme_id
@@ -18,9 +19,6 @@ App.controller 'ScoreSchemeEditorCtrl', ['$scope', '$uibModal', '$filter', 'Scor
       'score_scheme_id': $scope.score_scheme_id
       'page': pageNumber
     } )
-
-  $scope.setPerPage = (num) ->
-    $scope.perPage = num
 
   $scope.offset = () ->
     if $scope.currentPage == 1 then 0 else $scope.perPage * ($scope.currentPage - 1)
