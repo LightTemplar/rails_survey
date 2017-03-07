@@ -43,6 +43,7 @@ gem 'wicked_pdf'
 gem 'rabl'
 gem 'whenever', require: false
 gem 'sidekiq-client-cli'
+gem 'google-cloud-translate'
 
 group :production do
   gem 'rails_12factor'

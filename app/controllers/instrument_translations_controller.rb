@@ -36,14 +36,26 @@ class InstrumentTranslationsController < ApplicationController
     authorize @instrument_translation
   end
 
+  def new_gt
+    @project = current_project
+    @instrument = current_project.instruments.find(params[:instrument_id])
+    @instrument_translation = @instrument.translations.new
+    authorize @instrument_translation
+  end
+
   def create
     @instrument = current_project.instruments.find(params[:instrument_id])
     @instrument_translation = @instrument.translations.new(instrument_translation_params)
     authorize @instrument_translation
     if @instrument_translation.save
-      update_translations(params, @instrument, @instrument_translation)
-      redirect_to project_instrument_instrument_translation_path(current_project, @instrument, @instrument_translation),
-                  notice: 'Successfully created instrument translation.'
+      if request.referrer.split('/').last == 'new_gt'
+        GoogleTranslateWorker.perform_async(@instrument_translation.id)
+        redirect_to project_instrument_instrument_translations_path(current_project, @instrument), notice: 'Successfully created instrument translation.'
+      else
+        update_translations(params, @instrument, @instrument_translation)
+        redirect_to project_instrument_instrument_translation_path(current_project, @instrument, @instrument_translation),
+                    notice: 'Successfully created instrument translation.'
+      end
     else
       render :new
     end

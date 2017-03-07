@@ -34,12 +34,14 @@ RailsSurvey::Application.configure do
 
   # Version of your assets, change this if you want to expire all your assets.
   config.assets.version = '1.0'
-  
+
   config.before_configuration do
     env_file = File.join(Rails.root, 'config', 'local_env.yml')
-    YAML.load(File.open(env_file)).each do |key, value|
-      ENV[key.to_s] = value
-    end if File.exists?(env_file) && !File.zero?(env_file)
+    if File.exist?(env_file) && !File.zero?(env_file)
+      YAML.safe_load(File.open(env_file)).each do |key, value|
+        ENV[key.to_s] = value
+      end
+    end
   end
 
   # Specifies the header that your server uses for sending files.
@@ -85,25 +87,25 @@ RailsSurvey::Application.configure do
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
-  
+
   config.middleware.use ExceptionNotification::Rack,
-    :email => {
-      :email_prefix => Settings.exception_notifications.email_prefix,
-      :sender_address => Settings.exception_notifications.sender,
-      :exception_recipients => Settings.exception_notifications.recipients
-  }
+                        email: {
+                          email_prefix: Settings.exception_notifications.email_prefix,
+                          sender_address: Settings.exception_notifications.sender,
+                          exception_recipients: Settings.exception_notifications.recipients
+                        }
 
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.smtp_settings = {
-       :authentication => :plain,
-       :address => 'smtp.mailgun.org',
-       :port => 587,
-       :domain => ENV['SMTP_DOMAIN'],
-       :user_name => ENV['SMTP_USERNAME'],
-       :password => ENV['SMTP_PASSWORD']
+    authentication: :plain,
+    address: 'smtp.mailgun.org',
+    port: 587,
+    domain: ENV['SMTP_DOMAIN'],
+    user_name: ENV['SMTP_USERNAME'],
+    password: ENV['SMTP_PASSWORD']
   }
 
-  config.action_mailer.default_url_options = { :host => ENV['HOSTNAME'] }
+  config.action_mailer.default_url_options = { host: ENV['HOSTNAME'] }
 end

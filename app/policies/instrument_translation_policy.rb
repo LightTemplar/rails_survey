@@ -13,6 +13,10 @@ class InstrumentTranslationPolicy < ApplicationPolicy
     write_access
   end
 
+  def new_gt?
+    write_access
+  end
+
   def create?
     write_access
   end

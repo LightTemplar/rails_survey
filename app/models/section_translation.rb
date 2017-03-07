@@ -12,11 +12,18 @@
 #
 
 class SectionTranslation < ActiveRecord::Base
+  include GoogleTranslatable
   belongs_to :section
   before_save :touch_section
   validates :text, presence: true, allow_blank: false
 
   def touch_section
     section.touch if section && changed?
+  end
+
+  def translate_using_google
+    text_translation = translation_client.translate sanitize_text(section.title), to: language unless section.title.blank?
+    self.text = text_translation.text if text_translation
+    save
   end
 end

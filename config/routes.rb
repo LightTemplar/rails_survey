@@ -87,6 +87,9 @@ RailsSurvey::Application.routes.draw do
         member do
           get :show_original
         end
+        collection do
+          get :new_gt
+        end
       end
       resources :sections
       resources :grids
