@@ -23,8 +23,9 @@ class InstrumentTranslationsController < ApplicationController
     authorize @instrument_translation
     respond_to do |format|
       format.pdf do
-        render pdf: 'file_name',
-               template: 'instrument_translations/show'
+        render pdf: @instrument.title,
+               template: 'instrument_translations/show',
+               encoding: 'UTF-8'
       end
     end
   end
