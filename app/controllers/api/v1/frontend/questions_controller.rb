@@ -2,8 +2,8 @@ module Api
   module V1
     module Frontend
       class QuestionsController < ApiApplicationController
+        include ApiHelper
         respond_to :json
-        helper :api
 
         def index
           @instrument = current_project.instruments.find(params[:instrument_id])

@@ -64,6 +64,11 @@ class InstrumentTranslationsController < ApplicationController
 
   def edit
     @project = current_project
+    @questions = if params[:page].blank?
+                   @instrument.questions.page(1).per(5)
+                 else
+                   @instrument.questions.page(params[:page]).per(5)
+                 end
     authorize @instrument_translation
   end
 
@@ -71,8 +76,12 @@ class InstrumentTranslationsController < ApplicationController
     authorize @instrument_translation
     update_translations(params, @instrument, @instrument_translation)
     if @instrument_translation.update_attributes(instrument_translation_params)
-      redirect_to project_instrument_instrument_translation_path(current_project, @instrument, @instrument_translation),
-                  notice: 'Successfully updated instrument translation.'
+      if params[:page].blank?
+        redirect_to project_instrument_instrument_translation_path(current_project, @instrument, @instrument_translation),
+                    notice: 'Successfully updated instrument translation.'
+      else
+        redirect_to action: :edit, page: params[:page]
+      end
     else
       render :edit
     end
