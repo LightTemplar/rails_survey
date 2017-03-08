@@ -74,6 +74,7 @@ RailsSurvey::Application.routes.draw do
   end
 
   root to: 'projects#index'
+  get 'home/privacy'
   resources :projects do
     resources :score_schemes do
       member do
