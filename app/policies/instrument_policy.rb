@@ -8,11 +8,11 @@ class InstrumentPolicy < ApplicationPolicy
   def index?
     read_access
   end
-  
+
   def new?
     write_access
   end
-  
+
   def create?
     write_access
   end
@@ -32,27 +32,27 @@ class InstrumentPolicy < ApplicationPolicy
   def update?
     write_access
   end
-  
+
   def csv_export?
-    export_access 
+    export_access
   end
 
   def pdf_export?
     export_access
   end
-  
+
   def export_responses?
     export_access
   end
-  
+
   def export_pictures?
-    export_access 
+    export_access
   end
-  
+
   def move?
     read_access
   end
-  
+
   def update_move?
     write_access
   end
@@ -68,16 +68,21 @@ class InstrumentPolicy < ApplicationPolicy
   def copy_questions?
     write_access
   end
-  
+
+  def questions?
+    write_access
+  end
+
   private
+
   def read_access
     true
   end
-  
+
   def write_access
     @user.admin_user? || @user.manager?
   end
-  
+
   def export_access
     @user.admin_user? || @user.manager? || @user.analyst?
   end

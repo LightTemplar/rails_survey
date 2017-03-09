@@ -1,0 +1,23 @@
+<div class="text-center text-uppercase">
+  <h2 class="block-header">
+    <i class="md-edit c-indigo">
+      <%= @instrument.title ? @instrument.title : 'Instrument' %>
+    </i>
+  </h2>
+  <span class="c-green">
+    <i class="md-bookmark"></i>
+    <strong>Current Version:
+      <%= @instrument.current_version_number %></strong>
+  </span>
+  <% if @instrument.published %>
+  <span class="c-green">
+    <i class="md-visibility"></i>
+    <strong>Published</strong>
+  </span>
+<% else %>
+  <span class="c-red">
+    <i class="md-visibility-off"></i>
+    <strong>Not Published</strong>
+  </span>
+  <% end %>
+</div>

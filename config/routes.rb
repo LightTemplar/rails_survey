@@ -101,6 +101,7 @@ RailsSurvey::Application.routes.draw do
         get :move
         get :copy
         get :copy_questions
+        get :questions
         match :update_move, action: :update_move, via: [:patch, :put]
         match :update_copy, action: :update_copy, via: [:patch, :put]
       end
