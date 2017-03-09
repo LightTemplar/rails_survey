@@ -1,101 +1,100 @@
-<div class="block-header text-center text-capitalize">
-  <h2><i class="md-edit c-indigo"> Instrument </i></h2>
-</div>
+<%= render 'instrument_header' %>
 
 <div class="card">
   <div class="card-body card-padding">
     <%= form_for [@project, @instrument], html: {class: 'form-horizontal label-left'} do |f| %>
-        <% if @instrument.errors.any? %>
-            <div class="error_messages">
-              <h2><%= pluralize(@instrument.errors.count, 'error') %> prohibited this survey from being saved:</h2>
-              <ul>
-                <% @instrument.errors.full_messages.each do |msg| %>
-                    <li><%= msg %></li>
-                <% end %>
-              </ul>
-            </div>
+    <% if @instrument.errors.any? %>
+    <div class="error_messages">
+      <h2><%= pluralize(@instrument.errors.count, 'error') %>
+        prohibited this survey from being saved:</h2>
+      <ul>
+        <% @instrument.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
         <% end %>
+      </ul>
+    </div>
+    <% end %>
 
-        <div class="form-group">
-          <%= f.label :title, 'Instrument Title', class: 'col-sm-5 control-label' %>
-          <div class="col-sm-7">
-            <%= f.text_field :title, class: 'fg-line form-control input-sm', placeholder: 'Enter instrument title' %>
-          </div>
-        </div>
+    <div class="form-group">
+      <%= f.label :title, 'Instrument Title', class: 'col-sm-5 control-label' %>
+      <div class="col-sm-7">
+        <%= f.text_field :title, class: 'fg-line form-control input-sm', placeholder: 'Enter instrument title' %>
+      </div>
+    </div>
 
-        <div class="form-group">
-          <%= f.label :language, class: 'col-sm-5 control-label' %>
-          <div class="col-sm-7">
-            <%= f.select(:language, options_for_select(Settings.languages, @instrument.language)) %>
-          </div>
-        </div>
+    <div class="form-group">
+      <%= f.label :language, class: 'col-sm-5 control-label' %>
+      <div class="col-sm-7">
+        <%= f.select(:language, options_for_select(Settings.languages, @instrument.language)) %>
+      </div>
+    </div>
 
-        <div class="form-group">
-          <%= f.label :published, class: 'col-sm-5 control-label' %>
-          <div class="col-sm-7">
-            <%= f.check_box :published, class: 'checkbox' %>
-          </div>
-        </div>
+    <div class="form-group">
+      <%= f.label :published, class: 'col-sm-5 control-label' %>
+      <div class="col-sm-7">
+        <%= f.check_box :published, class: 'checkbox' %>
+      </div>
+    </div>
 
-        <div class="form-group">
-          <%= f.label :roster, class: 'col-sm-5 control-label' %>
-          <div class="col-sm-7">
-            <%= f.check_box :roster, class: 'checkbox' %>
-          </div>
-        </div>
+    <div class="form-group">
+      <%= f.label :roster, class: 'col-sm-5 control-label' %>
+      <div class="col-sm-7">
+        <%= f.check_box :roster, class: 'checkbox' %>
+      </div>
+    </div>
 
-        <div class="form-group">
-          <%= f.label :roster_type, class: 'col-sm-5 control-label' %>
-          <div class="col-sm-7">
-            <%= f.select(:roster_type, options_for_select(Settings.roster_types, @instrument.roster_type),
+    <div class="form-group">
+      <%= f.label :roster_type, class: 'col-sm-5 control-label' %>
+      <div class="col-sm-7">
+        <%= f.select(:roster_type, options_for_select(Settings.roster_types, @instrument.roster_type),
                          include_blank: true) %>
-          </div>
-        </div>
+      </div>
+    </div>
 
-        <div class="form-group">
-          <%= f.label :show_instructions, class: 'col-sm-5 control-label' %>
-          <div class="col-sm-7">
-            <%= f.check_box :show_instructions, class: 'checkbox' %>
-          </div>
-        </div>
+    <div class="form-group">
+      <%= f.label :show_instructions, class: 'col-sm-5 control-label' %>
+      <div class="col-sm-7">
+        <%= f.check_box :show_instructions, class: 'checkbox' %>
+      </div>
+    </div>
 
-        <div class="form-group">
-          <%= f.label 'Show page for choosing a default response for an entire section', class: 'col-sm-5 control-label' %>
-          <div class="col-sm-7">
-            <%= f.check_box :show_sections_page, class: 'checkbox' %>
-          </div>
-        </div>
+    <div class="form-group">
+      <%= f.label 'Show page for choosing a default response for an entire section', class: 'col-sm-5 control-label' %>
+      <div class="col-sm-7">
+        <%= f.check_box :show_sections_page, class: 'checkbox' %>
+      </div>
+    </div>
 
-        <div class="form-group">
-          <%= f.label 'Allow direct navigation to review page?', class: 'col-sm-5 control-label' %>
-          <div class="col-sm-7">
-            <%= f.check_box :navigate_to_review_page, class: 'checkbox' %>
-          </div>
-        </div>
+    <div class="form-group">
+      <%= f.label 'Allow direct navigation to review page?', class: 'col-sm-5 control-label' %>
+      <div class="col-sm-7">
+        <%= f.check_box :navigate_to_review_page, class: 'checkbox' %>
+      </div>
+    </div>
 
-        <div class="form-group">
-          <%= f.label :special_options, class: 'col-sm-5 control-label' %>
-          <div class="col-sm-7">
-            <% Settings.special_responses.each do |option| %>
-                <div>
-                  <%= check_box_tag 'instrument[special_options][]', option, @instrument.special_options.include?(option) %>
-                  <%= option %>
-                </div>
-            <% end %>
-            <strong>Where RF = Refused, DK = Don't Know, and NA = Not Applicable</strong>
-          </div>
+    <div class="form-group">
+      <%= f.label :special_options, class: 'col-sm-5 control-label' %>
+      <div class="col-sm-7">
+        <% Settings.special_responses.each do |option| %>
+        <div>
+          <%= check_box_tag 'instrument[special_options][]', option, @instrument.special_options.include?(option) %>
+          <%= option %>
         </div>
+        <% end %>
+        <strong>Where RF = Refused, DK = Don't Know, and NA = Not Applicable</strong>
+      </div>
+    </div>
 
-        <div class="form-group">
-          <%= f.label 'Message to display when critical questions are triggered', class: 'col-sm-5 control-label' %>
-          <div class="col-sm-7">
-            <%= f.text_area :critical_message, class: 'fg-line form-control input-sm', placeholder: 'Enter message' %>
-          </div>
-        </div>
+    <div class="form-group">
+      <%= f.label 'Message to display when critical questions are triggered', class: 'col-sm-5 control-label' %>
+      <div class="col-sm-7">
+        <%= f.text_area :critical_message, class: 'fg-line form-control input-sm', placeholder: 'Enter message' %>
+      </div>
+    </div>
 
-        <div class="form-actions">
-          <%= f.button :submit, class: 'btn btn-primary' %>
-        </div>
+    <div class="form-actions">
+      <%= f.button :submit, class: 'btn btn-primary' %>
+    </div>
     <% end %>
   </div>
 </div>

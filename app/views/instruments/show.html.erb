@@ -1,57 +1,50 @@
-<div class="text-center text-uppercase">
-  <h2 class="block-header"><i class="md-edit c-indigo"> <%= @instrument.title %> </i></h2>
-  <span class="c-green">
-        <i class="md-bookmark"></i>
-        <strong>Current Version: <%= @instrument.current_version_number %></strong>
-  </span>
-  <% if @instrument.published %>
-        <span class="c-green">
-            <i class="md-visibility"></i>
-            <strong>Published</strong>
-        </span>
-  <% else %>
-        <span class="c-red">
-            <i class="md-visibility-off"></i>
-            <strong>Not Published</strong>
-        </span>
-  <% end %>
-</div>
+<%= render 'instrument_header' %>
 
 <div class="card">
   <div class="card-header">
+    <%= link_to questions_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
+    <i class="md-launch"></i>
+    Questions Editor
+    <% end %>
     <%= link_to csv_export_project_instrument_path(@project, @instrument, format: :csv, filename: "#{@instrument.title}_#{@instrument.current_version_number}.csv"), class: 'btn btn-primary m-5' do %>
-        <i class="md-cloud-download"></i> CSV Export
+    <i class="md-cloud-download"></i>
+    CSV Export
     <% end %>
     <%= link_to pdf_export_project_instrument_path(@project, @instrument, format: :pdf, filename: "#{@instrument.title}_#{@instrument.current_version_number}.pdf"), class: 'btn btn-primary m-5' do %>
-        <i class="md-print"></i> PDF Export
+    <i class="md-print"></i>
+    PDF Export
     <% end %>
     <%= link_to project_instrument_instrument_translations_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-        <i class="md-language"></i> Translations
+    <i class="md-language"></i>
+    Translations
     <% end %>
     <%= link_to project_instrument_sections_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-        <i class="md-list"></i> Sections
+    <i class="md-list"></i>
+    Sections
     <% end %>
     <%= link_to project_instrument_grids_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-        <i class="md-view-list"></i> Tables
+    <i class="md-view-list"></i>
+    Tables
     <% end %>
     <%= link_to project_instrument_versions_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-        <i class="md-history"></i> Past Versions
+    <i class="md-history"></i>
+    Past Versions
     <% end %>
     <%= link_to edit_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-        <i class="md-edit"></i> Edit Instrument
+    <i class="md-edit"></i>
+    Edit Instrument
     <% end %>
     <%= link_to move_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-        <i class="md-content-cut"></i> Move Instrument
+    <i class="md-content-cut"></i>
+    Move Instrument
     <% end %>
     <%= link_to copy_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5 ' do %>
-        <i class="md-content-copy"></i> Copy Instrument
+    <i class="md-content-copy"></i>
+    Copy Instrument
     <% end %>
     <%= link_to copy_questions_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-        <i class="md-content-copy"></i> Copy Questions
+    <i class="md-content-copy"></i>
+    Copy Questions
     <% end %>
   </div>
-</div>
-
-<div class="card">
-  <%= render 'questions_form' %>
 </div>

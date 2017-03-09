@@ -1,27 +1,36 @@
 <style type="text/css">
-    #sidebar{ display:none; }
+  #sidebar {
+    display: none;
+  }
+
 </style>
 
-<section class="widget">
-  <header class="text-center bgm-red">
-    <h2><i class="md-vpn-lock m-10 c-white"> Forgot your password? </i></h2>
+<section>
+  <header class="text-center">
+    <h2>
+      <i class="md-vpn-lock m-10">
+        Forgot your password?
+      </i>
+    </h2>
   </header>
   <div class="body">
     <%= form_for(resource, :as => resource_name, :url => password_path(resource_name), :html => { :method => :post }) do |f| %>
-        <%= devise_error_messages! %>
+    <%= devise_error_messages! %>
 
-        <div class="row control-group">
-          <label class="col-md-2 control-label">
-              <%= f.label :email %>
-          </label>
-          <div class="col-md-10 controls form-group"> 
-              <%= f.email_field :email, :autofocus => true, class: 'form-control' %>
-          </div>
+    <div class="form-group">
+      <div class="row">
+        <label class="col-md-2">
+          <%= f.label :email, class: 'control-label' %>
+        </label>
+        <div class="col-md-10">
+          <%= f.email_field :email, :autofocus => true, class: 'form-control' %>
         </div>
-    
-        <div class="form-actions">
-          <%= f.submit 'Send me reset password instructions', class: 'btn btn-primary pull-right' %>
-        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <%= f.submit 'Send me reset password instructions', class: 'btn btn-primary pull-right' %>
+    </div>
     <% end %>
   </div>
 </section>

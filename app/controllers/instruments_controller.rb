@@ -81,7 +81,7 @@ class InstrumentsController < ApplicationController
     unless @instrument.response_images.empty?
       zipped_file = File.new(File.join('files', 'exports').to_s + "/#{Time.now.to_i}.zip", 'a+')
       zipped_file.close
-      pictures_export = ResponseImagesExport.create(:response_export_id => export_id, :download_url => zipped_file.path)
+      pictures_export = ResponseImagesExport.create(response_export_id: export_id, download_url: zipped_file.path)
       InstrumentImagesExportWorker.perform_async(@instrument.id, zipped_file.path, pictures_export.id)
     end
     redirect_to project_response_exports_path(current_project)
@@ -97,7 +97,7 @@ class InstrumentsController < ApplicationController
     @instrument = current_project.instruments.find(params[:id])
     authorize @instrument
     @project = current_user.projects.find(params[:project_id])
-    if @instrument.update_attributes(:project_id => params[:end_project])
+    if @instrument.update_attributes(project_id: params[:end_project])
       redirect_to project_path(@project)
     end
   end
@@ -121,11 +121,15 @@ class InstrumentsController < ApplicationController
     authorize @instrument
   end
 
-  private
-  def instrument_params
-    params.require(:instrument).permit(:title, :language, :alignment, :previous_question_count, :child_update_count,
-                                       :published, :show_instructions, :project_id, :show_sections_page, :roster,
-                                       :roster_type, :navigate_to_review_page, :critical_message, special_options: [])
+  def questions
+    @project = current_project
+    @instrument = current_project.instruments.find(params[:id])
+    authorize @instrument
   end
 
+  private
+
+  def instrument_params
+    params.require(:instrument).permit(:title, :language, :alignment, :previous_question_count, :child_update_count, :published, :project_id, :show_instructions, :show_sections_page, :roster, :roster_type, :navigate_to_review_page, :critical_message, special_options: [])
+  end
 end
