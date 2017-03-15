@@ -74,7 +74,6 @@ RailsSurvey::Application.routes.draw do
   end
 
   root to: 'projects#index'
-  get 'home/privacy'
   resources :projects do
     resources :score_schemes do
       member do
@@ -160,4 +159,6 @@ RailsSurvey::Application.routes.draw do
   resources :request_roles, only: [:index]
   get '/photos/:id/:style.:format', controller: 'api/v1/frontend/images', action: 'show'
   get '/pictures/:id/:style.:format', controller: 'response_images', action: 'show'
+  get 'home/privacy'
+  resources :android_updates, only: [:index, :show]
 end
