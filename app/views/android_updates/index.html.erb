@@ -1,0 +1,20 @@
+<div class="card">
+  <h3 class="card-header text-center">
+    <strong>Android APK Updates</strong>
+  </h3>
+  <div class="card-body card-padding text-center m-20">
+    <label>Version Code:</label>
+    <%= @update.version %></br>
+  <label >Version Name:</label>
+  <%= @update.name %>
+  <div class="form-group">
+    <a href="https://play.google.com/store/apps/details?id=org.adaptlab.chpir.android.survey" class="btn btn-primary btn-lg pull-left">
+      <i class="md-play-download"></i>Play Store
+    </a>
+    <button class="btn btn-primary btn-lg pull-right">
+      <i class="md-file-download"></i>
+      <%= link_to 'Download', android_update_path(@update), class: 'c-white' %>
+    </button>
+  </div>
+</div>
+</div>
