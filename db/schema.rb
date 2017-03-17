@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170315184652) do
+ActiveRecord::Schema.define(version: 20170317202514) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -336,7 +336,7 @@ ActiveRecord::Schema.define(version: 20170315184652) do
   end
 
   create_table "score_schemes", force: true do |t|
-    t.string   "instrument_id"
+    t.integer  "instrument_id", limit: 255
     t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"

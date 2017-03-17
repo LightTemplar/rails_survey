@@ -3,7 +3,7 @@
 # Table name: score_schemes
 #
 #  id            :integer          not null, primary key
-#  instrument_id :string(255)
+#  instrument_id :integer
 #  title         :string(255)
 #  created_at    :datetime
 #  updated_at    :datetime

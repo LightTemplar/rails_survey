@@ -16,7 +16,9 @@
           <tbody>
             <% @aggregators.each do |agg| %>
             <tr>
-              <td><%= link_to current_project.aggregator_label(agg), identifier_surveys_project_survey_path(current_project, agg.id) %></td>
+              <td>
+                <%= link_to current_project.aggregator_label(agg), identifier_surveys_project_survey_path(current_project, agg.id) %>
+              </td>
               <td><%= current_project.aggregator_survey_count(agg) %></td>
             </tr>
             <% end %>

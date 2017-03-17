@@ -1,6 +1,7 @@
 class InstrumentTranslationsController < ApplicationController
   after_action :verify_authorized
   before_action :set_translation, only: [:show, :edit, :update, :destroy, :show_original]
+  before_action :set_questions, only: [:new, :edit]
 
   def index
     @instrument = current_project.instruments.find(params[:instrument_id])
@@ -64,11 +65,6 @@ class InstrumentTranslationsController < ApplicationController
 
   def edit
     @project = current_project
-    @questions = if params[:page].blank?
-                   @instrument.questions.page(1).per(5)
-                 else
-                   @instrument.questions.page(params[:page]).per(5)
-                 end
     authorize @instrument_translation
   end
 
@@ -98,6 +94,15 @@ class InstrumentTranslationsController < ApplicationController
   def set_translation
     @instrument = current_project.instruments.find(params[:instrument_id])
     @instrument_translation = @instrument.translations.find(params[:id])
+  end
+
+  def set_questions
+    instrument = current_project.instruments.find(params[:instrument_id])
+    @questions = if params[:page].blank?
+                   instrument.questions.page(1).per(5)
+                 else
+                   instrument.questions.page(params[:page]).per(5)
+                 end
   end
 
   def update_translations(params, instrument, instrument_translation)

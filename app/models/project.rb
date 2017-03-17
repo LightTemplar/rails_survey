@@ -96,7 +96,12 @@ class Project < ActiveRecord::Base
 
   def aggregators
     if survey_aggregator == 'device_uuid'
-      surveys.group('device_uuid')
+      aggs = []
+      uuids = surveys.pluck(:device_uuid).uniq
+      uuids.each do |uuid|
+        aggs << surveys.find_by_device_uuid(uuid)
+      end
+      aggs
     elsif survey_aggregator == 'Center ID'
       surveys.select(&:center_id).uniq
     elsif survey_aggregator == 'Participant ID'
@@ -157,5 +162,4 @@ class Project < ActiveRecord::Base
   def merge_period_counts(grouped_responses)
     grouped_responses.map(&:to_a).flatten(1).each_with_object({}) { |(k, v), h| (h[k] ||= []) << v; }
   end
-
 end

@@ -42,8 +42,8 @@ ActiveAdmin.register User do
       f.input :email
       f.input :password, hint: 'Leave blank. Do not change.'
       f.input :password_confirmation
-      unless current_page?(new_admin_user_path)
-        f.input :projects, as: :check_boxes, collection: current_user.projects
+      if current_user.admin?
+        f.input :projects, as: :check_boxes, collection: Project.all
         f.input :roles, as: :check_boxes, collection: Role.where.not(name: 'super_admin')
       end
     end
@@ -59,16 +59,16 @@ ActiveAdmin.register User do
         @user.update_attributes(user_params)
       end
       if @user.errors.blank?
-        redirect_to admin_user_path(params[:id]), :notice => 'User updated successfully.'
+        redirect_to admin_user_path(params[:id]), notice: 'User updated successfully.'
       else
         render :edit
       end
     end
 
     private
+
     def user_params
       params.require(:user).permit(:email, :password, :password_confirmation, :gauth_enabled, :gauth_tmp, :gauth_tmp_datetime, project_ids: [], role_ids: [])
     end
   end
-
 end

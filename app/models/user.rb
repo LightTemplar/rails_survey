@@ -40,7 +40,7 @@ class User < ActiveRecord::Base
   def set_default_role
     role = Role.find_by_name('user')
     return unless role
-    UserRole.create(:user_id => self.id, :role_id => role.id)
+    UserRole.create(user_id: id, role_id: role.id)
   end
 
   def ensure_authentication_token
@@ -82,6 +82,7 @@ class User < ActiveRecord::Base
   end
 
   private
+
   def generate_authentication_token
     loop do
       token = Devise.friendly_token
