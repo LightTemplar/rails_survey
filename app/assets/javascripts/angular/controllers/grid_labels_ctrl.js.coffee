@@ -20,14 +20,17 @@ App.controller 'GridLabelsCtrl', ['$scope', 'GridLabel', ($scope, GridLabel) ->
     $scope.grid_labels.push(grid_label)
     
   $scope.removeGridLabel = (grid_label) ->
-    grid_label.$delete({},
-      (data) ->
-        $scope.grid_labels.splice($scope.grid_labels.indexOf(grid_label), 1)
-      ,
-      (data) ->
-        alert "Failed to delete grid label"
-      )
-  
+    $scope.grid_labels.splice($scope.grid_labels.indexOf(grid_label), 1)
+    if grid_label.id
+      grid_label.project_id = $scope.project_id
+      grid_label.instrument_id = $scope.instrument_id
+      grid_label.$delete({},
+        (data) ->
+        ,
+        (data) ->
+          alert "Failed to delete grid label"
+        )
+    
   $scope.$on('GRID_SAVED', (event, id) ->
     angular.forEach $scope.grid_labels, (label, index) ->
       if not label.id?
@@ -41,17 +44,18 @@ App.controller 'GridLabelsCtrl', ['$scope', 'GridLabel', ($scope, GridLabel) ->
   )
   
   $scope.saveLabel = (label) ->
-    label.project_id = $scope.project_id
-    label.instrument_id = $scope.instrument_id
-    if label.id
-      label.$update({},
-        (data, headers) -> ,
-        (result, headers) -> alert "Error updating grid label"
-      )
-    else
-      label.$save({},
-        (data, headers) -> ,
-        (result, headers) -> alert "Error saving grid label"
-      )
+    if label in $scope.grid_labels
+      label.project_id = $scope.project_id
+      label.instrument_id = $scope.instrument_id
+      if label.id
+        label.$update({},
+          (data, headers) -> ,
+          (result, headers) -> alert "Error updating grid label"
+        )
+      else
+        label.$save({},
+          (data, headers) -> ,
+          (result, headers) -> alert "Error saving grid label"
+        )
       
 ]

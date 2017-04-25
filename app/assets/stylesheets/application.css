@@ -25,15 +25,28 @@
  *= require textAngular
  *= require graphs
  *= require instruments
+ *= require grids
  *= require materialize
  *= require bootstrap_elements
  *= require fancypants_override
  */
 
-.top-buffer { margin-top: 20px; }
-.bottom-buffer { margin-bottom: 20px; }
-ul.squares { list-style: square; }
-li.active-result { color: #333; }
+.top-buffer {
+  margin-top: 20px;
+}
+
+.bottom-buffer {
+  margin-bottom: 20px;
+}
+
+ul.squares {
+  list-style: square;
+}
+
+li.active-result {
+  color: #333;
+}
+
 table.fixed-wide {
   table-layout: fixed;
   width: 100%;
