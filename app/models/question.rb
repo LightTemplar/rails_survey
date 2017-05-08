@@ -19,10 +19,10 @@
 #  instructions                     :text             default("")
 #  child_update_count               :integer          default(0)
 #  grid_id                          :integer
-#  first_in_grid                    :boolean          default(FALSE)
 #  instrument_version_number        :integer          default(-1)
 #  section_id                       :integer
 #  critical                         :boolean
+#  number_in_grid                   :integer
 #
 
 class Question < ActiveRecord::Base
@@ -41,7 +41,6 @@ class Question < ActiveRecord::Base
   delegate :project, to: :instrument
   before_save :update_instrument_version, if: proc { |question| question.changed? && !question.child_update_count_changed? }
   before_save :update_question_translation, if: proc { |question| question.text_changed? }
-  before_save :update_first_in_grid, if: proc { |question| question.first_in_grid_changed? }
   after_save :record_instrument_version
   before_destroy :update_instrument_version
   after_update :update_dependent_records
@@ -139,15 +138,6 @@ class Question < ActiveRecord::Base
 
   def select_multiple_variant?
     (question_type == 'SELECT_MULTIPLE') || (question_type == 'SELECT_MULTIPLE_WRITE_OTHER')
-  end
-
-  def update_first_in_grid
-    if first_in_grid
-      questions_in_grid = Question.where('grid_id = ?', grid_id)
-      questions_in_grid.where.not(id: id).each do |question|
-        question.update_attribute(:first_in_grid, false)
-      end
-    end
   end
 
   private

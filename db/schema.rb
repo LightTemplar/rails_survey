@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170317202514) do
+ActiveRecord::Schema.define(version: 20170425184240) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -91,9 +91,9 @@ ActiveRecord::Schema.define(version: 20170317202514) do
   create_table "grid_labels", force: true do |t|
     t.text     "label"
     t.integer  "grid_id"
-    t.integer  "option_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "deleted_at"
   end
 
   create_table "grids", force: true do |t|
@@ -102,6 +102,8 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "instructions"
+    t.datetime "deleted_at"
   end
 
   create_table "images", force: true do |t|
@@ -175,7 +177,8 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.string   "language"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "option_changed", default: false
+    t.boolean  "option_changed",            default: false
+    t.integer  "instrument_translation_id"
   end
 
   create_table "options", force: true do |t|
@@ -222,6 +225,7 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.string   "reg_ex_validation_message"
     t.boolean  "question_changed",          default: false
     t.text     "instructions"
+    t.integer  "instrument_translation_id"
   end
 
   create_table "questions", force: true do |t|
@@ -241,10 +245,10 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.text     "instructions",                     default: ""
     t.integer  "child_update_count",               default: 0
     t.integer  "grid_id"
-    t.boolean  "first_in_grid",                    default: false
     t.integer  "instrument_version_number",        default: -1
     t.integer  "section_id"
     t.boolean  "critical"
+    t.integer  "number_in_grid"
   end
 
   add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true
@@ -388,7 +392,8 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.string   "text"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "section_changed", default: false
+    t.boolean  "section_changed",           default: false
+    t.integer  "instrument_translation_id"
   end
 
   create_table "sections", force: true do |t|

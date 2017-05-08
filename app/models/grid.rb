@@ -8,6 +8,8 @@
 #  name          :string(255)
 #  created_at    :datetime
 #  updated_at    :datetime
+#  instructions  :text
+#  deleted_at    :datetime
 #
 
 class Grid < ActiveRecord::Base
@@ -15,7 +17,7 @@ class Grid < ActiveRecord::Base
   has_many :questions, dependent: :destroy
   has_many :grid_labels, dependent: :destroy
   after_save :update_question_types, if: proc { |grid| grid.question_type_changed? }
-
+  acts_as_paranoid
   def update_question_types
     questions.each do |question|
       question.update_attribute(:question_type, question_type)

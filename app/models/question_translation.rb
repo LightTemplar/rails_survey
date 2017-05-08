@@ -11,6 +11,7 @@
 #  reg_ex_validation_message :string(255)
 #  question_changed          :boolean          default(FALSE)
 #  instructions              :text
+#  instrument_translation_id :integer
 #
 
 class QuestionTranslation < ActiveRecord::Base

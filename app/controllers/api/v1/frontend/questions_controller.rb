@@ -8,12 +8,12 @@ module Api
         def index
           @instrument = current_project.instruments.find(params[:instrument_id])
           @page_num = params[:page]
-          @questions = if !@page_num.blank?
-                         @instrument.questions.includes(:options, :option_skips, :images).page(@page_num).per(10)
+          @questions = if !@page_num.blank? && params[:grid_id].blank?
+                         @instrument.questions.where(grid_id: nil).includes(:options, :option_skips, :images).page(@page_num).per(10)
                        elsif !params[:grid_id].blank?
                          @instrument.questions.where(grid_id: params[:grid_id])
                        else
-                         @instrument.questions
+                         @instrument.questions.where(grid_id: nil)
                        end
         end
 
@@ -94,7 +94,7 @@ module Api
         end
 
         def question_params
-          params.require(:question).permit(:text, :question_type, :question_identifier, :instrument_id, :follow_up_position, :following_up_question_identifier, :reg_ex_validation, :child_update_count, :number_in_instrument, :reg_ex_validation_message, :identifies_survey, :grid_id, :instructions, :first_in_grid, :instrument_version_number, :critical)
+          params.require(:question).permit(:text, :question_type, :question_identifier, :instrument_id, :follow_up_position, :following_up_question_identifier, :reg_ex_validation, :child_update_count, :number_in_instrument, :reg_ex_validation_message, :identifies_survey, :grid_id, :instructions, :number_in_grid, :instrument_version_number, :critical)
         end
       end
     end

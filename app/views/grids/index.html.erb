@@ -22,15 +22,27 @@
           </div>
         </div>
         <div class="m-10">
-          <span class="title">Table Name:</span>
+          <span class="title">
+            <strong>Table Name:</strong>
+          </span>
           <span editable-text="grid.name" e-name="name">
             {{grid.name}}
           </span>
         </div>
         <div class="m-10">
-          <span class="title">Question Type:</span>
+          <span class="title">
+            <strong>Question Type:</strong>
+          </span>
           <span editable-select="grid.question_type" e-name="question_type" e-ng-options="question_type as question_type for question_type in gridQuestionTypes">
             {{grid.question_type}}
+          </span>
+        </div>
+        <div class="m-10">
+          <span class="title">
+            <strong>Instructions:</strong>
+          </span>
+          <span editable-textarea="grid.instructions" e-name="instructions">
+            {{grid.instructions}}
           </span>
         </div>
         <div class="m-10" ng-controller="GridLabelsCtrl" ng-init="init(<%= @project.id %>, <%= @instrument.id %>, grid.id)">
@@ -63,16 +75,21 @@
         <legend class="section">Questions in Table</legend>
         <table class="table table-bordered table-hover table-condensed">
           <tr style="font-weight: bold">
-            <td style="width:10%">Number in Instrument</td>
-            <td style="width:10%">Question Identifier</td>
-            <td style="width: 55%">Question Text</td>
-            <td style="width: 5%">Starts Grid</td>
+            <td style="width:5%">Number in Instrument</td>
+            <td style="width:5%">Number in Table</td>
+            <td style="width:20%">Question Identifier</td>
+            <td style="width: 50%">Question Text</td>
             <td style="width: 20%">Edit</td>
           </tr>
-          <tr ng-repeat="question in questions">
+          <tr ng-repeat="question in questions | orderBy: 'number_in_grid'">
             <td>
               <span editable-text="question.number_in_instrument" e-form="rowform" e-name="number_in_instrument" e-required>
                 {{question.number_in_instrument}}
+              </span>
+            </td>
+            <td>
+              <span editable-text="question.number_in_grid" e-form="rowform" e-name="number_in_grid" e-required>
+                {{question.number_in_grid}}
               </span>
             </td>
             <td>
@@ -83,11 +100,6 @@
             <td>
               <span editable-textarea="question.text" e-form="rowform" e-name="text" e-required>
                 {{question.text}}
-              </span>
-            </td>
-            <td>
-              <span editable-select="question.first_in_grid" e-name="first_in_grid" e-form="rowform" e-ng-options="s as s for s in statuses">
-                {{question.first_in_grid}}
               </span>
             </td>
             <td>

@@ -1,26 +1,35 @@
 <div class="card">
   <div class="card-body card-padding">
     <div class="form-group">
-      <label for="grid-question-type" class="col-sm-2 control-label">Table Question Type: </label>
+      <label for="grid-question-type" class="col-sm-2 control-label">Table Question Type:
+      </label>
 
       <div class="col-sm-10">
         <select
-        allow-single-deselect="true"
-        data-placeholder="Select a question type..."
-        no-results-text="'This does not match a valid question type'"
-        name="question-type"
-        ng-model="grid.question_type"
-        ng-options="question_type as question_type for question_type in gridQuestionTypes"
-        ></select>
+          allow-single-deselect="true"
+          data-placeholder="Select a question type..."
+          no-results-text="'This does not match a valid question type'"
+          name="question-type"
+          ng-model="grid.question_type"
+          ng-options="question_type as question_type for question_type in gridQuestionTypes"></select>
       </div>
     </div>
     <div class="form-group">
-      <label for="grid-name" class="col-sm-2 control-label">Table Name: </label>
+      <label for="grid-name" class="col-sm-2 control-label">Table Name:
+      </label>
 
       <div class="col-sm-10">
         <div class="fg-line">
           <input type="text" class="form-control input-sm" name="name" ng-model="grid.name">
         </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="grid-instructions" class="col-sm-2 control-label">Instructions:
+      </label>
+
+      <div class="col-sm-10">
+        <textarea type="text" class="form-control" name=" instructions" ng-model=" grid.instructions"></textarea>
       </div>
     </div>
     <div class="clearfix"></div>
@@ -46,7 +55,10 @@
     </fieldset>
     <div class="row">
       <button class="btn btn-success pull-right" type="submit" ng-click="saveGrid(grid)">
-        <i class="md-save"> Save Table </i></button>
+        <i class="md-save">
+          Save Table
+        </i>
+      </button>
     </div>
   </div>
 </div>

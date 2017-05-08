@@ -21,7 +21,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', '$filter', 
       'project_id': project_id
       'id': instrument_id
     } , ->
-      $scope.totalQuestions = $scope.instrument.question_count
+      $scope.totalQuestions = $scope.instrument.non_grid_question_count
     )
     $scope.allQuestions = Question.query({
       'project_id': project_id,

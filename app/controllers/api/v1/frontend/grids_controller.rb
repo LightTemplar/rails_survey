@@ -35,7 +35,7 @@ module Api
         private
 
         def grid_params
-          params.require(:grid).permit(:instrument_id, :question_type, :name)
+          params.require(:grid).permit(:instrument_id, :question_type, :name, :instructions)
         end
       end
     end
