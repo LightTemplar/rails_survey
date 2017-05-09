@@ -87,4 +87,10 @@ App.controller 'GridsCtrl', ['$scope', 'Grid', 'Question', 'Instrument', 'GridLa
     $scope.getInstrument = ->
       $scope.instrument = Instrument.get({"project_id": $scope.project_id, "id": $scope.instrument_id})
 
+    $scope.editGrid = (grid) ->
+      if ($scope.edit_grid == grid)
+        $scope.edit_grid = null
+      else
+        $scope.edit_grid = grid
+  
 ]

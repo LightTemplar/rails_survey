@@ -57,5 +57,17 @@ App.controller 'GridLabelsCtrl', ['$scope', 'GridLabel', ($scope, GridLabel) ->
           (data, headers) -> ,
           (result, headers) -> alert "Error saving grid label"
         )
+  
+  $scope.sortableGrids = {
+    cursor: 'move',
+    handle: '.move-grid',
+    axis: 'y',
+    stop: (e, ui) -> 
+      angular.forEach $scope.grid_labels, (grid, index) ->
+        grid.position = index
+        grid.project_id = $scope.project_id
+        grid.instrument_id = $scope.instrument_id
+        grid.$update()
+  }
       
 ]

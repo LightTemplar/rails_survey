@@ -8,115 +8,136 @@
 <div class="card" ng-controller="GridsCtrl" ng-init="init(<%= @project.id %>, <%= @instrument.id %>)">
   <div class="card-body card-padding">
     <div class="tab-content well" ng-repeat="grid in grids">
-      <form editable-form name="editableForm" onaftersave="updateGrid(grid)">
-        <div class="row m-10">
-          <div class="pull-right">
-            <button type="button" class="btn btn-primary m-r-10" ng-click="editableForm.$show()" ng-show="!editableForm.$visible">Edit Table</button>
-            <button type="button" class="btn btn-danger m-r-10" ng-click="deleteGrid(grid)" ng-show="!editableForm.$visible">Delete Table</button>
-            <span ng-show="editableForm.$visible">
-              <div class="pull-right">
-                <button type="submit" class="btn btn-primary m-r-10" ng-disabled="editableForm.$waiting">Save</button>
-                <button type="button" class="btn btn-danger m-r-10" ng-disabled="editableForm.$waiting" ng-click="editableForm.$cancel()">Cancel</button>
-              </div>
+      <div class="row m-l-10">
+        <div class="col-md-4">
+          <a class="btn btn-primary m-5" ng-click="editGrid(grid)">
+            <i class="md-expand-more"></i>
+          </a>
+        </div>
+        <div class="col-md-8">
+          <div class="pull-right m-r-5">
+            <strong>{{grid.name}}</strong>
+          </div>
+        </div>
+      </div>
+      <div ng-show="edit_grid == grid">
+        <form editable-form name="editableForm" onaftersave="updateGrid(grid)">
+          <div class="row m-10">
+            <div class="pull-right">
+              <button type="button" class="btn btn-primary m-r-10" ng-click="editableForm.$show()" ng-show="!editableForm.$visible">Edit Table</button>
+              <button type="button" class="btn btn-danger m-r-10" ng-click="deleteGrid(grid)" ng-show="!editableForm.$visible">Delete Table</button>
+              <span ng-show="editableForm.$visible">
+                <div class="pull-right">
+                  <button type="submit" class="btn btn-primary m-r-10" ng-disabled="editableForm.$waiting">Save</button>
+                  <button type="button" class="btn btn-danger m-r-10" ng-disabled="editableForm.$waiting" ng-click="editableForm.$cancel()">Cancel</button>
+                </div>
+              </span>
+            </div>
+          </div>
+          <div class="m-10">
+            <span class="title">
+              <strong>Table Name:</strong>
+            </span>
+            <span editable-text="grid.name" e-name="name">
+              {{grid.name}}
             </span>
           </div>
-        </div>
-        <div class="m-10">
-          <span class="title">
-            <strong>Table Name:</strong>
-          </span>
-          <span editable-text="grid.name" e-name="name">
-            {{grid.name}}
-          </span>
-        </div>
-        <div class="m-10">
-          <span class="title">
-            <strong>Question Type:</strong>
-          </span>
-          <span editable-select="grid.question_type" e-name="question_type" e-ng-options="question_type as question_type for question_type in gridQuestionTypes">
-            {{grid.question_type}}
-          </span>
-        </div>
-        <div class="m-10">
-          <span class="title">
-            <strong>Instructions:</strong>
-          </span>
-          <span editable-textarea="grid.instructions" e-name="instructions">
-            {{grid.instructions}}
-          </span>
-        </div>
-        <div class="m-10" ng-controller="GridLabelsCtrl" ng-init="init(<%= @project.id %>, <%= @instrument.id %>, grid.id)">
-          <legend class="section">
-            <div class="row">
-              <div class="col-md-8">Table Option Labels</div>
-              <div class="col-md-4">
-                <button type="button" ng-click="addGridLabel(grid)" ng-show="editableForm.$visible" class="btn btn-xs btn-primary pull-right">
-                  <i class="icon-plus"></i>
-                  Add Option Label
-                </button>
+          <div class="m-10">
+            <span class="title">
+              <strong>Question Type:</strong>
+            </span>
+            <span editable-select="grid.question_type" e-name="question_type" e-ng-options="question_type as question_type for question_type in gridQuestionTypes">
+              {{grid.question_type}}
+            </span>
+          </div>
+          <div class="m-10">
+            <span class="title">
+              <strong>Instructions:</strong>
+            </span>
+            <span editable-textarea="grid.instructions" e-name="instructions">
+              {{grid.instructions}}
+            </span>
+          </div>
+          <div class="m-10" ng-controller="GridLabelsCtrl" ng-init="init(<%= @project.id %>, <%= @instrument.id %>, grid.id)">
+            <legend class="section">
+              <div class="row">
+                <div class="col-md-8">Table Option Labels</div>
+                <div class="col-md-4">
+                  <button type="button" ng-click="addGridLabel(grid)" ng-show="editableForm.$visible" class="btn btn-xs btn-primary pull-right">
+                    <i class="icon-plus"></i>
+                    Add Option Label
+                  </button>
+                </div>
               </div>
-            </div>
-          </legend>
-          <div ng-repeat="grid_label in grid_labels">
-            <div class="row">
-              <div class="col-md-10">
-                <span editable-textarea="grid_label.label" e-name="grid_label" onaftersave="saveLabel(grid_label)">{{grid_label.label}}</span>
-              </div>
-              <div class="col-md-2">
-                <button ng-click="removeGridLabel(grid_label)" ng-show="editableForm.$visible" class="btn btn-danger">
-                  <i class="md-delete"></i>
-                </button>
+            </legend>
+            <div ui-sortable="sortableGrids" ng-model="grid_labels">
+              <div ng-repeat="grid_label in grid_labels | orderBy: 'position'">
+                <div class="row">
+                  <div ng-show="editableForm.$visible" class="col-md-1">
+                    <a class="btn btn-default bgm-teal move-grid">
+                      <i class="md-open-with"></i>
+                    </a>
+                  </div>
+                  <div class="col-md-10">
+                    <span editable-textarea="grid_label.label" e-name="grid_label" onaftersave="saveLabel(grid_label)">{{grid_label.label}}</span>
+                  </div>
+                  <div class="col-md-1">
+                    <button ng-click="removeGridLabel(grid_label)" ng-show="editableForm.$visible" class="btn btn-danger">
+                      <i class="md-delete"></i>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+        </form>
+        <div class="m-10" ng-controller="GridQuestionsCtrl" ng-init="init(<%= @project.id %>, <%= @instrument.id %>, grid.id)">
+          <legend class="section">Questions in Table</legend>
+          <table class="table table-bordered table-hover table-condensed">
+            <tr style="font-weight: bold">
+              <td style="width:5%">Number in Instrument</td>
+              <td style="width:5%">Number in Table</td>
+              <td style="width:20%">Question Identifier</td>
+              <td style="width: 50%">Question Text</td>
+              <td style="width: 20%">Edit</td>
+            </tr>
+            <tr ng-repeat="question in questions | orderBy: 'number_in_grid'">
+              <td>
+                <span editable-text="question.number_in_instrument" e-form="rowform" e-name="number_in_instrument" e-required>
+                  {{question.number_in_instrument}}
+                </span>
+              </td>
+              <td>
+                <span editable-text="question.number_in_grid" e-form="rowform" e-name="number_in_grid" e-required>
+                  {{question.number_in_grid}}
+                </span>
+              </td>
+              <td>
+                <span editable-text="question.question_identifier" e-form="rowform" e-name="question_identifier" e-required>
+                  {{question.question_identifier}}
+                </span>
+              </td>
+              <td>
+                <span editable-textarea="question.text" e-form="rowform" e-name="text" e-required>
+                  {{question.text}}
+                </span>
+              </td>
+              <td>
+                <form editable-form name="rowform" onaftersave="updateQuestion(question)" ng-show="rowform.$visible" class="form-buttons form-inline">
+                  <button type="submit" ng-disabled="rowform.$waiting" class="btn btn-primary">save</button>
+                  <button type="button" ng-disabled="rowform.$waiting" ng-click="rowform.$cancel()" class="btn btn-danger">cancel</button>
+                </form>
+                <div class="buttons" ng-show="!rowform.$visible">
+                  <button class="btn btn-primary" ng-click="rowform.$show()">edit</button>
+                  <button class="btn btn-danger" ng-click="deleteQuestion(question)">delete</button>
+                </div>
+              </td>
+            </tr>
+          </table>
         </div>
-      </form>
-      <div class="m-10" ng-controller="GridQuestionsCtrl" ng-init="init(<%= @project.id %>, <%= @instrument.id %>, grid.id)">
-        <legend class="section">Questions in Table</legend>
-        <table class="table table-bordered table-hover table-condensed">
-          <tr style="font-weight: bold">
-            <td style="width:5%">Number in Instrument</td>
-            <td style="width:5%">Number in Table</td>
-            <td style="width:20%">Question Identifier</td>
-            <td style="width: 50%">Question Text</td>
-            <td style="width: 20%">Edit</td>
-          </tr>
-          <tr ng-repeat="question in questions | orderBy: 'number_in_grid'">
-            <td>
-              <span editable-text="question.number_in_instrument" e-form="rowform" e-name="number_in_instrument" e-required>
-                {{question.number_in_instrument}}
-              </span>
-            </td>
-            <td>
-              <span editable-text="question.number_in_grid" e-form="rowform" e-name="number_in_grid" e-required>
-                {{question.number_in_grid}}
-              </span>
-            </td>
-            <td>
-              <span editable-text="question.question_identifier" e-form="rowform" e-name="question_identifier" e-required>
-                {{question.question_identifier}}
-              </span>
-            </td>
-            <td>
-              <span editable-textarea="question.text" e-form="rowform" e-name="text" e-required>
-                {{question.text}}
-              </span>
-            </td>
-            <td>
-              <form editable-form name="rowform" onaftersave="updateQuestion(question)" ng-show="rowform.$visible" class="form-buttons form-inline">
-                <button type="submit" ng-disabled="rowform.$waiting" class="btn btn-primary">save</button>
-                <button type="button" ng-disabled="rowform.$waiting" ng-click="rowform.$cancel()" class="btn btn-danger">cancel</button>
-              </form>
-              <div class="buttons" ng-show="!rowform.$visible">
-                <button class="btn btn-primary" ng-click="rowform.$show()">edit</button>
-                <button class="btn btn-danger" ng-click="deleteQuestion(question)">delete</button>
-              </div>
-            </td>
-          </tr>
-        </table>
-      </div>
-      <div class="m-10">
-        <button class="btn btn-success" ng-click="newQuestion(grid)">Add Question</button>
+        <div class="m-10">
+          <button class="btn btn-success" ng-click="newQuestion(grid)">Add Question</button>
+        </div>
       </div>
     </div>
     <button class="btn btn-success" ng-click="newGrid()">
