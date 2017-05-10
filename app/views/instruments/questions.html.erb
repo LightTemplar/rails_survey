@@ -9,7 +9,7 @@
       <div class="listview lv-bordered lv-lg">
         <div class="lv-body">
           <div ui-sortable="sortableOptions" ng-model="questions">
-            <div class="lv-item media" dir-paginate="question in questions | itemsPerPage: questionsPerPage" total-items="totalQuestions" current-page="pagination.current">
+            <div class="lv-item media" dir-paginate="question in questions | itemsPerPage: questionsPerPage" total-items="totalQuestions" current-page="currentPaginationNumber">
 
               <div class="col-md-3">
                 <form ng-submit="repositionQuestion(question)">
@@ -93,7 +93,7 @@
       </div>
 
       <div class="text-center">
-        <dir-pagination-controls max-size="maxNumOfLinks" direction-links="true" boundary-links="true" on-page-change="getQuestionsPerPage(newPageNumber)"></dir-pagination-controls>
+        <dir-pagination-controls max-size="maxNumOfLinks" direction-links="true" boundary-links="true" auto-hide="false" on-page-change="getQuestionsPerPage(newPageNumber)"></dir-pagination-controls>
       </div>
 
       <div class="m-r-15" ng-show="questions.length == 0">
