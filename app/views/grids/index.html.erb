@@ -28,7 +28,7 @@
               <button type="button" class="btn btn-danger m-r-10" ng-click="deleteGrid(grid)" ng-show="!editableForm.$visible">Delete Table</button>
               <span ng-show="editableForm.$visible">
                 <div class="pull-right">
-                  <button type="submit" class="btn btn-primary m-r-10" ng-disabled="editableForm.$waiting">Save</button>
+                  <button type="submit" class="btn btn-success m-r-10" ng-disabled="editableForm.$waiting">Save</button>
                   <button type="button" class="btn btn-danger m-r-10" ng-disabled="editableForm.$waiting" ng-click="editableForm.$cancel()">Cancel</button>
                 </div>
               </span>
@@ -54,9 +54,9 @@
             <span class="title">
               <strong>Instructions:</strong>
             </span>
-            <span editable-textarea="grid.instructions" e-name="instructions">
-              {{grid.instructions}}
-            </span>
+            <div editable-text-angular="grid.instructions" e-name="instructions">
+              <div data-ng-bind-html="grid.instructions"></div>
+            </div>
           </div>
           <div class="m-10" ng-controller="GridLabelsCtrl" ng-init="init(<%= @project.id %>, <%= @instrument.id %>, grid.id)">
             <legend class="section">
