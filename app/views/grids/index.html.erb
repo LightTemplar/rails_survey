@@ -93,50 +93,56 @@
         </form>
         <div class="m-10" ng-controller="GridQuestionsCtrl" ng-init="init(<%= @project.id %>, <%= @instrument.id %>, grid.id)">
           <legend class="section">Questions in Table</legend>
-          <table class="table table-bordered table-hover table-condensed">
-            <tr style="font-weight: bold">
-              <td style="width:5%">Number in Instrument</td>
-              <td style="width:5%">Number in Table</td>
-              <td style="width:20%">Question Identifier</td>
-              <td style="width: 50%">Question Text</td>
-              <td style="width: 20%">Edit</td>
-            </tr>
-            <tr ng-repeat="question in questions | orderBy: 'number_in_grid'">
-              <td>
-                <span editable-text="question.number_in_instrument" e-form="rowform" e-name="number_in_instrument" e-required>
-                  {{question.number_in_instrument}}
-                </span>
-              </td>
-              <td>
-                <span editable-text="question.number_in_grid" e-form="rowform" e-name="number_in_grid" e-required>
-                  {{question.number_in_grid}}
-                </span>
-              </td>
-              <td>
-                <span editable-text="question.question_identifier" e-form="rowform" e-name="question_identifier" e-required>
-                  {{question.question_identifier}}
-                </span>
-              </td>
-              <td>
-                <span editable-textarea="question.text" e-form="rowform" e-name="text" e-required>
-                  {{question.text}}
-                </span>
-              </td>
-              <td>
-                <form editable-form name="rowform" onaftersave="updateQuestion(question)" ng-show="rowform.$visible" class="form-buttons form-inline">
-                  <button type="submit" ng-disabled="rowform.$waiting" class="btn btn-primary">save</button>
-                  <button type="button" ng-disabled="rowform.$waiting" ng-click="rowform.$cancel()" class="btn btn-danger">cancel</button>
-                </form>
-                <div class="buttons" ng-show="!rowform.$visible">
-                  <button class="btn btn-primary" ng-click="rowform.$show()">edit</button>
-                  <button class="btn btn-danger" ng-click="deleteQuestion(question)">delete</button>
-                </div>
-              </td>
-            </tr>
-          </table>
-        </div>
-        <div class="m-10">
-          <button class="btn btn-success" ng-click="newQuestion(grid)">Add Question</button>
+          <form editable-form name="tableform" onaftersave="saveQuestions()" oncancel="cancel()">
+            <table class="table table-bordered table-hover table-condensed">
+              <tr style="font-weight: bold">
+                <td style="width:5%">Number in Instrument</td>
+                <td style="width:5%">Number in Table</td>
+                <td style="width:25%">Question Identifier</td>
+                <td style="width:55%">Question Text</td>
+                <td style="width:10%">
+                  <span span ng-show="tableform.$visible">Edit</span>
+                </td>
+              </tr>
+              <tr ng-repeat="question in questions | orderBy: 'number_in_grid'">
+                <td>
+                  <span editable-text="question.number_in_instrument" e-form="tableform" e-name="number_in_instrument" e-required>
+                    {{question.number_in_instrument}}
+                  </span>
+                </td>
+                <td>
+                  <span editable-text="question.number_in_grid" e-form="tableform" e-name="number_in_grid" e-required>
+                    {{question.number_in_grid}}
+                  </span>
+                </td>
+                <td>
+                  <span editable-text="question.question_identifier" e-form="tableform" e-name="question_identifier" e-required>
+                    {{question.question_identifier}}
+                  </span>
+                </td>
+                <td>
+                  <span editable-textarea="question.text" e-form="tableform" e-name="text" e-required>
+                    {{question.text}}
+                  </span>
+                </td>
+                <td>
+                  <button type="button" ng-show="tableform.$visible" ng-click="deleteQuestion(question)" class="btn btn-danger pull-right">Delete</button>
+                </td>
+              </tr>
+            </table>
+            <div class="m-10">
+              <button type="button" class="btn btn-primary" ng-show="!tableform.$visible" ng-click="tableform.$show()">
+                Edit Questions
+              </button>
+            </div>
+            <div class="m-10">
+              <div class="btn-form" ng-show="tableform.$visible">
+                <button type="button" ng-disabled="tableform.$waiting" ng-click="newQuestion(grid)" class="btn btn-primary pull-right">Add Question</button>
+                <button type="submit" ng-disabled="tableform.$waiting" class="btn btn-success">Save Questions</button>
+                <button type="button" ng-disabled="tableform.$waiting" ng-click="tableform.$cancel()" class="btn btn-default">cancel</button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
