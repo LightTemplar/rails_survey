@@ -14,28 +14,20 @@
       <label for="question-type" class="col-sm-2 control-label">Question Type</label>
 
       <div class="col-sm-10">
-        <select
-        data-placeholder="Select a question type..."
-        no-results-text="'This does not match any valid question type'"
-        name="question-type"
-        id="question-type"
-        ng-model="question.question_type"
-        ng-options="type for type in questionTypes()"
-        required
-        >
+        <select data-placeholder="Select a question type..." no-results-text="'This does not match any valid question type'" name="question-type" id="question-type" ng-model="question.question_type" ng-options="type for type in questionTypes()" required>
           <option value=""></option>
         </select>
       </div>
     </div>
 
     <% if @instrument.show_instructions %>
-        <div class="form-group">
-          <label for="instructions" class="col-sm-2 control-label">Instructions</label>
+    <div class="form-group">
+      <label for="instructions" class="col-sm-2 control-label">Instructions</label>
 
-          <div class="col-sm-10">
-            <text-angular ta-toolbar="toolBar" textarea-class="form-control" ng-model="question.instructions"></text-angular>
-          </div>
-        </div>
+      <div class="col-sm-10">
+        <text-angular ta-toolbar="toolBar" textarea-class="form-control" ng-model="question.instructions"></text-angular>
+      </div>
+    </div>
     <% end %>
 
     <div class="form-group">
@@ -71,8 +63,6 @@
         </fieldset>
       </div>
     </div>
-
     <%= render 'questions_form_images' %>
-
   </form>
 </div>

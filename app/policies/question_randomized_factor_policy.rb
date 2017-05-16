@@ -1,0 +1,2 @@
+class QuestionRandomizedFactorPolicy < InstrumentPolicy
+end

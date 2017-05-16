@@ -9,7 +9,7 @@ module Api
           @instrument = current_project.instruments.find(params[:instrument_id])
           @page_num = params[:page]
           @questions = if !@page_num.blank? && params[:grid_id].blank?
-                         @instrument.questions.where(grid_id: nil).includes(:options, :option_skips, :images).page(@page_num).per(10)
+                         @instrument.questions.where(grid_id: nil).includes(:options, :option_skips, :images, :question_randomized_factors).page(@page_num).per(10)
                        elsif !params[:grid_id].blank?
                          @instrument.questions.where(grid_id: params[:grid_id])
                        else

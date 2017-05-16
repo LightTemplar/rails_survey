@@ -5,7 +5,7 @@ module Api
         respond_to :json
 
         def index
-          @instruments = current_project.instruments.order('title') if current_user
+          @instruments = current_project.instruments.includes(:randomized_factors, :randomized_options).order('title') if current_user
         end
 
         def show

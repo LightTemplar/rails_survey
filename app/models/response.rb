@@ -17,13 +17,14 @@
 #  device_user_id      :integer
 #  question_version    :integer          default(-1)
 #  deleted_at          :datetime
+#  randomized_data     :text
 #
-
+# randomized_data is a json string where the keys correspond to the position attribute in QuestionRandomizedFactor and the values correspond to the text attribute of the randomly chosen RandomizedOption belonging to the RandomizedFactor referenced in the QuestionRandomizedFactor
 class Response < ActiveRecord::Base
   include OptionLabels
   belongs_to :question
   belongs_to :survey, foreign_key: :survey_uuid, primary_key: :uuid
-  delegate :device, to: :survey 
+  delegate :device, to: :survey
   delegate :instrument, to: :survey
   delegate :project, to: :survey
   delegate :instrument_version_number, to: :survey
@@ -34,20 +35,20 @@ class Response < ActiveRecord::Base
   validate :question_existence
   validates :survey, presence: true
   after_destroy :calculate_response_rate
-  after_create {|response| response.message }
+  after_create(&:message)
 
   def question_existence
     unless Question.with_deleted.find_by_id(question_id)
       errors.add(:question, 'has never existed')
     end
   end
-  
+
   def calculate_response_rate
     SurveyPercentWorker.perform_in(30.minutes, survey.id)
   end
 
   def to_s
-    if question.nil? or question.options.empty?
+    if question.nil? || question.options.empty?
       text
     else
       question.options[text.to_i].to_s
@@ -55,13 +56,11 @@ class Response < ActiveRecord::Base
   end
 
   def grouped_responses
-    self.group(:created_at)
+    group(:created_at)
   end
 
   def time_taken_in_seconds
-    if time_ended && time_started
-      time_ended - time_started
-    end
+    time_ended - time_started if time_ended && time_started
   end
 
   def option_labels
@@ -69,8 +68,8 @@ class Response < ActiveRecord::Base
   end
 
   def dictionary
-    labels = [] 
-    if question and question.has_options?
+    labels = []
+    if question && question.has_options?
       question.options.with_deleted.each_with_index do |option, index|
         labels << "#{index}=\"#{option}\""
       end
@@ -82,9 +81,9 @@ class Response < ActiveRecord::Base
   def versioned_question
     @versioned_question ||= instrument_version.find_question_by(question_identifier: question_identifier)
   end
-  
+
   def message
-    msg =  { count: Response.count }
+    msg = { count: Response.count }
     begin
       $redis.publish 'responses-create', msg.to_json
     rescue Errno::ECONNREFUSED

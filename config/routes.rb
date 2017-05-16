@@ -22,12 +22,16 @@ RailsSurvey::Application.routes.draw do
                 resources :option_translations, only: [:update]
               end
               resources :images
+              resources :question_randomized_factors
             end
             resources :sections do
               resources :section_translations, only: [:update]
             end
             resources :grids do
               resources :grid_labels
+            end
+            resources :randomized_factors do
+              resources :randomized_options
             end
           end
           resources :score_schemes do
@@ -54,6 +58,9 @@ RailsSurvey::Application.routes.draw do
         resources :device_users, only: [:index, :show]
         resources :questions, only: [:index, :show]
         resources :options, only: [:index, :show]
+        resources :randomized_factors, only: [:index, :show]
+        resources :randomized_options, only: [:index, :show]
+        resources :question_randomized_factors, only: [:index, :show]
         resources :images, only: [:index, :show]
         resources :surveys, only: [:create]
         resources :responses, only: [:create]
@@ -94,6 +101,7 @@ RailsSurvey::Application.routes.draw do
       end
       resources :sections
       resources :grids
+      resources :randomized_factors
       member do
         get :csv_export
         get :pdf_export

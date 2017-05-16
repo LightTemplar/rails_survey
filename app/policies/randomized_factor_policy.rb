@@ -1,0 +1,2 @@
+class RandomizedFactorPolicy < InstrumentPolicy
+end

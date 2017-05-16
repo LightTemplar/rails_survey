@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170508200806) do
+ActiveRecord::Schema.define(version: 20170512132030) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -217,6 +217,14 @@ ActiveRecord::Schema.define(version: 20170508200806) do
     t.string   "survey_aggregator"
   end
 
+  create_table "question_randomized_factors", force: true do |t|
+    t.integer  "question_id"
+    t.integer  "randomized_factor_id"
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "question_translations", force: true do |t|
     t.integer  "question_id"
     t.string   "language"
@@ -253,6 +261,20 @@ ActiveRecord::Schema.define(version: 20170508200806) do
   end
 
   add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true
+
+  create_table "randomized_factors", force: true do |t|
+    t.integer  "instrument_id"
+    t.string   "title"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "randomized_options", force: true do |t|
+    t.integer  "randomized_factor_id"
+    t.text     "text"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "raw_scores", force: true do |t|
     t.integer  "score_unit_id"
@@ -309,6 +331,7 @@ ActiveRecord::Schema.define(version: 20170508200806) do
     t.integer  "device_user_id"
     t.integer  "question_version",    default: -1
     t.datetime "deleted_at"
+    t.text     "randomized_data"
   end
 
   add_index "responses", ["deleted_at"], name: "index_responses_on_deleted_at"

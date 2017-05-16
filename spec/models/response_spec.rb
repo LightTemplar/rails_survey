@@ -17,6 +17,7 @@
 #  device_user_id      :integer
 #  question_version    :integer          default(-1)
 #  deleted_at          :datetime
+#  randomized_data     :text
 #
 
 require "spec_helper"
