@@ -1,35 +1,35 @@
 <ul class="header-inner">
-  <% if request.path.include? 'wiki' %>
-      <li class="logo hidden-xs">
-        <%= link_to 'iSEE', '/projects' %>
-      </li>
-  <% else %>
-      <li id="menu-trigger" data-trigger="#sidebar">
-        <div class="line-wrap">
-          <div class="line top"></div>
-          <div class="line center"></div>
-          <div class="line bottom"></div>
-        </div>
-      </li>
-      <li class="logo hidden-xs">
-        <%= link_to 'iSEE', root_path %>
-      </li>
+  <li id="menu-trigger" data-trigger="#sidebar">
+    <div class="line-wrap">
+      <div class="line top"></div>
+      <div class="line center"></div>
+      <div class="line bottom"></div>
+    </div>
+  </li>
+  <li class="logo hidden-xs">
+    <%= link_to 'iSEE', root_path %>
+  </li>
 
-      <li class="pull-right">
-        <% if user_signed_in? %>
-            <ul class="top-menu">
-              <li class="alert alert-success alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                  <span aria-hidden="true">&times;</span></button>
-                <i class="md-person"> Currently logged in as <%= current_user.email %> </i>
-              </li>
-              <li>
-                <%= button_to destroy_user_session_path, :method => :delete, class: 'btn btn-danger' do %>
-                    <i class="md md-history"> Logout </i>
-                <% end %>
-              </li>
-            </ul>
+  <li class="pull-right">
+    <% if user_signed_in? %>
+    <ul class="top-menu">
+      <li class="alert alert-success alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <i class="md-person">
+          Currently logged in as
+          <%= current_user.email %>
+        </i>
+      </li>
+      <li>
+        <%= button_to destroy_user_session_path, :method => :delete, class: 'btn btn-danger' do %>
+        <i class="md md-history">
+          Logout
+        </i>
         <% end %>
       </li>
-  <% end %>
+    </ul>
+    <% end %>
+  </li>
 </ul>

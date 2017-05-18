@@ -26,10 +26,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def wiki_user
-    GollumRails::WikiUser.new(current_user.email, current_user.email, true) if user_signed_in?
-  end
-
   def authenticate_active_admin_user!
     authenticate_user!
     unless current_user.admin_user?

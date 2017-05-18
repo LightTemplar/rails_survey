@@ -4,7 +4,6 @@ RailsSurvey::Application.routes.draw do
   authenticate :user, ->(u) { u.admin? } do
     mount Sidekiq::Web, at: '/sidekiq'
   end
-  mount GollumRails::Engine => '/wiki'
   ActiveAdmin.routes(self)
 
   namespace :api, defaults: { format: 'json' } do

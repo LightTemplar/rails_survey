@@ -24,6 +24,7 @@
 class Survey < ActiveRecord::Base
   include RedisJobTracker
   include OptionLabels
+  include Sanitizable
   belongs_to :instrument
   belongs_to :device
   belongs_to :roster, foreign_key: :roster_uuid, primary_key: :uuid
@@ -48,7 +49,7 @@ class Survey < ActiveRecord::Base
       'text = ? AND other_response = ? AND special_response = ?', nil || '', nil || '', nil || ''
     ).pluck(:question_id).uniq.count
     valid_question_count = instrument.version_by_version_number(instrument_version_number)
-    .questions.select { |question| question.question_type != 'INSTRUCTIONS' }.count
+                                     .questions.select { |question| question.question_type != 'INSTRUCTIONS' }.count
     if valid_response_count && valid_question_count && valid_question_count != 0
       rate = (valid_response_count.to_f / valid_question_count.to_f).round(2)
     end
@@ -107,7 +108,7 @@ class Survey < ActiveRecord::Base
     wide_csv.close
     short_csv.close
     export = ResponseExport.create(instrument_id: instrument.id, instrument_versions: instrument.survey_instrument_versions,
-    short_format_url: short_csv.path, wide_format_url: wide_csv.path, long_format_url: long_csv.path)
+                                   short_format_url: short_csv.path, wide_format_url: wide_csv.path, long_format_url: long_csv.path)
     write_short_header(short_csv)
     write_long_header(long_csv, instrument)
     write_wide_header(wide_csv, instrument)
@@ -136,8 +137,7 @@ class Survey < ActiveRecord::Base
     validator = survey.validation_identifier
     CSV.open(file, 'a+') do |csv|
       survey.responses.each do |response|
-        csv << [validator, survey.id, response.question_identifier, Sanitize.fragment(survey.chronicled_question(response.question_identifier).try(:text)),
-        response.text, response.option_labels, response.special_response, response.other_response]
+        csv << [validator, survey.id, response.question_identifier, sanitize(survey.chronicled_question(response.question_identifier).try(:text)), response.text, response.option_labels, response.special_response, response.other_response]
       end
     end
     decrement_export_count(export_id.to_s)
@@ -181,8 +181,8 @@ class Survey < ActiveRecord::Base
     headers = get_headers(file)
     CSV.open(file, 'a+') do |csv|
       row = [survey.id, survey.uuid, survey.device.identifier, survey.device_label ? survey.device_label : survey.device.label, survey.latitude, survey.longitude, survey.instrument.id,
-        survey.instrument_version_number, survey.instrument.title, survey.responses.order('time_started').try(:first).try(:time_started),
-      survey.responses.order('time_ended').try(:last).try(:time_ended)]
+             survey.instrument_version_number, survey.instrument.title, survey.responses.order('time_started').try(:first).try(:time_started),
+             survey.responses.order('time_ended').try(:last).try(:time_ended)]
 
       if survey.metadata
         survey.metadata.each do |k, v|
@@ -207,7 +207,7 @@ class Survey < ActiveRecord::Base
         question_version_index = headers.index(response.question_identifier + '_version')
         row[question_version_index] = response.question_version if question_version_index
         question_text_index = headers.index(response.question_identifier + '_text')
-        row[question_text_index] = Sanitize.fragment(survey.chronicled_question(response.question_identifier).try(:text)) if question_text_index
+        row[question_text_index] = sanitize(survey.chronicled_question(response.question_identifier).try(:text)) if question_text_index
         start_time_index = headers.index(response.question_identifier + '_start_time')
         row[start_time_index] = response.time_started if start_time_index
         end_time_index = headers.index(response.question_identifier + '_end_time')
@@ -261,12 +261,12 @@ class Survey < ActiveRecord::Base
     CSV .open(file, 'a+') do |csv|
       survey.responses.each do |response|
         row = [response.question_identifier, "q_#{response.question_id}", survey.instrument_id,
-          response.instrument_version_number, response.question_version, survey.instrument_title,
-          survey_id, response.survey_uuid, survey.device_id, survey.device_uuid,
-          survey.device_label ? survey.device_label : survey.device.label,
-          response.versioned_question.try(:question_type), Sanitize.fragment(response.versioned_question.try(:text)),
-          response.text, response.option_labels, response.special_response, response.other_response, response.time_started,
-        response.time_ended, response.device_user.try(:id), response.device_user.try(:username)]
+               response.instrument_version_number, response.question_version, survey.instrument_title,
+               survey_id, response.survey_uuid, survey.device_id, survey.device_uuid,
+               survey.device_label ? survey.device_label : survey.device.label,
+               response.versioned_question.try(:question_type), sanitize(response.versioned_question.try(:text)),
+               response.text, response.option_labels, response.special_response, response.other_response, response.time_started,
+               response.time_ended, response.device_user.try(:id), response.device_user.try(:username)]
         if survey.metadata
           survey.metadata.each do |k, v|
             row[headers.index(k)] = v if headers.index(k)

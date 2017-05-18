@@ -26,6 +26,7 @@ class Instrument < ActiveRecord::Base
   include Translatable
   include Alignable
   include LanguageAssignable
+  include Sanitizable
   serialize :special_options, Array
   scope :published, -> { where(published: true) }
   belongs_to :project
@@ -101,8 +102,7 @@ class Instrument < ActiveRecord::Base
     format << ["\n"]
     format << %w(number_in_instrument question_identifier question_type question_instructions question_text) + instrument_translation_languages
     questions.each do |question|
-      format << [question.number_in_instrument, question.question_identifier, question.question_type,
-                 Sanitize.fragment(question.instructions), Sanitize.fragment(question.text)] + translations_for_object(question)
+      format << [question.number_in_instrument, question.question_identifier, question.question_type, sanitize(question.instructions), sanitize(question.text)] + translations_for_object(question)
       question.options.each do |option|
         format << ['', '', '', "Option for question #{question.question_identifier}", option.text] + translations_for_object(option)
         if option.next_question
@@ -139,7 +139,7 @@ class Instrument < ActiveRecord::Base
     text_translations = []
     obj.translations.each do |translation|
       if instrument_translation_languages.include? translation.language
-        text_translations << Sanitize.fragment(translation.text)
+        text_translations << sanitize(translation.text)
       end
     end
     text_translations
