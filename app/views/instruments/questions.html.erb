@@ -4,13 +4,11 @@
     <div class="card-header card-padding">
       <input type="search" ng-model="searchText" ui-keypress="{ 13 : 'searchItem()' }" placeholder="Search questions..." class="form-control bottom-buffer">
     </div>
-
     <div class="card-body card-padding">
       <div class="listview lv-bordered lv-lg">
         <div class="lv-body">
           <div ui-sortable="sortableOptions" ng-model="questions">
             <div class="lv-item media" dir-paginate="question in questions | itemsPerPage: questionsPerPage" total-items="totalQuestions" current-page="currentPaginationNumber">
-
               <div class="col-md-3">
                 <form ng-submit="repositionQuestion(question)">
                   <div class="fg-line form-group">
@@ -29,7 +27,6 @@
                   </a>
                 </div>
               </div>
-
               <div class="col-md-9">
                 <div class="card" ng-hide="edit_question == question">
                   <div class="card-header">
@@ -51,11 +48,9 @@
                         New Question
                       </i>
                     </a>
-
                     <div class="clearfix"></div>
                   </div>
                 </div>
-
                 <div ng-controller="OptionsCtrl">
                   <div ng-show="edit_question == question">
                     <section class="card">
@@ -86,16 +81,13 @@
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
       </div>
-
       <div class="text-center">
         <dir-pagination-controls max-size="maxNumOfLinks" direction-links="true" boundary-links="true" auto-hide="false" on-page-change="getQuestionsPerPage(newPageNumber)"></dir-pagination-controls>
       </div>
-
       <div class="m-r-15" ng-show="questions.length == 0">
         <a class="btn btn-success pull-right" ng-click="newQuestion(null)" id="add-question-button">
           <i class="md-add"></i>Add Question</a>

@@ -35,7 +35,7 @@ class Response < ActiveRecord::Base
   validate :question_existence
   validates :survey, presence: true
   after_destroy :calculate_response_rate
-  after_create(&:message)
+  # after_create(&:message)
 
   def question_existence
     unless Question.with_deleted.find_by_id(question_id)
@@ -82,12 +82,12 @@ class Response < ActiveRecord::Base
     @versioned_question ||= instrument_version.find_question_by(question_identifier: question_identifier)
   end
 
-  def message
-    msg = { count: Response.count }
-    begin
-      $redis.publish 'responses-create', msg.to_json
-    rescue Errno::ECONNREFUSED
-      logger.debug 'Redis is not running'
-    end
-  end
+  # def message
+  #   msg = { count: Response.count }
+  #   begin
+  #     $redis.publish 'responses-create', msg.to_json
+  #   rescue Errno::ECONNREFUSED
+  #     logger.debug 'Redis is not running'
+  #   end
+  # end
 end

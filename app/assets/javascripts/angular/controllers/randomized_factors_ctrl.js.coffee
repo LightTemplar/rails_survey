@@ -54,8 +54,8 @@ App.controller 'RandomizedFactorsCtrl', ['$scope', '$filter', 'Instrument', 'Ran
     else
       factor.$save({} ,
         (data, headers) ->
-          $scope.cancelFactor()
           $scope.$broadcast('FACTOR_SAVED', data.id)
+          $scope.cancelFactor()
         ,
         (result, headers) -> alert 'Error saving factor'
       )

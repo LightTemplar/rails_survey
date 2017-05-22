@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170512132030) do
+ActiveRecord::Schema.define(version: 20170519152900) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -193,6 +193,7 @@ ActiveRecord::Schema.define(version: 20170512132030) do
     t.integer  "instrument_version_number", default: -1
     t.boolean  "special",                   default: false
     t.boolean  "critical"
+    t.boolean  "complete_survey"
   end
 
   create_table "project_device_users", force: true do |t|

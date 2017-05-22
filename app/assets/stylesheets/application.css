@@ -9,6 +9,7 @@
  * compiled file, but it's generally better to create a new file per style scope.
  *
  *= require_self
+ *= require jquery-ui
  *= require animate.css/animate.min
  *= require sweetalert/dist/sweetalert-override.min
  *= require material-design-iconic-font/css/material-design-iconic-font.min

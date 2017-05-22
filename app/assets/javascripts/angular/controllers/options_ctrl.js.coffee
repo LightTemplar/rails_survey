@@ -53,4 +53,10 @@ App.controller 'OptionsCtrl', ['$scope', 'Option', '$filter', ($scope, Option, $
   filterOptions = () ->
     $scope.defaultOptions = $filter('filter')($scope.options, special: false, true)
 
+  $scope.unCheckNextQuestion = (option) ->
+    option.next_question = null
+  
+  $scope.unCheckCompleteSurvey = (option) ->
+    option.complete_survey = false
+
 ]

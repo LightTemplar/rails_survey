@@ -30,7 +30,7 @@ module Api
         private
 
         def option_params
-          params.require(:option).permit(:question_id, :text, :next_question, :number_in_question, :instrument_version_number, :critical)
+          params.require(:option).permit(:question_id, :text, :next_question, :number_in_question, :instrument_version_number, :critical, :complete_survey)
         end
       end
     end

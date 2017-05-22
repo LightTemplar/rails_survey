@@ -13,6 +13,7 @@
 #  instrument_version_number :integer          default(-1)
 #  special                   :boolean          default(FALSE)
 #  critical                  :boolean
+#  complete_survey           :boolean
 #
 
 class Option < ActiveRecord::Base
