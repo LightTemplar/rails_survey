@@ -2,7 +2,7 @@ require 'sidekiq/web'
 RailsSurvey::Application.routes.draw do
   devise_for :users
   authenticate :user, ->(u) { u.admin? } do
-    mount Sidekiq::Web, at: '/sidekiq'
+    mount Sidekiq::Web, at: 'sidekiq', as: 'sidekiq'
   end
   ActiveAdmin.routes(self)
 

@@ -33,16 +33,7 @@ RailsSurvey::Application.configure do
   config.assets.digest = true
 
   # Version of your assets, change this if you want to expire all your assets.
-  config.assets.version = '1.0'
-
-  config.before_configuration do
-    env_file = File.join(Rails.root, 'config', 'local_env.yml')
-    if File.exist?(env_file) && !File.zero?(env_file)
-      YAML.safe_load(File.open(env_file)).each do |key, value|
-        ENV[key.to_s] = value
-      end
-    end
-  end
+  config.assets.version = '1.0.1'
 
   # Specifies the header that your server uses for sending files.
   # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for apache
