@@ -139,6 +139,10 @@ class Project < ActiveRecord::Base
     end
   end
 
+  def survey_aggregator
+    read_attribute(:survey_aggregator).nil? ? 'device_uuid' : read_attribute(:survey_aggregator)
+  end
+
   private
 
   def sanitize(hash)
