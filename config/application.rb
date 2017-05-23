@@ -40,8 +40,5 @@ module RailsSurvey
     config.cache_store = :redis_store, 'redis://localhost:6379/0/cache', { expires_in: (Time.now.end_of_day - Time.now).seconds }
     config.autoload_paths += Dir[Rails.root.join('app', 'scorers', '{*/}')]
     config.action_controller.include_all_helpers = false
-    # if ENV['RAILS_RELATIVE_URL_ROOT']
-    #   config.relative_url_root = ENV['RAILS_RELATIVE_URL_ROOT']
-    # end
   end
 end
