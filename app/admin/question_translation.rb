@@ -1,6 +1,7 @@
 ActiveAdmin.register QuestionTranslation do
   belongs_to :question
   permit_params :language, :text, :reg_ex_validation_message, :question_id
+  actions :all, except: :new
 
   index do
     column :id
@@ -14,7 +15,7 @@ ActiveAdmin.register QuestionTranslation do
     actions
   end
 
-  show do |inst_trans|
+  show do |_inst_trans|
     attributes_table do
       row :id
       row :question_id
@@ -38,6 +39,6 @@ ActiveAdmin.register QuestionTranslation do
   end
 
   controller do
-    defaults :collection_name => "translations"
+    defaults collection_name: 'translations'
   end
 end

@@ -1,7 +1,8 @@
 ActiveAdmin.register Instrument do
   belongs_to :project
   permit_params :title, :language, :alignment, :previous_question_count, :child_update_count, :published, :show_instructions, :project_id
-  scope_to :current_user, unless: proc{ current_user.super_admin? }
+  scope_to :current_user, unless: proc { current_user.super_admin? }
+  actions :all, except: :new
 
   sidebar 'Instrument Associations', only: :show do
     ul do
@@ -23,5 +24,4 @@ ActiveAdmin.register Instrument do
     end
     f.actions
   end
-
 end

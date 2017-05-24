@@ -32,7 +32,7 @@
         <tbody>
           <tr ng-repeat="instrument in instruments | filter:q">
             <td>
-              <a href="/projects/<%= current_project.id %>/instruments/{{instrument.id}}">{{instrument.title}}</a>
+              <a href="{{baseUrl}}/projects/<%= current_project.id %>/instruments/{{instrument.id}}">{{instrument.title}}</a>
             </td>
             <td>{{instrument.published}}</td>
             <td>{{instrument.id}}</td>

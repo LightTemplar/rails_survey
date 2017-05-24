@@ -1,49 +1,55 @@
 <!DOCTYPE html>
 <html ng-app="Survey">
-<head>
-  <title>iSEE</title>
-  <%= stylesheet_link_tag 'application', media: 'all' %>
-  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-  <script type="text/javascript">google.load('visualization', '1', {'packages': ['corechart']});</script>
-  <%= javascript_include_tag 'application' %>
-  <%= csrf_meta_tags %>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <meta charset="utf-8">
-</head>
+  <head>
+    <title>iSEE</title>
+    <%= stylesheet_link_tag 'application', media: 'all' %>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load('visualization', '1', {'packages': ['corechart']});
+    </script>
+    <script>
+      window._base_url = "<%= ENV['BASE_URL'] %>"
+    </script>
+    <%= javascript_include_tag 'application' %>
+    <%= csrf_meta_tags %>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta charset="utf-8">
+  </head>
 
-<body>
-<header id="header">
-  <%= render 'layouts/header' %>
-</header>
+  <body>
+    <header id="header">
+      <%= render 'layouts/header' %>
+    </header>
 
-<div>
-  <% flash.each do |key, msg| %>
+    <div>
+      <% flash.each do |key, msg| %>
       <% if key == :alert or key == :notice %>
-          <div class="alert alert-<%= key == :alert ? 'danger' : 'success' %> alert-dismissible text-center" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span></button>
-            <%= msg %>
-          </div>
+      <div class="alert alert-<%= key == :alert ? 'danger' : 'success' %> alert-dismissible text-center" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <%= msg %>
+      </div>
       <% end %>
-  <% end %>
-</div>
-
-<section id="main">
-  <aside id="sidebar">
-    <div class="sidebar-inner c-overflow">
-      <%= render 'layouts/sidebar' %>
+      <% end %>
     </div>
-  </aside>
 
-  <section id="content">
-    <div class="container">
-      <%= yield %>
-    </div>
-  </section>
-</section>
+    <section id="main">
+      <aside id="sidebar">
+        <div class="sidebar-inner c-overflow">
+          <%= render 'layouts/sidebar' %>
+        </div>
+      </aside>
 
-<%= render 'layouts/footer' %>
-</body>
+      <section id="content">
+        <div class="container">
+          <%= yield %>
+        </div>
+      </section>
+    </section>
+
+    <%= render 'layouts/footer' %>
+  </body>
 </html>

@@ -6,8 +6,7 @@ ActiveAdmin.register Survey do
     end
   end
 
-  permit_params :instrument_id, :instrument_version_number, :uuid, :device_id, :instrument_title,
-                :device_uuid, :latitude, :longitude, :metadata, :completion_rate
+  permit_params :instrument_id, :instrument_version_number, :uuid, :device_id, :instrument_title, :device_uuid, :latitude, :longitude, :metadata, :completion_rate
 
   config.sort_order = 'id_desc'
   config.filters = true
@@ -52,9 +51,7 @@ ActiveAdmin.register Survey do
       instrument = Instrument.find_by_id(survey.instrument_id)
       instrument ? (link_to survey.instrument_title, admin_project_instrument_path(instrument.project_id, survey.instrument_id)) : survey.instrument_title
     end
-    column 'Instrument Versions', sortable: :instrument_version_number do |version|
-      version.instrument_version_number
-    end
+    column 'Instrument Versions', sortable: :instrument_version_number, &:instrument_version_number
     column :created_at do |survey|
       time_ago_in_words(survey.created_at) + ' ago'
     end
@@ -68,5 +65,4 @@ ActiveAdmin.register Survey do
     end
     f.actions
   end
-
 end
