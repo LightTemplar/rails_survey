@@ -99,7 +99,7 @@ class Question < ActiveRecord::Base
   end
 
   def instrument_version
-    if instrument && (read_attribute(:instrument_version_number) == -1)
+    if instrument && (read_attribute(:instrument_version_number).nil? || read_attribute(:instrument_version_number) == -1)
       instrument.current_version_number
     else
       read_attribute(:instrument_version_number)
