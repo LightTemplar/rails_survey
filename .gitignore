@@ -21,6 +21,8 @@ config/settings/*.local.yml
 config/environments/*.local.yml
 config/local_env.yml
 config/newrelic.yml
+config/deploy/production.rb
+config/*.pem
 
 # Ignore Rubymine files
 scopes/scope_settings.xml
@@ -31,11 +33,14 @@ scopes/scope_settings.xml
 # Ignore modules for node
 node/node_modules
 
-#Ignore Redis files
+# Ignore Redis files
 dump.rdb
 
-#Ignore public assets - generate by Capistrano on deploy
+# Ignore public assets - generate by Capistrano on deploy
 public/assets/
 
-#Ignore capistrano files
+# Ignore capistrano files
 config/deploy/production.rb
+
+# Ignore OS files
+*.DS_Store

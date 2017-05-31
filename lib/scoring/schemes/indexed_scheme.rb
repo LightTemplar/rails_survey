@@ -1,5 +1,4 @@
 class IndexedScheme < ScoringScheme
-
   def ref_option_index_raw_score=(str)
     if str.include?('...')
       index_score_hash = {}
@@ -16,7 +15,7 @@ class IndexedScheme < ScoringScheme
 
   def score(obj, ref_score)
     return nil if obj.response.blank? || ref_option_index_raw_score.blank?
-    #TODO quick and dirty
+    # TODO: quick and dirty
     if question_type == 'SELECT_MULTIPLE_WRITE_OTHER' && !relevant_index.nil?
       if obj.response.include?(relevant_index.to_s)
         return 7
@@ -24,7 +23,7 @@ class IndexedScheme < ScoringScheme
         return 1
       end
     end
-    #TODO quick and dirty
+    # TODO: quick and dirty
     if question_type == 'SELECT_ONE' && !relevant_index.nil?
       if ref_score.response && ref_score.response.include?(relevant_index.to_s)
         return ref_option_index_raw_score[obj.response]
@@ -34,10 +33,10 @@ class IndexedScheme < ScoringScheme
     end
 
     if reference_qid
-      return nil if ref_score.nil? || ref_score.response.blank? #TODO Why is ref_score nil
+      return nil if ref_score.nil? || ref_score.response.blank? # TODO: Why is ref_score nil
       reference_hash = ref_option_index_raw_score[ref_score.response]
       if reference_hash.nil?
-        #TODO Imputed/Inferred
+        # TODO: Imputed/Inferred
         return 1
       end
       return reference_hash['_'] if reference_hash && reference_hash.keys.include?('_')
@@ -49,11 +48,11 @@ class IndexedScheme < ScoringScheme
         return selected.values.first
       end
       if ref_option_index_raw_score[obj.response].class == Hash
-        center_code = Center.get_centers.find { |ctr| ctr.id == obj.center_id }.code
+        center = Center.get_centers.find { |ctr| ctr.id == obj.center_id }
+        center_code = center ? center.code : 1
         return ref_option_index_raw_score[center_code.to_s][obj.response]
       end
       ref_option_index_raw_score[obj.response]
     end
   end
-
 end

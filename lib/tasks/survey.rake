@@ -14,12 +14,12 @@ namespace :survey do
     group_score_schemes = []
     roster_schemes = []
     scores = []
-    book = Roo::Spreadsheet.open(base_dir + 'QCUALS Scoring/NonObsScoringScheme.xlsx', extension: :xlsx)
+    book = Roo::Spreadsheet.open(base_dir + 'NonObs/NonObsScoringScheme.xlsx', extension: :xlsx)
     scoring_sheet = book.sheet('Scoring')
 
     # Initialize crib beds and centers
-    CribBed.initialize_cribs(base_dir + 'QCUALS Scoring/NonObsScoringScheme.xlsx')
-    Center.initialize_centers(base_dir + 'QCUALS Scoring/NonObsScoringScheme.xlsx')
+    CribBed.initialize_cribs(base_dir + 'NonObs/NonObsScoringScheme.xlsx')
+    Center.initialize_centers(base_dir + 'NonObs/NonObsScoringScheme.xlsx')
 
     # Generate scoring schemes
     scoring_sheet.drop(1).each do |row|
@@ -38,12 +38,19 @@ namespace :survey do
     end
 
     # Parse responses and create score objects
-    header = []
+    header = %w(qid	short_qid	instrument_id	instrument_version_number
+      question_version_number	instrument_title	survey_id	survey_uuid
+      device_id	device_uuid	device_label	question_type	question_text
+      response	response_labels	special_response	other_response
+      response_time_started	response_time_ended	device_user_id
+      device_user_username	participant_uuid	participant_type	Center_ID
+      survey_label)
     response_scores = []
-    Dir.glob(base_dir + 'QCUALS Scoring/surveys/*.csv').each do |filename|
+    # Expects long versions of the export files
+    Dir.glob(base_dir + 'NonObs/surveys/*.csv').each do |filename|
       CSV.foreach(filename, encoding:'iso-8859-1:utf-8') do |row|
         if $. == 1
-          header = row
+          # header = row
         else
           qid = header.index('qid') ? row[header.index('qid')] : nil
           if qid
@@ -51,12 +58,12 @@ namespace :survey do
             survey_uuid = header.index('survey_uuid') ? row[header.index('survey_uuid')] : nil
             device_label = header.index('device_label') ? row[header.index('device_label')] : nil
             device_user = header.index('device_user_username') ? row[header.index('device_user_username')] : nil
-            center_id = header.index('Center ID') ? row[header.index('Center ID')] : nil
+            center_id = header.index('Center_ID') ? row[header.index('Center_ID')] : nil
             instrument_id = header.index('instrument_id') ? row[header.index('instrument_id')] : nil
             question_type = header.index('question_type') ? row[header.index('question_type')] : nil
             response = header.index('response') ? row[header.index('response')] : nil
-            response_scores.push(Score.new(qid, survey_id, survey_uuid, device_label, device_user, center_id, instrument_id,
-                      question_type, response))
+            response_scores.push(Score.new(qid, survey_id, survey_uuid, device_label,
+              device_user, center_id, instrument_id, question_type, response))
           end
         end
       end
@@ -111,66 +118,79 @@ namespace :survey do
     puts 'group scores added: ' + scores.size.to_s
 
     # Optimize role response search array
-    role_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
-        scheme.question_text == 'Name of Role'}
-    role_response_scores = []
-    role_scheme.qid.split(',').each do |qid|
-      role_response_scores.concat(response_scores.find_all{|rs| rs.qid == qid})
+    # role_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) && scheme.question_text == 'Name of Role'}
+    # role_response_scores = []
+    # role_scheme.qid.split(',').each do |qid|
+    #   role_response_scores.concat(response_scores.find_all{|rs| rs.qid == qid})
+    # end
+
+    # Write manual scores to file
+    file = base_dir + 'NonObs/manual_scores.csv'
+    CSV.open(file, 'wb') do |csv|
+      csv << %w(center_id instrument_id survey_id survey_uuid device_label device_user
+        qid question_type scoring_description domain sub_domain response weight raw_score)
+      csv << []
+      scores.each do |score|
+        if score.raw_score == 'manual'
+          row = [score.center_id, score.instrument_id, score.survey_id, score.survey_uuid, score.device_label, score.device_user, score.qid, score.question_type, score.scheme_description, score.domain, score.sub_domain, score.response, score.weight, score.raw_score]
+          csv << row
+        end
+      end
     end
 
     # === Rosters ===
-    Dir.glob(base_dir + 'QCUALS Rosters (child & staff)/Rosters Phase II/*.xlsx').each do |filename|
-      center_id = filename.split('/').last.gsub(/[^\d]/, '')
-      unless center_id.blank?
-        roster_book = Roo::Spreadsheet.open(filename, extension: :xlsx)
-        children_sheet = roster_book.sheet(roster_book.sheets[1]) #roster_book.sheet('Niños y Niñas')
-
-        # child section
-        previous_care_scheme = roster_schemes.find{|scheme| scheme.description == 'Simple search' &&
-            scheme.question_type == 'Roster'}
-        scores.push(previous_care_scheme.generate_previous_care_score(children_sheet, center_id.to_i))
-        age_and_school_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
-            scheme.question_text == 'School'}
-        scores.push(age_and_school_scheme.get_age_school_score(children_sheet, center_id.to_i))
-        vaccination_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
-            scheme.question_text == 'Vaccinations'}
-        scores.push(vaccination_scheme.get_vaccination_score(children_sheet, center_id.to_i))
-        lag_time_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
-          scheme.question_text == 'Arrival-Assignment lag time'}
-        scores.push(lag_time_scheme.get_lag_time_score(children_sheet, center_id.to_i))
-
-        # staff section
-        staff_sheet = roster_book.sheet('Personal') #TODO Might not support opening sheets concurrently
-        group_assignment_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
-          scheme.question_text == 'Group Assignment'}
-        scores << group_assignment_scheme.calculate_staff_score(staff_sheet, center_id.to_i, 14)
-        shift_per_week = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
-            scheme.question_text == '# Shifts/Week'}
-        scores << shift_per_week.calculate_staff_score(staff_sheet, center_id.to_i, 11)
-        number_of_groups = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
-          scheme.question_text == '# groups they have worked with in time at center'}
-        scores << number_of_groups.calculate_staff_score(staff_sheet, center_id.to_i, 14, 15)
-        hours_per_week_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
-            scheme.question_text == '# Hours/Week'}
-        scores << hours_per_week_scheme.get_weekly_hours_score(staff_sheet, center_id.to_i, 12)
-        name_of_role = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
-            scheme.question_text == 'Name of Role'}
-        roles = []
-        name_of_role.qid.split(',').each do |qid|
-          roles.concat(role_response_scores.find_all{|rs| rs.center_id == center_id.to_i && rs.qid == qid})
-        end
-        scores << name_of_role.match_roles(staff_sheet, center_id.to_i, 4, roles)
-      end
-    end
-    puts 'roster scores added: ' + scores.size.to_s
+    # Dir.glob(base_dir + 'QCUALS Rosters (child & staff)/Rosters Phase II/*.xlsx').each do |filename|
+    #   center_id = filename.split('/').last.gsub(/[^\d]/, '')
+    #   unless center_id.blank?
+    #     roster_book = Roo::Spreadsheet.open(filename, extension: :xlsx)
+    #     children_sheet = roster_book.sheet(roster_book.sheets[1]) #roster_book.sheet('Niños y Niñas')
+    #
+    #     # child section
+    #     previous_care_scheme = roster_schemes.find{|scheme| scheme.description == 'Simple search' &&
+    #         scheme.question_type == 'Roster'}
+    #     scores.push(previous_care_scheme.generate_previous_care_score(children_sheet, center_id.to_i))
+    #     age_and_school_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+    #         scheme.question_text == 'School'}
+    #     scores.push(age_and_school_scheme.get_age_school_score(children_sheet, center_id.to_i))
+    #     vaccination_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+    #         scheme.question_text == 'Vaccinations'}
+    #     scores.push(vaccination_scheme.get_vaccination_score(children_sheet, center_id.to_i))
+    #     lag_time_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+    #       scheme.question_text == 'Arrival-Assignment lag time'}
+    #     scores.push(lag_time_scheme.get_lag_time_score(children_sheet, center_id.to_i))
+    #
+    #     # staff section
+    #     staff_sheet = roster_book.sheet('Personal') # TODO Might not support opening sheets concurrently
+    #     group_assignment_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+    #       scheme.question_text == 'Group Assignment'}
+    #     scores << group_assignment_scheme.calculate_staff_score(staff_sheet, center_id.to_i, 14)
+    #     shift_per_week = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+    #         scheme.question_text == '# Shifts/Week'}
+    #     scores << shift_per_week.calculate_staff_score(staff_sheet, center_id.to_i, 11)
+    #     number_of_groups = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+    #       scheme.question_text == '# groups they have worked with in time at center'}
+    #     scores << number_of_groups.calculate_staff_score(staff_sheet, center_id.to_i, 14, 15)
+    #     hours_per_week_scheme = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+    #         scheme.question_text == '# Hours/Week'}
+    #     scores << hours_per_week_scheme.get_weekly_hours_score(staff_sheet, center_id.to_i, 12)
+    #     name_of_role = roster_schemes.find{|scheme| scheme.respond_to?(:question_text) &&
+    #         scheme.question_text == 'Name of Role'}
+    #     roles = []
+    #     name_of_role.qid.split(',').each do |qid|
+    #       roles.concat(role_response_scores.find_all{|rs| rs.center_id == center_id.to_i && rs.qid == qid})
+    #     end
+    #     scores << name_of_role.match_roles(staff_sheet, center_id.to_i, 4, roles)
+    #   end
+    # end
+    # puts 'roster scores added: ' + scores.size.to_s
 
     # Integrate manually scored ones
-    manual_score_book =  Roo::Spreadsheet.open(base_dir + 'QCUALS Scoring/Manual_Scoring_V1.xlsx', extension: :xlsx)
+
+    manual_score_book =  Roo::Spreadsheet.open(base_dir + 'NonObs/Manual_Scoring.xlsx', extension: :xlsx)
     manual_score_sheet = manual_score_book.sheet('ManualScores')
     manual_score_sheet.drop(1).each do |row|
       if row[0] && row[2] && row[6] && row[13] != 'manual' && !row[13].blank?
-        selected_score = scores.find_all{ |score| score.center_id == row[0].to_i && score.survey_id ==
-            row[2].to_i.to_s && score.qid == row[6] && score.raw_score == 'manual' }
+        selected_score = scores.find_all{ |score| score.center_id == row[0].to_i && score.survey_id == row[2].to_i.to_s && score.qid == row[6] && score.raw_score == 'manual' }
         selected_score.each do |score|
           score.raw_score = row[13].to_i
         end
@@ -178,9 +198,10 @@ namespace :survey do
     end
 
     # Integrate observational scores
+
     options = {:encoding => 'UTF-8', :skip_blanks => true}
     csv_header = []
-    CSV.foreach(base_dir + 'QCUALS Scoring/ObsScores.csv', options).with_index do |row, line|
+    CSV.foreach(base_dir + 'Obs/scores.csv', options).with_index do |row, line|
       if line == 0
         csv_header = row
       end
@@ -194,8 +215,8 @@ namespace :survey do
       weight = csv_header.index('unit_score_weight') ? row[csv_header.index('unit_score_weight')] : nil
       domain = csv_header.index('domain') ? row[csv_header.index('domain')] : nil
       if qid && center_id
-        scores << ObservationalScore.new(qid, survey_id, survey_uuid, device_label, device_user, center_id, raw_score,
-                                         weight, domain)
+        scores << ObservationalScore.new(qid, survey_id, survey_uuid, device_label,
+          device_user, center_id, raw_score, weight, domain)
       end
     end
     puts 'observational scores added: ' + scores.size.to_s
@@ -203,17 +224,22 @@ namespace :survey do
     # Export scores to csv file
     all_center_scores = []
     all_domain_scores = {1 => [], 2 => [], 3 => [], 4 => [], 5 => [], 6 => [], 7 => [], 8 => [], 9 => [], 10 => []}
-    csv_file = base_dir + 'QCUALS Scoring/QCUALS_SCORES.csv'
+    csv_file = base_dir + 'QCUALS_SCORES.csv'
     CSV.open(csv_file, 'wb') do |csv|
-      header = %w[center_id instrument_id survey_id survey_uuid device_label device_user qid question_type
-                scoring_description domain weight raw_score weighted_score domain_score domain_weight
-                weighted_domain_score center_score domain_1_avg domain_2_avg domain_3_avg domain_4_avg domain_5_avg
-                domain_6_avg domain_7_avg domain_8_avg domain_9_avg domain_10_avg center_score_avg]
+      header = %w(center_id instrument_id survey_id survey_uuid device_label
+        device_user qid question_type scoring_description domain weight
+        raw_score weighted_score domain_score domain_weight weighted_domain_score
+        center_score domain_1_avg domain_2_avg domain_3_avg domain_4_avg
+        domain_5_avg domain_6_avg domain_7_avg domain_8_avg domain_9_avg
+        domain_10_avg center_score_avg)
                 # subdomain sub_domain_1_score sub_domain_2_score sub_domain_3_score sub_domain_4_score
                 # sub_domain_5_score sub_domain_6_score sub_domain_7_score sub_domain_8_score]
       csv << header
       Center.get_centers.each do |center|
-        center_scores = scores.find_all{|score| score.center_id == center.id}
+        center_scores = []
+        scores.each do |score|
+          center_scores << score if score.is_a?(Score) && score.center_id == center.id
+        end
         domains = center_scores.map(&:domain).uniq.compact.sort
         weighted_center_score_sum = 0
         weights_sum = 0
@@ -266,9 +292,9 @@ namespace :survey do
           }
       end
       row = Array.new(28, '')
-      row[header.index('center_score_avg')] = (all_center_scores.inject(0, &:+) / all_center_scores.size).round(2)
+      row[header.index('center_score_avg')] = (all_center_scores.inject(0, &:+) / all_center_scores.size).round(2) unless all_center_scores.empty?
       all_domain_scores.each do |key, array|
-        row[header.index('domain_' + key.to_s + '_avg')] = (array.inject(0, &:+) / array.size).round(2)
+        row[header.index('domain_' + key.to_s + '_avg')] = (array.inject(0, &:+) / array.size).round(2) unless array.empty?
       end
       csv << row
     end

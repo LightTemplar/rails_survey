@@ -1,5 +1,5 @@
 class Center
-  attr :id, :kind, :type, :code, :centers
+  attr_reader :id, :kind, :type, :code, :centers
 
   def initialize(id, kind, type, code)
     @id = id.to_i
@@ -21,5 +21,4 @@ class Center
   def self.get_centers
     @centers
   end
-
 end

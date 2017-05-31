@@ -1,6 +1,6 @@
 class ScoringScheme
-  attr :qid, :reference_qid, :question_type, :description, :weight, :key_score_mapping,
-       :ref_option_index_raw_score, :word_bank, :exclude_index, :relevant_index, :domain, :sub_domain
+  attr_reader :qid, :reference_qid, :question_type, :description, :weight, :key_score_mapping,
+              :ref_option_index_raw_score, :word_bank, :exclude_index, :relevant_index, :domain, :sub_domain
 
   def initialize(q_id, q_type, desc, weight, domain, sub_domain)
     @qid = q_id
@@ -28,13 +28,9 @@ class ScoringScheme
     index_score_hash
   end
 
-  def qid=(qid)
-    @qid = qid
-  end
+  attr_writer :qid
 
-  def reference_qid=(qid)
-    @reference_qid = qid
-  end
+  attr_writer :reference_qid
 
   def ref_option_index_raw_score=(str)
     ref_hash = {}
@@ -56,13 +52,9 @@ class ScoringScheme
     end
   end
 
-  def word_bank=(words)
-    @word_bank = words
-  end
+  attr_writer :word_bank
 
-  def exclude_index=(index)
-    @exclude_index = index
-  end
+  attr_writer :exclude_index
 
   # Catchall scorer
   def score(response)
@@ -72,16 +64,17 @@ class ScoringScheme
   def assign_weight(center_id = nil)
     assigned_weight = weight
     if center_id && center_id != 0
-      center_code = Center.get_centers.find{|ctr| ctr.id == center_id}.code
+      center = Center.get_centers.find { |ctr| ctr.id == center_id }
+      center_code = center ? center.code : 1
       if weight.class == String && weight.include?(':')
         residential_weights = weight.split
         weight_one = residential_weights[0].split(':')
         weight_two = residential_weights[1].split(':')
-        if weight_one[0] == center_code.to_s
-          assigned_weight = weight_one[1]
-        else
-          assigned_weight = weight_two[1]
-        end
+        assigned_weight = if weight_one[0] == center_code.to_s
+                            weight_one[1]
+                          else
+                            weight_two[1]
+                          end
       end
     end
     assigned_weight = assigned_weight.to_i if assigned_weight.class == String
@@ -104,7 +97,7 @@ class ScoringScheme
 
   def get_roster_score(scores_array, center_id)
     scores_array = scores_array.compact
-    if scores_array.size > 0
+    if !scores_array.empty?
       computed_score = (scores_array.map(&:to_f).reduce(:+) / scores_array.size).round(2)
     else
       computed_score = nil
@@ -116,5 +109,4 @@ class ScoringScheme
     roster_score.sub_domain = sub_domain
     roster_score
   end
-
 end
