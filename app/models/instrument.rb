@@ -40,6 +40,7 @@ class Instrument < ActiveRecord::Base
   has_many :sections, dependent: :destroy
   has_many :rules, dependent: :destroy
   has_many :grids, dependent: :destroy
+  has_many :grid_labels, through: :grids
   has_many :metrics, dependent: :destroy
   has_many :rosters
   has_many :score_schemes, dependent: :destroy

@@ -2,19 +2,21 @@ module Api
   module V1
     module Frontend
       class ScoreUnitsController < ApiApplicationController
+        include ApiHelper
         respond_to :json
 
         def index
           if current_user
             score_scheme = current_project.score_schemes.find params[:score_scheme_id]
-            respond_with score_scheme.score_units.page(params[:page]).per(Settings.units_per_page)
+            @page_num = params[:page]
+            @score_units = score_scheme.score_units.page(params[:page]).per(5)
           end
         end
 
         def show
           if current_user
-            current_scheme = current_project.score_schemes.find params[:score_scheme_id]
-            respond_with current_scheme.score_units.find params[:id]
+            score_scheme = current_project.score_schemes.find params[:score_scheme_id]
+            @score_unit = score_scheme.score_units.find params[:id]
           end
         end
 
@@ -82,7 +84,10 @@ module Api
         def options
           if current_user
             score_scheme = current_project.score_schemes.find params[:score_scheme_id]
-            respond_with score_scheme.instrument.options.where(question_id: params[:question_ids]).where(special: false)
+            options = score_scheme.instrument.options.where(question_id: params[:question_ids]).where(special: false)
+            grid_ids = score_scheme.instrument.questions.where(id: params[:question_ids]).pluck(:grid_id)
+            grid_labels = score_scheme.instrument.grid_labels.where(grid_id: grid_ids)
+            respond_with options.concat(grid_labels.uniq)
           end
         end
 

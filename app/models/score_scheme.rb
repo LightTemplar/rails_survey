@@ -7,6 +7,7 @@
 #  title         :string(255)
 #  created_at    :datetime
 #  updated_at    :datetime
+#  deleted_at    :datetime
 #
 
 class ScoreScheme < ActiveRecord::Base
@@ -14,10 +15,7 @@ class ScoreScheme < ActiveRecord::Base
   has_many :score_units, dependent: :destroy
   has_many :scores, dependent: :destroy
   validates :title, presence: true, allow_blank: false
-
-  def as_json(options = {})
-    super((options || {}).merge(methods: [:score_unit_count]))
-  end
+  acts_as_paranoid
 
   def score_unit_count
     score_units.size

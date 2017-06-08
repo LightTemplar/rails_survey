@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170519152900) do
+ActiveRecord::Schema.define(version: 20170605161017) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -150,6 +150,7 @@ ActiveRecord::Schema.define(version: 20170519152900) do
     t.text     "critical_message"
     t.boolean  "roster",                  default: false
     t.string   "roster_type"
+    t.boolean  "scorable",                default: false
   end
 
   create_table "metrics", force: true do |t|
@@ -170,7 +171,10 @@ ActiveRecord::Schema.define(version: 20170519152900) do
     t.string   "label"
     t.boolean  "exists"
     t.boolean  "next_question"
+    t.datetime "deleted_at"
   end
+
+  add_index "option_scores", ["deleted_at"], name: "index_option_scores_on_deleted_at"
 
   create_table "option_translations", force: true do |t|
     t.integer  "option_id"
@@ -369,7 +373,10 @@ ActiveRecord::Schema.define(version: 20170519152900) do
     t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "deleted_at"
   end
+
+  add_index "score_schemes", ["deleted_at"], name: "index_score_schemes_on_deleted_at"
 
   create_table "score_sections", force: true do |t|
     t.string   "name"
@@ -390,7 +397,10 @@ ActiveRecord::Schema.define(version: 20170519152900) do
     t.integer  "question_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "deleted_at"
   end
+
+  add_index "score_unit_questions", ["deleted_at"], name: "index_score_unit_questions_on_deleted_at"
 
   create_table "score_units", force: true do |t|
     t.integer  "score_scheme_id"
@@ -401,7 +411,10 @@ ActiveRecord::Schema.define(version: 20170519152900) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "score_type"
+    t.datetime "deleted_at"
   end
+
+  add_index "score_units", ["deleted_at"], name: "index_score_units_on_deleted_at"
 
   create_table "scores", force: true do |t|
     t.integer  "survey_id"

@@ -72,6 +72,10 @@ RailsSurvey::Application.routes.draw do
         resources :grids, only: [:index]
         resources :grid_labels, only: [:index]
         resources :rosters, only: [:create]
+        resources :score_schemes, only: [:index]
+        resources :score_units, only: [:index]
+        resources :score_unit_questions, only: [:index]
+        resources :option_scores, only: [:index]
         member do
           get :current_time
         end

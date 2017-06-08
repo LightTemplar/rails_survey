@@ -19,7 +19,7 @@
 #  deleted_at          :datetime
 #  randomized_data     :text
 #
-# randomized_data is a json string where the keys correspond to the position attribute in QuestionRandomizedFactor and the values correspond to the text attribute of the randomly chosen RandomizedOption belonging to the RandomizedFactor referenced in the QuestionRandomizedFactor
+
 class Response < ActiveRecord::Base
   include OptionLabels
   belongs_to :question
