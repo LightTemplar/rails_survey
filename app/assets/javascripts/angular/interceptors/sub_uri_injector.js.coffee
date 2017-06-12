@@ -6,10 +6,11 @@
 # sub-uri (non-root folder), for example when hosting multiple apps on the same
 # server and using PhassengerPhusion, then ajax requests need to be re-written
 # to include the mount path. Rails requests do not need to be re-written since
-# setting the PassengerBaseURI variable in the virtual host takes care of it. 
+# setting the PassengerBaseURI variable in the virtual host takes care of it.
+# Exclude precompiled assets from the rewrite 
 App.factory 'SubUrlInjector', [ ->
   baseUrlInjector = request: (config) ->
-    if (_base_url != '/')
+    if (_base_url != '/' && config.url.substr(-4) != 'html')
       config.url = _base_url + config.url
     config
   baseUrlInjector

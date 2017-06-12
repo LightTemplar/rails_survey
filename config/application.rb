@@ -34,6 +34,7 @@ module RailsSurvey
     config.assets.paths << Rails.root.join('vendor', 'assets', 'images')
     config.assets.paths << Rails.root.join('vendor', 'assets', 'lib')
     config.assets.paths << Rails.root.join('vendor', 'assets', 'fonts')
+    config.assets.paths << Rails.root.join('vendor', 'assets', 'templates')
     I18n.enforce_available_locales = false
     config.assets.initialize_on_precompile = false
     config.assets.precompile += %w(active_admin.js active_admin.css.scss)

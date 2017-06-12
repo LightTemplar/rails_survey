@@ -9,7 +9,7 @@ module Api
           if current_user
             score_scheme = current_project.score_schemes.find params[:score_scheme_id]
             @page_num = params[:page]
-            @score_units = score_scheme.score_units.page(params[:page]).per(5)
+            @score_units = score_scheme.score_units.order(created_at: :asc).page(params[:page]).per(5)
           end
         end
 
