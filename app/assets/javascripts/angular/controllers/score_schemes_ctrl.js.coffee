@@ -5,6 +5,8 @@ App.controller 'ScoreSchemesCtrl', ['$scope', 'ScoreScheme', 'Instrument', ($sco
     $scope.project_id = project_id
     $scope.score_schemes = ScoreScheme.query({"project_id": project_id} )
     $scope.instruments = Instrument.query({"project_id": project_id} )
+    if _base_url != '/'
+      $scope.baseUrl = _base_url
 
   $scope.toggleViews = () ->
     $scope.showIndex = ! $scope.showIndex
