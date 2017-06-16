@@ -44,6 +44,10 @@ class InstrumentPolicy < ApplicationPolicy
   def export_responses?
     export_access
   end
+  
+  def translation_template_export?
+    export_access
+  end
 
   def export_pictures?
     export_access

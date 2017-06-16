@@ -19,6 +19,11 @@
       New Translation (Google Translate)
     </i>
     <% end %>
+    <%= link_to translation_template_export_project_instrument_path(current_project, @instrument, format: :csv), class: 'm-5 btn btn-primary pull-right' do %>
+    <i class="md-cloud-download">
+      Translation Template
+    </i>
+    <% end %>
   </div>
 
   <div class="card-body card-padding">

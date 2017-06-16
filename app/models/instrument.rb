@@ -176,6 +176,35 @@ class Instrument < ActiveRecord::Base
       end
     end
   end
+  
+  def translation_csv_template
+    CSV.generate do |csv|
+      generate_row(csv)
+    end
+  end
+  
+  def generate_row(csv)
+    csv << ['instrument_id', id]
+    csv << ['translation_language_iso_code', '', 'Enter language ISO 639-1 code in column 2']
+    csv << ['language_alignment', '', 'Enter left in column 2 if words in the language are read left-to-right or right if they are read right-to-left']
+    csv << ['instrument_title', sanitize(title), '', 'Enter instrument_title translation in column 3']
+    csv << ['instrument_critical_message', sanitize(critical_message), '', 'Enter critical message translation in column 3']
+    csv << ['']
+    csv << ['question_identifier',	'question_text',	'Enter question_text translations in this column',	'instructions',	'Enter instructions translations in this column',	'reg_ex_validation_message',	'Enter reg_ex_validation_message translations in this column']
+    questions.each do |question|
+      csv << [question.question_identifier, sanitize(question.text), '', sanitize(question.instructions), '', sanitize(question.reg_ex_validation_message), '']
+    end
+    csv << ['']
+    csv << ['option_id',	'option_text',	'Enter option_text translation in this column']
+    options.regular.each do |option|
+      csv << [option.id, sanitize(option.text), '']
+    end
+    csv << ['']
+    csv << ['section_id',	'section_title_text',	'Enter section_title_text translation in this column']
+    sections.each do |section|
+      csv << [section.id, sanitize(section.title), '']
+    end
+  end
 
   private
 

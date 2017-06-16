@@ -108,6 +108,7 @@ RailsSurvey::Application.routes.draw do
       member do
         get :csv_export
         get :pdf_export
+        get :translation_template_export
         get :export_responses
         get :move
         get :copy

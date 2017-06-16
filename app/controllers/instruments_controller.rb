@@ -86,6 +86,18 @@ class InstrumentsController < ApplicationController
     end
     redirect_to project_response_exports_path(current_project)
   end
+  
+  def translation_template_export
+    @instrument = current_project.instruments.find(params[:id])
+    authorize @instrument
+    respond_to do |format|
+      format.csv do
+        send_data @instrument.translation_csv_template,
+                  type: 'text/csv; charset=iso-8859-1; header=present',
+                  disposition: "attachment; filename=#{@instrument.title}_translation_template.csv"
+      end
+    end
+  end
 
   def move
     @projects = current_user.projects
