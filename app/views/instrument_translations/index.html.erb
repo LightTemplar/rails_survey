@@ -24,28 +24,33 @@
       Translation Template
     </i>
     <% end %>
+    <%= form_tag import_translation_project_instrument_instrument_translations_path(current_project, @instrument), multipart: true do %>
+    <%= file_field_tag :file, accept: 'text/csv', required: true, class: 'fileinput-new' %>
+    <%= submit_tag 'Upload Translations CSV', class: 'btn-primary btn-file' %>
+    <% end %>
   </div>
+</div>
 
-  <div class="card-body card-padding">
-    <div class="table-responsive">
-      <table class="table table-striped table-hover">
-        <thead>
-          <tr>
-            <th>Language</th>
-            <th>Created at</th>
-            <th>Updated at</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @instrument_translations.each do |translation| %>
-          <tr>
-            <td><%= link_to translation.language, project_instrument_instrument_translation_path(current_project, @instrument, translation) %></td>
-            <td><%= translation.created_at %></td>
-            <td><%= translation.updated_at %></td>
-          </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
+<div class="card-body card-padding">
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Language</th>
+          <th>Created at</th>
+          <th>Updated at</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @instrument_translations.each do |translation| %>
+        <tr>
+          <td><%= link_to translation.language, project_instrument_instrument_translation_path(current_project, @instrument, translation) %></td>
+          <td><%= translation.created_at %></td>
+          <td><%= translation.updated_at %></td>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
   </div>
+</div>
 </div>

@@ -15,6 +15,7 @@
 class SectionTranslation < ActiveRecord::Base
   include GoogleTranslatable
   belongs_to :section
+  belongs_to :instrument_translation
   before_save :touch_section
   validates :text, presence: true, allow_blank: false
 

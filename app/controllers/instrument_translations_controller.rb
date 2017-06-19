@@ -1,5 +1,5 @@
 class InstrumentTranslationsController < ApplicationController
-  after_action :verify_authorized
+  after_action :verify_authorized, except: [:import_translation]
   before_action :set_translation, only: [:show, :edit, :update, :destroy, :show_original]
   before_action :set_questions, only: [:new, :edit]
 
@@ -29,6 +29,11 @@ class InstrumentTranslationsController < ApplicationController
                encoding: 'UTF-8'
       end
     end
+  end
+  
+  def import_translation
+    TranslationImportWorker.perform_async(params[:file].tempfile.path) if params[:file].content_type == 'text/csv'
+    redirect_to project_instrument_instrument_translations_path(current_project, params[:instrument_id])
   end
 
   def new

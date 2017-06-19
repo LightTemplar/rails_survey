@@ -17,6 +17,7 @@
 class QuestionTranslation < ActiveRecord::Base
   include GoogleTranslatable
   belongs_to :question
+  belongs_to :instrument_translation
   before_save :touch_question
   validates :text, presence: true, allow_blank: false
 

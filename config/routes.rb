@@ -101,6 +101,9 @@ RailsSurvey::Application.routes.draw do
         collection do
           get :new_gt
         end
+        collection do
+          post :import_translation
+        end
       end
       resources :sections
       resources :grids

@@ -15,6 +15,7 @@
 class OptionTranslation < ActiveRecord::Base
   include GoogleTranslatable
   belongs_to :option
+  belongs_to :instrument_translation
   before_save :touch_option
   validates :text, presence: true, allow_blank: false
 
