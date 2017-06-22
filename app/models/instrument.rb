@@ -20,6 +20,7 @@
 #  critical_message        :text
 #  roster                  :boolean          default(FALSE)
 #  roster_type             :string(255)
+#  scorable                :boolean          default(FALSE)
 #
 
 class Instrument < ActiveRecord::Base
@@ -53,7 +54,7 @@ class Instrument < ActiveRecord::Base
   after_update :update_special_options
   validates :title, presence: true, allow_blank: false
   validates :project_id, presence: true, allow_blank: false
-
+  
   def update_special_options
     if special_options != special_options_was
       deleted_special_options = special_options_was - special_options

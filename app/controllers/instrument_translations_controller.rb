@@ -1,6 +1,6 @@
 class InstrumentTranslationsController < ApplicationController
   after_action :verify_authorized, except: [:import_translation]
-  before_action :set_translation, only: [:show, :edit, :update, :destroy, :show_original]
+  before_action :set_translation, only: [:show, :edit, :update, :destroy, :show_pdf]
   before_action :set_questions, only: [:new, :edit]
 
   def index
@@ -20,7 +20,7 @@ class InstrumentTranslationsController < ApplicationController
     end
   end
 
-  def show_original
+  def show_pdf
     authorize @instrument_translation
     respond_to do |format|
       format.pdf do
@@ -111,57 +111,60 @@ class InstrumentTranslationsController < ApplicationController
   end
 
   def update_translations(params, instrument, instrument_translation)
-    language = instrument_translation.language
-
     if params.key? :question_translations
       params[:question_translations].each_pair do |id, translation|
+        next if translation.blank?
         question = instrument.questions.find(id)
-        q_translation = question.has_translation_for?(language)
+        q_translation = instrument_translation.translation_for(question)
         if q_translation && (q_translation.text != translation)
           q_translation.update_attribute(:question_changed, false)
         end
-        question.add_or_update_translation_for(language, translation, :text)
+        question.add_or_update_translation_for(translation, :text, instrument_translation)
       end
     end
 
     if params.key? :validation_translations
       params[:validation_translations].each_pair do |id, translation|
+        next if translation.blank?
         question = instrument.questions.find(id)
-        question.add_or_update_translation_for(language, translation, :reg_ex_validation_message)
+        question.add_or_update_translation_for(translation, :reg_ex_validation_message, instrument_translation)
       end
     end
 
     if params.key? :instructions_translations
       params[:instructions_translations].each_pair do |id, translation|
+        next if translation.blank?
         question = instrument.questions.find(id)
-        question.add_or_update_translation_for(language, translation, :instructions)
+        question.add_or_update_translation_for(translation, :instructions, instrument_translation)
       end
     end
 
     if params.key? :option_translations
       params[:option_translations].each_pair do |id, translation|
+        next if translation.blank?
         option = Option.find(id)
-        o_translation = option.has_translation_for?(language)
+        o_translation = instrument_translation.translation_for(option)
         if o_translation && (o_translation.text != translation)
           o_translation.update_attribute(:option_changed, false)
         end
-        option.add_or_update_translation_for(language, translation, :text)
+        option.add_or_update_translation_for(translation, :text, instrument_translation)
       end
     end
 
     if params.key? :section_translations
       params[:section_translations].each_pair do |id, translation|
+        next if translation.blank?
         section = instrument.sections.find(id)
-        s_translation = section.has_translation_for?(language)
+        s_translation = instrument_translation.translation_for(section)
         if s_translation && (s_translation.text != translation)
           s_translation.update_attribute(:section_changed, false)
         end
-        section.add_or_update_translation_for(language, translation, :text)
+        section.add_or_update_translation_for(translation, :text, instrument_translation)
       end
     end
   end
 
   def instrument_translation_params
-    params.require(:instrument_translation).permit(:title, :language, :alignment, :critical_message)
+    params.require(:instrument_translation).permit(:title, :language, :alignment, :critical_message, :active)
   end
 end

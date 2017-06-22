@@ -29,7 +29,7 @@ class InstrumentTranslationPolicy < ApplicationPolicy
     true
   end
 
-  def show_original?
+  def show_pdf?
     true
   end
 

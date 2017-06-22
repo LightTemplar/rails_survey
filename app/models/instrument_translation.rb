@@ -10,20 +10,21 @@
 #  created_at       :datetime
 #  updated_at       :datetime
 #  critical_message :text
+#  active           :boolean          default(FALSE)
 #
 
 class InstrumentTranslation < ActiveRecord::Base
   include Alignable
   include LanguageAssignable
   include GoogleTranslatable
-  belongs_to :instrument
-  before_save :touch_instrument
+  belongs_to :instrument, touch: true
+  after_save :deactive_language_translations, if: :active?
   has_many :question_translations, dependent: :destroy
   has_many :option_translations, dependent: :destroy
   has_many :section_translations, dependent: :destroy
 
-  def touch_instrument
-    instrument.touch if instrument && changed?
+  def deactive_language_translations
+    InstrumentTranslation.where('id != ? AND language = ?', id, language).update_all(active: false)
   end
 
   def translate_using_google
@@ -59,4 +60,21 @@ class InstrumentTranslation < ActiveRecord::Base
       end
     end
   end
+
+  def translation_for(object)
+    case object
+    when Question then question_translations.where(question_id: object.id).try(:first)
+    when Option then option_translations.where(option_id: object.id).try(:first)
+    when Section then section_translations.where(section_id: object.id).try(:first)
+    end
+  end
+  
+  def translation_for_child(object)
+    case object
+    when Question then question_translations.where(question_id: object.id).first_or_initialize
+    when Option then option_translations.where(option_id: object.id).first_or_initialize
+    when Section then section_translations.where(section_id: object.id).first_or_initialize
+    end
+  end
+
 end

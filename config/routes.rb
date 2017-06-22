@@ -96,7 +96,7 @@ RailsSurvey::Application.routes.draw do
       resources :versions, only: [:index, :show]
       resources :instrument_translations do
         member do
-          get :show_original
+          get :show_pdf
         end
         collection do
           get :new_gt

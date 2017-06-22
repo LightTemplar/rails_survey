@@ -1,30 +1,52 @@
-<div class="block-header text-center" xmlns="http://www.w3.org/1999/html">
-  <h2>
+<div class="block-header text-center">
+  <h1>
     <i class="md-language c-indigo">
       <%= link_to @instrument.title, project_instrument_path(current_project, @instrument) %>
-      <span class="text-lowercase">
-        in
-        <%= @instrument_translation.language %></span>
     </i>
-  </h2>
-  <strong>Translated Title:</strong>
-  <%= @instrument.translated_for(@instrument_translation.language, :title) %>
-  <br>
-  <strong>Translated Critical Message:</strong>
-  <%= @instrument.translated_for(@instrument_translation.language, :critical_message) %>
+  </h1>
+  <div class="row">
+    <strong class="col-md-4">Translation Language:</strong>
+    <span class="col-md-8">
+      <%= @instrument_translation.language %>
+    </span>
+  </div>
+  <div class="row">
+    <strong class="col-md-4">Active Translation:</strong>
+    <span class="col-md-8">
+      <%= @instrument_translation.active %>
+    </span>
+  </div>
+  <div class="row">
+    <strong class="col-md-4">Language Alignment:</strong>
+    <span class="col-md-8">
+      <%= @instrument_translation.alignment %>
+    </span>
+  </div>
+  <div class="row">
+    <strong class="col-md-4">Translated Title:</strong>
+    <span class="col-md-8">
+      <%= @instrument_translation.title %>
+    </span>
+  </div>
+  <div class="row">
+    <strong class="col-md-4">Translated Critical Message:</strong>
+    <span class="col-md-8">
+      <%= @instrument_translation.critical_message %>
+    </span>
+  </div>
 </div>
 
 <div class="card">
   <div class="card-header">
     <div class="pull-right">
-      <%= link_to show_original_project_instrument_instrument_translation_path(current_project, @instrument, @instrument_translation, format: :pdf), class: 'btn btn-primary' do %>
+      <%= link_to show_pdf_project_instrument_instrument_translation_path(current_project, @instrument, @instrument_translation, format: :pdf), class: 'btn btn-primary' do %>
       <i class="md-print">
-        PDF (en)
+        Show PDF
       </i>
       <% end %>
       <%= link_to project_instrument_instrument_translation_path(current_project, @instrument, @instrument_translation, format: :pdf), class: 'btn btn-primary' do %>
       <i class="md-print">
-        PDF
+        Download PDF
       </i>
       <% end %>
       <%= link_to edit_project_instrument_instrument_translation_path(current_project, @instrument, @instrument_translation), class: 'btn btn-primary' do %>
@@ -48,7 +70,7 @@
         </thead>
         <tbody>
           <% @instrument.questions.each do |question| %>
-          <% if question.has_translation_for?(@instrument_translation.language) %>
+          <% if @instrument_translation.translation_for(question) %>
           <tr
             ng-class="{danger: question_translation_changed}"
             ng-controller="QuestionTranslationsCtrl"
@@ -56,105 +78,90 @@
                 <%= current_project.id %>,
                 <%= question.instrument.id %>,
                 <%= question.id %>,
-                <%= question.has_translation_for?(@instrument_translation.language).id %>,
-                <%= question.translated_for(@instrument_translation.language, :question_changed) %>
+                <%= @instrument_translation.translation_for(question).try(:id) %>,
+                <%= @instrument_translation.translation_for(question).try(:question_changed) %>
             )">
-            <td><%= question.question_identifier %></td>
-            <td><%= raw question.text %></td>
-            <td><%= raw (question.translated_for @instrument_translation.language, :text) %></td>
-            <td>
-              <button ng-show="<%= question.translated_for(@instrument_translation.language, :question_changed)  %>  && showOkButton" type="button" class="btn btn-sm btn-success" ng-click="setQuestionChanged(<%= @instrument_translation.language %>, false)">
-                Translation OK
-              </button>
-            </td>
-          </tr>
-        <% else %>
-          <tr>
-            <td><%= question.question_identifier %></td>
-            <td><%= raw question.text %></td>
-            <td><%= raw (question.translated_for @instrument_translation.language, :text) %></td>
-            <td></td>
-          </tr>
-          <% end %>
-          <% if question.has_non_special_options? %>
-          <% question.non_special_options.each do |option| %>
-          <% if option.has_translation_for?(@instrument_translation.language) %>
-          <tr
-            ng-class="{danger: option_translation_changed}"
-            ng-controller="OptionTranslationsCtrl"
-            ng-init="init(
-                            <%= current_project.id %>,
-                            <%= question.instrument.id %>,
-                            <%= question.id %>,
-                            <%= option.id %>,
-                            <%= option.has_translation_for?(@instrument_translation.language).id %>,
-                            <%= option.translated_for(@instrument_translation.language, :option_changed) %>
-                        )">
-            <td>Option for
-              <%= question.question_identifier %></td>
-            <td><%= option.text %></td>
-            <td><%= option.translated_for(@instrument_translation.language, :text) %>
-            </td>
-            <td>
-              <button ng-show="<%= option.translated_for(@instrument_translation.language, :option_changed)  %>  && showOkButton" type="button" class="btn btn-sm btn-success" ng-click="setOptionChanged(<%= @instrument_translation.language %>, false)">
-                Translation OK
-              </button>
-            </td>
-          </tr>
-        <% else %>
-          <tr>
-            <td>Option for
-              <%= question.question_identifier %></td>
-            <td><%= option.text %></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <% end %>
-
-          <% end %>
-          <% end %>
-          <% if question.starts_section? %>
-          <% if question.section.has_translation_for?(@instrument_translation.language) %>
-          <tr
-            ng-class="{danger: section_translation_changed}"
-            ng-controller="SectionTranslationsCtrl"
-            ng-init="init(
-                            <%= current_project.id %>,
-                            <%= question.instrument.id %>,
-                            <%= question.section.id %>,
-                            <%= question.section.has_translation_for?(@instrument_translation.language).id %>,
-                            <%= question.section.translated_for(@instrument_translation.language, :section_changed) %>
-                        )">
-            <td>Section starting with
-              <%= question.question_identifier %></td>
-            <td><%= question.section.title %></td>
-            <td><%= question.section.translated_for(@instrument_translation.language, :text) %></td>
-            <td>
-              <button ng-show="<%= question.section.translated_for(@instrument_translation.language, :section_changed)  %>  && showOkButton" type="button" class="btn btn-sm btn-success" ng-click="setSectionChanged(<%= @instrument_translation.language %>, false)">
-                Translation OK
-              </button>
-            </td>
-          </tr>
-        <% else %>
-          <tr>
-            <td>Section starting with
-              <%= question.question_identifier %></td>
-            <td><%= question.section.title %></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <% end %>
-          <% end %>
-          <% if question.reg_ex_validation_message %>
-          <td>Regular expression failure message for
-            <%= question.question_identifier %></td>
-          <td><%= question.reg_ex_validation_message %></td>
-          <td><%= question.translated_for @instrument_translation.language, :reg_ex_validation_message %></td>
-          <td></td>
-          <% end %>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
+          <% else %>
+            <tr>
+              <% end %>
+              <td><%= question.question_identifier %></td>
+              <td><%= raw question.text %></td>
+              <td><%= raw @instrument_translation.translation_for(question).try(:text) %></td>
+              <td>
+                <% if @instrument_translation.translation_for(question) %>
+                <button ng-show="<%= @instrument_translation.translation_for(question).try(:question_changed) %>  && showOkButton" type="button" class="btn btn-sm btn-success" ng-click="setQuestionChanged(<%= @instrument_translation.language %>, false)">
+                  Translation OK
+                </button>
+                <% end %>
+              </td>
+            </tr>
+            <% if question.has_non_special_options? %>
+            <% question.non_special_options.each do |option| %>
+            <% if @instrument_translation.translation_for(option) %>
+            <tr
+              ng-class="{danger: option_translation_changed}"
+              ng-controller="OptionTranslationsCtrl"
+              ng-init="init(<%= current_project.id %>, <%= question.instrument.id %>, <%= question.id %>, <%= option.id %>, <%= @instrument_translation.translation_for(option).try(:id) %>, <%= @instrument_translation.translation_for(option).try(:option_changed) %> )">
+            <% else %>
+              <tr>
+                <% end %>
+                <td>Option for
+                  <%= question.question_identifier %></td>
+                <td><%= option.text %></td>
+                <td><%= @instrument_translation.translation_for(option).try(:text) %></td>
+                <td>
+                  <% if @instrument_translation.translation_for(option) %>
+                  <button ng-show="<%= @instrument_translation.translation_for(option).try(:option_changed)  %>  && showOkButton" type="button" class="btn btn-sm btn-success" ng-click="setOptionChanged(<%= @instrument_translation.language %>, false)">
+                    Translation OK
+                  </button>
+                  <% end %>
+                </td>
+              </tr>
+              <% end %>
+              <% end %>
+              <% if question.starts_section? %>
+              <% if @instrument_translation.translation_for(question.section) %>
+              <tr
+                ng-class="{danger: section_translation_changed}"
+                ng-controller="SectionTranslationsCtrl"
+                ng-init="init(<%= current_project.id %>, <%= question.instrument.id %>, <%= question.section.id %>, <%= @instrument_translation.translation_for(question.section).try(:id) %>, <%= @instrument_translation.translation_for(question.section).try(:section_changed) %>)">
+              <% else %>
+                <tr>
+                  <% end %>
+                  <td>Section starting with
+                    <%= question.question_identifier %></td>
+                  <td><%= question.section.title %></td>
+                  <td><%= @instrument_translation.translation_for(question.section).try(:text) %></td>
+                  <td>
+                    <% if @instrument_translation.translation_for(question.section) %>
+                    <button ng-show="<%= @instrument_translation.translation_for(question.section).try(:section_changed) %>  && showOkButton" type="button" class="btn btn-sm btn-success" ng-click="setSectionChanged(<%= @instrument_translation.language %>, false)">
+                      Translation OK
+                    </button>
+                    <% end %>
+                  </td>
+                </tr>
+                <% end %>
+                <% unless question.instructions.blank? %>
+                <tr>
+                  <td>Instructions for
+                    <%= question.question_identifier %></td>
+                  <td><%= raw question.instructions %></td>
+                  <td><%= raw @instrument_translation.translation_for(question).try(:instructions) %></td>
+                  <td></td>
+                </tr>
+                <% end %>
+                <% if question.reg_ex_validation_message %>
+                <tr>
+                  <td>Regular expression failure message for
+                    <%= question.question_identifier %></td>
+                  <td><%= raw question.reg_ex_validation_message %></td>
+                  <td><%= raw @instrument_translation.translation_for(question).try(:reg_ex_validation_message) %></td>
+                  <td></td>
+                </tr>
+                <% end %>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>

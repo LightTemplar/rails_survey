@@ -16,14 +16,9 @@
 
 class QuestionTranslation < ActiveRecord::Base
   include GoogleTranslatable
-  belongs_to :question
-  belongs_to :instrument_translation
-  before_save :touch_question
+  belongs_to :question, touch: true
+  belongs_to :instrument_translation, touch: true
   validates :text, presence: true, allow_blank: false
-
-  def touch_question
-    question.touch if question && changed?
-  end
 
   def translate_using_google
     text_translation = translation_client.translate sanitize_text(question.text), to: language unless question.text.blank?
