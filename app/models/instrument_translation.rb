@@ -22,6 +22,8 @@ class InstrumentTranslation < ActiveRecord::Base
   has_many :question_translations, dependent: :destroy
   has_many :option_translations, dependent: :destroy
   has_many :section_translations, dependent: :destroy
+  has_many :grid_translations, dependent: :destroy
+  has_many :grid_label_translations, dependent: :destroy
 
   def deactive_language_translations
     InstrumentTranslation.where('id != ? AND language = ?', id, language).update_all(active: false)

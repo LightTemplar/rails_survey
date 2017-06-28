@@ -57,6 +57,16 @@
     </div>
   </div>
   <% end %>
+  <% if @survey.language %>
+  <div class="row">
+    <label class="col-md-4 text-right">
+      Survey Language:
+    </label>
+    <div class="col-md-8">
+      <%= @survey.language %>
+    </div>
+  </div>
+  <% end %>
 
   <div class="card-body card-padding">
     <div class="table-responsive">

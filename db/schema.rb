@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170620195645) do
+ActiveRecord::Schema.define(version: 20170626151513) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -88,6 +88,14 @@ ActiveRecord::Schema.define(version: 20170620195645) do
 
   add_index "devices", ["identifier"], name: "index_devices_on_identifier", unique: true
 
+  create_table "grid_label_translations", force: true do |t|
+    t.integer  "grid_label_id"
+    t.integer  "instrument_translation_id"
+    t.text     "label"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "grid_labels", force: true do |t|
     t.text     "label"
     t.integer  "grid_id"
@@ -95,6 +103,15 @@ ActiveRecord::Schema.define(version: 20170620195645) do
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.integer  "position"
+  end
+
+  create_table "grid_translations", force: true do |t|
+    t.integer  "grid_id"
+    t.integer  "instrument_translation_id"
+    t.string   "name"
+    t.text     "instructions"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "grids", force: true do |t|
@@ -493,6 +510,7 @@ ActiveRecord::Schema.define(version: 20170620195645) do
     t.datetime "deleted_at"
     t.boolean  "has_critical_responses"
     t.string   "roster_uuid"
+    t.string   "language"
   end
 
   add_index "surveys", ["deleted_at"], name: "index_surveys_on_deleted_at"

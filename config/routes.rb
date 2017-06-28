@@ -32,6 +32,10 @@ RailsSurvey::Application.routes.draw do
             resources :randomized_factors do
               resources :randomized_options
             end
+            resources :instrument_translations do
+              resources :grid_translations
+              resources :grid_label_translations
+            end
           end
           resources :score_schemes do
             resources :score_units do
@@ -69,8 +73,8 @@ RailsSurvey::Application.routes.draw do
         resources :skips, only: [:index, :show]
         resources :rules, only: [:index]
         resources :device_sync_entries, only: [:create]
-        resources :grids, only: [:index]
-        resources :grid_labels, only: [:index]
+        resources :grids, only: [:index, :show]
+        resources :grid_labels, only: [:index, :show]
         resources :rosters, only: [:create]
         resources :score_schemes, only: [:index]
         resources :score_units, only: [:index]

@@ -36,28 +36,36 @@
   </div>
 </div>
 
-<div class="card">
+<div class="row m-l-5 m-b-10">
+  <%= link_to show_pdf_project_instrument_instrument_translation_path(current_project, @instrument, @instrument_translation, format: :pdf), class: 'btn btn-primary' do %>
+  <i class="md-print">
+    Show PDF
+  </i>
+  <% end %>
+  <%= link_to project_instrument_instrument_translation_path(current_project, @instrument, @instrument_translation, format: :pdf), class: 'btn btn-primary' do %>
+  <i class="md-print">
+    Download PDF
+  </i>
+  <% end %>
+</div>
+
+<div class="card" ng-controller="TranslationsCtrl" ng-init="init(<%= current_project.id %>, <%= @instrument.id %>, <%= @instrument_translation.id %>)">
   <div class="card-header">
     <div class="pull-right">
-      <%= link_to show_pdf_project_instrument_instrument_translation_path(current_project, @instrument, @instrument_translation, format: :pdf), class: 'btn btn-primary' do %>
-      <i class="md-print">
-        Show PDF
-      </i>
-      <% end %>
-      <%= link_to project_instrument_instrument_translation_path(current_project, @instrument, @instrument_translation, format: :pdf), class: 'btn btn-primary' do %>
-      <i class="md-print">
-        Download PDF
-      </i>
-      <% end %>
+      <span class="btn btn-primary" ng-click="toggleViews()">
+        <i class="md-view-list">
+          edit Grid Translations
+        </i>
+      </span>
       <%= link_to edit_project_instrument_instrument_translation_path(current_project, @instrument, @instrument_translation), class: 'btn btn-primary' do %>
       <i class="md-language">
-        Edit Translation
+        Edit Question Translations
       </i>
       <% end %>
     </div>
   </div>
 
-  <div class="card-body card-padding">
+  <div class="card-body card-padding" ng-show="showQuestionTranslations">
     <div class="table-responsive">
       <table class="table table-hover fixed-wide">
         <thead>
@@ -163,5 +171,8 @@
               </tbody>
             </table>
           </div>
+        </div>
+        <div class="card-body card-padding" ng-show="showGridTranslations">
+          <%= render 'grid_translations' %>
         </div>
       </div>

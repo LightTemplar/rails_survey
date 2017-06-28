@@ -16,6 +16,7 @@ class Grid < ActiveRecord::Base
   belongs_to :instrument
   has_many :questions, dependent: :destroy
   has_many :grid_labels, dependent: :destroy
+  has_many :grid_translations, dependent: :destroy
   after_save :update_question_types, if: proc { |grid| grid.question_type_changed? }
   acts_as_paranoid
   def update_question_types

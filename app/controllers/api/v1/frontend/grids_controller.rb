@@ -6,7 +6,12 @@ module Api
 
         def index
           instrument = current_project.instruments.find(params[:instrument_id])
-          respond_with instrument.grids
+          @grids = instrument.grids
+        end
+
+        def show
+          instrument = current_project.instruments.find(params[:instrument_id])
+          @grid = instrument.grids.find params[:id]
         end
 
         def create

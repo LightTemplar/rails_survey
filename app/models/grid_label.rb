@@ -13,6 +13,7 @@
 
 class GridLabel < ActiveRecord::Base
   belongs_to :grid
+  has_many :grid_label_translations, dependent: :destroy
   validates :label, presence: true, allow_blank: false
   acts_as_paranoid
 end
