@@ -80,6 +80,8 @@ RailsSurvey::Application.routes.draw do
         resources :score_units, only: [:index]
         resources :score_unit_questions, only: [:index]
         resources :option_scores, only: [:index]
+        resources :scores, only: [:create]
+        resources :raw_scores, only: [:create]
         member do
           get :current_time
         end

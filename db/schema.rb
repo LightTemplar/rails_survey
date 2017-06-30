@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170626151513) do
+ActiveRecord::Schema.define(version: 20170629202137) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -305,6 +305,8 @@ ActiveRecord::Schema.define(version: 20170626151513) do
     t.float    "value"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "uuid"
+    t.string   "score_uuid"
   end
 
   create_table "response_exports", force: true do |t|
@@ -440,6 +442,10 @@ ActiveRecord::Schema.define(version: 20170626151513) do
     t.float    "score_sum"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "uuid"
+    t.string   "survey_uuid"
+    t.string   "device_uuid"
+    t.string   "device_label"
   end
 
   create_table "section_translations", force: true do |t|

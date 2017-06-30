@@ -8,11 +8,18 @@
 #  value         :float
 #  created_at    :datetime
 #  updated_at    :datetime
+#  uuid          :string(255)
+#  score_uuid    :string(255)
 #
 
 class RawScore < ActiveRecord::Base
   belongs_to :score_unit
-  belongs_to :score
+  belongs_to :centralized_score, class_name: 'Score', foreign_key: :score_id
+  belongs_to :distributed_score, class_name: 'Score', foreign_key: :score_uuid
+
+  def score
+    Score.where('id = ? OR uuid = ?', score_id, score_uuid).try(:first)
+  end
 
   def question_identifiers
     score_unit.questions.pluck(:question_identifier).join(', ')

@@ -30,7 +30,8 @@ class Survey < ActiveRecord::Base
   belongs_to :device
   belongs_to :roster, foreign_key: :roster_uuid, primary_key: :uuid
   has_many :responses, foreign_key: :survey_uuid, primary_key: :uuid, dependent: :destroy
-  has_many :scores, dependent: :destroy
+  has_many :centralized_scores, class_name: 'Score', foreign_key: :survey_id, dependent: :destroy
+  has_many :distributed_scores, class_name: 'Score', foreign_key: :survey_uuid, dependent: :destroy
   acts_as_paranoid
   delegate :project, to: :instrument
   validates :device_id, presence: true, allow_blank: false
@@ -40,6 +41,10 @@ class Survey < ActiveRecord::Base
   paginates_per 50
   after_create :calculate_percentage
   scope :non_roster, -> { where(roster_uuid: nil) }
+
+  def scores
+    Score.where('survey_id = ? OR survey_uuid = ?', id, uuid)
+  end
 
   def calculate_percentage
     SurveyPercentWorker.perform_in(5.hours, id)
