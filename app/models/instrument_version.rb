@@ -2,7 +2,7 @@ class InstrumentVersion
   attr_accessor :instrument, :version
 
   def method_missing(method, *args, &block)
-    if Instrument.method_defined?(method) 
+    if Instrument.method_defined?(method)
       if @version
         @version.reify.send(method, *args, &block)
       else
@@ -19,25 +19,26 @@ class InstrumentVersion
     instrument_version = InstrumentVersion.new
     instrument_version.instrument = instrument
     if instrument.current_version_number > version_number
-      versions = Rails.cache.fetch("instrument_versions-#{instrument.id}", :expires_in => 1.hour) { instrument.versions }
-      instrument_version.version = Rails.cache.fetch("instrument_versions-#{instrument.id}-#{version_number}", :expires_in => 1.hour) do
+      versions = Rails.cache.fetch("instrument_versions-#{instrument.id}", expires_in: 1.hour) do
+        instrument.versions
+      end
+      instrument_version.version = Rails.cache.fetch("instrument_versions-#{instrument.id}-#{version_number}", expires_in: 1.hour) do
         versions[version_number]
       end
     end
     instrument_version
   end
-  
+
   def questions
     return @instrument.questions unless @version
     return @questions if @questions
     questions = []
     @version.reify.questions.with_deleted.each do |question|
       versioned_question = versioned(question)
-      if versioned_question
-        questions << versioned_question
-        options = options_for_question(versioned_question)
-        versioned_question.define_singleton_method(:options) { options }
-      end
+      next unless versioned_question
+      questions << versioned_question
+      options = options_for_question(versioned_question)
+      versioned_question.define_singleton_method(:options) { options }
     end
     @questions = questions
   end
@@ -60,6 +61,7 @@ class InstrumentVersion
   end
 
   private
+
   def options_for_question(question)
     return [] unless question
     return question.options unless @version

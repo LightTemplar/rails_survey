@@ -103,7 +103,7 @@
                 <% end %>
               </td>
             </tr>
-            <% if question.has_non_special_options? %>
+            <% if question.non_special_options? %>
             <% question.non_special_options.each do |option| %>
             <% if @instrument_translation.translation_for(option) %>
             <tr

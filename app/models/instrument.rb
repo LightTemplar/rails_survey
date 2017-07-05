@@ -27,7 +27,6 @@ class Instrument < ActiveRecord::Base
   include Translatable
   include Alignable
   include LanguageAssignable
-  include Sanitizable
   serialize :special_options, Array
   scope :published, -> { where(published: true) }
   belongs_to :project
@@ -54,7 +53,9 @@ class Instrument < ActiveRecord::Base
   after_update :update_special_options
   validates :title, presence: true, allow_blank: false
   validates :project_id, presence: true, allow_blank: false
-  
+
+  @sanitizer = Rails::Html::FullSanitizer.new
+
   def update_special_options
     if special_options != special_options_was
       deleted_special_options = special_options_was - special_options
@@ -67,7 +68,9 @@ class Instrument < ActiveRecord::Base
   end
 
   def version_by_version_number(version_number)
-    InstrumentVersion.build(instrument_id: id, version_number: version_number)
+    Rails.cache.fetch("instruments-#{id}-#{version_number}", expires_in: 24.hours) do
+      InstrumentVersion.build(instrument_id: id, version_number: version_number)
+    end
   end
 
   def completion_rate
@@ -104,7 +107,7 @@ class Instrument < ActiveRecord::Base
     format << ["\n"]
     format << %w(number_in_instrument question_identifier question_type question_instructions question_text) + instrument_translation_languages
     questions.each do |question|
-      format << [question.number_in_instrument, question.question_identifier, question.question_type, sanitize(question.instructions), sanitize(question.text)] + translations_for_object(question)
+      format << [question.number_in_instrument, question.question_identifier, question.question_type, @sanitizer.sanitize(question.instructions), @sanitizer.sanitize(question.text)] + translations_for_object(question)
       question.options.each do |option|
         format << ['', '', '', "Option for question #{question.question_identifier}", option.text] + translations_for_object(option)
         if option.next_question
@@ -141,7 +144,7 @@ class Instrument < ActiveRecord::Base
     text_translations = []
     obj.translations.each do |translation|
       if instrument_translation_languages.include? translation.language
-        text_translations << sanitize(translation.text)
+        text_translations << @sanitizer.sanitize(translation.text)
       end
     end
     text_translations
@@ -177,33 +180,33 @@ class Instrument < ActiveRecord::Base
       end
     end
   end
-  
+
   def translation_csv_template
     CSV.generate do |csv|
       generate_row(csv)
     end
   end
-  
+
   def generate_row(csv)
     csv << ['instrument_id', id]
     csv << ['translation_language_iso_code', '', 'Enter language ISO 639-1 code in column 2']
     csv << ['language_alignment', '', 'Enter left in column 2 if words in the language are read left-to-right or right if they are read right-to-left']
-    csv << ['instrument_title', sanitize(title), '', 'Enter instrument_title translation in column 3']
-    csv << ['instrument_critical_message', sanitize(critical_message), '', 'Enter critical message translation in column 3']
+    csv << ['instrument_title', @sanitizer.sanitize(title), '', 'Enter instrument_title translation in column 3']
+    csv << ['instrument_critical_message', @sanitizer.sanitize(critical_message), '', 'Enter critical message translation in column 3']
     csv << ['']
     csv << ['question_identifier',	'question_text',	'Enter question_text translations in this column',	'instructions',	'Enter instructions translations in this column',	'reg_ex_validation_message',	'Enter reg_ex_validation_message translations in this column']
     questions.each do |question|
-      csv << [question.question_identifier, sanitize(question.text), '', sanitize(question.instructions), '', sanitize(question.reg_ex_validation_message), '']
+      csv << [question.question_identifier, @sanitizer.sanitize(question.text), '', @sanitizer.sanitize(question.instructions), '', @sanitizer.sanitize(question.reg_ex_validation_message), '']
     end
     csv << ['']
     csv << ['option_id',	'option_text',	'Enter option_text translation in this column']
     options.regular.each do |option|
-      csv << [option.id, sanitize(option.text), '']
+      csv << [option.id, @sanitizer.sanitize(option.text), '']
     end
     csv << ['']
     csv << ['section_id',	'section_title_text',	'Enter section_title_text translation in this column']
     sections.each do |section|
-      csv << [section.id, sanitize(section.title), '']
+      csv << [section.id, @sanitizer.sanitize(section.title), '']
     end
   end
 

@@ -12,6 +12,7 @@
 #
 
 class GridLabel < ActiveRecord::Base
+  default_scope { order('position ASC') }
   belongs_to :grid
   has_many :grid_label_translations, dependent: :destroy
   validates :label, presence: true, allow_blank: false

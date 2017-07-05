@@ -59,11 +59,11 @@ describe Question do
     end
     
     it "should respond true to has_options if has options" do
-      @option.question.has_options?.should be_truthy
+      @option.question.options?.should be_truthy
     end
 
     it "should respond false to has_options if no options" do
-      @question.has_options?.should be_falsey
+      @question.options?.should be_falsey
     end
   end
 

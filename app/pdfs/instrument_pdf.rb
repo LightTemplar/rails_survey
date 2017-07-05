@@ -11,6 +11,7 @@ class InstrumentPdf < Prawn::Document
   def initialize(instrument)
     super()
     @instrument = instrument
+    @sanitizer = Rails::Html::FullSanitizer.new
     header
     content
   end
@@ -20,10 +21,6 @@ class InstrumentPdf < Prawn::Document
   end
 
   private
-
-  def sanitize(str)
-    ActionView::Base.full_sanitizer.sanitize(str)
-  end
 
   def header
     text "#{@instrument.title} v#{@instrument.current_version_number}", size: 20, style: :bold
@@ -41,10 +38,10 @@ class InstrumentPdf < Prawn::Document
 
   def format_question(question)
     format_question_number(question)
-    text sanitize(question.instructions), style: :italic
+    text @sanitizer.sanitize(question.instructions), style: :italic
     move_down InstructionQuestionMargin
-    text sanitize(question.text)
-    draw_options(question) if question.has_options?
+    text @sanitizer.sanitize(question.text)
+    draw_options(question) if question.options?
     pad_after_question(question)
   end
 
@@ -61,7 +58,7 @@ class InstrumentPdf < Prawn::Document
       draw_option(option) { stroke_rectangle [OptionLeftMargin, cursor - 5], SquareSize, SquareSize } if question.select_multiple_variant?
       draw_line_option(option) if question.question_type == 'LIST_OF_TEXT_BOXES'
     end
-    draw_other(question) if question.has_other?
+    draw_other(question) if question.other?
   end
 
   def draw_option(option)

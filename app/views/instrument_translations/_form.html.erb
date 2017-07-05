@@ -78,7 +78,7 @@
             <%= text_area_tag "question_translations[#{question.id}]", @instrument_translation.translation_for(question).try(:text), size: '70x5', class: 'wysihtml5' %>
           </td>
         </tr>
-        <% if question.has_non_special_options? %>
+        <% if question.non_special_options? %>
         <% question.non_special_options.each do |option| %>
         <tr class="<%= 'danger' if @instrument_translation.translation_for(option).try(:option_changed) %>">
           <td>Option for

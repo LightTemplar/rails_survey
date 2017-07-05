@@ -43,6 +43,7 @@ gem 'rabl', '0.13.1'
 gem 'whenever', '0.9.7', require: false
 gem 'sidekiq-client-cli', '0.1.7'
 gem 'google-cloud-translate', '0.22.2'
+gem 'rails-html-sanitizer', '1.0.3'
 
 group :production do
   gem 'rails_12factor', '0.0.3'

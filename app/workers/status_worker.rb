@@ -7,7 +7,7 @@ class StatusWorker
       export.update(short_done: true, long_done: true, wide_done: true)
       Survey.delete_export_count(export_id.to_s)
     else
-      StatusWorker.perform_in(1.minute, export_id)
+      StatusWorker.perform_in(5.seconds, export_id)
     end
   end
 

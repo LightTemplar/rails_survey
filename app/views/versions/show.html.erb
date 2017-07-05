@@ -8,7 +8,7 @@
         <li>
           <%= raw question.text %> <br/>
           <span class="label label-info"><%= question.question_type %></span>
-          <% if question.has_options? %>
+          <% if question.options? %>
               <br/>Options:
               <ol class="options" start="0">
                 <% question.options.each do |option| %>

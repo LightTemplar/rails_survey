@@ -24,8 +24,6 @@
 
 class Survey < ActiveRecord::Base
   include RedisJobTracker
-  include OptionLabels
-  include Sanitizable
   belongs_to :instrument
   belongs_to :device
   belongs_to :roster, foreign_key: :roster_uuid, primary_key: :uuid
@@ -41,6 +39,7 @@ class Survey < ActiveRecord::Base
   paginates_per 50
   after_create :calculate_percentage
   scope :non_roster, -> { where(roster_uuid: nil) }
+  @sanitizer = Rails::Html::FullSanitizer.new
 
   def scores
     Score.where('survey_id = ? OR survey_uuid = ?', id, uuid)
@@ -51,11 +50,8 @@ class Survey < ActiveRecord::Base
   end
 
   def calculate_completion_rate
-    valid_response_count = responses.where.not(
-      'text = ? AND other_response = ? AND special_response = ?', nil || '', nil || '', nil || ''
-    ).pluck(:question_id).uniq.count
-    valid_question_count = instrument.version_by_version_number(instrument_version_number)
-                                     .questions.select { |question| question.question_type != 'INSTRUCTIONS' }.count
+    valid_response_count = responses.where.not('text = ? AND other_response = ? AND special_response = ?', nil || '', nil || '', nil || '').pluck(:question_id).uniq.count
+    valid_question_count = instrument.version_by_version_number(instrument_version_number).questions.select { |question| question.question_type != 'INSTRUCTIONS' }.count
     if valid_response_count && valid_question_count && valid_question_count != 0
       rate = (valid_response_count.to_f / valid_question_count.to_f).round(2)
     end
@@ -94,27 +90,49 @@ class Survey < ActiveRecord::Base
     metadata['Participant ID'] if metadata
   end
 
-  def chronicled_question(question_identifier)
-    @chronicled_question ||= Hash.new do |question_hash, q_id|
-      question_hash[q_id] = instrument_version.find_question_by(question_identifier: q_id)
-    end
-    @chronicled_question[question_identifier]
+  def versioned_question(question_identifier)
+    instrument_version.find_question_by(question_identifier: question_identifier)
   end
 
   def option_labels(response)
-    generate_labels(response, chronicled_question(response.question_identifier))
+    vq = versioned_question(response.question_identifier)
+    return '' if vq.nil? || !vq.optionable?
+    labels = []
+    if Settings.list_question_types.include?(vq.question_type)
+      labels << vq.non_special_options.map(&:text)
+    else
+      response.text.split(Settings.list_delimiter).each do |option_index|
+        labels << if vq.other? && option_index.to_i == vq.other_index
+                    'Other'
+                  else
+                    label_text(vq, option_index)
+                  end
+      end
+    end
+    labels.join(Settings.list_delimiter)
+  end
+
+  def label_text(versioned_question, option_index)
+    if versioned_question.grid
+      versioned_question.grid_labels[option_index.to_i].try(:label)
+    else
+      versioned_question.non_special_options[option_index.to_i].try(:text)
+    end
+  end
+
+  def self.create_file(instrument, format)
+    root = File.join('files', 'exports').to_s
+    File.new(root + "/#{Time.now.to_i}_#{instrument.title}_#{format}.csv", 'a+')
   end
 
   def self.instrument_export(instrument)
-    root = File.join('files', 'exports').to_s
-    short_csv = File.new(root + "/#{Time.now.to_i}_#{instrument.title}_short.csv", 'a+')
-    wide_csv = File.new(root + "/#{Time.now.to_i}_#{instrument.title}_wide.csv", 'a+')
-    long_csv = File.new(root + "/#{Time.now.to_i}_#{instrument.title}_long.csv", 'a+')
+    short_csv = create_file(instrument, 'short')
+    wide_csv = create_file(instrument, 'wide')
+    long_csv = create_file(instrument, 'long')
     long_csv.close
     wide_csv.close
     short_csv.close
-    export = ResponseExport.create(instrument_id: instrument.id, instrument_versions: instrument.survey_instrument_versions,
-                                   short_format_url: short_csv.path, wide_format_url: wide_csv.path, long_format_url: long_csv.path)
+    export = ResponseExport.create(instrument_id: instrument.id, instrument_versions: instrument.survey_instrument_versions, short_format_url: short_csv.path, wide_format_url: wide_csv.path, long_format_url: long_csv.path)
     write_short_header(short_csv)
     write_long_header(long_csv, instrument)
     write_wide_header(wide_csv, instrument)
@@ -122,13 +140,13 @@ class Survey < ActiveRecord::Base
     export_short_csv(short_csv, instrument, export.id)
     export_long_csv(long_csv, instrument, export.id)
     set_export_count(export.id.to_s, instrument.surveys.count * 3)
-    StatusWorker.perform_in(5.minutes, export.id)
+    StatusWorker.perform_in(5.seconds, export.id)
     export.id
   end
 
   def self.export_short_csv(short_csv, instrument, export_id)
     instrument.surveys.each do |survey|
-      ShortExportWorker.perform_in(30.seconds, short_csv.path, survey.id, export_id)
+      ShortExportWorker.perform_async(short_csv.path, survey.uuid, export_id)
     end
   end
 
@@ -138,57 +156,85 @@ class Survey < ActiveRecord::Base
     end
   end
 
-  def self.write_short_row(file, survey_id, export_id)
-    survey = Survey.includes(:responses).where(id: survey_id).first
+  def self.write_short_row(file, survey_uuid, export_id)
+    survey = get_survey(survey_uuid)
     validator = survey.validation_identifier
     CSV.open(file, 'a+') do |csv|
       survey.responses.each do |response|
-        csv << [validator, survey.id, response.question_identifier, sanitize(survey.chronicled_question(response.question_identifier).try(:text)), response.text, response.option_labels, response.special_response, response.other_response]
+        csv << [validator, survey.id, response.question_identifier, @sanitizer.sanitize(survey.versioned_question(response.question_identifier).try(:text)), response.text, survey.option_labels(response), response.special_response, response.other_response]
       end
     end
     decrement_export_count(export_id.to_s)
   end
 
   def validation_identifier
-    metadata['Center ID'] ? metadata['Center ID'] : metadata['Participant ID'] if metadata
+    return unless metadata
+    metadata['Center ID'] ? metadata['Center ID'] : metadata['Participant ID']
   end
 
   def self.export_wide_csv(wide_csv, instrument, export_id)
     instrument.surveys.each do |survey|
-      WideExportWorker.perform_in(30.seconds, wide_csv.path, survey.id, export_id)
+      WideExportWorker.perform_async(wide_csv.path, survey.uuid, export_id)
     end
   end
 
-  def self.write_wide_header(wide_csv, model)
+  def self.metadata_keys(ins)
+    last_update = ins.surveys.order('updated_at ASC').try(:last).try(:updated_at)
+    Rails.cache.fetch("survey-metadata-#{ins.id}-#{last_update}", expires_in: 24.hours) do
+      m_keys = []
+      ins.surveys.each do |survey|
+        next unless survey.metadata
+        survey.metadata.keys.each do |key|
+          m_keys << key unless m_keys.include? key
+        end
+      end
+      m_keys
+    end
+  end
+
+  def self.write_wide_header(wide_csv, ins)
     variable_identifiers = []
     question_identifier_variables = %w(_short_qid _question_type _label _special _other _version _text _start_time _end_time)
-    model.questions.each do |question|
+    ins.questions.each do |question|
       variable_identifiers << question.question_identifier unless variable_identifiers.include? question.question_identifier
       question_identifier_variables.each do |variable|
         variable_identifiers << question.question_identifier + variable unless variable_identifiers.include? question.question_identifier + variable
       end
     end
-    metadata_keys = []
-    model.surveys.each do |survey|
-      next unless survey.metadata
-      survey.metadata.keys.each do |key|
-        metadata_keys << key unless metadata_keys.include? key
-      end
-    end
-    header = %w(survey_id survey_uuid device_identifier device_label latitude longitude instrument_id instrument_version_number
-                instrument_title survey_start_time survey_end_time device_user_id device_user_username) + metadata_keys + variable_identifiers
+    header = %w(survey_id survey_uuid device_identifier device_label latitude longitude instrument_id instrument_version_number instrument_title survey_start_time survey_end_time device_user_id device_user_username) + metadata_keys(ins) + variable_identifiers
     CSV.open(wide_csv, 'wb') do |csv|
       csv << header
     end
   end
 
-  def self.write_wide_row(file, survey_id, export_id)
-    survey = Survey.includes(:responses).where(id: survey_id).first
+  def start_time
+    Rails.cache.fetch("survey-start-#{id}-#{ordered_response('time_started', 'ASC')}", expires_in: 24.hours) do
+      ordered_response('time_started', 'ASC')
+    end
+  end
+
+  def end_time
+    Rails.cache.fetch("survey-end-#{id}-#{ordered_response('time_ended', 'DESC')}", expires_in: 24.hours) do
+      ordered_response('time_ended', 'DESC')
+    end
+  end
+
+  def ordered_response(ord_attr, ord)
+    responses.order("#{ord_attr} #{ord}").try(:first).try(ord.to_sym)
+  end
+
+  def self.get_survey(survey_uuid)
+    key2 = Response.where(survey_uuid: survey_uuid).order('updated_at ASC').last.try(:updated_at)
+    Rails.cache.fetch("survey-#{survey_uuid}-#{key2}", expires_in: 24.hours) do
+      Survey.includes(:responses).where(uuid: survey_uuid).first
+    end
+  end
+
+  def self.write_wide_row(file, survey_uuid, export_id)
+    survey = get_survey(survey_uuid)
     headers = get_headers(file)
     CSV.open(file, 'a+') do |csv|
-      row = [survey.id, survey.uuid, survey.device.identifier, survey.device_label ? survey.device_label : survey.device.label, survey.latitude, survey.longitude, survey.instrument.id,
-             survey.instrument_version_number, survey.instrument.title, survey.responses.order('time_started').try(:first).try(:time_started),
-             survey.responses.order('time_ended').try(:last).try(:time_ended)]
+      row = [survey.id, survey.uuid, survey.device.identifier, survey.device_label ? survey.device_label : survey.device.label, survey.latitude, survey.longitude, survey.instrument.id, survey.instrument_version_number, survey.instrument.title, survey.start_time, survey.end_time]
 
       if survey.metadata
         survey.metadata.each do |k, v|
@@ -203,7 +249,7 @@ class Survey < ActiveRecord::Base
         short_qid_index = headers.index(response.question_identifier + '_short_qid')
         row[short_qid_index] = response.question_id if short_qid_index
         question_type_index = headers.index(response.question_identifier + '_question_type')
-        row[question_type_index] = survey.chronicled_question(response.question_identifier).try(:question_type) if question_type_index
+        row[question_type_index] = survey.versioned_question(response.question_identifier).try(:question_type) if question_type_index
         special_identifier_index = headers.index(response.question_identifier + '_special')
         row[special_identifier_index] = response.special_response if special_identifier_index
         other_identifier_index = headers.index(response.question_identifier + '_other')
@@ -213,7 +259,7 @@ class Survey < ActiveRecord::Base
         question_version_index = headers.index(response.question_identifier + '_version')
         row[question_version_index] = response.question_version if question_version_index
         question_text_index = headers.index(response.question_identifier + '_text')
-        row[question_text_index] = sanitize(survey.chronicled_question(response.question_identifier).try(:text)) if question_text_index
+        row[question_text_index] = @sanitizer.sanitize(survey.versioned_question(response.question_identifier).try(:text)) if question_text_index
         start_time_index = headers.index(response.question_identifier + '_start_time')
         row[start_time_index] = response.time_started if start_time_index
         end_time_index = headers.index(response.question_identifier + '_end_time')
@@ -240,39 +286,23 @@ class Survey < ActiveRecord::Base
 
   def self.export_long_csv(long_csv, model, export_id)
     model.surveys.each do |survey|
-      LongExportWorker.perform_in(30.seconds, long_csv.path, survey.id, export_id)
+      LongExportWorker.perform_async(long_csv.path, survey.uuid, export_id)
     end
   end
 
-  def self.write_long_header(long_csv, model)
-    metadata_keys = []
-    model.surveys.each do |survey|
-      next unless survey.metadata
-      survey.metadata.keys.each do |key|
-        metadata_keys << key unless metadata_keys.include? key
-      end
-    end
-    header = %w(qid short_qid instrument_id instrument_version_number question_version_number
-                instrument_title survey_id survey_uuid device_id device_uuid device_label question_type question_text
-                response response_labels special_response other_response response_time_started response_time_ended
-                device_user_id device_user_username) + metadata_keys
+  def self.write_long_header(long_csv, ins)
+    header = %w(qid short_qid instrument_id instrument_version_number question_version_number instrument_title survey_id survey_uuid device_id device_uuid device_label question_type question_text response response_labels special_response other_response response_time_started response_time_ended device_user_id device_user_username) + metadata_keys(ins)
     CSV.open(long_csv, 'wb') do |csv|
       csv << header
     end
   end
 
-  def self.write_long_row(file, survey_id, export_id)
-    survey = Survey.includes(:responses).where(id: survey_id).first
+  def self.write_long_row(file, survey_uuid, export_id)
+    survey = get_survey(survey_uuid)
     headers = get_headers(file)
     CSV .open(file, 'a+') do |csv|
       survey.responses.each do |response|
-        row = [response.question_identifier, "q_#{response.question_id}", survey.instrument_id,
-               response.instrument_version_number, response.question_version, survey.instrument_title,
-               survey_id, response.survey_uuid, survey.device_id, survey.device_uuid,
-               survey.device_label ? survey.device_label : survey.device.label,
-               response.versioned_question.try(:question_type), sanitize(response.versioned_question.try(:text)),
-               response.text, response.option_labels, response.special_response, response.other_response, response.time_started,
-               response.time_ended, response.device_user.try(:id), response.device_user.try(:username)]
+        row = [response.question_identifier, "q_#{response.question_id}", survey.instrument_id, response.instrument_version_number, response.question_version, survey.instrument_title, survey.id, response.survey_uuid, survey.device_id, survey.device_uuid, survey.device_label, survey.versioned_question(response.question_identifier).try(:question_type), @sanitizer.sanitize(survey.versioned_question(response.question_identifier).try(:text)), response.text, survey.option_labels(response), response.special_response, response.other_response, response.time_started, response.time_ended, response.device_user.try(:id), response.device_user.try(:username)]
         if survey.metadata
           survey.metadata.each do |k, v|
             row[headers.index(k)] = v if headers.index(k)

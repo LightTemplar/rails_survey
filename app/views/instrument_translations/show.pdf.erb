@@ -48,7 +48,7 @@
             <td><%= raw question.text %></td>
             <td><%= raw @instrument_translation.translation_for(question).try(:text) %></td>
           </tr>
-          <% if question.has_non_special_options? %>
+          <% if question.non_special_options? %>
           <% question.non_special_options.each do |option| %>
           <tr style="page-break-inside: avoid">
             <td>Option for

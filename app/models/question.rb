@@ -78,7 +78,7 @@ class Question < ActiveRecord::Base
     update_columns(child_update_count: option_count)
   end
 
-  def has_options?
+  def options?
     !options.empty?
   end
 
@@ -90,7 +90,7 @@ class Question < ActiveRecord::Base
     options.select { |option| !option.special }
   end
 
-  def has_non_special_options?
+  def non_special_options?
     !non_special_options.empty?
   end
 
@@ -106,7 +106,7 @@ class Question < ActiveRecord::Base
     end
   end
 
-  def has_other?
+  def other?
     Settings.question_with_other.include? question_type
   end
 
@@ -139,6 +139,15 @@ class Question < ActiveRecord::Base
 
   def select_multiple_variant?
     (question_type == 'SELECT_MULTIPLE') || (question_type == 'SELECT_MULTIPLE_WRITE_OTHER')
+  end
+
+  def grid_labels
+    grid.grid_labels if grid
+  end
+
+  def optionable?
+    return !grid_labels.empty? if grid
+    options?
   end
 
   private

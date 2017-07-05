@@ -14,6 +14,7 @@ class TranslationPdf < Prawn::Document
     @instrument             = instrument_translation.instrument
     @language               = @instrument_translation.language
     @version                = @instrument.current_version_number
+    @sanitizer = Rails::Html::FullSanitizer.new
 
     header
     content
@@ -24,10 +25,6 @@ class TranslationPdf < Prawn::Document
   end
 
   private
-
-  def sanitize(str)
-    ActionView::Base.full_sanitizer.sanitize(str)
-  end
 
   def header
     text "#{@instrument_translation.title} v#{@version}", size: 20, style: :bold
@@ -49,9 +46,9 @@ class TranslationPdf < Prawn::Document
 
     if question.has_translation_for?(@language)
       move_down InstructionQuestionMargin
-      text sanitize(question.translated_for(@language, :instructions)) if question.instructions
-      text sanitize(question.translated_for(@language, :text))
-      draw_options(question) if question.has_options?
+      text @sanitizer.sanitize(question.translated_for(@language, :instructions)) if question.instructions
+      text @sanitizer.sanitize(question.translated_for(@language, :text))
+      draw_options(question) if question.options?
     end
 
     pad_after_question(question)
@@ -71,7 +68,7 @@ class TranslationPdf < Prawn::Document
       draw_line_option(option) if question.question_type == 'LIST_OF_TEXT_BOXES'
     end
 
-    draw_other(question) if question.has_other?
+    draw_other(question) if question.other?
   end
 
   def pad_after_question(question)

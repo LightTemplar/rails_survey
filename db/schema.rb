@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170629202137) do
+ActiveRecord::Schema.define(version: 20170706150734) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -360,6 +360,9 @@ ActiveRecord::Schema.define(version: 20170629202137) do
   end
 
   add_index "responses", ["deleted_at"], name: "index_responses_on_deleted_at"
+  add_index "responses", ["survey_uuid"], name: "index_responses_on_survey_uuid"
+  add_index "responses", ["time_ended"], name: "index_responses_on_time_ended"
+  add_index "responses", ["time_started"], name: "index_responses_on_time_started"
   add_index "responses", ["uuid"], name: "index_responses_on_uuid"
 
   create_table "roles", force: true do |t|
