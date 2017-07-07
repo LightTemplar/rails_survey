@@ -75,9 +75,9 @@ class InstrumentsController < ApplicationController
   end
 
   def export_responses
-    @instrument = current_project.instruments.includes(:surveys).where(id: params[:id]).try(:first)
+    @instrument = current_project.instruments.includes(surveys: [:responses]).where(id: params[:id]).try(:first)
     authorize @instrument
-    export_id = Survey.instrument_export(@instrument)
+    export_id = @instrument.export_surveys
     unless @instrument.response_images.empty?
       zipped_file = File.new(File.join('files', 'exports').to_s + "/#{Time.now.to_i}.zip", 'a+')
       zipped_file.close
@@ -86,7 +86,7 @@ class InstrumentsController < ApplicationController
     end
     redirect_to project_response_exports_path(current_project)
   end
-  
+
   def translation_template_export
     @instrument = current_project.instruments.find(params[:id])
     authorize @instrument

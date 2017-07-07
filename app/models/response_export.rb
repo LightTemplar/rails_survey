@@ -20,12 +20,12 @@ class ResponseExport < ActiveRecord::Base
   serialize :instrument_versions
   belongs_to :project
   belongs_to :instrument
-  has_one :response_images_export, dependent: :destroy  
+  has_one :response_images_export, dependent: :destroy
   before_destroy :destroy_files
 
   def percent_complete(model)
     total_surveys = model.surveys.where('surveys.created_at < ?', created_at).count * 3.0
-    remaining_surveys = Survey.get_export_count(id.to_s).to_i
+    remaining_surveys = instrument.get_export_count(id.to_s).to_i
     if remaining_surveys > 0
       percent = ((total_surveys - remaining_surveys.to_f) / total_surveys) * 100
       percent = percent.round
@@ -39,13 +39,13 @@ class ResponseExport < ActiveRecord::Base
   end
 
   private
+
   def destroy_files
     if long_format_url
       File.delete(long_format_url) if File.exist?(long_format_url)
     end
     if wide_format_url
       File.delete(wide_format_url) if File.exist?(wide_format_url)
-    end    
+    end
   end
-  
 end

@@ -27,6 +27,7 @@ class Instrument < ActiveRecord::Base
   include Translatable
   include Alignable
   include LanguageAssignable
+  include RedisJobTracker
   serialize :special_options, Array
   scope :published, -> { where(published: true) }
   belongs_to :project
@@ -209,6 +210,93 @@ class Instrument < ActiveRecord::Base
       csv << [section.id, @sanitizer.sanitize(section.title), '']
     end
   end
+
+  def export_surveys
+    files = create_files
+    export = ResponseExport.create(instrument_id: id, instrument_versions: survey_instrument_versions, short_format_url: files[0].path, long_format_url: files[1].path, wide_format_url: files[2].path)
+    write_export_headers(files)
+    set_export_count(export.id.to_s, surveys.count * 3)
+    write_export_rows(files, export.id)
+    export.id
+  end
+
+  def write_export_headers(files)
+    file_headers = { files[0] => short_headers, files[1] => long_headers, files[2] => wide_headers }
+    file_headers.each do |file, header|
+      CSV.open(file, 'wb') do |csv|
+        csv << header
+      end
+    end
+  end
+
+  def write_export_rows(files, export_id)
+    surveys.each do |survey|
+      SurveyExportWorker.perform_async(files[0].path, files[1].path, files[2].path, survey.uuid, export_id)
+    end
+    StatusWorker.perform_in(5.seconds, export_id)
+  end
+
+  def create_files
+    files = []
+    root = File.join('files', 'exports').to_s
+    %w(short long wide).each do |format|
+      file = File.new(root + "/#{Time.now.to_i}_#{title}_#{format}.csv", 'a+')
+      file.close
+      files << file
+    end
+    files
+  end
+
+  def short_headers
+    %w(identifier survey_id question_identifier question_text response_text response_label special_response other_response)
+  end
+
+  def long_headers
+    %w(qid short_qid instrument_id instrument_version_number question_version_number instrument_title survey_id survey_uuid device_id device_uuid device_label question_type question_text response response_labels special_response other_response response_time_started response_time_ended device_user_id device_user_username) + metadata_keys
+  end
+
+  def wide_headers
+    variable_identifiers = []
+    question_identifier_variables = %w(_short_qid _question_type _label _special _other _version _text _start_time _end_time)
+    # TODO: cache
+    questions.each do |question|
+      variable_identifiers << question.question_identifier unless variable_identifiers.include? question.question_identifier
+      question_identifier_variables.each do |variable|
+        variable_identifiers << question.question_identifier + variable unless variable_identifiers.include? question.question_identifier + variable
+      end
+    end
+    %w(survey_id survey_uuid device_identifier device_label latitude longitude instrument_id instrument_version_number instrument_title survey_start_time survey_end_time device_user_id device_user_username) + metadata_keys + variable_identifiers
+  end
+
+  def metadata_keys
+    last_update = surveys.order('updated_at ASC').try(:last).try(:updated_at)
+    Rails.cache.fetch("survey-metadata-#{id}-#{last_update}", expires_in: 24.hours) do
+      m_keys = []
+      surveys.each do |survey|
+        next unless survey.metadata
+        survey.metadata.keys.each do |key|
+          m_keys << key unless m_keys.include? key
+        end
+      end
+      m_keys
+    end
+  end
+
+  # def export_short(export_id)
+  #   header = %w(identifier survey_id question_identifier question_text response_text response_label special_response other_response)
+  #   $redis.lpush "sh-#{id}-#{export_id}", header
+  #   $redis.lpush "sk-#{id}-#{export_id}", "sh-#{id}-#{export_id}"
+  #   surveys.each do |survey|
+  #     validator = survey.validation_identifier
+  #     survey.responses.each do |response|
+  #       csv = [validator, survey.id, response.question_identifier, survey.sanitize(survey.versioned_question(response.question_identifier).try(:text)), response.text, survey.option_labels(response), response.special_response, response.other_response]
+  #       $redis.rpush "sr-#{id}-#{export_id}-#{response.id}", csv
+  #       $redis.rpush "sk-#{id}-#{export_id}", "sr-#{id}-#{export_id}-#{response.id}"
+  #     end
+  #   end
+  #   ret_val = $redis.lrange "sk-#{id}-#{export_id}", 0, -1
+  #   puts ret_val.inspect
+  # end
 
   private
 
