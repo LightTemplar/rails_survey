@@ -1,4 +1,4 @@
-<section class="widget">
+<!-- <section class="widget">
   <header>
     <h4><i class="icon-edit"></i> Project</h4>
   </header>
@@ -13,49 +13,51 @@
       </thead>
 
       <tbody>
-        <% unless current_project.responses.empty? %>
+        <%# unless current_project.responses.empty? %>
             <tr>
-              <td><%= link_to current_project.name, current_project %></td>
-              <td><%= current_project.description %></td>
-              <% if policy(current_project).export? %>
-                <td> <%= link_to 'Export Responses', project_export_responses_path(current_project) %> </td>
-              <% end %>
+              <td><%#= link_to current_project.name, current_project %></td>
+              <td><%#= current_project.description %></td>
+              <%# if policy(current_project).export? %>
+                <td> <%#= link_to 'Export Responses', project_export_responses_path(current_project) %> </td>
+              <%# end %>
             </tr>
-         <% end %>
+         <%# end %>
       </tbody>
     </table>
   </div>
-</section>
+</section> -->
 
 <section class="widget">
   <header>
-    <h4><i class="icon-edit"></i> Instruments</h4>
+    <h4>
+      <i class="icon-edit"></i>
+      Instruments</h4>
   </header>
   <div class="body">
     <table class="table table-hover">
       <thead>
-      <tr>
-        <th>Title</th>
-        <th>Instrument Id</th>
-        <th>Current Version</th>
-        <th>Created at</th>
-        <th>Last updated</th>
-        <th>Export Responses</th>
-      </tr>
+        <tr>
+          <th>Title</th>
+          <th>Instrument Id</th>
+          <th>Current Version</th>
+          <th>Created at</th>
+          <th>Last updated</th>
+          <th>Export Responses</th>
+        </tr>
       </thead>
       <tbody>
-      <% @instruments.each do |instrument| %>
+        <% @instruments.each do |instrument| %>
         <% unless instrument.responses.empty? %>
-            <tr>
-              <td><%= link_to instrument.title, project_instrument_path(current_project, instrument) %></td>
-              <td><%= instrument.id %></td>
-              <td><%= instrument.current_version_number %></td>
-              <td><%= instrument.created_at %></td>
-              <td><%= instrument.updated_at %></td>
-              <td><%= link_to 'Export Responses', export_responses_project_instrument_path(current_project, instrument) %></td>
-            </tr>
+        <tr>
+          <td><%= link_to instrument.title, project_instrument_path(current_project, instrument) %></td>
+          <td><%= instrument.id %></td>
+          <td><%= instrument.current_version_number %></td>
+          <td><%= instrument.created_at %></td>
+          <td><%= instrument.updated_at %></td>
+          <td><%= link_to 'Export Responses', export_responses_project_instrument_path(current_project, instrument) %></td>
+        </tr>
         <% end %>
-      <% end %>
+        <% end %>
       </tbody>
     </table>
   </div>
