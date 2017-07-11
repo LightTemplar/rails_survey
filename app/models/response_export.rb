@@ -41,11 +41,8 @@ class ResponseExport < ActiveRecord::Base
   private
 
   def destroy_files
-    if long_format_url
-      File.delete(long_format_url) if File.exist?(long_format_url)
-    end
-    if wide_format_url
-      File.delete(wide_format_url) if File.exist?(wide_format_url)
-    end
+    File.delete(long_format_url) if long_format_url && File.exist?(long_format_url)
+    File.delete(wide_format_url) if wide_format_url && File.exist?(wide_format_url)
+    File.delete(short_format_url) if short_format_url && File.exist?(short_format_url)
   end
 end

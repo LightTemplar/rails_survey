@@ -15,8 +15,8 @@ set :bundle_binstubs, nil
 set :sidekiq_default_hooks, true
 set :sidekiq_pid, File.join(shared_path, 'tmp', 'pids', 'sidekiq.pid')
 set :sidekiq_log, File.join(shared_path, 'log', 'sidekiq.log')
-set :sidekiq_concurrency, 15
-set :sidekiq_processes, 2
+set :sidekiq_concurrency, 25
+set :sidekiq_processes, 3
 # Wheneverize
 set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }
 
