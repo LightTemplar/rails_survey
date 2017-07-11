@@ -11,10 +11,13 @@ set :linked_files, %w(config/database.yml config/secret_token.txt config/local_e
 set :linked_dirs, %w(log tmp/pids tmp/cache tmp/sockets vendor/bundle)
 set :linked_dirs, fetch(:linked_dirs) + %w(files updates)
 set :bundle_binstubs, nil
+# Sikekiq configurations
+set sidekiq_default_hooks: true
 set :sidekiq_pid, File.join(shared_path, 'tmp', 'pids', 'sidekiq.pid')
 set :sidekiq_log, File.join(shared_path, 'log', 'sidekiq.log')
 set :sidekiq_concurrency, 15
 set :sidekiq_processes, 2
+# Wheneverize
 set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }
 
 # When using Phusion Passenger App Server
