@@ -2,16 +2,32 @@
   <h2>
     <i class="md-language c-indigo">
       <%= link_to @instrument.title, project_instrument_path(current_project, @instrument) %>
-      <span class="text-lowercase">
-        in
-        <%= @instrument_translation.language %></span>
     </i>
   </h2>
-  <strong>Translated Title:</strong>
-  <%= @instrument.translated_for(@instrument_translation.language, :title) %>
-  <br>
-  <strong>Translated Critical Message:</strong>
-  <%= @instrument.translated_for(@instrument_translation.language, :critical_message) %>
+  <div class="row">
+    <strong class="col-md-4">Translation Language:</strong>
+    <span class="col-md-8">
+      <%= @instrument_translation.language %>
+    </span>
+  </div>
+  <div class="row">
+    <strong class="col-md-4">Language Alignment:</strong>
+    <span class="col-md-8">
+      <%= @instrument_translation.alignment %>
+    </span>
+  </div>
+  <div class="row">
+    <strong class="col-md-4">Translated Title:</strong>
+    <span class="col-md-8">
+      <%= @instrument_translation.title %>
+    </span>
+  </div>
+  <div class="row">
+    <strong class="col-md-4">Translated Critical Message:</strong>
+    <span class="col-md-8">
+      <%= @instrument_translation.critical_message %>
+    </span>
+  </div>
 </div>
 
 <div class="card">
@@ -27,94 +43,43 @@
         </thead>
         <tbody>
           <% @instrument.questions.each do |question| %>
-          <% if question.has_translation_for?(@instrument_translation.language) %>
-          <tr
-            style="page-break-inside: avoid"
-            ng-class="{danger: question_translation_changed}"
-            ng-controller="QuestionTranslationsCtrl"
-            ng-init="init(
-                <%= current_project.id %>,
-                <%= question.instrument.id %>,
-                <%= question.id %>,
-                <%= question.has_translation_for?(@instrument_translation.language).id %>,
-                <%= question.translated_for(@instrument_translation.language, :question_changed) %>
-            )">
-            <td><%= question.question_identifier %></td>
-            <td><%= raw question.text %></td>
-            <td><%= raw (question.translated_for @instrument_translation.language, :text) %></td>
-          </tr>
-        <% else %>
           <tr style="page-break-inside: avoid">
             <td><%= question.question_identifier %></td>
             <td><%= raw question.text %></td>
-            <td><%= raw (question.translated_for @instrument_translation.language, :text) %></td>
+            <td><%= raw @instrument_translation.translation_for(question).try(:text) %></td>
           </tr>
-          <% end %>
-          <% if question.has_non_special_options? %>
+          <% if question.non_special_options? %>
           <% question.non_special_options.each do |option| %>
-          <% if option.has_translation_for?(@instrument_translation.language) %>
-          <tr
-            style="page-break-inside: avoid"
-            ng-class="{danger: option_translation_changed}"
-            ng-controller="OptionTranslationsCtrl"
-            ng-init="init(
-                            <%= current_project.id %>,
-                            <%= question.instrument.id %>,
-                            <%= question.id %>,
-                            <%= option.id %>,
-                            <%= option.has_translation_for?(@instrument_translation.language).id %>,
-                            <%= option.translated_for(@instrument_translation.language, :option_changed) %>
-                        )">
-            <td>Option for
-              <%= question.question_identifier %></td>
-            <td><%= option.text %></td>
-            <td><%= option.translated_for(@instrument_translation.language, :text) %>
-            </td>
-          </tr>
-        <% else %>
           <tr style="page-break-inside: avoid">
             <td>Option for
               <%= question.question_identifier %></td>
             <td><%= option.text %></td>
-            <td></td>
+            <td><%= @instrument_translation.translation_for(option).try(:text) %></td>
           </tr>
-          <% end %>
-
           <% end %>
           <% end %>
           <% if question.starts_section? %>
-          <% if question.section.has_translation_for?(@instrument_translation.language) %>
-          <tr
-            style="page-break-inside: avoid"
-            ng-class="{danger: section_translation_changed}"
-            ng-controller="SectionTranslationsCtrl"
-            ng-init="init(
-                            <%= current_project.id %>,
-                            <%= question.instrument.id %>,
-                            <%= question.section.id %>,
-                            <%= question.section.has_translation_for?(@instrument_translation.language).id %>,
-                            <%= question.section.translated_for(@instrument_translation.language, :section_changed) %>
-                        )">
-            <td>Section starting with
-              <%= question.question_identifier %></td>
-            <td><%= question.section.title %></td>
-            <td><%= question.section.translated_for(@instrument_translation.language, :text) %></td>
-          </tr>
-        <% else %>
           <tr style="page-break-inside: avoid">
             <td>Section starting with
               <%= question.question_identifier %></td>
             <td><%= question.section.title %></td>
-            <td></td>
+            <td><%= @instrument_translation.translation_for(question.section).try(:text) %></td>
           </tr>
           <% end %>
+          <% unless question.instructions.blank? %>
+          <tr style="page-break-inside: avoid">
+            <td>Instructions for
+              <%= question.question_identifier %></td>
+            <td><%= raw question.instructions %></td>
+            <td><%= raw @instrument_translation.translation_for(question).try(:instructions) %></td>
+          </tr>
           <% end %>
           <% if question.reg_ex_validation_message %>
           <tr style="page-break-inside: avoid">
             <td>Regular expression failure message for
               <%= question.question_identifier %></td>
-            <td><%= question.reg_ex_validation_message %></td>
-            <td><%= question.translated_for @instrument_translation.language, :reg_ex_validation_message %></td>
+            <td><%= raw question.reg_ex_validation_message %></td>
+            <td><%= raw @instrument_translation.translation_for(question).try(:reg_ex_validation_message) %></td>
           </tr>
           <% end %>
           <% end %>

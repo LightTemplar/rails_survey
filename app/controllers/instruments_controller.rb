@@ -75,9 +75,9 @@ class InstrumentsController < ApplicationController
   end
 
   def export_responses
-    @instrument = current_project.instruments.includes(:surveys).where(id: params[:id]).try(:first)
+    @instrument = current_project.instruments.includes(:questions, surveys: [:responses]).where(id: params[:id]).try(:first)
     authorize @instrument
-    export_id = Survey.instrument_export(@instrument)
+    export_id = @instrument.export_surveys
     unless @instrument.response_images.empty?
       zipped_file = File.new(File.join('files', 'exports').to_s + "/#{Time.now.to_i}.zip", 'a+')
       zipped_file.close
@@ -85,6 +85,18 @@ class InstrumentsController < ApplicationController
       InstrumentImagesExportWorker.perform_async(@instrument.id, zipped_file.path, pictures_export.id)
     end
     redirect_to project_response_exports_path(current_project)
+  end
+
+  def translation_template_export
+    @instrument = current_project.instruments.find(params[:id])
+    authorize @instrument
+    respond_to do |format|
+      format.csv do
+        send_data @instrument.translation_csv_template,
+                  type: 'text/csv; charset=iso-8859-1; header=present',
+                  disposition: "attachment; filename=#{@instrument.title}_translation_template.csv"
+      end
+    end
   end
 
   def move
@@ -130,6 +142,6 @@ class InstrumentsController < ApplicationController
   private
 
   def instrument_params
-    params.require(:instrument).permit(:title, :language, :alignment, :previous_question_count, :child_update_count, :published, :project_id, :show_instructions, :show_sections_page, :roster, :roster_type, :navigate_to_review_page, :critical_message, special_options: [])
+    params.require(:instrument).permit(:title, :language, :alignment, :previous_question_count, :child_update_count, :published, :project_id, :show_instructions, :show_sections_page, :roster, :roster_type, :navigate_to_review_page, :critical_message, :scorable, special_options: [])
   end
 end

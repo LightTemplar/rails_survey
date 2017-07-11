@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170317202514) do
+ActiveRecord::Schema.define(version: 20170706150734) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -88,10 +88,28 @@ ActiveRecord::Schema.define(version: 20170317202514) do
 
   add_index "devices", ["identifier"], name: "index_devices_on_identifier", unique: true
 
+  create_table "grid_label_translations", force: true do |t|
+    t.integer  "grid_label_id"
+    t.integer  "instrument_translation_id"
+    t.text     "label"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "grid_labels", force: true do |t|
     t.text     "label"
     t.integer  "grid_id"
-    t.integer  "option_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "deleted_at"
+    t.integer  "position"
+  end
+
+  create_table "grid_translations", force: true do |t|
+    t.integer  "grid_id"
+    t.integer  "instrument_translation_id"
+    t.string   "name"
+    t.text     "instructions"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -102,6 +120,8 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "instructions"
+    t.datetime "deleted_at"
   end
 
   create_table "images", force: true do |t|
@@ -127,6 +147,7 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "critical_message"
+    t.boolean  "active",           default: false
   end
 
   create_table "instruments", force: true do |t|
@@ -147,6 +168,7 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.text     "critical_message"
     t.boolean  "roster",                  default: false
     t.string   "roster_type"
+    t.boolean  "scorable",                default: false
   end
 
   create_table "metrics", force: true do |t|
@@ -167,7 +189,10 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.string   "label"
     t.boolean  "exists"
     t.boolean  "next_question"
+    t.datetime "deleted_at"
   end
+
+  add_index "option_scores", ["deleted_at"], name: "index_option_scores_on_deleted_at"
 
   create_table "option_translations", force: true do |t|
     t.integer  "option_id"
@@ -175,7 +200,8 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.string   "language"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "option_changed", default: false
+    t.boolean  "option_changed",            default: false
+    t.integer  "instrument_translation_id"
   end
 
   create_table "options", force: true do |t|
@@ -189,6 +215,7 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.integer  "instrument_version_number", default: -1
     t.boolean  "special",                   default: false
     t.boolean  "critical"
+    t.boolean  "complete_survey"
   end
 
   create_table "project_device_users", force: true do |t|
@@ -213,6 +240,14 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.string   "survey_aggregator"
   end
 
+  create_table "question_randomized_factors", force: true do |t|
+    t.integer  "question_id"
+    t.integer  "randomized_factor_id"
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "question_translations", force: true do |t|
     t.integer  "question_id"
     t.string   "language"
@@ -222,6 +257,7 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.string   "reg_ex_validation_message"
     t.boolean  "question_changed",          default: false
     t.text     "instructions"
+    t.integer  "instrument_translation_id"
   end
 
   create_table "questions", force: true do |t|
@@ -241,13 +277,27 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.text     "instructions",                     default: ""
     t.integer  "child_update_count",               default: 0
     t.integer  "grid_id"
-    t.boolean  "first_in_grid",                    default: false
     t.integer  "instrument_version_number",        default: -1
     t.integer  "section_id"
     t.boolean  "critical"
+    t.integer  "number_in_grid"
   end
 
   add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true
+
+  create_table "randomized_factors", force: true do |t|
+    t.integer  "instrument_id"
+    t.string   "title"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "randomized_options", force: true do |t|
+    t.integer  "randomized_factor_id"
+    t.text     "text"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "raw_scores", force: true do |t|
     t.integer  "score_unit_id"
@@ -255,6 +305,8 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.float    "value"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "uuid"
+    t.string   "score_uuid"
   end
 
   create_table "response_exports", force: true do |t|
@@ -304,9 +356,13 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.integer  "device_user_id"
     t.integer  "question_version",    default: -1
     t.datetime "deleted_at"
+    t.text     "randomized_data"
   end
 
   add_index "responses", ["deleted_at"], name: "index_responses_on_deleted_at"
+  add_index "responses", ["survey_uuid"], name: "index_responses_on_survey_uuid"
+  add_index "responses", ["time_ended"], name: "index_responses_on_time_ended"
+  add_index "responses", ["time_started"], name: "index_responses_on_time_started"
   add_index "responses", ["uuid"], name: "index_responses_on_uuid"
 
   create_table "roles", force: true do |t|
@@ -340,7 +396,10 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "deleted_at"
   end
+
+  add_index "score_schemes", ["deleted_at"], name: "index_score_schemes_on_deleted_at"
 
   create_table "score_sections", force: true do |t|
     t.string   "name"
@@ -361,7 +420,10 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.integer  "question_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "deleted_at"
   end
+
+  add_index "score_unit_questions", ["deleted_at"], name: "index_score_unit_questions_on_deleted_at"
 
   create_table "score_units", force: true do |t|
     t.integer  "score_scheme_id"
@@ -372,7 +434,10 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "score_type"
+    t.datetime "deleted_at"
   end
+
+  add_index "score_units", ["deleted_at"], name: "index_score_units_on_deleted_at"
 
   create_table "scores", force: true do |t|
     t.integer  "survey_id"
@@ -380,6 +445,10 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.float    "score_sum"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "uuid"
+    t.string   "survey_uuid"
+    t.string   "device_uuid"
+    t.string   "device_label"
   end
 
   create_table "section_translations", force: true do |t|
@@ -388,7 +457,8 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.string   "text"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "section_changed", default: false
+    t.boolean  "section_changed",           default: false
+    t.integer  "instrument_translation_id"
   end
 
   create_table "sections", force: true do |t|
@@ -449,6 +519,7 @@ ActiveRecord::Schema.define(version: 20170317202514) do
     t.datetime "deleted_at"
     t.boolean  "has_critical_responses"
     t.string   "roster_uuid"
+    t.string   "language"
   end
 
   add_index "surveys", ["deleted_at"], name: "index_surveys_on_deleted_at"

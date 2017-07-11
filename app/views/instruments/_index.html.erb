@@ -21,7 +21,8 @@
         <thead>
           <tr>
             <th>Title</th>
-            <th>Instrument Id</th>
+            <th>Published</th>
+            <th>Id</th>
             <th>Current Version</th>
             <th># questions</th>
             <th>Created at</th>
@@ -31,8 +32,9 @@
         <tbody>
           <tr ng-repeat="instrument in instruments | filter:q">
             <td>
-              <a href="/projects/<%= current_project.id %>/instruments/{{instrument.id}}">{{instrument.title}}</a>
+              <a href="{{baseUrl}}/projects/<%= current_project.id %>/instruments/{{instrument.id}}">{{instrument.title}}</a>
             </td>
+            <td>{{instrument.published}}</td>
             <td>{{instrument.id}}</td>
             <td>{{instrument.current_version_number}}</td>
             <td>{{instrument.question_count}}</td>

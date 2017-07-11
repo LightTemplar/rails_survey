@@ -5,13 +5,11 @@ module Api
         respond_to :json
 
         def index
-          if current_user
-            respond_with current_project.score_schemes.order(updated_at: :desc)
-          end
+          @score_schemes = current_project.score_schemes.order(updated_at: :desc) if current_user
         end
 
         def show
-          respond_with current_project.score_schemes.find params[:id] if current_user
+          @score_scheme = current_project.score_schemes.find params[:id] if current_user
         end
 
         def create

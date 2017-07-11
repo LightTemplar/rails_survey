@@ -20,12 +20,14 @@
 #  critical_message        :text
 #  roster                  :boolean          default(FALSE)
 #  roster_type             :string(255)
+#  scorable                :boolean          default(FALSE)
 #
 
 class Instrument < ActiveRecord::Base
   include Translatable
   include Alignable
   include LanguageAssignable
+  include RedisJobTracker
   serialize :special_options, Array
   scope :published, -> { where(published: true) }
   belongs_to :project
@@ -39,9 +41,12 @@ class Instrument < ActiveRecord::Base
   has_many :sections, dependent: :destroy
   has_many :rules, dependent: :destroy
   has_many :grids, dependent: :destroy
+  has_many :grid_labels, through: :grids
   has_many :metrics, dependent: :destroy
   has_many :rosters
   has_many :score_schemes, dependent: :destroy
+  has_many :randomized_factors, dependent: :destroy
+  has_many :randomized_options, through: :randomized_factors
 
   has_paper_trail on: [:update, :destroy]
   acts_as_paranoid
@@ -49,6 +54,8 @@ class Instrument < ActiveRecord::Base
   after_update :update_special_options
   validates :title, presence: true, allow_blank: false
   validates :project_id, presence: true, allow_blank: false
+
+  @sanitizer = Rails::Html::FullSanitizer.new
 
   def update_special_options
     if special_options != special_options_was
@@ -62,7 +69,9 @@ class Instrument < ActiveRecord::Base
   end
 
   def version_by_version_number(version_number)
-    InstrumentVersion.build(instrument_id: id, version_number: version_number)
+    Rails.cache.fetch("instruments-#{id}-#{version_number}", expires_in: 24.hours) do
+      InstrumentVersion.build(instrument_id: id, version_number: version_number)
+    end
   end
 
   def completion_rate
@@ -99,8 +108,7 @@ class Instrument < ActiveRecord::Base
     format << ["\n"]
     format << %w(number_in_instrument question_identifier question_type question_instructions question_text) + instrument_translation_languages
     questions.each do |question|
-      format << [question.number_in_instrument, question.question_identifier, question.question_type,
-                 Sanitize.fragment(question.instructions), Sanitize.fragment(question.text)] + translations_for_object(question)
+      format << [question.number_in_instrument, question.question_identifier, question.question_type, @sanitizer.sanitize(question.instructions), @sanitizer.sanitize(question.text)] + translations_for_object(question)
       question.options.each do |option|
         format << ['', '', '', "Option for question #{question.question_identifier}", option.text] + translations_for_object(option)
         if option.next_question
@@ -137,7 +145,7 @@ class Instrument < ActiveRecord::Base
     text_translations = []
     obj.translations.each do |translation|
       if instrument_translation_languages.include? translation.language
-        text_translations << Sanitize.fragment(translation.text)
+        text_translations << @sanitizer.sanitize(translation.text)
       end
     end
     text_translations
@@ -171,6 +179,149 @@ class Instrument < ActiveRecord::Base
         question.number_in_instrument = question.number_in_instrument - 1
         question.save
       end
+    end
+  end
+
+  def translation_csv_template
+    CSV.generate do |csv|
+      generate_row(csv)
+    end
+  end
+
+  def generate_row(csv)
+    csv << ['instrument_id', id]
+    csv << ['translation_language_iso_code', '', 'Enter language ISO 639-1 code in column 2']
+    csv << ['language_alignment', '', 'Enter left in column 2 if words in the language are read left-to-right or right if they are read right-to-left']
+    csv << ['instrument_title', @sanitizer.sanitize(title), '', 'Enter instrument_title translation in column 3']
+    csv << ['instrument_critical_message', @sanitizer.sanitize(critical_message), '', 'Enter critical message translation in column 3']
+    csv << ['']
+    csv << ['question_identifier',	'question_text',	'Enter question_text translations in this column',	'instructions',	'Enter instructions translations in this column',	'reg_ex_validation_message',	'Enter reg_ex_validation_message translations in this column']
+    questions.each do |question|
+      csv << [question.question_identifier, @sanitizer.sanitize(question.text), '', @sanitizer.sanitize(question.instructions), '', @sanitizer.sanitize(question.reg_ex_validation_message), '']
+    end
+    csv << ['']
+    csv << ['option_id',	'option_text',	'Enter option_text translation in this column']
+    options.regular.each do |option|
+      csv << [option.id, @sanitizer.sanitize(option.text), '']
+    end
+    csv << ['']
+    csv << ['section_id',	'section_title_text',	'Enter section_title_text translation in this column']
+    sections.each do |section|
+      csv << [section.id, @sanitizer.sanitize(section.title), '']
+    end
+  end
+
+  def export_surveys
+    files = create_files
+    export = ResponseExport.create(instrument_id: id, instrument_versions: survey_instrument_versions, short_format_url: files[0].path, long_format_url: files[1].path, wide_format_url: files[2].path)
+    write_export_headers(files)
+    export_counter_by_format(export.id)
+    write_export_rows(files, export.id)
+    export.id
+  end
+
+  def export_counter_by_format(export_id)
+    export_formats.each do |format|
+      set_export_count("#{export_id}_#{format}", surveys.count)
+    end
+  end
+
+  def write_export_headers(files)
+    file_headers = { files[0] => short_headers, files[1] => long_headers, files[2] => wide_headers }
+    file_headers.each do |file, header|
+      CSV.open(file, 'wb') do |csv|
+        csv << header
+      end
+    end
+  end
+
+  def write_export_rows(files, export_id)
+    surveys.each do |survey|
+      SurveyExportWorker.perform_async(survey.uuid, export_id)
+    end
+    files.each do |file|
+      StatusWorker.perform_in(10.seconds, export_id, file.path)
+    end
+  end
+
+  def create_files
+    files = []
+    root = File.join('files', 'exports').to_s
+    export_formats.each do |format|
+      file = File.new(root + "/#{Time.now.to_i}_#{title}_#{format}.csv", 'a+')
+      file.close
+      files << file
+    end
+    files
+  end
+
+  def export_formats
+    %w(short long wide)
+  end
+
+  def short_headers
+    %w(identifier survey_id question_identifier question_text response_text response_label special_response other_response)
+  end
+
+  def long_headers
+    %w(qid short_qid instrument_id instrument_version_number question_version_number instrument_title survey_id survey_uuid device_id device_uuid device_label question_type question_text response response_labels special_response other_response response_time_started response_time_ended device_user_id device_user_username) + metadata_keys
+  end
+
+  def wide_headers
+    variable_identifiers = []
+    question_identifier_variables = %w(_short_qid _question_type _label _special _other _version _text _start_time _end_time)
+    questions.each do |question|
+      variable_identifiers << question.question_identifier unless variable_identifiers.include? question.question_identifier
+      question_identifier_variables.each do |variable|
+        variable_identifiers << question.question_identifier + variable unless variable_identifiers.include? question.question_identifier + variable
+      end
+    end
+    %w(survey_id survey_uuid device_identifier device_label latitude longitude instrument_id instrument_version_number instrument_title survey_start_time survey_end_time device_user_id device_user_username) + metadata_keys + variable_identifiers
+  end
+
+  def metadata_keys
+    last_update = surveys.order('updated_at ASC').try(:last).try(:updated_at)
+    Rails.cache.fetch("survey-metadata-#{id}-#{last_update}", expires_in: 24.hours) do
+      m_keys = []
+      surveys.each do |survey|
+        next unless survey.metadata
+        survey.metadata.keys.each do |key|
+          m_keys << key unless m_keys.include? key
+        end
+      end
+      m_keys
+    end
+  end
+
+  def fetch_csv_data(file, format, export_id)
+    data = []
+    keys = $redis.lrange "#{format}-keys-#{id}-#{export_id}", 0, -1
+    $redis.del "#{format}-keys-#{id}-#{export_id}"
+    keys.each do |key|
+      data_row = $redis.lrange key, 0, -1
+      data << data_row
+      $redis.del key
+    end
+    dump_csv_data(data, file)
+    complete_export(export_id, format)
+  end
+
+  def dump_csv_data(data, file)
+    CSV.open(file, 'a+') do |csv|
+      data.each do |row|
+        csv << row
+      end
+    end
+  end
+
+  def complete_export(export_id, format)
+    export = ResponseExport.find(export_id)
+    if format == 'short'
+      export.update(short_done: true)
+    elsif format == 'long'
+      export.update(long_done: true)
+    elsif format == 'wide'
+      export.update(wide_done: true)
     end
   end
 

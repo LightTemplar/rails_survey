@@ -1,14 +1,14 @@
 class StatusWorker
   include Sidekiq::Worker
 
-  def perform(export_id)
+  def perform(export_id, filename)
+    format = filename.split('_').last.split('.').first
     export = ResponseExport.find(export_id)
-    if Survey.get_export_count(export_id.to_s) == '0'
-      export.update(short_done: true, long_done: true, wide_done: true)
-      Survey.delete_export_count(export_id.to_s)
+    if export.instrument.get_export_count("#{export_id}_#{format}") == '0'
+      export.instrument.fetch_csv_data(filename, format, export_id)
+      export.instrument.delete_export_count("#{export_id}_#{format}")
     else
-      StatusWorker.perform_in(1.minute, export_id)
+      StatusWorker.perform_in(5.seconds, export_id, filename)
     end
   end
-
 end

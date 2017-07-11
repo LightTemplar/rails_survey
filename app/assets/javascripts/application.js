@@ -12,11 +12,11 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require jquery-ui
 //= require twitter/bootstrap
 //= require waves/dist/waves.min
 //= require sweetalert/dist/sweetalert.min
 //= require autosize/dist/autosize.min
-//= require gollum_rails
 //= require rangy-core
 //= require rangy-selectionsaverestore.min
 //= require bootstrap3-wysihtml5.all.min

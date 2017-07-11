@@ -7,9 +7,11 @@
 #  question_id   :integer
 #  created_at    :datetime
 #  updated_at    :datetime
+#  deleted_at    :datetime
 #
 
 class ScoreUnitQuestion < ActiveRecord::Base
   belongs_to :score_unit
   belongs_to :question
+  acts_as_paranoid
 end

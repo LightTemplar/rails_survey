@@ -1,9 +1,8 @@
 collection @questions
 cache @questions
-if @page_num.blank?
-  extends 'api/v1/frontend/questions/only'
-else
-  extends 'api/v1/frontend/questions/show'
+
+extends 'api/v1/frontend/questions/show'
+unless @page_num.blank?
   node(:_links) do
     paginate @questions
   end

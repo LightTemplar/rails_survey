@@ -9,7 +9,7 @@
  * compiled file, but it's generally better to create a new file per style scope.
  *
  *= require_self
- *= require gollum_rails
+ *= require jquery-ui
  *= require animate.css/animate.min
  *= require sweetalert/dist/sweetalert-override.min
  *= require material-design-iconic-font/css/material-design-iconic-font.min
@@ -25,15 +25,28 @@
  *= require textAngular
  *= require graphs
  *= require instruments
+ *= require grids
  *= require materialize
  *= require bootstrap_elements
  *= require fancypants_override
  */
 
-.top-buffer { margin-top: 20px; }
-.bottom-buffer { margin-bottom: 20px; }
-ul.squares { list-style: square; }
-li.active-result { color: #333; }
+.top-buffer {
+  margin-top: 20px;
+}
+
+.bottom-buffer {
+  margin-bottom: 20px;
+}
+
+ul.squares {
+  list-style: square;
+}
+
+li.active-result {
+  color: #333;
+}
+
 table.fixed-wide {
   table-layout: fixed;
   width: 100%;

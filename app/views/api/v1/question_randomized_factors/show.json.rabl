@@ -1,0 +1,3 @@
+object @question_randomized_factor
+cache @question_randomized_factor
+extends 'api/templates/question_randomized_factor'

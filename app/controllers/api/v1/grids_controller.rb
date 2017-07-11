@@ -7,6 +7,11 @@ module Api
         project = Project.find(params[:project_id])
         @grids = project.grids
       end
+
+      def show
+        project = Project.find(params[:project_id])
+        @grid = project.grids.find(params[:id])
+      end
     end
   end
 end

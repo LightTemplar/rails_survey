@@ -57,6 +57,16 @@
     </div>
   </div>
   <% end %>
+  <% if @survey.language %>
+  <div class="row">
+    <label class="col-md-4 text-right">
+      Survey Language:
+    </label>
+    <div class="col-md-8">
+      <%= @survey.language %>
+    </div>
+  </div>
+  <% end %>
 
   <div class="card-body card-padding">
     <div class="table-responsive">
@@ -69,6 +79,7 @@
             <th>Response</th>
             <th>Special Response</th>
             <th>Other Response</th>
+            <th>Randomized Data</th>
             <th>Created at</th>
             <th>Time taken(sec)</th>
             <th>Response Image</th>
@@ -88,6 +99,7 @@
             </td>
             <td><%= response.special_response %></td>
             <td><%= response.other_response %></td>
+            <td><%= response.randomized_data %></td>
             <td><%= response.created_at %>
             </td>
             <td><%= response.time_taken_in_seconds %></td>

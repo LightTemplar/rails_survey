@@ -1,13 +1,9 @@
 module SessionsHelper
   def store_location
-    if (request.fullpath != "/users/sign_in" && request.fullpath != "/users/sign_up" &&
-      request.fullpath != "/users/password" && request.fullpath != "/users/password/new"  && 
-      request.fullpath != "/users/password/edit" && request.fullpath != "/users/sign_out" && 
-      request.fullpath != "/admin/login"  && request.fullpath != "/users/checkga" &&
-      request.fullpath != "/admin/checkga" && !request.xhr?) 
-      session[:previous_url] = request.fullpath 
-    else
-      session[:previous_url] = "/"
-    end
+    session[:previous_url] = if request.fullpath == user_session_path || request.fullpath == new_user_session_path || request.fullpath == user_password_path || request.fullpath == new_user_password_path || request.fullpath == edit_user_password_path || request.fullpath == destroy_user_session_path || request.fullpath == user_checkga_path || request.xhr?
+                               nil
+                             else
+                               request.fullpath
+                             end
   end
 end

@@ -2,9 +2,8 @@ require 'sidekiq/web'
 RailsSurvey::Application.routes.draw do
   devise_for :users
   authenticate :user, ->(u) { u.admin? } do
-    mount Sidekiq::Web, at: '/sidekiq'
+    mount Sidekiq::Web, at: 'sidekiq', as: 'sidekiq'
   end
-  mount GollumRails::Engine => '/wiki'
   ActiveAdmin.routes(self)
 
   namespace :api, defaults: { format: 'json' } do
@@ -22,12 +21,20 @@ RailsSurvey::Application.routes.draw do
                 resources :option_translations, only: [:update]
               end
               resources :images
+              resources :question_randomized_factors
             end
             resources :sections do
               resources :section_translations, only: [:update]
             end
             resources :grids do
               resources :grid_labels
+            end
+            resources :randomized_factors do
+              resources :randomized_options
+            end
+            resources :instrument_translations do
+              resources :grid_translations
+              resources :grid_label_translations
             end
           end
           resources :score_schemes do
@@ -54,6 +61,9 @@ RailsSurvey::Application.routes.draw do
         resources :device_users, only: [:index, :show]
         resources :questions, only: [:index, :show]
         resources :options, only: [:index, :show]
+        resources :randomized_factors, only: [:index, :show]
+        resources :randomized_options, only: [:index, :show]
+        resources :question_randomized_factors, only: [:index, :show]
         resources :images, only: [:index, :show]
         resources :surveys, only: [:create]
         resources :responses, only: [:create]
@@ -63,9 +73,15 @@ RailsSurvey::Application.routes.draw do
         resources :skips, only: [:index, :show]
         resources :rules, only: [:index]
         resources :device_sync_entries, only: [:create]
-        resources :grids, only: [:index]
-        resources :grid_labels, only: [:index]
+        resources :grids, only: [:index, :show]
+        resources :grid_labels, only: [:index, :show]
         resources :rosters, only: [:create]
+        resources :score_schemes, only: [:index]
+        resources :score_units, only: [:index]
+        resources :score_unit_questions, only: [:index]
+        resources :option_scores, only: [:index]
+        resources :scores, only: [:create]
+        resources :raw_scores, only: [:create]
         member do
           get :current_time
         end
@@ -86,17 +102,22 @@ RailsSurvey::Application.routes.draw do
       resources :versions, only: [:index, :show]
       resources :instrument_translations do
         member do
-          get :show_original
+          get :show_pdf
         end
         collection do
           get :new_gt
         end
+        collection do
+          post :import_translation
+        end
       end
       resources :sections
       resources :grids
+      resources :randomized_factors
       member do
         get :csv_export
         get :pdf_export
+        get :translation_template_export
         get :export_responses
         get :move
         get :copy

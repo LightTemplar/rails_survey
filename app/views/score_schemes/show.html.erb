@@ -94,6 +94,6 @@
     </div>
   </div>
   <div class="text-center">
-    <dir-pagination-controls max-size="maxNumOfLinks" direction-links="true" boundary-links="true" on-page-change="getScoreUnits(newPageNumber)"></dir-pagination-controls>
+    <dir-pagination-controls max-size="maxNumOfLinks" direction-links="true" boundary-links="true" template-url="<%= asset_path('dirPaginationTemplate.html')%>" on-page-change="getScoreUnits(newPageNumber)"></dir-pagination-controls>
   </div>
 </div>

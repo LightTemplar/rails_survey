@@ -19,10 +19,10 @@
 #  instructions                     :text             default("")
 #  child_update_count               :integer          default(0)
 #  grid_id                          :integer
-#  first_in_grid                    :boolean          default(FALSE)
 #  instrument_version_number        :integer          default(-1)
 #  section_id                       :integer
 #  critical                         :boolean
+#  number_in_grid                   :integer
 #
 
 class Question < ActiveRecord::Base
@@ -38,10 +38,10 @@ class Question < ActiveRecord::Base
   # different from has_many :skips, through: :options
   has_many :option_skips, through: :options, source: :skips
   has_many :skips, foreign_key: :question_identifier, primary_key: :question_identifier, dependent: :destroy
+  has_many :question_randomized_factors, dependent: :destroy
   delegate :project, to: :instrument
   before_save :update_instrument_version, if: proc { |question| question.changed? && !question.child_update_count_changed? }
   before_save :update_question_translation, if: proc { |question| question.text_changed? }
-  before_save :update_first_in_grid, if: proc { |question| question.first_in_grid_changed? }
   after_save :record_instrument_version
   before_destroy :update_instrument_version
   after_update :update_dependent_records
@@ -78,7 +78,7 @@ class Question < ActiveRecord::Base
     update_columns(child_update_count: option_count)
   end
 
-  def has_options?
+  def options?
     !options.empty?
   end
 
@@ -90,7 +90,7 @@ class Question < ActiveRecord::Base
     options.select { |option| !option.special }
   end
 
-  def has_non_special_options?
+  def non_special_options?
     !non_special_options.empty?
   end
 
@@ -99,14 +99,14 @@ class Question < ActiveRecord::Base
   end
 
   def instrument_version
-    if instrument && (read_attribute(:instrument_version_number) == -1)
+    if instrument && (read_attribute(:instrument_version_number).nil? || read_attribute(:instrument_version_number) == -1)
       instrument.current_version_number
     else
       read_attribute(:instrument_version_number)
     end
   end
 
-  def has_other?
+  def other?
     Settings.question_with_other.include? question_type
   end
 
@@ -141,13 +141,13 @@ class Question < ActiveRecord::Base
     (question_type == 'SELECT_MULTIPLE') || (question_type == 'SELECT_MULTIPLE_WRITE_OTHER')
   end
 
-  def update_first_in_grid
-    if first_in_grid
-      questions_in_grid = Question.where('grid_id = ?', grid_id)
-      questions_in_grid.where.not(id: id).each do |question|
-        question.update_attribute(:first_in_grid, false)
-      end
-    end
+  def grid_labels
+    grid.grid_labels if grid
+  end
+
+  def optionable?
+    return !grid_labels.empty? if grid
+    options?
   end
 
   private

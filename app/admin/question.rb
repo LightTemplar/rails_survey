@@ -4,6 +4,7 @@ ActiveAdmin.register Question do
                 :number_in_instrument, :follow_up_position, :reg_ex_validation_message, :identifies_survey, :instructions
   config.per_page = 10
   config.sort_order = 'id_asc'
+  config.clear_action_items!
 
   sidebar 'Question Associations', only: :show do
     ul do
@@ -22,7 +23,7 @@ ActiveAdmin.register Question do
     actions
   end
 
-  show do |question|
+  show do |_question|
     attributes_table do
       row :id
       row (:text) { |qst| raw(qst.text) }
@@ -60,5 +61,4 @@ ActiveAdmin.register Question do
     end
     f.actions
   end
-
 end

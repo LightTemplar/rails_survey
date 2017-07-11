@@ -1,9 +1,0 @@
-.row
-  .col-md-8
-  .col-md-4
-    -if current_user && current_user.wiki_editor?
-      = link_to "new page" , new_wiki_page_path ,    :class => "btn , btn-info edit_link"
-.row
-  -@pages.each do |page|
-    .col-md-4
-      = link_to page.name , wiki_page_path(page.name) , :class => :page_link

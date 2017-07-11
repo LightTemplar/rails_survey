@@ -20,6 +20,7 @@
 #  critical_message        :text
 #  roster                  :boolean          default(FALSE)
 #  roster_type             :string(255)
+#  scorable                :boolean          default(FALSE)
 #
 
 require "spec_helper"

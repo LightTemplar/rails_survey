@@ -1,0 +1,2 @@
+class RandomizedOptionPolicy < InstrumentPolicy
+end

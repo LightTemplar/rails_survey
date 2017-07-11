@@ -1,14 +1,14 @@
-App.controller 'GridsCtrl', ['$scope', 'Grid', 'Question', 'Instrument', 'Option', 'GridLabel', '$filter',
-  ($scope, Grid, Question, Instrument, Option, GridLabel, $filter) ->
+App.controller 'GridsCtrl', ['$scope', 'Grid', 'Question', 'Instrument', 'GridLabel', ($scope, Grid, Question, Instrument, GridLabel) ->
     $scope.init = (project_id, instrument_id) ->
       $scope.project_id = project_id
       $scope.instrument_id = instrument_id
       $scope.displayNewTemplate = false
       $scope.gridQuestionTypes = ['SELECT_ONE', 'SELECT_MULTIPLE']
       $scope.grids = Grid.query({"project_id": project_id, "instrument_id": instrument_id})
-      $scope.instruments = Instrument.query({"project_id": project_id}, -> $scope.getInstrument())
+      $scope.instrument = Instrument.get({"project_id": project_id, "id": instrument_id})
 
     $scope.newGrid = ->
+      $scope.edit_grid = null
       $scope.displayNewTemplate = !$scope.displayNewTemplate
       $scope.grid = new Grid()
       $scope.grid.instrument_id = $scope.instrument_id
@@ -50,68 +50,10 @@ App.controller 'GridsCtrl', ['$scope', 'Grid', 'Question', 'Instrument', 'Option
           alert "Failed to update grid"
       )
 
-    $scope.newQuestion = (grid) ->
-      $scope.current_grid = grid
-      question = new Question()
-      $scope.questions = Question.query({
-          "project_id": $scope.project_id,
-          "instrument_id": $scope.instrument_id,
-          "grid_id": grid.id
-        },
-        -> $scope.assignQuestionAttributes(question, grid))
-
-    $scope.assignQuestionAttributes = (question, grid) ->
-      if $scope.questions.length > 0
-        question.number_in_instrument = $scope.questions[$scope.questions.length - 1].number_in_instrument + 1
+    $scope.editGrid = (grid) ->
+      if ($scope.edit_grid == grid)
+        $scope.edit_grid = null
       else
-        question.number_in_instrument = $scope.instrument.previous_question_count + 1
-      question.text = "Placeholder question text"
-      question.question_identifier = "q_#{$scope.project_id}_#{$scope.instrument_id}_#{$scope.uniqueId()}"
-      question.question_type = grid.question_type
-      question.instrument_id = $scope.instrument_id
-      question.grid_id = grid.id
-      question.project_id = $scope.project_id
-      question.$save({},
-        (data, headers) -> $scope.saveQuestionSuccess(data, headers),
-        (result, headers) -> $scope.saveQuestionFailure(result, headers)
-      )
-
-    $scope.uniqueId = ->
-      new Date().getTime().toString(36).split("").reverse().join("")
-
-    $scope.saveQuestionSuccess = (data, headers) ->
-      $scope.$broadcast('GRID_CHANGED', data.id)
-      $scope.option_texts = GridLabel.query(
-        {"project_id": $scope.project_id, "instrument_id": $scope.instrument_id, "grid_id": $scope.current_grid.id},
-      -> $scope.createQuestionOptions(data.id)
-      )
-
-    $scope.saveQuestionFailure = (result, headers) ->
-      angular.forEach result.data.errors, (error, field) ->
-        alert error
-
-    $scope.getInstrument = ->
-      $scope.instrument = $filter('filter')($scope.instruments, id: $scope.instrument_id, true)[0]
-
-    $scope.createQuestionOptions = (question_id) ->
-      $scope.createOption(option_text, question_id, index + 1) for option_text, index in $scope.option_texts
-
-    $scope.createOption = (option_text, question_id, index) ->
-      option = new Option
-      option.project_id = $scope.project_id
-      option.instrument_id = $scope.instrument_id
-      option.question_id = question_id
-      option.text = option_text.label
-      option.number_in_question = index
-      option.$save({},
-        (data, headers) -> $scope.updateGridLabel(option_text, data),
-        (data, headers) -> alert "Failed to save option"
-      )
-
-    $scope.updateGridLabel = (grid_label, option) ->
-      grid_label.option_id = option.id
-      grid_label.project_id = $scope.project_id
-      grid_label.instrument_id = $scope.instrument_id
-      grid_label.$update({})
-
+        $scope.edit_grid = grid
+  
 ]

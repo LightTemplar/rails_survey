@@ -25,6 +25,9 @@ class Project < ActiveRecord::Base
   has_many :questions, through: :instruments
   has_many :images, through: :questions
   has_many :options, through: :questions
+  has_many :randomized_factors, through: :instruments
+  has_many :randomized_options, through: :randomized_factors
+  has_many :question_randomized_factors, through: :questions
   has_many :sections, through: :instruments
   has_many :project_device_users
   has_many :device_users, through: :project_device_users
@@ -37,6 +40,7 @@ class Project < ActiveRecord::Base
   has_many :score_schemes, through: :instruments
   has_many :score_units, through: :score_schemes
   has_many :option_scores, through: :score_units
+  has_many :score_unit_questions, through: :score_units
   has_many :scores, through: :score_schemes
   validates :name, presence: true, allow_blank: false
   validates :description, presence: true, allow_blank: true
@@ -64,7 +68,6 @@ class Project < ActiveRecord::Base
     response_count_per_period(:group_responses_by_hour).each do |hour, count|
       count_per_hour[hour.to_s] = count.inject { |sum, x| sum + x }
     end
-    puts sanitize(count_per_hour)
     array << sanitize(count_per_hour)
   end
 

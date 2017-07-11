@@ -26,10 +26,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def wiki_user
-    GollumRails::WikiUser.new(current_user.email, current_user.email, true) if user_signed_in?
-  end
-
   def authenticate_active_admin_user!
     authenticate_user!
     unless current_user.admin_user?
@@ -55,7 +51,7 @@ class ApplicationController < ActionController::Base
     request_path = request.fullpath.split('/')
     if request_path[1] == 'api'
       redirect_to request.referrer, status: 303
-    elsif request.fullpath == root_path || request.fullpath == '/users/sign_in'
+    elsif request.fullpath == root_path || request.fullpath == user_session_path
       redirect_to request_roles_path
     else
       redirect_to (request.referrer || root_path)

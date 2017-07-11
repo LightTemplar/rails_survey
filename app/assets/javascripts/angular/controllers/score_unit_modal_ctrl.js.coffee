@@ -8,6 +8,7 @@ App.controller 'ScoreUnitModalCtrl', ['$scope', '$uibModalInstance', 'scoreUnit'
   $scope.questions = Question.query({
     'project_id': scoreUnit.project_id,
     'instrument_id': scoreUnit.instrument_id
+    'all': true
   } , ->
     angular.copy($scope.questions, $scope.all_questions)
     if $scope.scoreUnit.question_type?
@@ -35,7 +36,7 @@ App.controller 'ScoreUnitModalCtrl', ['$scope', '$uibModalInstance', 'scoreUnit'
       } , ->
         option_scores = []
         angular.forEach options, (option, index) ->
-          option_scores.push({label: option.text, option_id: option.id, value: '', question_id: option.question_id} )
+          option_scores.push({label: option.text || option.label, option_id: option.id, value: '', question_id: option.question_id, position: option.position} )
         $scope.scoreUnit.option_scores = option_scores
         $uibModalInstance.close($scope.scoreUnit)
       )

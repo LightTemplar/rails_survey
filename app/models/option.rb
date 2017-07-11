@@ -13,12 +13,14 @@
 #  instrument_version_number :integer          default(-1)
 #  special                   :boolean          default(FALSE)
 #  critical                  :boolean
+#  complete_survey           :boolean
 #
 
 class Option < ActiveRecord::Base
   include Translatable
   default_scope { order('special ASC, number_in_question ASC') }
   scope :special_options, -> { where(special: true) }
+  scope :regular, -> { where(special: false) }
   belongs_to :question
   delegate :instrument, to: :question, allow_nil: true
   delegate :project, to: :question
@@ -32,7 +34,6 @@ class Option < ActiveRecord::Base
   has_paper_trail
   acts_as_paranoid
   has_many :skips, dependent: :destroy
-  has_one :grid_label
 
   validates :text, presence: true, allow_blank: false
 
@@ -51,15 +52,6 @@ class Option < ActiveRecord::Base
 
   def to_s
     text
-  end
-
-  # Return grid_label text if option has grid_label
-  def text
-    if grid_label
-      grid_label.label
-    else
-      read_attribute(:text)
-    end
   end
 
   def instrument_version

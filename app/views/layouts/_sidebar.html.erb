@@ -103,7 +103,7 @@
   </li>
 
   <li>
-    <%= link_to '/sidekiq' do %>
+    <%= link_to sidekiq_path do %>
     <i class="md-group-work"></i>
     <span class="name">Sidekiq</span>
     <% end %>
@@ -116,12 +116,6 @@
     <% end %>
   </li>
 
-  <li>
-    <%= link_to '/wiki' do %>
-    <i class="md-pages"></i>
-    <span class="name">FAQ</span>
-    <% end %>
-  </li>
   <% end %>
 </ul>
 <% else %>

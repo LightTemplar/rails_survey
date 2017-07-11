@@ -28,7 +28,7 @@
         <tbody>
           <tr ng-repeat="scheme in score_schemes">
             <td>
-              <a href="/projects/<%= current_project.id %>/score_schemes/{{scheme.id}}">{{scheme.title}}</a>
+              <a href="{{baseUrl}}/projects/<%= current_project.id %>/score_schemes/{{scheme.id}}">{{scheme.title}}</a>
             </td>
             <td>{{scheme.instrument_id}}</td>
             <td>{{scheme.created_at | date:'short'}}</td>

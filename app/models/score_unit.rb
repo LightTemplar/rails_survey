@@ -11,14 +11,16 @@
 #  created_at      :datetime
 #  updated_at      :datetime
 #  score_type      :integer
+#  deleted_at      :datetime
 #
 
 class ScoreUnit < ActiveRecord::Base
-  belongs_to :score_scheme
+  belongs_to :score_scheme, touch: true
   has_many :score_unit_questions, dependent: :destroy
   has_many :questions, through: :score_unit_questions
   has_many :option_scores, dependent: :destroy
   has_many :raw_scores
+  acts_as_paranoid
   # Add new score_types to the end of the enum to maintain order
   enum score_type: [:single_select, :multiple_select, :multiple_select_sum, :range, :simple_search]
 

@@ -17,3 +17,7 @@ end
 child :images do
   extends 'api/child_templates/image'
 end
+
+child :question_randomized_factors do
+  extends 'api/templates/question_randomized_factor'
+end

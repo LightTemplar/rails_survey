@@ -46,7 +46,7 @@ module Api
         private
 
         def grid_label_params
-          params.require(:grid_label).permit(:label, :grid_id, :option_id)
+          params.require(:grid_label).permit(:label, :grid_id, :position)
         end
       end
     end

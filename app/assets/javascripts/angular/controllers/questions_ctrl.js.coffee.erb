@@ -6,6 +6,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', '$filter', 
   $scope.currentPaginationNumber = 1
   $scope.questionsPerPage = 10
   $scope.maxNumOfLinks = 10
+  $scope.fetchFromRemote = true
   $scope.toolBar = [
       ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'pre', 'quote'],
       ['justifyLeft', 'justifyCenter', 'justifyRight', 'indent', 'outdent'],
@@ -17,28 +18,34 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', '$filter', 
     $scope.project_id = project_id
     $scope.instrument_id = instrument_id
     $scope.getQuestionsPerPage(1)
-    $scope.instrument = Instrument.get({
-      'project_id': project_id
-      'id': instrument_id
-    } , ->
-      $scope.totalQuestions = $scope.instrument.question_count
-    )
+    $scope.getInstrument()
     $scope.allQuestions = Question.query({
       'project_id': project_id,
       'instrument_id': instrument_id
     } )
 
-  $scope.pagination = current: $scope.currentPaginationNumber
-
-  $scope.getQuestionsPerPage = (pageNumber) ->
-    $scope.currentPaginationNumber = pageNumber
-    $scope.questions = Question.query({
-      'project_id': $scope.project_id,
-      'instrument_id': $scope.instrument_id,
-      'page': pageNumber
-      } , ->
-        $scope.questions = $filter('orderBy')($scope.questions, 'number_in_instrument', false)
+  $scope.getInstrument = () ->
+    $scope.instrument = Instrument.get({
+      'project_id': $scope.project_id
+      'id': $scope.instrument_id
+    } , ->
+      # Exclude grid questions from the total count for pagination purposes
+      $scope.totalQuestions = $scope.instrument.non_grid_question_count
     )
+    
+  # Fetch page questions from server unless it is a new page
+  $scope.getQuestionsPerPage = (pageNumber) ->
+    if ($scope.fetchFromRemote)
+      $scope.currentPaginationNumber = pageNumber
+      $scope.questions = Question.query({
+        'project_id': $scope.project_id,
+        'instrument_id': $scope.instrument_id,
+        'page': pageNumber
+        } , ->
+          $scope.questions = $filter('orderBy')($scope.questions, 'number_in_instrument', false)
+      )
+    else
+      $scope.fetchFromRemote = true
 
   $scope.sortableOptions = {
     cursor: 'move',
@@ -59,20 +66,27 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', '$filter', 
     question.instrument_id = $scope.instrument_id
     question.question_identifier = "q_#{question.project_id}_#{question.instrument_id}_#{$scope.uniqueId()}"
     if currentQuestion == null
-        question.number_in_instrument = $scope.questions.length + 1
+        question.number_in_instrument = $scope.instrument.question_count + 1
         $scope.questions.push(question)
     else
         question.number_in_instrument = currentQuestion.number_in_instrument + 1
-        $scope.questions.splice($scope.questions.indexOf(currentQuestion) + 1, 0, question)
-    $scope.edit_question = question
-    indexOfChange = $scope.questions.indexOf(question)
-    for qst in $scope.questions
-        if $scope.questions.indexOf(qst) > indexOfChange
-            qst.number_in_instrument = qst.number_in_instrument + 1
+        if $scope.questions.length == $scope.questionsPerPage
+          $scope.fetchFromRemote = false
+          $scope.currentPaginationNumber = $scope.currentPaginationNumber + 1
+          $scope.totalQuestions = $scope.totalQuestions + 1
+          $scope.questions = [question]
+        else
+          $scope.questions.splice($scope.questions.indexOf(currentQuestion) + 1, 0, question)
+          indexOfChange = $scope.questions.indexOf(question)
+          for qst in $scope.questions
+              if $scope.questions.indexOf(qst) > indexOfChange
+                  qst.number_in_instrument = qst.number_in_instrument + 1
+        $scope.edit_question = question
 
   $scope.saveQuestionSuccess = (data, headers) ->
     $scope.$broadcast('SAVE_QUESTION', data.id)
     $scope.edit_question = null
+    $scope.getInstrument()
 
   $scope.saveQuestionFailure = (result, headers) ->
     angular.forEach result.data.errors, (error, field) ->
@@ -106,16 +120,20 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', '$filter', 
 
   $scope.deleteQuestion = (question) ->
     if confirm('Are you sure you want to delete this question?')
-      question.project_id = $scope.project_id
-      question.$delete({} ,
-        (data) ->
-          question.id = null
-        ,
-        (data) ->
-          alert 'Failed to delete question'
-        )
-      $scope.questions.splice($scope.questions.indexOf(question), 1)
-      $scope.updateQuestionNumbers()
+      if (question.id)
+        question.project_id = $scope.project_id
+        question.instrument_id = $scope.instrument_id
+        question.$delete({} ,
+          (data) ->
+            question.id = null
+          ,
+          (data) ->
+            alert 'Failed to delete question'
+          )
+        $scope.questions.splice($scope.questions.indexOf(question), 1)
+        $scope.updateQuestionNumbers()
+      else
+        $scope.questions.splice($scope.questions.indexOf(question), 1)
 
   $scope.uniqueId = ->
     new Date().getTime().toString(36).split('').reverse().join('')
@@ -130,7 +148,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', '$filter', 
     if question?
       $scope.allQuestions.slice(question.number_in_instrument, $scope.allQuestions.length)
 
-  $scope.questionTypes = ->
+  $scope.questionTypes = () ->
     <%= Settings.question_types %>
 
   $scope.questionTypesWithOptions = (questionType) ->
