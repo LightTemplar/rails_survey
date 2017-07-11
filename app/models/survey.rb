@@ -124,14 +124,15 @@ class Survey < ActiveRecord::Base
     sanitizer.sanitize(str)
   end
 
-  def write_short_row(file, export_id)
+  def write_short_row(export_id)
     validator = validation_identifier
-    CSV.open(file, 'a+') do |csv|
-      responses.each do |response|
-        csv << [validator, id, response.question_identifier, sanitize(versioned_question(response.question_identifier).try(:text)), response.text, option_labels(response), response.special_response, response.other_response]
-      end
+    responses.each do |response|
+      csv = [validator, id, response.question_identifier, sanitize(versioned_question(response.question_identifier).try(:text)), response.text, option_labels(response), response.special_response, response.other_response]
+      row_key = "short-row-#{id}-#{export_id}-#{response.id}"
+      $redis.rpush row_key, csv
+      $redis.rpush "short-keys-#{instrument.id}-#{export_id}", row_key
     end
-    decrement_export_count(export_id.to_s)
+    decrement_export_count("#{export_id}_short")
   end
 
   def validation_identifier
@@ -155,50 +156,50 @@ class Survey < ActiveRecord::Base
     responses.order("#{ord_attr} #{ord}").try(:first).try(ord.to_sym)
   end
 
-  def write_wide_row(file, export_id)
-    headers = get_headers(file)
-    CSV.open(file, 'a+') do |csv|
-      row = [id, uuid, device.identifier, device_label ? device_label : device.label, latitude, longitude, instrument.id, instrument_version_number, instrument.title, start_time, end_time]
+  def write_wide_row(export_id)
+    headers = instrument.wide_headers
+    row = [id, uuid, device.identifier, device_label ? device_label : device.label, latitude, longitude, instrument_id, instrument_version_number, instrument_title, start_time, end_time]
 
-      if metadata
-        metadata.each do |k, v|
-          key_index = headers.index { |h| h == k }
-          row[key_index] = v
-        end
+    if metadata
+      metadata.each do |k, v|
+        key_index = headers.index { |h| h == k }
+        row[key_index] = v
       end
-
-      responses.each do |response|
-        identifier_index = headers.index(response.question_identifier)
-        row[identifier_index] = response.text if identifier_index
-        short_qid_index = headers.index(response.question_identifier + '_short_qid')
-        row[short_qid_index] = response.question_id if short_qid_index
-        question_type_index = headers.index(response.question_identifier + '_question_type')
-        row[question_type_index] = versioned_question(response.question_identifier).try(:question_type) if question_type_index
-        special_identifier_index = headers.index(response.question_identifier + '_special')
-        row[special_identifier_index] = response.special_response if special_identifier_index
-        other_identifier_index = headers.index(response.question_identifier + '_other')
-        row[other_identifier_index] = response.other_response if other_identifier_index
-        label_index = headers.index(response.question_identifier + '_label')
-        row[label_index] = option_labels(response) if label_index
-        question_version_index = headers.index(response.question_identifier + '_version')
-        row[question_version_index] = response.question_version if question_version_index
-        question_text_index = headers.index(response.question_identifier + '_text')
-        row[question_text_index] = sanitize(versioned_question(response.question_identifier).try(:text)) if question_text_index
-        start_time_index = headers.index(response.question_identifier + '_start_time')
-        row[start_time_index] = response.time_started if start_time_index
-        end_time_index = headers.index(response.question_identifier + '_end_time')
-        row[end_time_index] = response.time_ended if end_time_index
-      end
-      device_user_id_index = headers.index('device_user_id')
-      device_user_username_index = headers.index('device_user_username')
-      device_user_ids = responses.pluck(:device_user_id).uniq.compact
-      unless device_user_ids.empty?
-        row[device_user_id_index] = device_user_ids.join(',')
-        row[device_user_username_index] = DeviceUser.find(device_user_ids).map(&:username).uniq.join(',')
-      end
-      csv << row
     end
-    decrement_export_count(export_id.to_s)
+
+    responses.each do |response|
+      identifier_index = headers.index(response.question_identifier)
+      row[identifier_index] = response.text if identifier_index
+      short_qid_index = headers.index(response.question_identifier + '_short_qid')
+      row[short_qid_index] = response.question_id if short_qid_index
+      question_type_index = headers.index(response.question_identifier + '_question_type')
+      row[question_type_index] = versioned_question(response.question_identifier).try(:question_type) if question_type_index
+      special_identifier_index = headers.index(response.question_identifier + '_special')
+      row[special_identifier_index] = response.special_response if special_identifier_index
+      other_identifier_index = headers.index(response.question_identifier + '_other')
+      row[other_identifier_index] = response.other_response if other_identifier_index
+      label_index = headers.index(response.question_identifier + '_label')
+      row[label_index] = option_labels(response) if label_index
+      question_version_index = headers.index(response.question_identifier + '_version')
+      row[question_version_index] = response.question_version if question_version_index
+      question_text_index = headers.index(response.question_identifier + '_text')
+      row[question_text_index] = sanitize(versioned_question(response.question_identifier).try(:text)) if question_text_index
+      start_time_index = headers.index(response.question_identifier + '_start_time')
+      row[start_time_index] = response.time_started if start_time_index
+      end_time_index = headers.index(response.question_identifier + '_end_time')
+      row[end_time_index] = response.time_ended if end_time_index
+    end
+    device_user_id_index = headers.index('device_user_id')
+    device_user_username_index = headers.index('device_user_username')
+    device_user_ids = responses.pluck(:device_user_id).uniq.compact
+    unless device_user_ids.empty?
+      row[device_user_id_index] = device_user_ids.join(',')
+      row[device_user_username_index] = DeviceUser.find(device_user_ids).map(&:username).uniq.join(',')
+    end
+    row_key = "wide-row-#{id}-#{export_id}-survey-#{id}"
+    $redis.rpush row_key, row
+    $redis.rpush "wide-keys-#{instrument_id}-#{export_id}", row_key
+    decrement_export_count("#{export_id}_wide")
   end
 
   def get_headers(file)
@@ -208,20 +209,20 @@ class Survey < ActiveRecord::Base
     @headers[file]
   end
 
-  def write_long_row(file, export_id)
-    headers = get_headers(file)
-    CSV .open(file, 'a+') do |csv|
-      responses.each do |response|
-        row = [response.question_identifier, "q_#{response.question_id}", instrument_id, response.instrument_version_number, response.question_version, instrument_title, id, response.survey_uuid, device_id, device_uuid, device_label, versioned_question(response.question_identifier).try(:question_type), sanitize(versioned_question(response.question_identifier).try(:text)), response.text, option_labels(response), response.special_response, response.other_response, response.time_started, response.time_ended, response.device_user.try(:id), response.device_user.try(:username)]
-        if metadata
-          metadata.each do |k, v|
-            row[headers.index(k)] = v if headers.index(k)
-          end
+  def write_long_row(export_id)
+    headers = instrument.long_headers
+    responses.each do |response|
+      row = [response.question_identifier, "q_#{response.question_id}", instrument_id, response.instrument_version_number, response.question_version, instrument_title, id, response.survey_uuid, device_id, device_uuid, device_label, versioned_question(response.question_identifier).try(:question_type), sanitize(versioned_question(response.question_identifier).try(:text)), response.text, option_labels(response), response.special_response, response.other_response, response.time_started, response.time_ended, response.device_user.try(:id), response.device_user.try(:username)]
+      if metadata
+        metadata.each do |k, v|
+          row[headers.index(k)] = v if headers.index(k)
         end
-        csv << row
       end
+      row_key = "long-row-#{id}-#{export_id}-#{response.id}"
+      $redis.rpush row_key, row
+      $redis.rpush "long-keys-#{instrument_id}-#{export_id}", row_key
     end
-    decrement_export_count(export_id.to_s)
+    decrement_export_count("#{export_id}_long")
   end
 
   def score

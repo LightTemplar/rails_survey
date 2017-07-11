@@ -75,7 +75,7 @@ class InstrumentsController < ApplicationController
   end
 
   def export_responses
-    @instrument = current_project.instruments.includes(surveys: [:responses]).where(id: params[:id]).try(:first)
+    @instrument = current_project.instruments.includes(:questions, surveys: [:responses]).where(id: params[:id]).try(:first)
     authorize @instrument
     export_id = @instrument.export_surveys
     unless @instrument.response_images.empty?

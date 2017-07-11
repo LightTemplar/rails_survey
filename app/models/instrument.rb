@@ -215,9 +215,15 @@ class Instrument < ActiveRecord::Base
     files = create_files
     export = ResponseExport.create(instrument_id: id, instrument_versions: survey_instrument_versions, short_format_url: files[0].path, long_format_url: files[1].path, wide_format_url: files[2].path)
     write_export_headers(files)
-    set_export_count(export.id.to_s, surveys.count * 3)
+    export_counter_by_format(export.id)
     write_export_rows(files, export.id)
     export.id
+  end
+
+  def export_counter_by_format(export_id)
+    export_formats.each do |format|
+      set_export_count("#{export_id}_#{format}", surveys.count)
+    end
   end
 
   def write_export_headers(files)
@@ -231,20 +237,26 @@ class Instrument < ActiveRecord::Base
 
   def write_export_rows(files, export_id)
     surveys.each do |survey|
-      SurveyExportWorker.perform_async(files[0].path, files[1].path, files[2].path, survey.uuid, export_id)
+      SurveyExportWorker.perform_async(survey.uuid, export_id)
     end
-    StatusWorker.perform_in(5.seconds, export_id)
+    files.each do |file|
+      StatusWorker.perform_in(10.seconds, export_id, file.path)
+    end
   end
 
   def create_files
     files = []
     root = File.join('files', 'exports').to_s
-    %w(short long wide).each do |format|
+    export_formats.each do |format|
       file = File.new(root + "/#{Time.now.to_i}_#{title}_#{format}.csv", 'a+')
       file.close
       files << file
     end
     files
+  end
+
+  def export_formats
+    %w(short long wide)
   end
 
   def short_headers
@@ -258,7 +270,6 @@ class Instrument < ActiveRecord::Base
   def wide_headers
     variable_identifiers = []
     question_identifier_variables = %w(_short_qid _question_type _label _special _other _version _text _start_time _end_time)
-    # TODO: cache
     questions.each do |question|
       variable_identifiers << question.question_identifier unless variable_identifiers.include? question.question_identifier
       question_identifier_variables.each do |variable|
@@ -282,21 +293,37 @@ class Instrument < ActiveRecord::Base
     end
   end
 
-  # def export_short(export_id)
-  #   header = %w(identifier survey_id question_identifier question_text response_text response_label special_response other_response)
-  #   $redis.lpush "sh-#{id}-#{export_id}", header
-  #   $redis.lpush "sk-#{id}-#{export_id}", "sh-#{id}-#{export_id}"
-  #   surveys.each do |survey|
-  #     validator = survey.validation_identifier
-  #     survey.responses.each do |response|
-  #       csv = [validator, survey.id, response.question_identifier, survey.sanitize(survey.versioned_question(response.question_identifier).try(:text)), response.text, survey.option_labels(response), response.special_response, response.other_response]
-  #       $redis.rpush "sr-#{id}-#{export_id}-#{response.id}", csv
-  #       $redis.rpush "sk-#{id}-#{export_id}", "sr-#{id}-#{export_id}-#{response.id}"
-  #     end
-  #   end
-  #   ret_val = $redis.lrange "sk-#{id}-#{export_id}", 0, -1
-  #   puts ret_val.inspect
-  # end
+  def fetch_csv_data(file, format, export_id)
+    data = []
+    keys = $redis.lrange "#{format}-keys-#{id}-#{export_id}", 0, -1
+    $redis.del "#{format}-keys-#{id}-#{export_id}"
+    keys.each do |key|
+      data_row = $redis.lrange key, 0, -1
+      data << data_row
+      $redis.del key
+    end
+    dump_csv_data(data, file)
+    complete_export(export_id, format)
+  end
+
+  def dump_csv_data(data, file)
+    CSV.open(file, 'a+') do |csv|
+      data.each do |row|
+        csv << row
+      end
+    end
+  end
+
+  def complete_export(export_id, format)
+    export = ResponseExport.find(export_id)
+    if format == 'short'
+      export.update(short_done: true)
+    elsif format == 'long'
+      export.update(long_done: true)
+    elsif format == 'wide'
+      export.update(wide_done: true)
+    end
+  end
 
   private
 
