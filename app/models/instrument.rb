@@ -280,8 +280,7 @@ class Instrument < ActiveRecord::Base
   end
 
   def metadata_keys
-    last_update = surveys.order('updated_at ASC').try(:last).try(:updated_at)
-    Rails.cache.fetch("survey-metadata-#{id}-#{last_update}", expires_in: 24.hours) do
+    Rails.cache.fetch("survey-metadata-#{id}-#{surveys.maximum('updated_at')}", expires_in: 24.hours) do
       m_keys = []
       surveys.each do |survey|
         next unless survey.metadata

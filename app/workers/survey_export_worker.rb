@@ -9,7 +9,7 @@ class SurveyExportWorker
   end
 
   def get_survey(survey_uuid)
-    key = Response.where(survey_uuid: survey_uuid).order('updated_at ASC').try(:last).try(:updated_at)
+    key = Response.where(survey_uuid: survey_uuid).maximum('updated_at')
     Rails.cache.fetch("survey-#{survey_uuid}-#{key}", expires_in: 24.hours) do
       Survey.includes(:responses).where(uuid: survey_uuid).try(:first)
     end
