@@ -124,19 +124,17 @@ class Survey < ActiveRecord::Base
     sanitizer.sanitize(str)
   end
 
-  # Params export_id of -1 (not a real export) is passed by a cache warmer
-  def write_short_row(export_id)
+  def write_short_row
     validator = validation_identifier
     responses.each do |response|
       csv = Rails.cache.fetch("w_s_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 24.hours) do
         [validator, id, response.question_identifier, sanitize(versioned_question(response.question_identifier).try(:text)), response.text, option_labels(response), response.special_response, response.other_response]
       end
-      next if export_id < 0
-      row_key = "short-row-#{id}-#{export_id}-#{response.id}"
+      row_key = "short-row-#{id}-#{instrument.response_export.id}-#{response.id}"
       $redis.rpush row_key, csv
-      $redis.rpush "short-keys-#{instrument.id}-#{export_id}", row_key
+      $redis.rpush "short-keys-#{instrument.id}-#{instrument.response_export.id}", row_key
     end
-    decrement_export_count("#{export_id}_short") if export_id > -1
+    decrement_export_count("#{instrument.response_export.id}_short")
   end
 
   def validation_identifier
@@ -160,7 +158,7 @@ class Survey < ActiveRecord::Base
     responses.order("#{ord_attr} #{ord}").try(:first).try(ord.to_sym)
   end
 
-  def write_wide_row(export_id)
+  def write_wide_row
     headers =
       Rails.cache.fetch("w_w_r_h-#{instrument_id}-#{instrument_version_number}", expires_in: 24.hours) do
         array = instrument.wide_headers
@@ -205,14 +203,13 @@ class Survey < ActiveRecord::Base
       row[device_user_id_index] = device_user_ids.join(',')
       row[device_user_username_index] = DeviceUser.find(device_user_ids).map(&:username).uniq.join(',')
     end
-    return if export_id < 0
-    row_key = "wide-row-#{id}-#{export_id}-survey-#{id}"
+    row_key = "wide-row-#{id}-#{instrument.response_export.id}-survey-#{id}"
     $redis.rpush row_key, row
-    $redis.rpush "wide-keys-#{instrument_id}-#{export_id}", row_key
-    decrement_export_count("#{export_id}_wide")
+    $redis.rpush "wide-keys-#{instrument_id}-#{instrument.response_export.id}", row_key
+    decrement_export_count("#{instrument.response_export.id}_wide")
   end
 
-  def write_long_row(export_id)
+  def write_long_row
     headers = Rails.cache.fetch("w_l_r_h-#{instrument_id}-#{instrument_version_number}", expires_in: 24.hours) do
       array = instrument.long_headers
       Hash[array.map.with_index.to_a]
@@ -226,12 +223,11 @@ class Survey < ActiveRecord::Base
           row[headers[k]] = v if headers[k]
         end
       end
-      next if export_id < 0
-      row_key = "long-row-#{id}-#{export_id}-#{response.id}"
+      row_key = "long-row-#{id}-#{instrument.response_export.id}-#{response.id}"
       $redis.rpush row_key, row
-      $redis.rpush "long-keys-#{instrument_id}-#{export_id}", row_key
+      $redis.rpush "long-keys-#{instrument_id}-#{instrument.response_export.id}", row_key
     end
-    decrement_export_count("#{export_id}_long") if export_id > -1
+    decrement_export_count("#{instrument.response_export.id}_long")
   end
 
   def score

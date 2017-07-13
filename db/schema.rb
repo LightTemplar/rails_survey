@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170706150734) do
+ActiveRecord::Schema.define(version: 20170713193530) do
 
   create_table "active_admin_comments", force: true do |t|
     t.string   "namespace"
@@ -169,6 +169,7 @@ ActiveRecord::Schema.define(version: 20170706150734) do
     t.boolean  "roster",                  default: false
     t.string   "roster_type"
     t.boolean  "scorable",                default: false
+    t.boolean  "auto_export_responses",   default: true
   end
 
   create_table "metrics", force: true do |t|
@@ -310,16 +311,13 @@ ActiveRecord::Schema.define(version: 20170706150734) do
   end
 
   create_table "response_exports", force: true do |t|
-    t.string   "long_format_url"
     t.boolean  "long_done",           default: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "project_id"
     t.integer  "instrument_id"
     t.text     "instrument_versions"
-    t.string   "wide_format_url"
     t.boolean  "wide_done",           default: false
-    t.string   "short_format_url"
     t.boolean  "short_done",          default: false
   end
 

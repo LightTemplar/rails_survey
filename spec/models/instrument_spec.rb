@@ -21,6 +21,7 @@
 #  roster                  :boolean          default(FALSE)
 #  roster_type             :string(255)
 #  scorable                :boolean          default(FALSE)
+#  auto_export_responses   :boolean          default(TRUE)
 #
 
 require "spec_helper"

@@ -1,5 +1,5 @@
 class ProjectsController < ApplicationController
-  after_action :verify_authorized, except: [:export_responses]
+  after_action :verify_authorized # , except: [:export_responses]
 
   def index
     @projects = current_user.projects
@@ -48,16 +48,16 @@ class ProjectsController < ApplicationController
     redirect_to projects_url
   end
 
-  def export_responses
-    export_id = current_project.export_responses
-    unless current_project.response_images.empty?
-      zipped_file = File.new(File.join('files', 'exports').to_s + "/#{Time.now.to_i}.zip", 'a+')
-      zipped_file.close
-      pictures_export = ResponseImagesExport.create(response_export_id: export_id, download_url: zipped_file.path)
-      ProjectImagesExportWorker.perform_async(current_project.id, zipped_file.path, pictures_export.id)
-    end
-    redirect_to project_response_exports_path(current_project)
-  end
+  # def export_responses
+  #   export_id = current_project.export_responses
+  #   unless current_project.response_images.empty?
+  #     zipped_file = File.new(File.join('files', 'exports').to_s + "/#{Time.now.to_i}.zip", 'a+')
+  #     zipped_file.close
+  #     pictures_export = ResponseImagesExport.create(response_export_id: export_id, download_url: zipped_file.path)
+  #     ProjectImagesExportWorker.perform_async(current_project.id, zipped_file.path, pictures_export.id)
+  #   end
+  #   redirect_to project_response_exports_path(current_project)
+  # end
 
   private
 

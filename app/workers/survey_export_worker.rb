@@ -1,11 +1,11 @@
 class SurveyExportWorker
   include Sidekiq::Worker
 
-  def perform(survey_uuid, export_id)
+  def perform(survey_uuid)
     survey = get_survey(survey_uuid)
-    survey.write_short_row(export_id)
-    survey.write_long_row(export_id)
-    survey.write_wide_row(export_id)
+    survey.write_short_row
+    survey.write_long_row
+    survey.write_wide_row
   end
 
   def get_survey(survey_uuid)

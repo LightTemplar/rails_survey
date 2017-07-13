@@ -67,12 +67,13 @@
           <th>ID</th>
           <th>Instrument</th>
           <th>Versions</th>
-          <th>Date</th>
-          <th>Long format</th>
-          <th>Wide format</th>
-          <th>Short format</th>
+          <th>Export Date</th>
+          <th>Long</th>
+          <th>Wide</th>
+          <th>Short</th>
           <th>Pictures</th>
-          <th>% Complete</th>
+          <th>Completion</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -85,25 +86,25 @@
             <%= link_to instrument_version, project_instrument_version_path(current_project, current_project.instruments.find(export.try(:instrument_id)).try(:id), instrument_version) %>
             <% end %>
           </td>
-          <td><%= export.created_at.strftime("%Y-%m-%d %I:%M%p") %></td>
+          <td><%= export.updated_at %></td>
           <td>
-            <% if export.long_done && export.long_format_url %>
-            <%= link_to 'long csv', instrument_responses_long_project_response_export_path(current_project, export.id) %>
-            <% elsif export.long_format_url && !export.long_done %>
+            <% if export.long_done %>
+            <%= link_to 'CSV', instrument_responses_long_project_response_export_path(current_project, export.id) %>
+          <% else %>
             Processing...
             <% end %>
           </td>
           <td>
-            <% if export.wide_done && export.wide_format_url %>
-            <%= link_to 'wide csv', instrument_responses_wide_project_response_export_path(current_project, export.id) %>
-            <% elsif export.wide_format_url && !export.wide_done %>
+            <% if export.wide_done %>
+            <%= link_to 'CSV', instrument_responses_wide_project_response_export_path(current_project, export.id) %>
+          <% else %>
             Processing...
             <% end %>
           </td>
           <td>
-            <% if export.short_done && export.short_format_url %>
-            <%= link_to 'short csv', instrument_responses_short_project_response_export_path(current_project, export.id) %>
-            <% elsif !export.short_done && export.short_format_url %>
+            <% if export.short_done %>
+            <%= link_to 'CSV', instrument_responses_short_project_response_export_path(current_project, export.id) %>
+          <% else %>
             Processing...
             <% end %>
           </td>
@@ -113,8 +114,11 @@
             <% end %>
           </td>
           <td>
-            <%= "#{ export.percent_complete(export.instrument) } %" %>
+            <%= "#{export.percent_complete} %" %>
           </td>
+          <th>
+            <%= link_to 'Re-export', export_responses_project_instrument_path(current_project, export.instrument), class: 'btn btn-primary' %>
+          </th>
         </tr>
         <% end %>
       </tbody>

@@ -154,9 +154,9 @@ RailsSurvey::Application.routes.draw do
     resources :graphs, only: [:index]
     resources :response_exports do
       member do
-        get :project_responses_long
-        get :project_responses_wide
-        get :project_responses_short
+        # get :project_responses_long
+        # get :project_responses_wide
+        # get :project_responses_short
         get :instrument_responses_long
         get :instrument_responses_wide
         get :instrument_responses_short
@@ -164,7 +164,7 @@ RailsSurvey::Application.routes.draw do
         get :instrument_response_images
       end
     end
-    get :export_responses
+    # get :export_responses
     get 'graphs/daily/' => 'graphs#daily_responses'
     get 'graphs/hourly/' => 'graphs#hourly_responses'
     resources :metrics do

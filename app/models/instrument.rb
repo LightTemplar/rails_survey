@@ -21,6 +21,7 @@
 #  roster                  :boolean          default(FALSE)
 #  roster_type             :string(255)
 #  scorable                :boolean          default(FALSE)
+#  auto_export_responses   :boolean          default(TRUE)
 #
 
 class Instrument < ActiveRecord::Base
@@ -37,7 +38,7 @@ class Instrument < ActiveRecord::Base
   has_many :responses, through: :surveys
   has_many :response_images, through: :responses
   has_many :translations, foreign_key: 'instrument_id', class_name: 'InstrumentTranslation', dependent: :destroy
-  has_many :response_exports
+  has_one :response_export
   has_many :sections, dependent: :destroy
   has_many :rules, dependent: :destroy
   has_many :grids, dependent: :destroy
@@ -211,48 +212,42 @@ class Instrument < ActiveRecord::Base
     end
   end
 
+  def response_export_counter(response_export)
+    export_formats.each do |format|
+      set_export_count("#{response_export.id}_#{format}", surveys.count)
+    end
+  end
+
+  # TODO: Optimize so as not to export ones with no changes
   def export_surveys
-    files = create_files
-    export = ResponseExport.create(instrument_id: id, instrument_versions: survey_instrument_versions, short_format_url: files[0].path, long_format_url: files[1].path, wide_format_url: files[2].path)
-    write_export_headers(files)
-    export_counter_by_format(export.id)
-    write_export_rows(files, export.id)
-    export.id
-  end
-
-  def export_counter_by_format(export_id)
-    export_formats.each do |format|
-      set_export_count("#{export_id}_#{format}", surveys.count)
+    unless response_export
+      ResponseExport.create(instrument_id: id, instrument_versions: survey_instrument_versions)
+      reload
     end
+    response_export.update_attributes(long_done: false, wide_done: false, short_done: false)
+    response_export_counter(response_export)
+    write_export_rows
+    # latest_record = responses.maximum('updated_at')
+    # if response_export
+    #   if response_export.updated_at < latest_record
+    #     response_export.update_attributes(long_done: false, wide_done: false, short_done: false)
+    #     response_export_counter(response_export)
+    #     write_export_rows
+    #   end
+    # else
+    #   export = ResponseExport.create(instrument_id: id, instrument_versions: survey_instrument_versions)
+    #   response_export_counter(export)
+    #   write_export_rows
+    # end
   end
 
-  def write_export_headers(files)
-    file_headers = { files[0] => short_headers, files[1] => long_headers, files[2] => wide_headers }
-    file_headers.each do |file, header|
-      CSV.open(file, 'wb') do |csv|
-        csv << header
-      end
-    end
-  end
-
-  def write_export_rows(files, export_id)
+  def write_export_rows
     surveys.each do |survey|
-      SurveyExportWorker.perform_async(survey.uuid, export_id)
+      SurveyExportWorker.perform_async(survey.uuid)
     end
-    files.each do |file|
-      StatusWorker.perform_in(10.seconds, export_id, file.path)
-    end
-  end
-
-  def create_files
-    files = []
-    root = File.join('files', 'exports').to_s
     export_formats.each do |format|
-      file = File.new(root + "/#{Time.now.to_i}_#{title}_#{format}.csv", 'a+')
-      file.close
-      files << file
+      StatusWorker.perform_in(10.seconds, response_export.id, format)
     end
-    files
   end
 
   def export_formats
@@ -292,35 +287,26 @@ class Instrument < ActiveRecord::Base
     end
   end
 
-  def fetch_csv_data(file, format, export_id)
+  def stringify_arrays(format)
     data = []
-    keys = $redis.lrange "#{format}-keys-#{id}-#{export_id}", 0, -1
-    $redis.del "#{format}-keys-#{id}-#{export_id}"
+    keys = $redis.lrange "#{format}-keys-#{id}-#{response_export.id}", 0, -1
+    $redis.del "#{format}-keys-#{id}-#{response_export.id}"
     keys.each do |key|
       data_row = $redis.lrange key, 0, -1
       data << data_row
       $redis.del key
     end
-    dump_csv_data(data, file)
-    complete_export(export_id, format)
+    $redis.set "#{id}-#{response_export.id}-#{format}", data.to_s
+    mark_export_as_complete(format)
   end
 
-  def dump_csv_data(data, file)
-    CSV.open(file, 'a+') do |csv|
-      data.each do |row|
-        csv << row
-      end
-    end
-  end
-
-  def complete_export(export_id, format)
-    export = ResponseExport.find(export_id)
+  def mark_export_as_complete(format)
     if format == 'short'
-      export.update(short_done: true)
+      response_export.update_columns(short_done: true)
     elsif format == 'long'
-      export.update(long_done: true)
+      response_export.update_columns(long_done: true)
     elsif format == 'wide'
-      export.update(wide_done: true)
+      response_export.update_columns(wide_done: true)
     end
   end
 
