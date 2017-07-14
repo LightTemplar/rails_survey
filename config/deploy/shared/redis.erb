@@ -1,6 +1,6 @@
-check process redis with pidfile /var/run/redis/redis-server.pid
-  start program = "/etc/init.d/redis-server start"
-  stop program = "/etc/init.d/redis-server stop"
+check process redis with pidfile /var/run/redis/redis-0.pid
+  start program = "/etc/init.d/redis-0 start"
+  stop program = "/etc/init.d/redis-0 stop"
   if 2 restarts within 3 cycles then timeout
   if totalmem > 2048 MB then alert
   if children > 255 for 5 cycles then stop
@@ -8,3 +8,26 @@ check process redis with pidfile /var/run/redis/redis-server.pid
   if failed host 127.0.0.1 port 6379 then restart
   if 5 restarts within 5 cycles then timeout
   group rails_survey-redis
+  
+check process redis with pidfile /var/run/redis/redis-1.pid
+  start program = "/etc/init.d/redis-1 start"
+  stop program = "/etc/init.d/redis-1 stop"
+  if 2 restarts within 3 cycles then timeout
+  if totalmem > 2048 MB then alert
+  if children > 255 for 5 cycles then stop
+  if cpu usage > 95% for 3 cycles then restart
+  if failed host 127.0.0.1 port 6380 then restart
+  if 5 restarts within 5 cycles then timeout
+  group rails_survey-redis
+    
+check process redis with pidfile /var/run/redis/redis-2.pid
+  start program = "/etc/init.d/redis-2 start"
+  stop program = "/etc/init.d/redis-2 stop"
+  if 2 restarts within 3 cycles then timeout
+  if totalmem > 2048 MB then alert
+  if children > 255 for 5 cycles then stop
+  if cpu usage > 95% for 3 cycles then restart
+  if failed host 127.0.0.1 port 6381 then restart
+  if 5 restarts within 5 cycles then timeout
+  group rails_survey-redis
+    
