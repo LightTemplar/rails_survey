@@ -43,11 +43,25 @@ class ResponseExport < ActiveRecord::Base
     file = Tempfile.new("#{instrument_id}-#{id}-#{format}")
     CSV.open(file, 'a+') do |csv|
       csv << csv_headers(format)
-      data.each do |row|
-        csv << row
+      if data
+        data.each do |row|
+          csv << row
+        end
+      else
+        instrument.export_surveys if instrument.surveys.count > 0
       end
     end
     file
+  end
+
+  # Re-export under the following circumstances:
+  # 1) Instrument has surveys but its record in Redis doesn't exist
+  # 2) Instrument responses have changed since the last export
+  def re_export?
+    return false if instrument.surveys.blank?
+    csv_data = $redis.get "#{instrument_id}-#{id}-wide"
+    return true if JSON.parse(csv_data).blank?
+    instrument.responses.maximum('updated_at') > updated_at
   end
 
   private

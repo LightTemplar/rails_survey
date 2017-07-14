@@ -73,7 +73,7 @@
           <th>Short</th>
           <th>Pictures</th>
           <th>Completion</th>
-          <th></th>
+          <th>Re-export</th>
         </tr>
       </thead>
       <tbody>
@@ -117,7 +117,9 @@
             <%= "#{export.percent_complete} %" %>
           </td>
           <th>
+            <% if export.re_export? %>
             <%= link_to 'Re-export', export_responses_project_instrument_path(current_project, export.instrument), class: 'btn btn-primary' %>
+            <% end %>
           </th>
         </tr>
         <% end %>

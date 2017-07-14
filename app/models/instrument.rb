@@ -218,27 +218,15 @@ class Instrument < ActiveRecord::Base
     end
   end
 
-  # TODO: Optimize so as not to export ones with no changes
   def export_surveys
     unless response_export
       ResponseExport.create(instrument_id: id, instrument_versions: survey_instrument_versions)
       reload
     end
+    return unless response_export.re_export?
     response_export.update_attributes(long_done: false, wide_done: false, short_done: false)
     response_export_counter(response_export)
     write_export_rows
-    # latest_record = responses.maximum('updated_at')
-    # if response_export
-    #   if response_export.updated_at < latest_record
-    #     response_export.update_attributes(long_done: false, wide_done: false, short_done: false)
-    #     response_export_counter(response_export)
-    #     write_export_rows
-    #   end
-    # else
-    #   export = ResponseExport.create(instrument_id: id, instrument_versions: survey_instrument_versions)
-    #   response_export_counter(export)
-    #   write_export_rows
-    # end
   end
 
   def write_export_rows
