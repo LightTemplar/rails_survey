@@ -1,5 +1,6 @@
 class StatusWorker
   include Sidekiq::Worker
+  sidekiq_options queue: 'status'
 
   def perform(export_id, format)
     export = ResponseExport.find(export_id)

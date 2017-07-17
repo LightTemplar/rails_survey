@@ -59,12 +59,21 @@ class ResponseExport < ActiveRecord::Base
   # 2) Instrument responses have changed since the last export
   def re_export?
     return false if instrument.surveys.blank?
-    csv_data = $redis.get "#{instrument_id}-#{id}-wide"
-    return true if JSON.parse(csv_data).blank?
+    return true if csv_blank?
     instrument.responses.maximum('updated_at') > updated_at
   end
 
   private
+
+  def csv_blank?
+    wide_csv = $redis.get "#{instrument_id}-#{id}-wide"
+    return true if JSON.parse(wide_csv).blank?
+    long_csv = $redis.get "#{instrument_id}-#{id}-long"
+    return true if JSON.parse(long_csv).blank?
+    short_csv = $redis.get "#{instrument_id}-#{id}-short"
+    return true if JSON.parse(short_csv).blank?
+    false
+  end
 
   def csv_data(format)
     data = $redis.get "#{instrument_id}-#{id}-#{format}"

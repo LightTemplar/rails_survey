@@ -1,5 +1,6 @@
 class SurveyExportWorker
   include Sidekiq::Worker
+  sidekiq_options queue: 'export'
 
   def perform(survey_uuid)
     survey = get_survey(survey_uuid)
