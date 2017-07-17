@@ -70,7 +70,7 @@ class Instrument < ActiveRecord::Base
   end
 
   def version_by_version_number(version_number)
-    Rails.cache.fetch("instruments-#{id}-#{version_number}", expires_in: 24.hours) do
+    Rails.cache.fetch("instruments-#{id}-#{version_number}", expires_in: 30.minutes) do
       InstrumentVersion.build(instrument_id: id, version_number: version_number)
     end
   end
@@ -263,7 +263,7 @@ class Instrument < ActiveRecord::Base
   end
 
   def metadata_keys
-    Rails.cache.fetch("survey-metadata-#{id}-#{surveys.maximum('updated_at')}", expires_in: 24.hours) do
+    Rails.cache.fetch("survey-metadata-#{id}-#{surveys.maximum('updated_at')}", expires_in: 30.minutes) do
       m_keys = []
       surveys.each do |survey|
         next unless survey.metadata

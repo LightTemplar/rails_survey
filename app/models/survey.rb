@@ -127,7 +127,7 @@ class Survey < ActiveRecord::Base
   def write_short_row
     validator = validation_identifier
     responses.each do |response|
-      csv = Rails.cache.fetch("w_s_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 24.hours) do
+      csv = Rails.cache.fetch("w_s_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 30.minutes) do
         [validator, id, response.question_identifier, sanitize(versioned_question(response.question_identifier).try(:text)), response.text, option_labels(response), response.special_response, response.other_response]
       end
       row_key = "short-row-#{id}-#{instrument.response_export.id}-#{response.id}"
@@ -143,13 +143,13 @@ class Survey < ActiveRecord::Base
   end
 
   def start_time
-    Rails.cache.fetch("survey-start-#{id}-#{ordered_response('time_started', 'ASC')}", expires_in: 24.hours) do
+    Rails.cache.fetch("survey-start-#{id}-#{ordered_response('time_started', 'ASC')}", expires_in: 30.minutes) do
       ordered_response('time_started', 'ASC')
     end
   end
 
   def end_time
-    Rails.cache.fetch("survey-end-#{id}-#{ordered_response('time_ended', 'DESC')}", expires_in: 24.hours) do
+    Rails.cache.fetch("survey-end-#{id}-#{ordered_response('time_ended', 'DESC')}", expires_in: 30.minutes) do
       ordered_response('time_ended', 'DESC')
     end
   end
@@ -160,7 +160,7 @@ class Survey < ActiveRecord::Base
 
   def write_wide_row
     headers =
-      Rails.cache.fetch("w_w_r_h-#{instrument_id}-#{instrument_version_number}", expires_in: 24.hours) do
+      Rails.cache.fetch("w_w_r_h-#{instrument_id}-#{instrument_version_number}", expires_in: 30.minutes) do
         array = instrument.wide_headers
         Hash[array.map.with_index.to_a]
       end
@@ -210,12 +210,12 @@ class Survey < ActiveRecord::Base
   end
 
   def write_long_row
-    headers = Rails.cache.fetch("w_l_r_h-#{instrument_id}-#{instrument_version_number}", expires_in: 24.hours) do
+    headers = Rails.cache.fetch("w_l_r_h-#{instrument_id}-#{instrument_version_number}", expires_in: 30.minutes) do
       array = instrument.long_headers
       Hash[array.map.with_index.to_a]
     end
     responses.each do |response|
-      row = Rails.cache.fetch("w_l_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 24.hours) do
+      row = Rails.cache.fetch("w_l_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 30.minutes) do
         [response.question_identifier, "q_#{response.question_id}", instrument_id, response.instrument_version_number, response.question_version, instrument_title, id, response.survey_uuid, device_id, device_uuid, device_label, versioned_question(response.question_identifier).try(:question_type), sanitize(versioned_question(response.question_identifier).try(:text)), response.text, option_labels(response), response.special_response, response.other_response, response.time_started, response.time_ended, response.device_user.try(:id), response.device_user.try(:username)]
       end
       if metadata
