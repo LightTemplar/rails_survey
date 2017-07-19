@@ -4,19 +4,26 @@ check process sidekiq_rails_survey0
 with pidfile "/var/www/rails_survey/shared/tmp/pids/sidekiq-0.pid"
 start program = "/usr/bin/sudo -u dmtg /bin/bash -c 'cd /var/www/rails_survey/current && ~/.rvm/bin/rvm default do bundle exec sidekiq  -P /var/www/rails_survey/shared/tmp/pids/sidekiq-0.pid'" with timeout 30 seconds
 stop program = "/usr/bin/sudo -u dmtg /bin/bash -c 'cd /var/www/rails_survey/current && ~/.rvm/bin/rvm default do bundle exec sidekiqctl stop /var/www/rails_survey/shared/tmp/pids/sidekiq-0.pid'" with timeout 20 seconds
-if totalmem > 1024.0 MB for 5 cycles then restart
+if totalmem > 512.0 MB for 5 cycles then restart
 group rails_survey-sidekiq
 
 check process sidekiq_rails_survey1
 with pidfile "/var/www/rails_survey/shared/tmp/pids/sidekiq-1.pid"
 start program = "/usr/bin/sudo -u dmtg /bin/bash -c 'cd /var/www/rails_survey/current && ~/.rvm/bin/rvm default do bundle exec sidekiq  -P /var/www/rails_survey/shared/tmp/pids/sidekiq-1.pid'" with timeout 30 seconds
 stop program = "/usr/bin/sudo -u dmtg /bin/bash -c 'cd /var/www/rails_survey/current && ~/.rvm/bin/rvm default do bundle exec sidekiqctl stop /var/www/rails_survey/shared/tmp/pids/sidekiq-1.pid'" with timeout 20 seconds
-if totalmem > 1024.0 MB for 5 cycles then restart
+if totalmem > 512.0 MB for 5 cycles then restart
 group rails_survey-sidekiq
 
 check process sidekiq_rails_survey2
 with pidfile "/var/www/rails_survey/shared/tmp/pids/sidekiq-2.pid"
 start program = "/usr/bin/sudo -u dmtg /bin/bash -c 'cd /var/www/rails_survey/current && ~/.rvm/bin/rvm default do bundle exec sidekiq  -P /var/www/rails_survey/shared/tmp/pids/sidekiq-2.pid'" with timeout 30 seconds
 stop program = "/usr/bin/sudo -u dmtg /bin/bash -c 'cd /var/www/rails_survey/current && ~/.rvm/bin/rvm default do bundle exec sidekiqctl stop /var/www/rails_survey/shared/tmp/pids/sidekiq-2.pid'" with timeout 20 seconds
-if totalmem > 1024.0 MB for 5 cycles then restart
+if totalmem > 512.0 MB for 5 cycles then restart
+group rails_survey-sidekiq
+
+check process sidekiq_rails_survey3
+with pidfile "/var/www/rails_survey/shared/tmp/pids/sidekiq-3.pid"
+start program = "/usr/bin/sudo -u dmtg /bin/bash -c 'cd /var/www/rails_survey/current && ~/.rvm/bin/rvm default do bundle exec sidekiq  -P /var/www/rails_survey/shared/tmp/pids/sidekiq-3.pid'" with timeout 30 seconds
+stop program = "/usr/bin/sudo -u dmtg /bin/bash -c 'cd /var/www/rails_survey/current && ~/.rvm/bin/rvm default do bundle exec sidekiqctl stop /var/www/rails_survey/shared/tmp/pids/sidekiq-3.pid'" with timeout 20 seconds
+if totalmem > 512.0 MB for 5 cycles then restart
 group rails_survey-sidekiq
