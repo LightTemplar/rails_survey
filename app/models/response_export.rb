@@ -11,6 +11,7 @@
 #  instrument_versions :text
 #  wide_done           :boolean          default(FALSE)
 #  short_done          :boolean          default(FALSE)
+#  completion          :decimal(5, 2)    default(0.0)
 #
 
 class ResponseExport < ActiveRecord::Base
@@ -19,7 +20,12 @@ class ResponseExport < ActiveRecord::Base
   belongs_to :instrument
   has_one :response_images_export, dependent: :destroy
 
-  def percent_complete
+  def completion
+    ResponseExportCompletionWorker.perform_in(1.second, id)
+    read_attribute(:completion)
+  end
+
+  def compute_completion
     total = instrument.surveys.count * 3.0
     long = instrument.get_export_count("#{id}_long")
     short = instrument.get_export_count("#{id}_short")
@@ -34,7 +40,7 @@ class ResponseExport < ActiveRecord::Base
     if percent >= 100 && !wide_done && !short_done && !long_done
       update_columns(short_done: true, long_done: true, wide_done: true)
     end
-    percent
+    update_column(:completion, percent)
   end
 
   def export_file(format)
@@ -64,8 +70,7 @@ class ResponseExport < ActiveRecord::Base
   end
 
   def done?(format)
-    return true if format && Sidekiq::Queue.new('status').size.zero? && percent_complete >= 100
-    false
+    format && completion >= 100
   end
 
   private

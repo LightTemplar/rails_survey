@@ -226,7 +226,7 @@ class Instrument < ActiveRecord::Base
     unless new_export
       return unless response_export.re_export?
     end
-    response_export.update_attributes(long_done: false, wide_done: false, short_done: false)
+    response_export.update_attributes(long_done: false, wide_done: false, short_done: false, completion: 0.0)
     response_export_counter(response_export)
     write_export_rows
   end
@@ -304,6 +304,7 @@ class Instrument < ActiveRecord::Base
     elsif format == 'wide'
       response_export.update_columns(wide_done: true)
     end
+    ResponseExportCompletionWorker.perform_async(response_export.id)
   end
 
   private
