@@ -88,21 +88,21 @@
           </td>
           <td><%= export.updated_at %></td>
           <td>
-            <% if export.long_done %>
+            <% if export.done?(export.long_done) %>
             <%= link_to 'CSV', instrument_responses_long_project_response_export_path(current_project, export.id) %>
           <% else %>
             Processing...
             <% end %>
           </td>
           <td>
-            <% if export.wide_done %>
+            <% if export.done?(export.wide_done) %>
             <%= link_to 'CSV', instrument_responses_wide_project_response_export_path(current_project, export.id) %>
           <% else %>
             Processing...
             <% end %>
           </td>
           <td>
-            <% if export.short_done %>
+            <% if export.done?(export.short_done) %>
             <%= link_to 'CSV', instrument_responses_short_project_response_export_path(current_project, export.id) %>
           <% else %>
             Processing...

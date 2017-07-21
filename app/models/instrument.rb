@@ -218,19 +218,24 @@ class Instrument < ActiveRecord::Base
     end
   end
 
-  def export_surveys
+  def export_surveys(new_export = false)
     unless response_export
       ResponseExport.create(instrument_id: id, instrument_versions: survey_instrument_versions)
       reload
     end
-    return unless response_export.re_export?
+    unless new_export
+      return unless response_export.re_export?
+    end
     response_export.update_attributes(long_done: false, wide_done: false, short_done: false)
     response_export_counter(response_export)
     write_export_rows
   end
 
   def write_export_rows
-    surveys.each do |survey|
+    instrument_surveys = Rails.cache.fetch("instrument-surveys-#{id}-#{surveys.maximum('updated_at')}", expires_in: 30.minutes) do
+      surveys
+    end
+    instrument_surveys.each do |survey|
       SurveyExportWorker.perform_async(survey.uuid)
     end
     export_formats.each do |format|
@@ -253,7 +258,10 @@ class Instrument < ActiveRecord::Base
   def wide_headers
     variable_identifiers = []
     question_identifier_variables = %w(_short_qid _question_type _label _special _other _version _text _start_time _end_time)
-    questions.each do |question|
+    instrument_questions = Rails.cache.fetch("instrument-questions-#{id}-#{questions.maximum('updated_at')}", expires_in: 30.minutes) do
+      questions
+    end
+    instrument_questions.each do |question|
       variable_identifiers << question.question_identifier unless variable_identifiers.include? question.question_identifier
       question_identifier_variables.each do |variable|
         variable_identifiers << question.question_identifier + variable unless variable_identifiers.include? question.question_identifier + variable

@@ -2,8 +2,8 @@ class ResponseExportsController < ApplicationController
   after_action :verify_authorized, except: [:index, :show, :instrument_responses_long, :instrument_responses_wide, :instrument_responses_short, :project_response_images, :instrument_response_images]
 
   def index
-    @project_exports = current_project.response_exports.order('created_at DESC').limit(10)
-    @instrument_exports = current_project.instrument_response_exports.take(30)
+    # @project_exports = current_project.response_exports
+    @instrument_exports = current_project.instrument_response_exports
   end
 
   def new

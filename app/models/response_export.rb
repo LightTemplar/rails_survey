@@ -63,6 +63,11 @@ class ResponseExport < ActiveRecord::Base
     instrument.responses.maximum('updated_at') > updated_at
   end
 
+  def done?(format)
+    return true if format && Sidekiq::Queue.new('status').size.zero? && percent_complete >= 100
+    false
+  end
+
   private
 
   def csv_blank?
