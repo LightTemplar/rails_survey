@@ -39,7 +39,7 @@ module RailsSurvey
     config.assets.initialize_on_precompile = false
     config.assets.precompile += %w(active_admin.js active_admin.css.scss)
     config.wiki_path = 'wiki.git'
-    config.cache_store = :redis_store, "#{ENV['REDIS_CACHE_URL']}/cache"
+    config.cache_store = :redis_store, "#{ENV['REDIS_CACHE_URL']}/cache", { expires_in: 6.hours }
     config.autoload_paths += Dir[Rails.root.join('app', 'scorers', '{*/}')]
     config.action_controller.include_all_helpers = false
   end
