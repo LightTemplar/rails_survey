@@ -42,6 +42,7 @@
 //= require dirPagination
 //= require textAngular-sanitize.min
 //= require textAngular.min
+//= require jquery-linedtextarea
 //= require_tree ./angular
 //= require_directory .
 

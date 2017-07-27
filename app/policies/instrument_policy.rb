@@ -44,7 +44,7 @@ class InstrumentPolicy < ApplicationPolicy
   def export_responses?
     export_access
   end
-  
+
   def translation_template_export?
     export_access
   end
@@ -74,6 +74,10 @@ class InstrumentPolicy < ApplicationPolicy
   end
 
   def questions?
+    write_access
+  end
+
+  def reorder?
     write_access
   end
 

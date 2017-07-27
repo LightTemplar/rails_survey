@@ -6,6 +6,7 @@
   - [export, 1]
   - [cache, 1]
   - [percentage, 1]
+  - [questions_reorder, 2]
 production:
   :concurrency: 2
   

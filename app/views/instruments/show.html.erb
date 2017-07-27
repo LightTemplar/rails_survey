@@ -4,7 +4,11 @@
   <div class="card-header">
     <%= link_to questions_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
     <i class="md-launch"></i>
-    Questions Editor
+    Individual Questions Editor
+    <% end %>
+    <%= link_to project_instrument_grids_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
+    <i class="md-view-list"></i>
+    Tabular Questions Editor
     <% end %>
     <%= link_to csv_export_project_instrument_path(@project, @instrument, format: :csv, filename: "#{@instrument.title}_#{@instrument.current_version_number}.csv"), class: 'btn btn-primary m-5' do %>
     <i class="md-cloud-download"></i>
@@ -21,10 +25,6 @@
     <%= link_to project_instrument_sections_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
     <i class="md-list"></i>
     Sections
-    <% end %>
-    <%= link_to project_instrument_grids_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-    <i class="md-view-list"></i>
-    Tables
     <% end %>
     <%= link_to project_instrument_randomized_factors_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
     <i class="md-view-list"></i>
@@ -49,6 +49,10 @@
     <%= link_to copy_questions_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
     <i class="md-content-copy"></i>
     Copy Questions
+    <% end %>
+    <%= link_to project_instrument_reorder_questions_path(current_project.id, @instrument.id), class: 'btn btn-primary m-5' do %>
+    <i class="md-unfold-more"></i>
+    Reorder Questions
     <% end %>
   </div>
 </div>

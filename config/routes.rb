@@ -99,21 +99,6 @@ RailsSurvey::Application.routes.draw do
     end
     resources :scores
     resources :instruments do
-      resources :versions, only: [:index, :show]
-      resources :instrument_translations do
-        member do
-          get :show_pdf
-        end
-        collection do
-          get :new_gt
-        end
-        collection do
-          post :import_translation
-        end
-      end
-      resources :sections
-      resources :grids
-      resources :randomized_factors
       member do
         get :csv_export
         get :pdf_export
@@ -125,6 +110,26 @@ RailsSurvey::Application.routes.draw do
         get :questions
         match :update_move, action: :update_move, via: [:patch, :put]
         match :update_copy, action: :update_copy, via: [:patch, :put]
+      end
+      resources :instrument_translations do
+        member do
+          get :show_pdf
+        end
+        collection do
+          get :new_gt
+        end
+        collection do
+          post :import_translation
+        end
+      end
+      resources :versions, only: [:index, :show]
+      resources :sections
+      resources :grids
+      resources :randomized_factors
+      resources :reorder_questions, only: [:index] do
+        collection do
+          post :reorder
+        end
       end
     end
 

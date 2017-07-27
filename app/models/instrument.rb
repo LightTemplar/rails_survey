@@ -307,6 +307,38 @@ class Instrument < ActiveRecord::Base
     ResponseExportCompletionWorker.perform_async(response_export.id)
   end
 
+  def reorder_display_text
+    sanitizer = Rails::Html::FullSanitizer.new
+    text = ''
+    questions.each do |question|
+      text << "#{question.question_identifier}\t#{question.number_in_instrument}\t#{sanitizer.sanitize(question.text).truncate(50)}\n"
+    end
+    text
+  end
+
+  def mass_question_reorder(q_str)
+    # Parse question identifiers from string parameter
+    reordered_questions = q_str.strip.split("\n")
+    question_identifiers = []
+    reordered_questions.each do |question_line|
+      question_identifiers << question_line.split("\t")[0]
+    end
+    # Keep valid question identifiers
+    db_question_identifiers = questions.pluck(:question_identifier)
+    real_qids = question_identifiers.select { |qid| db_question_identifiers.include?(qid) }
+    # Delete removed questions
+    db_question_identifiers.each do |qid|
+      unless real_qids.include?(qid)
+        questions.where(question_identifier: qid).try(:first).try(:destroy)
+      end
+    end
+    # Update positions of reordered questions
+    real_qids.each_with_index do |qid, index|
+      question = questions.where(question_identifier: qid).first
+      question.update_attribute(:number_in_instrument, index + 1) if question
+    end
+  end
+
   private
 
   def update_question_count

@@ -23,6 +23,7 @@
  *= require fontello/css/fontello
  *= require bootstrap3-wysihtml5.min
  *= require textAngular
+ *= require jquery-linedtextarea
  *= require graphs
  *= require instruments
  *= require grids
