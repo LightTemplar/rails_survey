@@ -1,0 +1,15 @@
+<h2><%= t "devise.invitations.new.header" %></h2>
+
+<%= form_for @user, url: send_invitation_admin_users_path do |f| %>
+<div class="row">
+  <div class="col-md-2">
+    <%= f.label :email, class: 'pull-right' %>
+  </div>
+  <div class="col-md-10">
+    <%= f.text_field :email, required: true, class: 'fg-line select form-control' %>
+  </div>
+</div>
+<div class="row m-5">
+  <%= f.button :submit, class: 'btn btn-success pull-right' %>
+</div>
+<% end %>

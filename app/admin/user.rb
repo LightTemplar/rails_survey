@@ -1,6 +1,27 @@
 ActiveAdmin.register User do
   permit_params :email, :password, :password_confirmation, :gauth_enabled, :gauth_tmp, :gauth_tmp_datetime, project_ids: [], role_ids: []
 
+  action_item :new_invitation, only: :index do
+    link_to 'Invite New User', new_user_invitation_path
+  end
+
+  collection_action :new_invitation do
+    @user = User.new
+    render 'new', layout: 'active_admin'
+  end
+
+  collection_action :send_invitation, method: :post do
+    @user = User.invite!(user_params, current_user)
+    if @user.errors.empty?
+      flash[:success] = 'User has been successfully invited.'
+      redirect_to admin_users_path
+    else
+      messages = @user.errors.full_messages.map { |msg| msg }.join
+      flash[:error] = 'Error: ' + messages
+      redirect_to new_user_invitation_path
+    end
+  end
+
   index do
     column :email
     column :current_sign_in_at

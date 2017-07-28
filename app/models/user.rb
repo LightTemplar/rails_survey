@@ -24,12 +24,20 @@
 #  gauth_enabled          :string(255)      default("f")
 #  gauth_tmp              :string(255)
 #  gauth_tmp_datetime     :datetime
+#  invitation_token       :string(255)
+#  invitation_created_at  :datetime
+#  invitation_sent_at     :datetime
+#  invitation_accepted_at :datetime
+#  invitation_limit       :integer
+#  invited_by_id          :integer
+#  invited_by_type        :string(255)
+#  invitations_count      :integer          default(0)
 #
 
 class User < ActiveRecord::Base
   attr_accessor :gauth_token
   include ComplexPassword
-  devise :google_authenticatable, :database_authenticatable, :recoverable, :rememberable, :trackable, :validatable, :timeoutable, :lockable
+  devise :invitable, :google_authenticatable, :database_authenticatable, :recoverable, :rememberable, :trackable, :validatable, :timeoutable, :lockable
   before_save :ensure_authentication_token
   after_create :set_default_role
   has_many :user_projects
@@ -44,9 +52,7 @@ class User < ActiveRecord::Base
   end
 
   def ensure_authentication_token
-    if authentication_token.blank?
-      self.authentication_token = generate_authentication_token
-    end
+    self.authentication_token = generate_authentication_token if authentication_token.blank?
   end
 
   def user?

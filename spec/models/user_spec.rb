@@ -24,6 +24,14 @@
 #  gauth_enabled          :string(255)      default("f")
 #  gauth_tmp              :string(255)
 #  gauth_tmp_datetime     :datetime
+#  invitation_token       :string(255)
+#  invitation_created_at  :datetime
+#  invitation_sent_at     :datetime
+#  invitation_accepted_at :datetime
+#  invitation_limit       :integer
+#  invited_by_id          :integer
+#  invited_by_type        :string(255)
+#  invitations_count      :integer          default(0)
 #
 
 require "spec_helper"
