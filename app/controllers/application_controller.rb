@@ -18,6 +18,10 @@ class ApplicationController < ActionController::Base
     session[:previous_url] || root_path
   end
 
+  def after_accept_path_for(_resource)
+    root_path
+  end
+
   def respond_to_ajax
     if request.xhr?
       respond_to do |format|

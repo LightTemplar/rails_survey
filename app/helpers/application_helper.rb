@@ -9,4 +9,11 @@ module ApplicationHelper
     end
     link_to(name, '#', class: "add_fields #{options[:class]}", data: { id: id, fields: fields.delete("\n") })
   end
+
+  def sanitized_base
+    return '' unless ENV['BASE_URL']
+    url = ENV['BASE_URL'].dup
+    url[0] = '' if url[0] == '/'
+    url
+  end
 end
