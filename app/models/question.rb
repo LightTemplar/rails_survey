@@ -134,19 +134,27 @@ class Question < ActiveRecord::Base
   end
 
   def select_one_variant?
-    (question_type == 'SELECT_ONE') || (question_type == 'SELECT_ONE_WRITE_OTHER')
+    %w(SELECT_ONE SELECT_ONE_WRITE_OTHER).include? question_type
   end
 
   def select_multiple_variant?
-    (question_type == 'SELECT_MULTIPLE') || (question_type == 'SELECT_MULTIPLE_WRITE_OTHER')
+    %w(SELECT_MULTIPLE SELECT_MULTIPLE_WRITE_OTHER).include? question_type
+  end
+
+  def list_of_boxes_variant?
+    %(LIST_OF_TEXT_BOXES LIST_OF_INTEGER_BOXES).include? question_type
   end
 
   def grid_labels
     grid.grid_labels if grid
   end
 
+  def grid_labels?
+    !grid_labels.empty?
+  end
+
   def optionable?
-    return !grid_labels.empty? if grid
+    return grid_labels? if grid
     options?
   end
 
