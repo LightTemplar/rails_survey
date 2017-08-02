@@ -150,7 +150,7 @@ class Question < ActiveRecord::Base
   end
 
   def grid_labels?
-    !grid_labels.empty?
+    !grid_labels.blank?
   end
 
   def optionable?
