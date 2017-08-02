@@ -24,4 +24,16 @@ class Grid < ActiveRecord::Base
       question.update_attribute(:question_type, question_type)
     end
   end
+
+  def select_one_variant?
+    %w(SELECT_ONE SELECT_ONE_WRITE_OTHER).include? question_type
+  end
+
+  def select_multiple_variant?
+    %w(SELECT_MULTIPLE SELECT_MULTIPLE_WRITE_OTHER).include? question_type
+  end
+
+  def list_of_boxes_variant?
+    %(LIST_OF_TEXT_BOXES LIST_OF_INTEGER_BOXES).include? question_type
+  end
 end
