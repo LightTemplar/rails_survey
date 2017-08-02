@@ -145,6 +145,10 @@ class Question < ActiveRecord::Base
     %(LIST_OF_TEXT_BOXES LIST_OF_INTEGER_BOXES).include? question_type
   end
 
+  def slider_variant?
+    %(SLIDER LABELED_SLIDER).include? question_type
+  end
+
   def grid_labels
     grid.grid_labels if grid
   end

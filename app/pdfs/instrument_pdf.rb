@@ -92,7 +92,7 @@ class InstrumentPdf
   end
 
   def draw_choices(question)
-    if question.non_special_options?
+    if question.non_special_options? && !question.slider_variant?
       question.non_special_options.each do |option|
         draw_choice(option)
       end
@@ -100,6 +100,8 @@ class InstrumentPdf
       question.grid_labels.each do |label|
         draw_choice(label)
       end
+    elsif question.slider_variant?
+      draw_slider(question)
     end
     draw_other(question) if question.other?
     move_down AFTER_OPTIONS_MARGIN
@@ -160,6 +162,25 @@ class InstrumentPdf
       move_down 200
     else
       move_down 50
+    end
+  end
+
+  def draw_slider(question)
+    left_pos = bounds.left + OPTION_LEFT_MARGIN
+    right_pos = bounds.right - OPTION_LEFT_MARGIN
+    step = (right_pos - left_pos) / 10
+    horizontal_line left_pos, right_pos, at: cursor - 10
+    0.upto(9) do |n|
+      draw_text (n + 1).to_s, at: [left_pos + (n * step), cursor - 5]
+    end
+    return unless question.question_type == 'LABELED_SLIDER'
+    move_down 10
+    cursor_pos = cursor - 5
+    width = (right_pos - left_pos) / question.non_special_options.count
+    question.non_special_options.each_with_index do |option, index|
+      bounding_box([left_pos + (width * index), cursor_pos], width: width) do
+        text option.text
+      end
     end
   end
 end
