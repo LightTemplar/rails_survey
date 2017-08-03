@@ -1,7 +1,7 @@
 module PdfUtils
   QUESTION_LEFT_MARGIN = 30
   QUESTION_NUMBER_MARGIN = 5
-  INSTRUCTION_QUESTION_MARGIN = 10
+  AFTER_INSTRUCTIONS_MARGIN = 10
   QUESTION_TEXT_MARGIN = 10
   AFTER_OPTIONS_MARGIN = 5
   MINIMUM_REMAINING_HEIGHT = 75
@@ -19,10 +19,10 @@ module PdfUtils
     move_down QUESTION_NUMBER_MARGIN
   end
 
-  def format_question_instructions(instructions)
+  def format_instructions(instructions)
     sanitizer = Rails::Html::FullSanitizer.new
     text sanitizer.sanitize(instructions), style: :italic
-    move_down INSTRUCTION_QUESTION_MARGIN unless instructions.blank?
+    move_down AFTER_INSTRUCTIONS_MARGIN unless instructions.blank?
   end
 
   def format_question_text(question_text)

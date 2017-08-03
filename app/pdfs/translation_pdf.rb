@@ -41,13 +41,13 @@ class TranslationPdf
   end
 
   def format_question(question)
+    format_instructions(@instrument_translation.translation_for(question.grid).try(:instructions)) if question.grid && question.number_in_grid == 1
     format_question_number(question)
     question_translation = @instrument_translation.translation_for(question)
-    if question_translation
-      format_question_instructions(question_translation.instructions)
-      format_question_text(question_translation.text)
-      format_question_choices(question, true)
-      pad_after_question(question)
-    end
+    return unless question_translation
+    format_instructions(question_translation.instructions)
+    format_question_text(question_translation.text)
+    format_question_choices(question, true)
+    pad_after_question(question)
   end
 end
