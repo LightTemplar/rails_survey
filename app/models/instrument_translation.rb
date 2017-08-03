@@ -36,7 +36,7 @@ class InstrumentTranslation < ActiveRecord::Base
     self.critical_message = critical_message_translation.text if critical_message_translation
     save
   end
-  
+
   def self.import(file_path)
     csv_data = CSV.read(file_path)
     instrument = Instrument.where(id: csv_data[0][1].to_i).try(:first)
@@ -68,9 +68,11 @@ class InstrumentTranslation < ActiveRecord::Base
     when Question then question_translations.where(question_id: object.id).try(:first)
     when Option then option_translations.where(option_id: object.id).try(:first)
     when Section then section_translations.where(section_id: object.id).try(:first)
+    when Grid then grid_translations.where(grid_id: object.id).try(:first)
+    when GridLabel then grid_label_translations.where(grid_label_id: object.id).try(:first)
     end
   end
-  
+
   def translation_for_child(object)
     case object
     when Question then question_translations.where(question_id: object.id).first_or_initialize
@@ -78,5 +80,4 @@ class InstrumentTranslation < ActiveRecord::Base
     when Section then section_translations.where(section_id: object.id).first_or_initialize
     end
   end
-
 end
