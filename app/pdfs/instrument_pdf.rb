@@ -37,9 +37,9 @@ class InstrumentPdf
   end
 
   def format_question(question)
+    format_instructions(question.grid.instructions) if question.grid && question.number_in_grid == 1
     format_question_number(question)
-    instructions_text = (question.grid && question.number_in_grid == 1 ? question.grid.instructions : question.instructions)
-    format_question_instructions(instructions_text)
+    format_instructions(question.instructions)
     format_question_text(question.text)
     format_question_choices(question)
     pad_after_question(question)
