@@ -1,4 +1,4 @@
-App.controller 'QuestionRandomizedFactorsCtrl', ['$scope', '$filter', 'QuestionRandomizedFactor', 'Instrument', ($scope, $filter, QuestionRandomizedFactor, Instrument) ->
+App.controller 'QuestionRandomizedFactorsCtrl', ['$scope', '$filter', 'QuestionRandomizedFactor', ($scope, $filter, QuestionRandomizedFactor) ->
   $scope.init = (project_id, instrument_id) ->
     $scope.project_id = project_id
     $scope.instrument_id = instrument_id
@@ -6,7 +6,6 @@ App.controller 'QuestionRandomizedFactorsCtrl', ['$scope', '$filter', 'QuestionR
   if $scope.question? 
     if $scope.question.question_randomized_factors?
       $scope.randomizedQuestionFactors = (angular.copy(factor, new QuestionRandomizedFactor) for factor in $scope.question.question_randomized_factors)
-    $scope.instrument = Instrument.get({'project_id': $scope.project_id, 'id': $scope.instrument_id })
         
   $scope.addRandomizedFactor = () ->
     $scope.randomizedQuestionFactors = [] if !$scope.randomizedQuestionFactors?
