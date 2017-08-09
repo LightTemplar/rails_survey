@@ -19,10 +19,6 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', '$filter', 
     $scope.instrument_id = instrument_id
     $scope.getQuestionsPerPage(1)
     $scope.getInstrument()
-    $scope.allQuestions = Question.query({
-      'project_id': project_id,
-      'instrument_id': instrument_id
-    } )
 
   $scope.getInstrument = () ->
     $scope.instrument = Instrument.get({
@@ -31,11 +27,11 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', '$filter', 
     } , ->
       # Exclude grid questions from the total count for pagination purposes
       $scope.totalQuestions = $scope.instrument.non_grid_question_count
+      $scope.allQuestions = $scope.instrument.question_identifiers
     )
     
   # Fetch page questions from server unless it is a new page
   $scope.getQuestionsPerPage = (pageNumber) ->
-    $location.search({page: pageNumber})
     if ($scope.fetchFromRemote)
       $scope.currentPaginationNumber = pageNumber
       $scope.questions = Question.query({
@@ -44,6 +40,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', '$filter', 
         'page': pageNumber
         } , ->
           $scope.questions = $filter('orderBy')($scope.questions, 'number_in_instrument', false)
+          $location.search({page: pageNumber})
       )
     else
       $scope.fetchFromRemote = true
