@@ -6,12 +6,15 @@ RailsSurvey::Application.routes.draw do
   end
   ActiveAdmin.routes(self)
 
+  concern :paginatable do
+    get '(page/:page)', action: :index, on: :collection, as: ''
+  end
   namespace :api, defaults: { format: 'json' } do
     namespace :v1 do
       namespace :frontend do
         resources :projects do
           resources :instruments, only: [:index, :show] do
-            resources :questions do
+            resources :questions, concerns: :paginatable do
               resources :question_translations, only: [:update]
               member do
                 post :copy
@@ -140,9 +143,6 @@ RailsSurvey::Application.routes.draw do
     resources :rules
     resources :device_users
     resources :responses
-    concern :paginatable do
-      get '(page/:page)', action: :index, on: :collection, as: ''
-    end
     resources :surveys, concerns: :paginatable do
       collection do
         get 'instrument_surveys/:instrument_id', action: :instrument_surveys, as: 'instrument'
