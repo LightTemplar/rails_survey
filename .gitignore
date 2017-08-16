@@ -23,6 +23,7 @@ config/environments/*.local.yml
 config/local_env.yml
 config/newrelic.yml
 config/deploy/production.rb
+config/private_key.pem
 
 # Ignore Rubymine files
 scopes/scope_settings.xml

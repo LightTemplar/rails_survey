@@ -49,7 +49,7 @@ class Instrument < ActiveRecord::Base
   has_many :randomized_factors, dependent: :destroy
   has_many :randomized_options, through: :randomized_factors
 
-  has_paper_trail on: [:update, :destroy]
+  has_paper_trail on: %i[update destroy]
   acts_as_paranoid
   before_save :update_question_count
   after_update :update_special_options
@@ -107,7 +107,7 @@ class Instrument < ActiveRecord::Base
     format << ['Version number:', current_version_number]
     format << ['Language:', language]
     format << ["\n"]
-    format << %w(number_in_instrument question_identifier question_type question_instructions question_text) + instrument_translation_languages
+    format << %w[number_in_instrument question_identifier question_type question_instructions question_text] + instrument_translation_languages
     questions.each do |question|
       format << [question.number_in_instrument, question.question_identifier, question.question_type, @sanitizer.sanitize(question.instructions), @sanitizer.sanitize(question.text)] + translations_for_object(question)
       question.options.each do |option|
@@ -241,23 +241,24 @@ class Instrument < ActiveRecord::Base
     export_formats.each do |format|
       StatusWorker.perform_in(10.seconds, response_export.id, format)
     end
+    BoxClientUploader.new.create_folder(title.gsub(/\s+/, '_'))
   end
 
   def export_formats
-    %w(short long wide)
+    %w[short long wide]
   end
 
   def short_headers
-    %w(identifier survey_id question_identifier question_text response_text response_label special_response other_response)
+    %w[identifier survey_id question_identifier question_text response_text response_label special_response other_response]
   end
 
   def long_headers
-    %w(qid short_qid instrument_id instrument_version_number question_version_number instrument_title survey_id survey_uuid device_id device_uuid device_label question_type question_text response response_labels special_response other_response response_time_started response_time_ended device_user_id device_user_username) + metadata_keys
+    %w[qid short_qid instrument_id instrument_version_number question_version_number instrument_title survey_id survey_uuid device_id device_uuid device_label question_type question_text response response_labels special_response other_response response_time_started response_time_ended device_user_id device_user_username] + metadata_keys
   end
 
   def wide_headers
     variable_identifiers = []
-    question_identifier_variables = %w(_short_qid _question_type _label _special _other _version _text _start_time _end_time)
+    question_identifier_variables = %w[_short_qid _question_type _label _special _other _version _text _start_time _end_time]
     instrument_questions = Rails.cache.fetch("instrument-questions-#{id}-#{questions.maximum('updated_at')}", expires_in: 30.minutes) do
       questions
     end
@@ -267,7 +268,7 @@ class Instrument < ActiveRecord::Base
         variable_identifiers << question.question_identifier + variable unless variable_identifiers.include? question.question_identifier + variable
       end
     end
-    %w(survey_id survey_uuid device_identifier device_label latitude longitude instrument_id instrument_version_number instrument_title survey_start_time survey_end_time device_user_id device_user_username) + metadata_keys + variable_identifiers
+    %w[survey_id survey_uuid device_identifier device_label latitude longitude instrument_id instrument_version_number instrument_title survey_start_time survey_end_time device_user_id device_user_username] + metadata_keys + variable_identifiers
   end
 
   def metadata_keys
@@ -294,6 +295,13 @@ class Instrument < ActiveRecord::Base
     end
     $redis.set "#{id}-#{response_export.id}-#{format}", data.to_s
     mark_export_as_complete(format)
+    upload_file_to_box(format)
+  end
+
+  def upload_file_to_box(format)
+    name = title.gsub(/\s+/, '_')
+    filename = "#{name}_#{format}_#{Time.now.strftime('%Y_%m_%d_%H_%M_%S_%p')}.csv"
+    BoxUploadWorker.perform_async(response_export.id, format, name, filename)
   end
 
   def mark_export_as_complete(format)
