@@ -9,13 +9,13 @@ module Api
           @instrument = current_project.instruments.find(params[:instrument_id])
           @page_num = params[:page]
           @questions = if params[:all]
-            @instrument.questions
-          elsif !@page_num.blank? && params[:grid_id].blank?
-            @instrument.questions.where(grid_id: nil).includes(:options, :option_skips, :images, :question_randomized_factors).page(@page_num).per(30)
-          elsif !params[:grid_id].blank?
-            @instrument.questions.where(grid_id: params[:grid_id])
-          else
-            @instrument.questions.where(grid_id: nil)
+                         @instrument.questions
+                       elsif !@page_num.blank? && params[:grid_id].blank?
+                         @instrument.questions.where(grid_id: nil).includes(:options, :option_skips, :images, :question_randomized_factors).page(@page_num).per(20)
+                       elsif !params[:grid_id].blank?
+                         @instrument.questions.where(grid_id: params[:grid_id])
+                       else
+                         @instrument.questions.where(grid_id: nil)
           end
         end
 
