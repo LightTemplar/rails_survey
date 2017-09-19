@@ -7,7 +7,7 @@
   <div class="row">
     <strong class="col-md-4">Translation Language:</strong>
     <span class="col-md-8">
-      <%= @instrument_translation.language %>
+      <%= Settings.languages.to_h.key(@instrument_translation.language) %>
     </span>
   </div>
   <div class="row">
