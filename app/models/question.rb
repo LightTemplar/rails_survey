@@ -55,8 +55,8 @@ class Question < ActiveRecord::Base
 
   amoeba do
     enable
-    include_field :options
-    include_field :translations
+    include_association :options
+    include_association :translations
     nullify :instrument_id
     nullify :number_in_instrument
     nullify :question_identifier
@@ -87,7 +87,7 @@ class Question < ActiveRecord::Base
   end
 
   def non_special_options
-    options.select { |option| !option.special }
+    options.reject(&:special)
   end
 
   def non_special_options?
@@ -134,11 +134,11 @@ class Question < ActiveRecord::Base
   end
 
   def select_one_variant?
-    %w(SELECT_ONE SELECT_ONE_WRITE_OTHER).include? question_type
+    %w[SELECT_ONE SELECT_ONE_WRITE_OTHER].include? question_type
   end
 
   def select_multiple_variant?
-    %w(SELECT_MULTIPLE SELECT_MULTIPLE_WRITE_OTHER).include? question_type
+    %w[SELECT_MULTIPLE SELECT_MULTIPLE_WRITE_OTHER].include? question_type
   end
 
   def list_of_boxes_variant?

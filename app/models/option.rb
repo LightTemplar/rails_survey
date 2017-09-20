@@ -39,7 +39,7 @@ class Option < ActiveRecord::Base
 
   amoeba do
     enable
-    include_field :translations
+    include_association :translations
     nullify :next_question
   end
 

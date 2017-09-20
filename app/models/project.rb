@@ -18,7 +18,7 @@ class Project < ActiveRecord::Base
   has_many :devices, through: :project_devices
   has_many :responses, through: :surveys
   has_many :response_images, through: :responses
-  has_many :user_projects
+  has_many :user_projects, dependent: :destroy
   has_many :users, through: :user_projects
   has_many :response_exports
   has_many :response_images_exports, through: :response_exports
@@ -150,7 +150,7 @@ class Project < ActiveRecord::Base
 
   def sanitize(hash)
     (0..23).each do |h|
-      hour = sprintf '%02d', h
+      hour = format '%02d', h
       hash[hour] = 0 unless hash.key?(hour)
     end
     hash
