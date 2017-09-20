@@ -1,5 +1,4 @@
 ActiveAdmin.register ApiKey do
-  menu :if => proc{ current_user.super_admin? }
   permit_params :access_token
 
   index do
@@ -8,7 +7,7 @@ ActiveAdmin.register ApiKey do
     actions
   end
 
-  show do |key|
+  show do |_key|
     attributes_table do
       row :id
       row :access_token

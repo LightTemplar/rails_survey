@@ -1,5 +1,4 @@
 ActiveAdmin.register DeviceUser do
-  scope_to :current_user, unless: proc{ current_user.super_admin? }
   permit_params :name, :username, :password, :password_confirmation, :active, device_ids: [], project_ids: []
 
   index do
@@ -46,8 +45,8 @@ ActiveAdmin.register DeviceUser do
       f.input :password, hint: 'Leave blank. Do not change.'
       f.input :password_confirmation
       f.input :active
-      f.input :projects, :as => :check_boxes
-      f.input :devices, :as => :check_boxes, member_label: :label
+      f.input :projects, as: :check_boxes
+      f.input :devices, as: :check_boxes, member_label: :label
     end
     f.actions
   end

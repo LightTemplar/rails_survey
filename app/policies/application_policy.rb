@@ -19,7 +19,7 @@ class ApplicationPolicy
   end
 
   def create?
-    @user.super_admin?
+    @user.admin_user?
   end
 
   def edit?
@@ -37,5 +37,4 @@ class ApplicationPolicy
   def destroy_all?
     create?
   end
-
 end
