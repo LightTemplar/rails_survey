@@ -27,7 +27,7 @@ App.controller 'QuestionsCtrl', ['$scope', 'Question', 'Instrument', '$filter', 
     } , ->
       # Exclude grid questions from the total count for pagination purposes
       $scope.totalQuestions = $scope.instrument.non_grid_question_count
-      $scope.allQuestions = $scope.instrument.question_identifiers
+      $scope.allQuestions = $scope.instrument.questions
     )
     
   # Fetch page questions from server unless it is a new page

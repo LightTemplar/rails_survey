@@ -25,6 +25,7 @@ class Option < ActiveRecord::Base
   delegate :instrument, to: :question, allow_nil: true
   delegate :project, to: :question
   has_many :translations, foreign_key: 'option_id', class_name: 'OptionTranslation', dependent: :destroy
+  has_many :skips, dependent: :destroy
   before_save :update_instrument_version, if: proc { |option| option.changed? }
   before_save :update_option_translation, if: proc { |option| option.text_changed? }
   before_destroy :update_instrument_version
@@ -33,13 +34,12 @@ class Option < ActiveRecord::Base
   after_save :check_parent_criticality
   has_paper_trail
   acts_as_paranoid
-  has_many :skips, dependent: :destroy
 
   validates :text, presence: true, allow_blank: false
 
   amoeba do
     enable
-    include_field :translations
+    include_association :translations
     nullify :next_question
   end
 

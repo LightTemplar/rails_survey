@@ -19,6 +19,7 @@ class Grid < ActiveRecord::Base
   has_many :grid_translations, dependent: :destroy
   after_save :update_question_types, if: proc { |grid| grid.question_type_changed? }
   acts_as_paranoid
+
   def update_question_types
     questions.each do |question|
       question.update_attribute(:question_type, question_type)
@@ -26,11 +27,11 @@ class Grid < ActiveRecord::Base
   end
 
   def select_one_variant?
-    %w(SELECT_ONE SELECT_ONE_WRITE_OTHER).include? question_type
+    %w[SELECT_ONE SELECT_ONE_WRITE_OTHER].include? question_type
   end
 
   def select_multiple_variant?
-    %w(SELECT_MULTIPLE SELECT_MULTIPLE_WRITE_OTHER).include? question_type
+    %w[SELECT_MULTIPLE SELECT_MULTIPLE_WRITE_OTHER].include? question_type
   end
 
   def list_of_boxes_variant?

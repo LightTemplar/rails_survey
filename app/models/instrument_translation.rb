@@ -25,6 +25,19 @@ class InstrumentTranslation < ActiveRecord::Base
   has_many :grid_translations, dependent: :destroy
   has_many :grid_label_translations, dependent: :destroy
 
+  # Used to migrate child translations that were not associated with an instrument_translation
+  def assign_old_translations
+    instrument.questions.each do |question|
+      question.translations.where(language: language).update_all(instrument_translation_id: id)
+    end
+    instrument.options.each do |option|
+      option.translations.where(language: language).update_all(instrument_translation_id: id)
+    end
+    instrument.sections.each do |section|
+      section.translations.where(language: language).update_all(instrument_translation_id: id)
+    end
+  end
+
   def deactive_language_translations
     InstrumentTranslation.where('id != ? AND language = ?', id, language).update_all(active: false)
   end

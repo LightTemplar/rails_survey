@@ -1,6 +1,7 @@
 App.controller 'SkipsCtrl', ['$scope', '$filter', 'Skip', 'Question', ($scope, $filter, Skip, Question) ->
 
-  $scope.skips = (angular.copy(skip, new Skip) for skip in $filter('filter')($scope.question.option_skips, option_id: $scope.option.id, true)) if $scope.question.option_skips?
+  if $scope.option
+    $scope.skips = (angular.copy(skip, new Skip) for skip in $filter('filter')($scope.question.option_skips, option_id: $scope.option.id, true)) if $scope.question.option_skips?
 
   currentQuestion = $filter('filter')($scope.questions, id: $scope.question_id, true)[0]
 
