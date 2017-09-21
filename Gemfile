@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 ruby '2.3.1'
-gem 'activeadmin', '~> 1.0.0.pre4'
+gem 'activeadmin', '~> 1.0.0'
 gem 'amoeba', '3.0.0'
 gem 'angularjs-rails', '~> 1.4.8'
 gem 'angular_rails_csrf', '2.0.0'
@@ -27,10 +27,11 @@ gem 'paranoia', '~> 2.0'
 gem 'prawn', '2.2.2'
 gem 'pundit', '1.1.0'
 gem 'rabl', '0.13.1'
-gem 'rails', '4.1.16'
+gem 'rails', '4.2.0'
 gem 'rails-html-sanitizer', '1.0.3'
 gem 'redis', '~> 3.3', '>= 3.3.1'
 gem 'redis-rails', '5.0.1'
+gem 'responders', '~> 2.0'
 gem 'rubyzip', '~> 1.1.2'
 gem 'sass-rails', '~> 4.0.0'
 gem 'seed_dump', '3.2.4'
@@ -52,6 +53,7 @@ group :production do
 end
 
 group :development do
+  gem 'web-console', '~> 2.0'
   gem 'better_errors', '2.1.1'
   gem 'binding_of_caller', '0.7.2'
   gem 'bullet', '5.4.2'
