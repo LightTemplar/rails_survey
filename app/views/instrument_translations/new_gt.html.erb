@@ -1,12 +1,5 @@
-<div class="block-header text-center text-capitalize">
-  <h2>
-    <i class="md-language c-indigo">
-      Create Translation for
-      <%= @instrument.title %>
-      using Google Translate
-    </i>
-  </h2>
-</div>
+<%= render partial: '/instruments/instrument_header', locals: {subtitle: 'create translation using Google Translate'} %>
+
 <div class="card">
   <div class="card-body card-padding">
     <%= form_for [@project, @instrument, @instrument_translation] do |f| %>

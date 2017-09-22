@@ -2,6 +2,14 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+body #content {
+  padding: 10px 0;
+}
+
+.block-header {
+  margin-bottom: 5px;
+}
+
 ol.questions {
   list-style: decimal;
   padding-left: 40px;

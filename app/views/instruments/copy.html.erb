@@ -1,18 +1,20 @@
-<div class="block-header text-center text-capitalize">
-  <h2><i class="md-content-copy c-indigo"> <%= @instrument.title %> </i></h2>
-</div>
+<%= render partial: 'instrument_header', locals: {subtitle: @instrument.title} %>
+
 <div class="card">
   <div class="card-body card-padding">
-    <p>Choose project to copy instrument, <i><%= @instrument.title %></i>, to:</p>
+    <p>Choose project to copy instrument,
+      <i><%= @instrument.title %></i>, to:</p>
     <%= form_for @instrument, url: update_copy_project_instrument_path(current_project, @instrument) do |f| %>
-        <% @projects.each do |project| %>
-            <% unless project == current_project %>
-                <%= radio_button_tag(:end_project, project.id) %> <span class="m-10"></span>
-                <%= label_tag(:end_project, project.name) %> </br>
-            <% end %>
-        <% end %>
-        <%= f.button :submit, class: 'btn btn-primary btn-large pull-right' %>
-        <div class="clearfix"></div>
-    <% end %>
-  </div>
+    <% @projects.each do |project| %>
+    <% unless project == current_project %>
+    <%= radio_button_tag(:end_project, project.id) %>
+    <span class="m-10"></span>
+    <%= label_tag(:end_project, project.name) %>
+  </br>
+  <% end %>
+  <% end %>
+  <%= f.button :submit, class: 'btn btn-primary btn-large pull-right' %>
+  <div class="clearfix"></div>
+  <% end %>
+</div>
 </div>

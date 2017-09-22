@@ -46,7 +46,6 @@ ActiveAdmin.register DeviceUser do
       f.input :password_confirmation
       f.input :active
       f.input :projects, as: :check_boxes
-      f.input :devices, as: :check_boxes, member_label: :label
     end
     f.actions
   end

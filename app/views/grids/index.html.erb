@@ -1,10 +1,5 @@
-<div class="block-header text-center text-capitalize">
-  <h2>Tables for instrument
-    <i class="md-grid-on c-indigo">
-      <%= @instrument.title %>
-    </i>
-  </h2>
-</div>
+<%= render partial: '/instruments/instrument_header', locals: {subtitle: 'tabular questions editor'} %>
+
 <div class="card" ng-controller="GridsCtrl" ng-init="init(<%= @project.id %>, <%= @instrument.id %>)">
   <div class="card-body card-padding">
     <div class="tab-content well" ng-repeat="grid in grids">

@@ -1,23 +1,34 @@
+<%= render partial: 'instrument_header', locals: {subtitle: @instrument.title} %>
+
 <div ng-controller="CopyQuestionsCtrl" ng-init="init(<%= @project.id %>, <%= @instrument.id %>)">
   <fieldset class="m-20">
-    <legend class="text-center text-capitalize"><strong>Instruments to copy questions to</strong></legend>
+    <legend class="text-center text-capitalize">
+      <strong>Instruments to copy questions to</strong>
+    </legend>
     <p class="text-muted">Check the instruments that you want to copy questions to:</p>
 
     <div class="form-group">
       <div ng-repeat="instrument in instruments">
         <label>
-          <input type="checkbox" ng-model="instrument.checked"><span class="m-l-10"></span> {{ instrument.title }}
+          <input type="checkbox" ng-model="instrument.checked">
+          <span class="m-l-10"></span>
+          {{ instrument.title }}
         </label>
       </div>
     </div>
 
-    <legend class="text-center text-capitalize"><strong>Questions to be copied</strong></legend>
-    <p class="text-muted">Check the questions that you want copied to the instruments checked above: </p>
+    <legend class="text-center text-capitalize">
+      <strong>Questions to be copied</strong>
+    </legend>
+    <p class="text-muted">Check the questions that you want copied to the instruments checked above:
+    </p>
 
     <div class="form-group">
       <div class="col-sm-6" ng-repeat="question in questions">
         <label>
-          <input type="checkbox" ng-model="question.checked"><span class="m-l-10"></span> {{ question.question_identifier }}
+          <input type="checkbox" ng-model="question.checked">
+          <span class="m-l-10"></span>
+          {{ question.question_identifier }}
         </label>
       </div>
     </div>

@@ -23,18 +23,16 @@
       <%= render 'layouts/header' %>
     </header>
 
-    <div>
-      <% flash.each do |key, msg| %>
-      <% if key == :alert or key == :notice %>
-      <div class="alert alert-<%= key == :alert ? 'danger' : 'success' %> alert-dismissible text-center" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-        <%= msg %>
-      </div>
-      <% end %>
-      <% end %>
+    <% flash.each do |key, msg| %>
+    <% if key == :alert or key == :notice %>
+    <div class="alert alert-<%= key == :alert ? 'danger' : 'success' %> alert-dismissible text-center" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <%= msg %>
     </div>
+    <% end %>
+    <% end %>
 
     <section id="main">
       <aside id="sidebar">

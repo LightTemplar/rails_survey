@@ -1,4 +1,5 @@
-<%= render 'instrument_header' %>
+<%= render partial: 'instrument_header', locals: {subtitle: 'questions editor'} %>
+
 <div class="card">
   <div ng-controller="QuestionsCtrl" ng-init="init(<%= @project.id %>, <%= @instrument.id %>)">
     <div class="card-header card-padding">

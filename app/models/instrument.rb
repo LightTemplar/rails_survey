@@ -49,14 +49,12 @@ class Instrument < ActiveRecord::Base
   has_many :randomized_factors, dependent: :destroy
   has_many :randomized_options, through: :randomized_factors
 
-  has_paper_trail on: [:update, :destroy]
+  has_paper_trail on: %i[update destroy]
   acts_as_paranoid
   before_save :update_question_count
   after_update :update_special_options
   validates :title, presence: true, allow_blank: false
   validates :project_id, presence: true, allow_blank: false
-
-  @sanitizer = Rails::Html::FullSanitizer.new
 
   def update_special_options
     if special_options != special_options_was
@@ -102,14 +100,15 @@ class Instrument < ActiveRecord::Base
   end
 
   def export(format)
+    sanitizer = Rails::Html::FullSanitizer.new
     format << ['Instrument id:', id]
     format << ['Instrument title:', title]
     format << ['Version number:', current_version_number]
     format << ['Language:', language]
     format << ["\n"]
-    format << %w(number_in_instrument question_identifier question_type question_instructions question_text) + instrument_translation_languages
+    format << %w[number_in_instrument question_identifier question_type question_instructions question_text] + instrument_translation_languages
     questions.each do |question|
-      format << [question.number_in_instrument, question.question_identifier, question.question_type, @sanitizer.sanitize(question.instructions), @sanitizer.sanitize(question.text)] + translations_for_object(question)
+      format << [question.number_in_instrument, question.question_identifier, question.question_type, sanitizer.sanitize(question.instructions), sanitizer.sanitize(question.text)] + translations_for_object(question)
       question.options.each do |option|
         format << ['', '', '', "Option for question #{question.question_identifier}", option.text] + translations_for_object(option)
         if option.next_question
@@ -143,10 +142,11 @@ class Instrument < ActiveRecord::Base
   end
 
   def translations_for_object(obj)
+    sanitizer = Rails::Html::FullSanitizer.new
     text_translations = []
     obj.translations.each do |translation|
       if instrument_translation_languages.include? translation.language
-        text_translations << @sanitizer.sanitize(translation.text)
+        text_translations << sanitizer.sanitize(translation.text)
       end
     end
     text_translations
@@ -190,25 +190,26 @@ class Instrument < ActiveRecord::Base
   end
 
   def generate_row(csv)
+    sanitizer = Rails::Html::FullSanitizer.new
     csv << ['instrument_id', id]
     csv << ['translation_language_iso_code', '', 'Enter language ISO 639-1 code in column 2']
     csv << ['language_alignment', '', 'Enter left in column 2 if words in the language are read left-to-right or right if they are read right-to-left']
-    csv << ['instrument_title', @sanitizer.sanitize(title), '', 'Enter instrument_title translation in column 3']
-    csv << ['instrument_critical_message', @sanitizer.sanitize(critical_message), '', 'Enter critical message translation in column 3']
+    csv << ['instrument_title', sanitizer.sanitize(title), '', 'Enter instrument_title translation in column 3']
+    csv << ['instrument_critical_message', sanitizer.sanitize(critical_message), '', 'Enter critical message translation in column 3']
     csv << ['']
     csv << ['question_identifier',	'question_text',	'Enter question_text translations in this column',	'instructions',	'Enter instructions translations in this column',	'reg_ex_validation_message',	'Enter reg_ex_validation_message translations in this column']
     questions.each do |question|
-      csv << [question.question_identifier, @sanitizer.sanitize(question.text), '', @sanitizer.sanitize(question.instructions), '', @sanitizer.sanitize(question.reg_ex_validation_message), '']
+      csv << [question.question_identifier, sanitizer.sanitize(question.text), '', sanitizer.sanitize(question.instructions), '', sanitizer.sanitize(question.reg_ex_validation_message), '']
     end
     csv << ['']
     csv << ['option_id',	'option_text',	'Enter option_text translation in this column']
     options.regular.each do |option|
-      csv << [option.id, @sanitizer.sanitize(option.text), '']
+      csv << [option.id, sanitizer.sanitize(option.text), '']
     end
     csv << ['']
     csv << ['section_id',	'section_title_text',	'Enter section_title_text translation in this column']
     sections.each do |section|
-      csv << [section.id, @sanitizer.sanitize(section.title), '']
+      csv << [section.id, sanitizer.sanitize(section.title), '']
     end
   end
 
@@ -244,20 +245,20 @@ class Instrument < ActiveRecord::Base
   end
 
   def export_formats
-    %w(short long wide)
+    %w[short long wide]
   end
 
   def short_headers
-    %w(identifier survey_id question_identifier question_text response_text response_label special_response other_response)
+    %w[identifier survey_id question_identifier question_text response_text response_label special_response other_response]
   end
 
   def long_headers
-    %w(qid short_qid instrument_id instrument_version_number question_version_number instrument_title survey_id survey_uuid device_id device_uuid device_label question_type question_text response response_labels special_response other_response response_time_started response_time_ended device_user_id device_user_username) + metadata_keys
+    %w[qid short_qid instrument_id instrument_version_number question_version_number instrument_title survey_id survey_uuid device_id device_uuid device_label question_type question_text response response_labels special_response other_response response_time_started response_time_ended device_user_id device_user_username] + metadata_keys
   end
 
   def wide_headers
     variable_identifiers = []
-    question_identifier_variables = %w(_short_qid _question_type _label _special _other _version _text _start_time _end_time)
+    question_identifier_variables = %w[_short_qid _question_type _label _special _other _version _text _start_time _end_time]
     instrument_questions = Rails.cache.fetch("instrument-questions-#{id}-#{questions.maximum('updated_at')}", expires_in: 30.minutes) do
       questions
     end
@@ -267,7 +268,7 @@ class Instrument < ActiveRecord::Base
         variable_identifiers << question.question_identifier + variable unless variable_identifiers.include? question.question_identifier + variable
       end
     end
-    %w(survey_id survey_uuid device_identifier device_label latitude longitude instrument_id instrument_version_number instrument_title survey_start_time survey_end_time device_user_id device_user_username) + metadata_keys + variable_identifiers
+    %w[survey_id survey_uuid device_identifier device_label latitude longitude instrument_id instrument_version_number instrument_title survey_start_time survey_end_time device_user_id device_user_username] + metadata_keys + variable_identifiers
   end
 
   def metadata_keys

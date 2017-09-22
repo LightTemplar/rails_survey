@@ -1,9 +1,4 @@
-<div class="block-header text-center text-capitalize">
-  <h2>
-    <i class="md-folder-shared c-indigo">Randomized Factors
-    </i>
-  </h2>
-</div>
+<%= render partial: '/instruments/instrument_header', locals: {subtitle: 'randomized factors'} %>
 
 <div class="card">
   <div ng-controller="RandomizedFactorsCtrl" ng-init="init(<%= current_project.id %>, <%= @instrument.id %>)">

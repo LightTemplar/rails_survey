@@ -1,11 +1,4 @@
-<div class="block-header text-center text-capitalize">
-  <h2>
-    <i class="md-language c-indigo">
-      Translations for
-      <%= @instrument.title %>
-    </i>
-  </h2>
-</div>
+<%= render partial: '/instruments/instrument_header', locals: {subtitle: 'translations'} %>
 
 <div class="card">
   <div class="card-header">

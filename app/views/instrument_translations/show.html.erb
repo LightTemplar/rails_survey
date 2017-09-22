@@ -1,9 +1,5 @@
+<%= render partial: '/instruments/instrument_header', locals: {subtitle: "#{Settings.languages.to_h.key(@instrument_translation.language)} translation"} %>
 <div class="block-header text-center">
-  <h1>
-    <i class="md-language c-indigo">
-      <%= link_to @instrument.title, project_instrument_path(current_project, @instrument) %>
-    </i>
-  </h1>
   <div class="row">
     <strong class="col-md-4">Translation Language:</strong>
     <span class="col-md-8">
