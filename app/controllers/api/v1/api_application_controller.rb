@@ -1,11 +1,11 @@
 module Api
   module V1
     class ApiApplicationController < ApplicationController
-      before_filter :restrict_access
-      before_filter :check_version_code
-      skip_before_filter :authenticate_user!
-      skip_before_filter :authenticate_user_from_token!
-      skip_before_filter :set_project
+      before_action :restrict_access
+      before_action :check_version_code
+      skip_before_action :authenticate_user!
+      skip_before_action :authenticate_user_from_token!
+      skip_before_action :set_project
 
       private
 

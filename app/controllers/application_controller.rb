@@ -3,10 +3,10 @@ class ApplicationController < ActionController::Base
   include ProjectsHelper
   include Pundit
   protect_from_forgery with: :exception
-  before_filter :authenticate_user_from_token!
-  before_filter :store_location
-  before_filter :authenticate_user!
-  before_filter :set_project
+  before_action :authenticate_user_from_token!
+  before_action :store_location
+  before_action :authenticate_user!
+  before_action :set_project
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   def after_sign_in_path_for(_resource_or_scope)
