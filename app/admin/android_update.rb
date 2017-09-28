@@ -1,5 +1,4 @@
 ActiveAdmin.register AndroidUpdate do
-  menu if: proc { current_user.super_admin? }
   permit_params :version, :name, :apk_update
 
   form do |f|

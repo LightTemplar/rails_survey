@@ -14,11 +14,9 @@ ActiveAdmin.register Survey do
   filter :uuid
   filter :device_label
   filter :metadata
-  actions :all, except: :new
 
   collection_action :calculate_completion_rates, method: :get do
-    redirect_to admin_instrument_surveys_path(params[:instrument_id]), notice: 'Completion rates recalculation successfully
-      started!'
+    redirect_to admin_instrument_surveys_path(params[:instrument_id]), notice: 'Completion rates recalculation successfully started!'
   end
 
   action_item :calculate_completion_rates, only: :index do

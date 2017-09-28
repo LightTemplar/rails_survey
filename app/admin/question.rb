@@ -1,7 +1,6 @@
 ActiveAdmin.register Question do
   belongs_to :instrument
-  permit_params :text, :question_type, :question_identifier, :instrument_id, :following_up_question_identifier, :reg_ex_validation,
-                :number_in_instrument, :follow_up_position, :reg_ex_validation_message, :identifies_survey, :instructions
+  permit_params :text, :question_type, :question_identifier, :instrument_id, :following_up_question_identifier, :reg_ex_validation, :number_in_instrument, :follow_up_position, :reg_ex_validation_message, :identifies_survey, :instructions
   config.per_page = 10
   config.sort_order = 'id_asc'
   config.clear_action_items!

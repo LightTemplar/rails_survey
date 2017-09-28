@@ -1,8 +1,7 @@
 ActiveAdmin.register ResponseExport do
   belongs_to :instrument
-  permit_params :long_format_url, :wide_format_url, :project_id, :instrument_id,
-                :instrument_versions, :long_done, :wide_done, :short_format_url, :short_done
-  actions :all, except: [:new, :edit]
+  permit_params :long_format_url, :wide_format_url, :project_id, :instrument_id, :instrument_versions, :long_done, :wide_done, :short_format_url, :short_done
+  actions :all, except: %i[new edit]
 
   member_action :download_exports, method: :get do
     redirect_to resource_path, notice: 'Download successful!'
@@ -41,7 +40,7 @@ ActiveAdmin.register ResponseExport do
       response_export = ResponseExport.find_by_id(params[:id])
       if response_export
         root = File.join('files', 'exports').to_s
-        file = File.new(root + "/#{Time.now.to_i}", "a+")
+        file = File.new(root + "/#{Time.now.to_i}", 'a+')
         Zip::OutputStream.open(file.path) do |zipfile|
           if response_export.long_format_url
             zipfile.put_next_entry("long_csv_#{Time.now.to_i}.csv")
@@ -54,11 +53,10 @@ ActiveAdmin.register ResponseExport do
             zipfile.print IO.read(wide_csv_data)
           end
         end
-        send_file file.path, :type => 'application/zip', :disposition => 'attachment', :filename => "exports_#{Time.now.to_i}.zip"
+        send_file file.path, type: 'application/zip', disposition: 'attachment', filename: "exports_#{Time.now.to_i}.zip"
         file.close
         DeleteFilesWorker.perform_in(2.minutes, file.path)
       end
     end
   end
-
 end

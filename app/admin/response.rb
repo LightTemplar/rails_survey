@@ -1,9 +1,7 @@
 ActiveAdmin.register Response do
   belongs_to :survey
-  permit_params :question_id, :text, :other_response, :special_response, :survey_uuid, :time_started, :time_ended,
-                :question_identifier, :uuid, :device_user_id, :question_version
+  permit_params :question_id, :text, :other_response, :special_response, :survey_uuid, :time_started, :time_ended, :question_identifier, :uuid, :device_user_id, :question_version
   config.sort_order = 'id_desc'
-  actions :all, except: :new
 
   index do
     selectable_column
@@ -37,5 +35,4 @@ ActiveAdmin.register Response do
     end
     f.actions
   end
-
 end
