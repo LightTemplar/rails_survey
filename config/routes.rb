@@ -10,10 +10,18 @@ RailsSurvey::Application.routes.draw do
     get '(page/:page)', action: :index, on: :collection, as: ''
   end
   namespace :api, defaults: { format: 'json' } do
+    namespace :v2 do
+      resources :question_sets do
+        resources :questions
+      end
+      resources :option_sets do
+        resources :options
+      end
+    end
     namespace :v1 do
       namespace :frontend do
         resources :projects do
-          resources :instruments, only: [:index, :show] do
+          resources :instruments, only: %i[index show] do
             resources :questions, concerns: :paginatable do
               resources :question_translations, only: [:update]
               member do
@@ -60,24 +68,24 @@ RailsSurvey::Application.routes.draw do
       end
 
       resources :projects do
-        resources :instruments, only: [:index, :show]
-        resources :device_users, only: [:index, :show]
-        resources :questions, only: [:index, :show]
-        resources :options, only: [:index, :show]
-        resources :randomized_factors, only: [:index, :show]
-        resources :randomized_options, only: [:index, :show]
-        resources :question_randomized_factors, only: [:index, :show]
-        resources :images, only: [:index, :show]
+        resources :instruments, only: %i[index show]
+        resources :device_users, only: %i[index show]
+        resources :questions, only: %i[index show]
+        resources :options, only: %i[index show]
+        resources :randomized_factors, only: %i[index show]
+        resources :randomized_options, only: %i[index show]
+        resources :question_randomized_factors, only: %i[index show]
+        resources :images, only: %i[index show]
         resources :surveys, only: [:create]
         resources :responses, only: [:create]
         resources :response_images, only: [:create]
-        resources :sections, only: [:index, :show]
-        resources :android_updates, only: [:index, :show]
-        resources :skips, only: [:index, :show]
+        resources :sections, only: %i[index show]
+        resources :android_updates, only: %i[index show]
+        resources :skips, only: %i[index show]
         resources :rules, only: [:index]
         resources :device_sync_entries, only: [:create]
-        resources :grids, only: [:index, :show]
-        resources :grid_labels, only: [:index, :show]
+        resources :grids, only: %i[index show]
+        resources :grid_labels, only: %i[index show]
         resources :rosters, only: [:create]
         resources :score_schemes, only: [:index]
         resources :score_units, only: [:index]
@@ -95,6 +103,12 @@ RailsSurvey::Application.routes.draw do
   root to: 'projects#index'
   get 'home/privacy'
   resources :projects do
+    member do
+      get :instrument_export
+    end
+    collection do
+      get :question_sets
+    end
     resources :score_schemes do
       member do
         get 'score/:survey_id', action: 'score', as: 'score'
@@ -111,8 +125,8 @@ RailsSurvey::Application.routes.draw do
         get :copy
         get :copy_questions
         get :questions
-        match :update_move, action: :update_move, via: [:patch, :put]
-        match :update_copy, action: :update_copy, via: [:patch, :put]
+        match :update_move, action: :update_move, via: %i[patch put]
+        match :update_copy, action: :update_copy, via: %i[patch put]
       end
       resources :instrument_translations do
         member do
@@ -125,7 +139,7 @@ RailsSurvey::Application.routes.draw do
           post :import_translation
         end
       end
-      resources :versions, only: [:index, :show]
+      resources :versions, only: %i[index show]
       resources :sections
       resources :grids
       resources :randomized_factors
@@ -134,10 +148,6 @@ RailsSurvey::Application.routes.draw do
           post :reorder
         end
       end
-    end
-
-    member do
-      get :instrument_export
     end
 
     resources :rules
@@ -152,7 +162,7 @@ RailsSurvey::Application.routes.draw do
       end
     end
     resources :notifications, only: [:index]
-    resources :devices, only: [:index, :show] do
+    resources :devices, only: %i[index show] do
       resources :device_sync_entries, only: [:index]
     end
     resources :response_images, only: [:show]
@@ -187,5 +197,5 @@ RailsSurvey::Application.routes.draw do
   get '/photos/:id/:style.:format', controller: 'api/v1/frontend/images', action: 'show'
   get '/pictures/:id/:style.:format', controller: 'response_images', action: 'show'
   get 'home/privacy'
-  resources :android_updates, only: [:index, :show]
+  resources :android_updates, only: %i[index show]
 end

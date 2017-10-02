@@ -59,6 +59,11 @@ class ProjectsController < ApplicationController
   #   redirect_to project_response_exports_path(current_project)
   # end
 
+  def question_sets
+    # @question_sets = QuestionSet.all
+    # authorize @question_sets
+  end
+
   private
 
   def project_params

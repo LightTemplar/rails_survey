@@ -14,6 +14,7 @@
 #  special                   :boolean          default(FALSE)
 #  critical                  :boolean
 #  complete_survey           :boolean
+#  option_set_id             :integer
 #
 
 class Option < ActiveRecord::Base
@@ -22,6 +23,7 @@ class Option < ActiveRecord::Base
   scope :special_options, -> { where(special: true) }
   scope :regular, -> { where(special: false) }
   belongs_to :question
+  belongs_to :option_set_id
   delegate :instrument, to: :question, allow_nil: true
   delegate :project, to: :question
   has_many :translations, foreign_key: 'option_id', class_name: 'OptionTranslation', dependent: :destroy

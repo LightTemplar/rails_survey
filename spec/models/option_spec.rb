@@ -14,6 +14,7 @@
 #  special                   :boolean          default(FALSE)
 #  critical                  :boolean
 #  complete_survey           :boolean
+#  option_set_id             :integer
 #
 
 require "spec_helper"

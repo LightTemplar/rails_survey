@@ -23,6 +23,8 @@
 #  section_id                       :integer
 #  critical                         :boolean
 #  number_in_grid                   :integer
+#  question_set_id                  :integer
+#  option_set_id                    :integer
 #
 
 class Question < ActiveRecord::Base
@@ -31,6 +33,8 @@ class Question < ActiveRecord::Base
   belongs_to :instrument
   belongs_to :grid
   belongs_to :section
+  belongs_to :option_set
+  belongs_to :question_set
   has_many :responses
   has_many :options, dependent: :destroy
   has_many :translations, foreign_key: 'question_id', class_name: 'QuestionTranslation', dependent: :destroy

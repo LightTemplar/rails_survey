@@ -23,6 +23,8 @@
 #  section_id                       :integer
 #  critical                         :boolean
 #  number_in_grid                   :integer
+#  question_set_id                  :integer
+#  option_set_id                    :integer
 #
 
 require "spec_helper"
