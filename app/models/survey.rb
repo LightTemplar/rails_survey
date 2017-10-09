@@ -38,7 +38,7 @@ class Survey < ActiveRecord::Base
   validates :instrument_version_number, presence: true, allow_blank: false
   paginates_per 50
   after_create :calculate_percentage
-  after_create :schedule_export, if: proc { |survey| survey.instrument.auto_export_responses }
+  after_commit :schedule_export, if: proc { |survey| survey.instrument.auto_export_responses }
   scope :non_roster, -> { where(roster_uuid: nil) }
 
   def schedule_export

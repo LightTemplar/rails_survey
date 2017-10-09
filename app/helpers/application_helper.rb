@@ -16,4 +16,8 @@ module ApplicationHelper
     url[0] = '' if url[0] == '/'
     url
   end
+
+  def formatted_time(time)
+    time.to_datetime.strftime('%F %H:%M%p')
+  end
 end
