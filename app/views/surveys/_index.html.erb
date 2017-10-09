@@ -11,7 +11,7 @@
           <th>Device</th>
           <th>Device Label</th>
           <th>Location</th>
-          <th>% Complete</th>
+          <th>Completion</th>
           <th>Responses</th>
         </tr>
       </thead>
@@ -21,12 +21,9 @@
         <tr>
           <td><%= survey.uuid %></td>
           <td><%= survey.created_at %></td>
-          <td>
-            <%= survey.center_id ? survey.center_id : survey.participant_id %>
-          </td>
+          <td><%= survey.label %></td>
           <td><%= link_to survey.instrument_title, project_instrument_path(current_project, survey.instrument) %></td>
-          <td><%= link_to survey.instrument_version_number,
-                                project_instrument_version_path(current_project, survey.instrument, survey.instrument_version_number) %></td>
+          <td><%= link_to survey.instrument_version_number, project_instrument_version_path(current_project, survey.instrument, survey.instrument_version_number) %></td>
           <td><%= survey.device_uuid %></td>
           <td><%= survey.device_label ? survey.device_label : (survey.device.label if survey.device) %></td>
           <td>

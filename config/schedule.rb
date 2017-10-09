@@ -5,7 +5,6 @@
 job_type :sidekiq, 'cd :path && RAILS_ENV=:environment bundle exec sidekiq-client :task :output'
 
 # Add the worker to the queue directly
-every 1.day, at: '1:00 am' do
+every :day, at: '1:00 am' do
   sidekiq 'push CacheWarmerWorker'
-  sidekiq 'push ExportCacheWarmerWorker'
 end

@@ -38,7 +38,28 @@ class Survey < ActiveRecord::Base
   validates :instrument_version_number, presence: true, allow_blank: false
   paginates_per 50
   after_create :calculate_percentage
+  after_create :schedule_export, if: proc { |survey| survey.instrument.auto_export_responses }
   scope :non_roster, -> { where(roster_uuid: nil) }
+
+  def schedule_export
+    job = Sidekiq::ScheduledSet.new.find do |entry|
+      entry.item['class'] == 'ExportWorker' && entry.item['args'].first == instrument_id
+    end
+    ExportWorker.perform_at(DateTime.now.end_of_day + 2.hours, instrument_id) unless job
+  end
+
+  def switch_instrument(destination_instrument_id)
+    destination_instrument = Instrument.find(destination_instrument_id)
+    return unless destination_instrument
+    saved = update_attributes(instrument_id: destination_instrument.id, instrument_version_number: destination_instrument.current_version_number)
+    if saved
+      responses.each do |response|
+        destination_question = destination_instrument.questions.where(question_identifier: "#{response.question_identifier}_#{destination_instrument.project_id}").try(:first)
+        next unless destination_question
+        response.update_attributes(question_identifier: destination_question.question_identifier, question_id: destination_question.id)
+      end
+    end
+  end
 
   def scores
     Score.where('survey_id = ? OR survey_uuid = ?', id, uuid)
@@ -50,7 +71,7 @@ class Survey < ActiveRecord::Base
 
   def calculate_completion_rate
     valid_response_count = responses.where.not('text = ? AND other_response = ? AND special_response = ?', nil || '', nil || '', nil || '').pluck(:question_id).uniq.count
-    valid_question_count = instrument.version_by_version_number(instrument_version_number).questions.select { |question| question.question_type != 'INSTRUCTIONS' }.count
+    valid_question_count = instrument.version_by_version_number(instrument_version_number).questions.reject { |question| question.question_type == 'INSTRUCTIONS' }.count
     if valid_response_count && valid_question_count && valid_question_count != 0
       rate = (valid_response_count.to_f / valid_question_count.to_f).round(2)
     end
@@ -87,6 +108,14 @@ class Survey < ActiveRecord::Base
 
   def participant_id
     metadata['Participant ID'] if metadata
+  end
+
+  def caregiver_id
+    metadata['Caregiver ID'] if metadata
+  end
+
+  def label
+    metadata['survey_label'] if metadata
   end
 
   def versioned_question(question_identifier)
