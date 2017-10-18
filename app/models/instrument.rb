@@ -224,9 +224,9 @@ class Instrument < ActiveRecord::Base
       ResponseExport.create(instrument_id: id, instrument_versions: survey_instrument_versions)
       reload
     end
-    unless new_export
-      return unless response_export.re_export?
-    end
+    # unless new_export
+    #   return unless response_export.re_export?
+    # end
     response_export.update_attributes(long_done: false, wide_done: false, short_done: false, completion: 0.0)
     response_export_counter(response_export)
     write_export_rows

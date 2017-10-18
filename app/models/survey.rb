@@ -172,19 +172,11 @@ class Survey < ActiveRecord::Base
   end
 
   def start_time
-    Rails.cache.fetch("survey-start-#{id}-#{ordered_response('time_started', 'ASC')}", expires_in: 30.minutes) do
-      ordered_response('time_started', 'ASC')
-    end
+    responses.where.not(time_started: nil).order('time_started ASC').try(:first).try(:time_started)
   end
 
   def end_time
-    Rails.cache.fetch("survey-end-#{id}-#{ordered_response('time_ended', 'DESC')}", expires_in: 30.minutes) do
-      ordered_response('time_ended', 'DESC')
-    end
-  end
-
-  def ordered_response(ord_attr, ord)
-    responses.order("#{ord_attr} #{ord}").try(:first).try(ord.to_sym)
+    responses.where.not(time_ended: nil).order('time_ended DESC').try(:first).try(:time_ended)
   end
 
   def write_wide_row
