@@ -224,12 +224,16 @@ class Instrument < ActiveRecord::Base
       ResponseExport.create(instrument_id: id, instrument_versions: survey_instrument_versions)
       reload
     end
-    # unless new_export
-    #   return unless response_export.re_export?
-    # end
     response_export.update_attributes(long_done: false, wide_done: false, short_done: false, completion: 0.0)
     response_export_counter(response_export)
+    sanitize_redis_keys
     write_export_rows
+  end
+
+  def sanitize_redis_keys
+    $redis.del "wide-keys-#{id}-#{response_export.id}"
+    $redis.del "long-keys-#{id}-#{response_export.id}"
+    $redis.del "short-keys-#{id}-#{response_export.id}"
   end
 
   def write_export_rows
@@ -287,11 +291,9 @@ class Instrument < ActiveRecord::Base
   def stringify_arrays(format)
     data = []
     keys = $redis.lrange "#{format}-keys-#{id}-#{response_export.id}", 0, -1
-    $redis.del "#{format}-keys-#{id}-#{response_export.id}"
     keys.each do |key|
       data_row = $redis.lrange key, 0, -1
       data << data_row
-      $redis.del key
     end
     $redis.set "#{id}-#{response_export.id}-#{format}", data.to_s
     mark_export_as_complete(format)
