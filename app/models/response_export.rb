@@ -46,8 +46,9 @@ class ResponseExport < ActiveRecord::Base
   def export_file(format)
     csv_data = $redis.get "#{instrument_id}-#{id}-#{format}"
     data = JSON.parse(csv_data)
+    data = data.reject{|arr| arr.all?(&:blank?)}
     file = Tempfile.new("#{instrument_id}-#{id}-#{format}")
-    CSV.open(file, 'a+') do |csv|
+    CSV.open(file, 'w') do |csv|
       csv << csv_headers(format)
       if data
         data.each do |row|
