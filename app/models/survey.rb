@@ -159,9 +159,8 @@ class Survey < ActiveRecord::Base
       csv = Rails.cache.fetch("w_s_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 30.minutes) do
         [validator, id, response.question_identifier, sanitize(versioned_question(response.question_identifier).try(:text)), response.text, option_labels(response), response.special_response, response.other_response]
       end
-      row_key = "short-row-#{id}-#{instrument.response_export.id}-#{response.id}"
-      $redis.rpush row_key, csv
-      $redis.rpush "short-keys-#{instrument.id}-#{instrument.response_export.id}", row_key
+      push_to_redis("short-row-#{id}-#{instrument.response_export.id}-#{response.id}",
+        "short-keys-#{instrument.id}-#{instrument.response_export.id}", csv)
     end
     decrement_export_count("#{instrument.response_export.id}_short")
   end
@@ -224,9 +223,8 @@ class Survey < ActiveRecord::Base
       row[device_user_id_index] = device_user_ids.join(',')
       row[device_user_username_index] = DeviceUser.find(device_user_ids).map(&:username).uniq.join(',')
     end
-    row_key = "wide-row-#{id}-#{instrument.response_export.id}-survey-#{id}"
-    $redis.rpush row_key, row
-    $redis.rpush "wide-keys-#{instrument_id}-#{instrument.response_export.id}", row_key
+    push_to_redis("wide-row-#{id}-#{instrument.response_export.id}-survey-#{id}",
+      "wide-keys-#{instrument_id}-#{instrument.response_export.id}", row)
     decrement_export_count("#{instrument.response_export.id}_wide")
   end
 
@@ -244,11 +242,16 @@ class Survey < ActiveRecord::Base
           row[headers[k]] = v if headers[k]
         end
       end
-      row_key = "long-row-#{id}-#{instrument.response_export.id}-#{response.id}"
-      $redis.rpush row_key, row
-      $redis.rpush "long-keys-#{instrument_id}-#{instrument.response_export.id}", row_key
+      push_to_redis("long-row-#{id}-#{instrument.response_export.id}-#{response.id}",
+        "long-keys-#{instrument_id}-#{instrument.response_export.id}", row)
     end
     decrement_export_count("#{instrument.response_export.id}_long")
+  end
+
+  def push_to_redis(key_one, key_two, data)
+    $redis.del key_one
+    $redis.rpush key_one, data
+    $redis.rpush key_two, key_one
   end
 
   def score
