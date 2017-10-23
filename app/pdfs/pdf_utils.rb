@@ -26,8 +26,13 @@ module PdfUtils
   end
 
   def format_question_text(question_text)
-    sanitizer = Rails::Html::FullSanitizer.new
-    text sanitizer.sanitize(question_text)
+    sanitizer = Rails::Html::WhiteListSanitizer.new
+    tags = %w[b i u strikethrough sub sup]
+    question_text = question_text.delete("\n")
+    question_text = question_text.gsub('</p>', "\n")
+    question_text = question_text.gsub('</div>', "\n")
+    question_text = question_text.gsub('<br>', "\n")
+    text sanitizer.sanitize(question_text, tags: tags), inline_format: true
     move_down QUESTION_TEXT_MARGIN
   end
 

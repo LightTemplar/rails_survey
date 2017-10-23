@@ -32,7 +32,7 @@
             <%= link_to instrument_version, project_instrument_version_path(current_project, export.instrument.try(:id), instrument_version) %>
             <% end %>
           </td>
-          <td><%= export.updated_at %></td>
+          <td><%= formatted_time(export.updated_at) %></td>
           <td>
             <% if export.done?(export.long_done) %>
             <%= link_to 'CSV', instrument_responses_long_project_response_export_path(current_project, export.id) %>

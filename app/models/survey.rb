@@ -38,7 +38,28 @@ class Survey < ActiveRecord::Base
   validates :instrument_version_number, presence: true, allow_blank: false
   paginates_per 50
   after_create :calculate_percentage
+  after_commit :schedule_export, if: proc { |survey| survey.instrument.auto_export_responses }
   scope :non_roster, -> { where(roster_uuid: nil) }
+
+  def schedule_export
+    job = Sidekiq::ScheduledSet.new.find do |entry|
+      entry.item['class'] == 'ExportWorker' && entry.item['args'].first == instrument_id
+    end
+    ExportWorker.perform_at(DateTime.now.end_of_day + 2.hours, instrument_id) unless job
+  end
+
+  def switch_instrument(destination_instrument_id)
+    destination_instrument = Instrument.find(destination_instrument_id)
+    return unless destination_instrument
+    saved = update_attributes(instrument_id: destination_instrument.id, instrument_version_number: destination_instrument.current_version_number)
+    if saved
+      responses.each do |response|
+        destination_question = destination_instrument.questions.where(question_identifier: "#{response.question_identifier}_#{destination_instrument.project_id}").try(:first)
+        next unless destination_question
+        response.update_attributes(question_identifier: destination_question.question_identifier, question_id: destination_question.id)
+      end
+    end
+  end
 
   def scores
     Score.where('survey_id = ? OR survey_uuid = ?', id, uuid)
@@ -50,7 +71,7 @@ class Survey < ActiveRecord::Base
 
   def calculate_completion_rate
     valid_response_count = responses.where.not('text = ? AND other_response = ? AND special_response = ?', nil || '', nil || '', nil || '').pluck(:question_id).uniq.count
-    valid_question_count = instrument.version_by_version_number(instrument_version_number).questions.select { |question| question.question_type != 'INSTRUCTIONS' }.count
+    valid_question_count = instrument.version_by_version_number(instrument_version_number).questions.reject { |question| question.question_type == 'INSTRUCTIONS' }.count
     if valid_response_count && valid_question_count && valid_question_count != 0
       rate = (valid_response_count.to_f / valid_question_count.to_f).round(2)
     end
@@ -87,6 +108,14 @@ class Survey < ActiveRecord::Base
 
   def participant_id
     metadata['Participant ID'] if metadata
+  end
+
+  def caregiver_id
+    metadata['Caregiver ID'] if metadata
+  end
+
+  def label
+    metadata['survey_label'] if metadata
   end
 
   def versioned_question(question_identifier)
@@ -130,9 +159,8 @@ class Survey < ActiveRecord::Base
       csv = Rails.cache.fetch("w_s_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 30.minutes) do
         [validator, id, response.question_identifier, sanitize(versioned_question(response.question_identifier).try(:text)), response.text, option_labels(response), response.special_response, response.other_response]
       end
-      row_key = "short-row-#{id}-#{instrument.response_export.id}-#{response.id}"
-      $redis.rpush row_key, csv
-      $redis.rpush "short-keys-#{instrument.id}-#{instrument.response_export.id}", row_key
+      push_to_redis("short-row-#{id}-#{instrument.response_export.id}-#{response.id}",
+        "short-keys-#{instrument.id}-#{instrument.response_export.id}", csv)
     end
     decrement_export_count("#{instrument.response_export.id}_short")
   end
@@ -143,19 +171,11 @@ class Survey < ActiveRecord::Base
   end
 
   def start_time
-    Rails.cache.fetch("survey-start-#{id}-#{ordered_response('time_started', 'ASC')}", expires_in: 30.minutes) do
-      ordered_response('time_started', 'ASC')
-    end
+    responses.where.not(time_started: nil).order('time_started ASC').try(:first).try(:time_started)
   end
 
   def end_time
-    Rails.cache.fetch("survey-end-#{id}-#{ordered_response('time_ended', 'DESC')}", expires_in: 30.minutes) do
-      ordered_response('time_ended', 'DESC')
-    end
-  end
-
-  def ordered_response(ord_attr, ord)
-    responses.order("#{ord_attr} #{ord}").try(:first).try(ord.to_sym)
+    responses.where.not(time_ended: nil).order('time_ended DESC').try(:first).try(:time_ended)
   end
 
   def write_wide_row
@@ -203,9 +223,8 @@ class Survey < ActiveRecord::Base
       row[device_user_id_index] = device_user_ids.join(',')
       row[device_user_username_index] = DeviceUser.find(device_user_ids).map(&:username).uniq.join(',')
     end
-    row_key = "wide-row-#{id}-#{instrument.response_export.id}-survey-#{id}"
-    $redis.rpush row_key, row
-    $redis.rpush "wide-keys-#{instrument_id}-#{instrument.response_export.id}", row_key
+    push_to_redis("wide-row-#{id}-#{instrument.response_export.id}-survey-#{id}",
+      "wide-keys-#{instrument_id}-#{instrument.response_export.id}", row)
     decrement_export_count("#{instrument.response_export.id}_wide")
   end
 
@@ -223,11 +242,16 @@ class Survey < ActiveRecord::Base
           row[headers[k]] = v if headers[k]
         end
       end
-      row_key = "long-row-#{id}-#{instrument.response_export.id}-#{response.id}"
-      $redis.rpush row_key, row
-      $redis.rpush "long-keys-#{instrument_id}-#{instrument.response_export.id}", row_key
+      push_to_redis("long-row-#{id}-#{instrument.response_export.id}-#{response.id}",
+        "long-keys-#{instrument_id}-#{instrument.response_export.id}", row)
     end
     decrement_export_count("#{instrument.response_export.id}_long")
+  end
+
+  def push_to_redis(key_one, key_two, data)
+    $redis.del key_one
+    $redis.rpush key_one, data
+    $redis.rpush key_two, key_one
   end
 
   def score

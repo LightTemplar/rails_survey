@@ -4,7 +4,7 @@ class StatusWorker
 
   def perform(export_id, format)
     export = ResponseExport.find(export_id)
-    if (export.instrument.get_export_count("#{export_id}_#{format}") == '0') || Sidekiq::Queue.new('export').size.zero?
+    if export.instrument.get_export_count("#{export_id}_#{format}") == '0'
       export.instrument.stringify_arrays(format)
       export.instrument.delete_export_count("#{export_id}_#{format}")
     else
