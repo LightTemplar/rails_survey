@@ -17,6 +17,7 @@ RailsSurvey::Application.routes.draw do
       resources :option_sets do
         resources :options
       end
+      get 'settings/index'
     end
     namespace :v1 do
       namespace :frontend do

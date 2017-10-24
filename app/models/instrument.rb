@@ -32,8 +32,11 @@ class Instrument < ActiveRecord::Base
   serialize :special_options, Array
   scope :published, -> { where(published: true) }
   belongs_to :project
-  has_many :questions, dependent: :destroy
+  
+  has_many :instrument_question_sets
+  has_many :questions, through: :instrument_question_sets
   has_many :options, through: :questions
+
   has_many :surveys
   has_many :responses, through: :surveys
   has_many :response_images, through: :responses

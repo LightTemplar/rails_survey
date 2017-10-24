@@ -44,6 +44,7 @@
 //= require textAngular.min
 //= require jquery-linedtextarea
 //= require_tree ./angular
+//= require_tree ./sets
 //= require_directory .
 
 //textAngular-sanitize replaces angular-sanitize

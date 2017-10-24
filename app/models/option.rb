@@ -23,17 +23,17 @@ class Option < ActiveRecord::Base
   scope :special_options, -> { where(special: true) }
   scope :regular, -> { where(special: false) }
   belongs_to :question
-  belongs_to :option_set_id
+  belongs_to :option_set
   delegate :instrument, to: :question, allow_nil: true
   delegate :project, to: :question
   has_many :translations, foreign_key: 'option_id', class_name: 'OptionTranslation', dependent: :destroy
   has_many :skips, dependent: :destroy
-  before_save :update_instrument_version, if: proc { |option| option.changed? }
-  before_save :update_option_translation, if: proc { |option| option.text_changed? }
-  before_destroy :update_instrument_version
-  after_save :record_instrument_version_number
-  after_save :sanitize_next_question
-  after_save :check_parent_criticality
+  # before_save :update_instrument_version, if: proc { |option| option.changed? }
+  # before_save :update_option_translation, if: proc { |option| option.text_changed? }
+  # before_destroy :update_instrument_version
+  # after_save :record_instrument_version_number
+  # after_save :sanitize_next_question
+  # after_save :check_parent_criticality
   has_paper_trail
   acts_as_paranoid
 

@@ -34,9 +34,9 @@ class Question < ActiveRecord::Base
   belongs_to :grid
   belongs_to :section
   belongs_to :option_set
+  has_many :options, through: :option_set
   belongs_to :question_set
   has_many :responses
-  has_many :options, dependent: :destroy
   has_many :translations, foreign_key: 'question_id', class_name: 'QuestionTranslation', dependent: :destroy
   has_many :images, dependent: :destroy
   # different from has_many :skips, through: :options
@@ -49,13 +49,13 @@ class Question < ActiveRecord::Base
   after_save :record_instrument_version
   before_destroy :update_instrument_version
   after_update :update_dependent_records
-  after_create :create_special_options
+  # after_create :create_special_options, if: proc { |question| question.instrument}
   has_paper_trail
   acts_as_paranoid
 
-  validates :question_identifier, uniqueness: true, presence: true, allow_blank: false
-  validates :text, presence: true, allow_blank: false
-  validates :number_in_instrument, presence: true, allow_blank: false
+  # validates :question_identifier, uniqueness: true, presence: true, allow_blank: false
+  # validates :text, presence: true, allow_blank: false
+  # validates :number_in_instrument, presence: true, allow_blank: false
 
   amoeba do
     enable

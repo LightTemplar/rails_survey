@@ -1,0 +1,15 @@
+<div ng-controller="QuestionsCtrl" ng-init="init(question_set)">
+  <div class="text-center"><strong>Questions In Set</strong></div>
+  <div ng-repeat="question in questions">
+    <div class="row">
+      <a class="col-md-4" ng-click="editQuestion(question)">
+        <strong>{{question.question_identifier}}</strong>
+      </a>
+      <div class="col-md-8">{{question.text | limitTo:textLimit}}</div>
+    </div>
+    <div ng-show="currentQuestion == question">
+      <%= render 'questions/show' %>
+    </div>
+  </div>
+  <div class="m-t-5 btn btn-primary" ng-click="newQuestion()">Add Question</div>
+</div>

@@ -1,0 +1,18 @@
+<div ng-controller="OptionsCtrl" ng-init="init(option_set)">
+  <div class="row">
+    <div class="col-md-8">
+      <span class="text-center"><strong>Options In Set</strong></span>
+    </div>
+    <div class="col-md-4">
+      <button class="btn btn-primary" ng-click="newOption()">Add Option</button>
+    </div>
+  </div>
+  <div ng-repeat="option in options">
+    <div class="row">
+      <a class="col-md-2" ng-click="editOption(option)">{{option.text}} </a>
+    </div>
+    <div ng-show="currentOption == option">
+      <%= render 'options/show' %>
+    </div>
+  </div>
+</div>

@@ -9,6 +9,6 @@
 #
 
 class OptionSet < ActiveRecord::Base
-  has_many :options
+  has_many :options, dependent: :destroy
   has_many :questions
 end

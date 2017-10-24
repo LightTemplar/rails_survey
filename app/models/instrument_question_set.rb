@@ -12,4 +12,6 @@
 class InstrumentQuestionSet < ActiveRecord::Base
   belongs_to :instrument
   belongs_to :question_set
+  has_many :questions, through: :question_set
+  has_many :options, through: :questions
 end

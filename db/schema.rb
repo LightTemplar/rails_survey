@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170915203407) do
+ActiveRecord::Schema.define(version: 20170928193235) do
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.string   "namespace",     limit: 255
@@ -139,6 +139,13 @@ ActiveRecord::Schema.define(version: 20170915203407) do
 
   add_index "images", ["deleted_at"], name: "index_images_on_deleted_at"
 
+  create_table "instrument_question_sets", force: :cascade do |t|
+    t.integer  "instrument_id"
+    t.integer  "question_set_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "instrument_translations", force: :cascade do |t|
     t.integer  "instrument_id"
     t.string   "language",         limit: 255
@@ -195,6 +202,12 @@ ActiveRecord::Schema.define(version: 20170915203407) do
 
   add_index "option_scores", ["deleted_at"], name: "index_option_scores_on_deleted_at"
 
+  create_table "option_sets", force: :cascade do |t|
+    t.string   "title"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "option_translations", force: :cascade do |t|
     t.integer  "option_id"
     t.text     "text"
@@ -217,6 +230,7 @@ ActiveRecord::Schema.define(version: 20170915203407) do
     t.boolean  "special",                               default: false
     t.boolean  "critical"
     t.boolean  "complete_survey"
+    t.integer  "option_set_id"
   end
 
   create_table "project_device_users", force: :cascade do |t|
@@ -245,6 +259,12 @@ ActiveRecord::Schema.define(version: 20170915203407) do
     t.integer  "question_id"
     t.integer  "randomized_factor_id"
     t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "question_sets", force: :cascade do |t|
+    t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -282,6 +302,8 @@ ActiveRecord::Schema.define(version: 20170915203407) do
     t.integer  "section_id"
     t.boolean  "critical"
     t.integer  "number_in_grid"
+    t.integer  "question_set_id"
+    t.integer  "option_set_id"
   end
 
   add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true

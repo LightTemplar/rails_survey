@@ -1,0 +1,14 @@
+<div class="text-center"><strong>Question Sets</strong></div>
+<div ng-controller="QuestionSetsCtrl">
+  <div ng-repeat="question_set in questionSets">
+    <a class="m-5" ng-click="viewQuestionSet(question_set)">
+      <strong>{{question_set.title}}</strong>
+    </a>
+    <div ng-show="currentQuestionSet == question_set">
+      <%= render 'question_sets/show' %>
+    </div>
+  </div>
+
+  <div class="btn btn-primary pull-right m-5" ng-click="newQuestionSet()">New Question Set</div>
+
+</div>
