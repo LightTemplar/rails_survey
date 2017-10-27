@@ -2,7 +2,7 @@ module Api
   module V2
       class OptionsController < ApiApplicationController
         respond_to :json
-        before_action :set_option_set, only: [:index, :create, :update]
+        before_action :set_option_set
 
         def index
           respond_with @option_set.options
@@ -20,6 +20,11 @@ module Api
         def update
           option = @option_set.options.find(params[:id])
           respond_with option.update_attributes(option_params)
+        end
+
+        def destroy
+          option = @option_set.options.find(params[:id])
+          respond_with option.destroy
         end
 
         private

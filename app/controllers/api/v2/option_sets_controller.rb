@@ -2,10 +2,14 @@ module Api
   module V2
     class OptionSetsController < ApiApplicationController
       respond_to :json
-      before_action :set_option_set, only: [:update]
+      before_action :set_option_set, only: [:update, :show, :destroy]
 
       def index
         respond_with OptionSet.all
+      end
+
+      def show
+        respond_with @option_set
       end
 
       def create
@@ -19,6 +23,10 @@ module Api
 
       def update
         respond_with @option_set.update_attributes(option_set_params)
+      end
+
+      def destroy
+        respond_with @option_set.destroy
       end
 
       private

@@ -1,14 +1,25 @@
-<div class="text-center"><strong class="text-center">Option Sets</strong></div>
+<h4 class="text-center"><strong>Option Sets</strong></h4>
 <div class="card">
   <div class="card-body card-padding">
     <div ng-controller="OptionSetsCtrl">
-      <div ng-repeat="option_set in optionSets">
-        <a class="m-5" ng-click="viewOptionSet(option_set)">{{option_set.title}}</a>
-        <div ng-show="currentOptionSet == option_set">
-          <div ng-include='"option_sets/show.html"'></div>
-        </div>
+      <div ng-repeat="optionSet in optionSets">
+        <a href="/option_sets/{{optionSet.id}}">
+          <strong>{{optionSet.title}}</strong>
+        </a>
       </div>
-      <div class="btn btn-primary pull-right m-5" ng-click="newOptionSet()">New Option Set</div>
+      <div class="btn btn-primary m-5" ng-click="createOptionSet()">New Option Set</div>
+      <ng-form name="newOptionSetEditorForm" ng-show="showNewOptionSet">
+          <div class="row">
+            <label class="col-md-2">Title</label>
+            <div class="col-md-8">
+              <input type="text" class="form-control" name="new-option-set"
+              ng-model="newOptionSet.title" required>
+            </div>
+            <div class="col-md-1 btn btn-default" ng-click="cancelNewOptionSet()">Cancel</div>
+            <div class="col-md-1 btn btn-success" ng-disabled="newOptionSetEditorForm.$invalid"
+            ng-click="saveOptionSet()">Save</div>
+          </div>
+      </ng-form>
     </div>
   </div>
 </div>

@@ -1,32 +1,52 @@
-App.controller 'OptionSetsCtrl', ['$scope', 'OptionSet', 'Option', 'Setting',
-($scope, OptionSet, Option, Setting) ->
+App.controller 'OptionSetsCtrl', ['$scope', 'OptionSet', ($scope, OptionSet) ->
+  $scope.createOptionSet = () ->
+    setNewOption(new OptionSet(), true)
 
-  $scope.settings = Setting.get({})
-  $scope.optionSets = OptionSet.query({})
-  $scope.questions = []
-
-  $scope.viewOptionSet = (optionSet) ->
-    $scope.currentOptionSet = optionSet
-
-  $scope.newOptionSet = () ->
-    optionSet = new OptionSet()
-    $scope.currentOptionSet = optionSet
-    $scope.optionSets.push(optionSet)
-
-  $scope.editOptionSet = (optionSet) ->
-    $scope.currentOptionSet = optionSet
+  $scope.cancelNewOptionSet = () ->
+    setNewOption(null, false)
 
   $scope.saveOptionSet = () ->
-    if $scope.currentOptionSet.id
-      $scope.currentOptionSet.$update({} ,
-        (data, headers) -> ,
+    $scope.newOptionSet.$save({} ,
+      (data, headers) ->
+      (result, headers) ->
+    )
+    $scope.optionSets.push($scope.newOptionSet)
+    $scope.cancelNewOptionSet()
+
+  setNewOption = (optionSet, status) ->
+    $scope.newOptionSet = optionSet
+    $scope.showNewOptionSet = status
+
+  setNewOption(new OptionSet(), false)
+  $scope.optionSets = OptionSet.query({})
+
+]
+
+App.controller 'ShowOptionSetCtrl', ['$scope', '$routeParams', '$location', 'OptionSet', 'Option',
+ ($scope, $routeParams, $location, OptionSet, Option) ->
+
+  $scope.updateOptionSet = () ->
+    if $scope.optionSet.id
+      $scope.optionSet.$update({} ,
+        (data, headers) ->
         (result, headers) ->
       )
-    else
-      $scope.currentOptionSet.$save({} ,
-        (data, headers) -> ,
-        (result, headers) ->
-      )
-    $scope.currentOptionSet = null
+
+  $scope.deleteOptionSet = () ->
+    if confirm('Are you sure you want to delete this option set?')
+      if $scope.optionSet.id
+        $scope.optionSet.$delete({} ,
+          (data, headers) ->
+            $location.path '/option_sets'
+          (result, headers) ->
+        )
+
+  if $scope.optionSets and $routeParams.id
+    $scope.optionSet = _.first(_.filter($scope.optionSets, (qs) -> qs.id == $routeParams.id))
+  else if $routeParams.id and not $scope.optionSets
+    $scope.optionSet = OptionSet.get({'id': $routeParams.id})
+
+  if $routeParams.id
+    $scope.options = Option.query({"option_set_id": $routeParams.id})
 
 ]

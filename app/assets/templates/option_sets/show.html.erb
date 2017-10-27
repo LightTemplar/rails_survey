@@ -1,15 +1,17 @@
-<ng-form class="card" name="optionSetEditorForm">
+<h4 class="text-center"><strong>{{optionSet.title}}</strong></h4>
+<div class="card">
   <div class="card-body card-padding">
-    <div class="row">
-      <label class="col-md-2">Title</label>
-      <div class="col-md-7">
-        <input type="text" class="form-control" name="option-set" ng-model="option_set.title" required>
+    <ng-form name="optionSetEditorForm">
+      <div class="row">
+        <label class="col-md-1">Title</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control" name="option-set" ng-model="optionSet.title" required>
+        </div>
+        <div class="col-md-1 btn btn-danger" ng-click="deleteOptionSet()">Delete</div>
+        <div class="col-md-1 btn btn-success" ng-disabled="optionSetEditorForm.$invalid"
+        ng-click="updateOptionSet()">Save</div>
       </div>
-      <div class="col-md-1 btn btn-default" ng-click="editOptionSet(null)"><i class="md-cancel"></i></div>
-      <div class="col-md-1 btn btn-danger" ng-click=""><i class="md-delete"></i></div>
-      <div class="col-md-1 btn btn-success" ng-disabled="optionSetEditorForm.$invalid"
-      ng-click="saveOptionSet()"><i class="md-save"></i></div>
-    </div>
-    <div ng-include='"options/index.html"'></div>
+      <div ng-include='"options/index.html"'></div>
+    </ng-form>
   </div>
-</ng-form>
+</div>

@@ -1,8 +1,6 @@
-App.controller 'OptionsCtrl', ['$scope', 'Option', ($scope, Option) ->
+App.controller 'OptionsCtrl', ['$scope', 'Option', '$routeParams', ($scope, Option, $routeParams) ->
 
-  $scope.init = (optionSet) ->
-    $scope.optionSet = optionSet
-    $scope.options = Option.query({"option_set_id": $scope.optionSet.id})
+  $scope.options = Option.query({"option_set_id": $routeParams.id})
 
   $scope.newOption = () ->
     option = new Option()
@@ -25,5 +23,16 @@ App.controller 'OptionsCtrl', ['$scope', 'Option', ($scope, Option) ->
         (result, headers) ->
       )
     $scope.currentOption = null
+
+  $scope.deleteOption = () ->
+    if confirm('Are you sure you want to delete this option?')
+      if $scope.currentOption.id
+        $scope.currentOption.$delete({} ,
+          (data, headers) ->
+            index = $scope.options.indexOf($scope.currentOption)
+            $scope.options.splice(index,1)
+            $scope.currentOption = null
+          (result, headers) ->
+        )
 
 ]

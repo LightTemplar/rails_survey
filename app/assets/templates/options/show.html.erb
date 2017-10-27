@@ -1,19 +1,23 @@
 <ng-form class="card" name="optionEditorForm">
   <div class="card-body card-padding">
     <div class="row">
-      <label class="col-md-2">Text</label>
-      <div class="col-md-7">
+      <label class="col-md-1">Text</label>
+      <div class="col-md-8">
         <textarea
         class="form-control"
         name="option-text"
         ng-model="option.text"
         ng-required="true">
-      </textarea>
+        </textarea>
+      </div>
+      <div class="btn-group col-md-3">
+        <div class="row">
+          <div class="col-md-4 btn btn-default" ng-click="editOption(null)">Cancel</div>
+          <div class="col-md-4 btn btn-danger" ng-click="deleteOption()">Delete</div>
+          <div class="col-md-4 btn btn-success" ng-disabled="optionEditorForm.$invalid"
+          ng-click="saveOption(option)">Save</div>
+        </div>
+      </div>
     </div>
-    <div class="col-md-1 btn btn-default" ng-click="editOption(null)"><i class="md-cancel"></i></div>
-    <div class="col-md-1 btn btn-danger" ng-click=""><i class="md-delete"></i></div>
-    <div class="col-md-1 btn btn-success" ng-disabled="optionEditorForm.$invalid"
-    ng-click="saveOption(option)"><i class="md-save"></i></div>
   </div>
-</div>
 </ng-form>
