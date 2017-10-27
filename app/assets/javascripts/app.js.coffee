@@ -32,4 +32,7 @@ window.App = angular.module('Survey',
       .when '/option_sets/:id',
         templateUrl: 'option_sets/show.html'
         controller: 'ShowOptionSetCtrl'
+      .when '/projects/:project_id/instruments/:instrument_id/instrument_question_sets',
+        templateUrl: 'instrument_question_sets/index.html'
+        controller: 'InstrumentQuestionSetsCtrl'
   ])

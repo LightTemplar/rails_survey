@@ -5,7 +5,7 @@ module Api
       before_action :set_instrument_project, only: [:index, :create, :destroy]
 
       def index
-        respond_with @instrument.instrument_question_sets
+        @instrument_question_sets = @instrument.instrument_question_sets
       end
 
       def create

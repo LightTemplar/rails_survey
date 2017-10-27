@@ -1,23 +1,18 @@
-App.controller 'InstrumentQuestionSetsCtrl', ['$scope', '_', 'InstrumentQuestionSet', 'QuestionSet',
-($scope, _, InstrumentQuestionSet, QuestionSet) ->
+App.controller 'InstrumentQuestionSetsCtrl', ['$scope', '_', '$routeParams', 'InstrumentQuestionSet', 'QuestionSet',
+($scope, _, $routeParams, InstrumentQuestionSet, QuestionSet) ->
+
   $scope.showQuestionSets = false
-  $scope.init = (project_id, instrument_id) ->
-    $scope.project_id = project_id
-    $scope.instrument_id = instrument_id
-    $scope.instrumentQuestionSets = InstrumentQuestionSet.query({
-      "project_id": $scope.project_id,
-      "instrument_id": $scope.instrument_id
-    }, ->
-      $scope.existingQuestionSetIds = _.map($scope.instrumentQuestionSets, (iqs) -> iqs.question_set_id)
-    )
-    $scope.questionSets = QuestionSet.query({}, ->
-      # Toggle checkboxes
-      angular.forEach $scope.questionSets, (questionSet, index) ->
-        if _.contains($scope.existingQuestionSetIds, questionSet.id)
-          questionSet.selected = true
-        else
-          questionSet.selected = false
-    )
+  $scope.project_id = $routeParams.project_id
+  $scope.instrument_id = $routeParams.instrument_id
+  $scope.instrumentQuestionSets = InstrumentQuestionSet.query({
+    "project_id": $scope.project_id,
+    "instrument_id": $scope.instrument_id
+  }, ->
+    $scope.existingQuestionSetIds = _.map($scope.instrumentQuestionSets, (iqs) -> iqs.question_set_id)
+  )
+  $scope.questionSets = QuestionSet.query({}, ->
+    toggleCheckboxes()
+  )
 
   $scope.newInstrumentQuestionSet = () ->
     $scope.showQuestionSets = true
@@ -32,6 +27,7 @@ App.controller 'InstrumentQuestionSetsCtrl', ['$scope', '_', 'InstrumentQuestion
 
   $scope.dismissSelection = () ->
     $scope.showQuestionSets = false
+    toggleCheckboxes() # TODO Doesn't update UI
 
   $scope.saveSelectedSets = () ->
     $scope.showQuestionSets = false
@@ -42,18 +38,38 @@ App.controller 'InstrumentQuestionSetsCtrl', ['$scope', '_', 'InstrumentQuestion
       iqs = new InstrumentQuestionSet()
       iqs = addRouteParameters(iqs)
       iqs.question_set_id = questionSetId
-      iqs.$save({})
-      $scope.instrumentQuestionSets.push(iqs)
+      qs = questionSetById(questionSetId)
+      iqs.question_set_title = qs.title
+      iqs.$save({},
+        (data, headers) ->
+          # TODO Doesn't update UI
+          $scope.instrumentQuestionSets.push(iqs)
+        (result, headers) ->
+      )
     angular.forEach deletedQuestionSetIds, (qsi, index) ->
       iqs = _.filter($scope.instrumentQuestionSets, (iqs) -> iqs.question_set_id == qsi)[0]
       iqs = addRouteParameters(iqs)
-      iqs.$delete({})
-      iqs_index = $scope.instrumentQuestionSets.indexOf(iqs)
-      $scope.instrumentQuestionSets.splice(iqs_index, 1)
+      iqs.$delete({},
+        (data, headers) ->
+          iqs_index = $scope.instrumentQuestionSets.indexOf(iqs)
+          $scope.instrumentQuestionSets.splice(iqs_index, 1)
+        (result, headers) ->
+      )
 
   addRouteParameters = (obj) ->
     obj.project_id = $scope.project_id
     obj.instrument_id = $scope.instrument_id
     return obj
+
+  toggleCheckboxes = () ->
+    angular.forEach $scope.questionSets, (questionSet, index) ->
+      if _.contains($scope.existingQuestionSetIds, questionSet.id)
+        questionSet.selected = true
+      else
+        questionSet.selected = false
+
+  questionSetById = (questionSetId) ->
+    questionSet = _.first(_.filter($scope.questionSets, (qs) -> qs.id == questionSetId))
+    return questionSet
 
 ]

@@ -122,7 +122,6 @@ RailsSurvey::Application.routes.draw do
     end
     resources :scores
     resources :instruments do
-      resources :instrument_question_sets
       member do
         get :csv_export
         get :pdf_export

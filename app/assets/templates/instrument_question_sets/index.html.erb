@@ -1,0 +1,33 @@
+<h4 class="text-center"><strong>Instrument Question Sets</strong></h4>
+<div ng-controller="InstrumentQuestionSetsCtrl">
+  <div class="card" ng-show="!showQuestionSets">
+    <div class="card-body card-padding">
+      <div ng-repeat="instrument_question_set in instrumentQuestionSets">
+        <a href="/question_sets/{{instrument_question_set.question_set_id}}">
+          {{instrument_question_set.question_set_title}}
+        </a>
+      </div>
+      <div class="m-t-5 btn btn-primary" ng-click="newInstrumentQuestionSet()">
+        Edit Question Sets
+      </div>
+    </div>
+  </div>
+
+  <div class="card" ng-show="showQuestionSets">
+    <div class="card-body card-padding">
+      <div ng-repeat="set in questionSets">
+        <input
+        type="checkbox"
+        ng-model="set.selected"
+        ng-true-value="true"
+        ng-false-value="false"
+        ng-change="selectionChanged(set)"
+        > {{set.title}}
+      </div>
+      <div class="m-5">
+        <div class="btn btn-warning" ng-click="dismissSelection()">Cancel</div>
+        <div class="btn btn-primary" ng-click="saveSelectedSets()">Save</div>
+      </div>
+    </div>
+  </div>
+</div>

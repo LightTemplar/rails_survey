@@ -2,9 +2,8 @@
 
 <div class="card">
   <div class="card-header">
-    <%= link_to 'Instrument Question Sets',
-    project_instrument_instrument_question_sets_path(@project, @instrument),
-    class: 'btn btn-primary' %>
+    <a class="btn btn-primary" href="/projects/<%= @project.id %>/instruments/<%= @instrument.id %>/instrument_question_sets">Instrument Question Sets</a>
+    <%#= link_to 'Instrument Question Sets', project_instrument_instrument_question_sets_path(@project, @instrument), class: 'btn btn-primary' %>
     <!-- <i class="md-launch">Instrument Question Sets</i> -->
     <%# end %>
     <%#= link_to questions_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
