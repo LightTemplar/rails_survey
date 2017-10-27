@@ -2,10 +2,14 @@ module Api
   module V2
       class QuestionsController < ApiApplicationController
         respond_to :json
-        before_action :set_question_set, only: [:index, :create, :update]
+        before_action :set_question_set
 
         def index
           respond_with @question_set.questions
+        end
+
+        def show
+          respond_with @question_set.questions.find(params[:id])
         end
 
         def create
@@ -20,6 +24,11 @@ module Api
         def update
           question = @question_set.questions.find(params[:id])
           respond_with question.update_attributes(question_params)
+        end
+
+        def destroy
+          question = @question_set.questions.find(params[:id])
+          respond_with question.destroy
         end
 
         private

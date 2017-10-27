@@ -1,0 +1,14 @@
+<div class="text-center"><strong class="text-center">Option Sets</strong></div>
+<div class="card">
+  <div class="card-body card-padding">
+    <div ng-controller="OptionSetsCtrl">
+      <div ng-repeat="option_set in optionSets">
+        <a class="m-5" ng-click="viewOptionSet(option_set)">{{option_set.title}}</a>
+        <div ng-show="currentOptionSet == option_set">
+          <div ng-include='"option_sets/show.html"'></div>
+        </div>
+      </div>
+      <div class="btn btn-primary pull-right m-5" ng-click="newOptionSet()">New Option Set</div>
+    </div>
+  </div>
+</div>

@@ -9,6 +9,9 @@ class ApplicationController < ActionController::Base
   before_action :set_project
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
+  def index
+  end
+
   def after_sign_in_path_for(_resource_or_scope)
     set_current_project_id(session[:previous_url])
     session[:previous_url] || root_path

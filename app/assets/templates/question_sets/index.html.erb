@@ -1,0 +1,21 @@
+<h4 class="text-center"><strong>Question Sets</strong></h4>
+<div class="card">
+  <div class="card-body card-padding">
+    <div ng-controller="QuestionSetsCtrl">
+      <div ng-repeat="questionSet in questionSets">
+        <a href="/question_sets/{{questionSet.id}}"><strong>{{questionSet.title}}</strong></a>
+      </div>
+      <div class="btn btn-primary m-5" ng-click="createQuestionSet()">New Question Set</div>
+      <ng-form class="row" name="newQuestionSetForm" ng-show="showNewQuestionSet">
+          <label class="col-md-2">Title</label>
+          <div class="col-md-8">
+            <input type="text" class="form-control" name="new-question-set"
+            ng-model="newQuestionSet.title" required>
+          </div>
+          <div class="col-md-1 btn btn-default" ng-click="cancelNewQuestionSet()">Cancel</div>
+          <div class="col-md-1 btn btn-success" ng-disabled="newQuestionSetForm.$invalid"
+          ng-click="saveQuestionSet()">Save</div>
+      </ng-form>
+    </div>
+  </div>
+</div>

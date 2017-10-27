@@ -17,6 +17,11 @@ RailsSurvey::Application.routes.draw do
       resources :option_sets do
         resources :options
       end
+      resources :projects do
+        resources :instruments do
+          resources :instrument_question_sets
+        end
+      end
       get 'settings/index'
     end
     namespace :v1 do
@@ -117,6 +122,7 @@ RailsSurvey::Application.routes.draw do
     end
     resources :scores
     resources :instruments do
+      resources :instrument_question_sets
       member do
         get :csv_export
         get :pdf_export
@@ -199,4 +205,6 @@ RailsSurvey::Application.routes.draw do
   get '/pictures/:id/:style.:format', controller: 'response_images', action: 'show'
   get 'home/privacy'
   resources :android_updates, only: %i[index show]
+  # Handled by ngRoute
+  get '*path' => 'application#index'
 end

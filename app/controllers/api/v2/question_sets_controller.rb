@@ -7,6 +7,10 @@ module Api
         respond_with QuestionSet.all
       end
 
+      def show
+        respond_with QuestionSet.find(params[:id])
+      end
+
       def create
         question_set = QuestionSet.new(question_set_params)
         if question_set.save
@@ -21,8 +25,13 @@ module Api
         respond_with question_set.update_attributes(question_set_params)
       end
 
+      def destroy
+        qs = QuestionSet.find(params[:id])
+        respond_with qs.destroy
+      end
+
       private
-      
+
       def question_set_params
         params.require(:question_set).permit(:title)
       end

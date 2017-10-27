@@ -10,6 +10,6 @@
       <div class="col-md-1 btn btn-success" ng-disabled="optionSetEditorForm.$invalid"
       ng-click="saveOptionSet()"><i class="md-save"></i></div>
     </div>
-    <%= render 'options/index' %>
+    <div ng-include='"options/index.html"'></div>
   </div>
 </ng-form>

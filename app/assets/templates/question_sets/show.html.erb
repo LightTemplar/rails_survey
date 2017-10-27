@@ -1,0 +1,21 @@
+<h4 class="text-center"><strong>{{questionSet.title}}</strong></h4>
+<div class="card">
+  <div class="card-body card-padding">
+    <ng-form class="card" name="questionSetEditorForm"
+    ng-controller="ShowQuestionSetCtrl">
+      <div class="card-body card-padding">
+        <div class="row">
+          <label class="col-md-1">Title</label>
+          <div class="col-md-9">
+            <input type="text" class="form-control" name="question-set"
+            ng-model="questionSet.title" required>
+          </div>
+          <div class="col-md-1 btn btn-danger" ng-click="deleteQuestionSet()">Delete</div>
+          <div class="col-md-1 btn btn-success" ng-disabled="questionSetEditorForm.$invalid"
+          ng-click="updateQuestionSet()">Update</div>
+        </div>
+        <div ng-include='"questions/index.html"'></div>
+      </div>
+    </ng-form>
+  </div>
+</div>

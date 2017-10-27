@@ -21,6 +21,8 @@
 //= require rangy-selectionsaverestore.min
 //= require bootstrap3-wysihtml5.all.min
 //= require angular
+//= require angular-route
+//= require angular-rails-templates
 //= require angular-resource
 //= require angular-animate
 //= require angular-cookies
@@ -43,8 +45,8 @@
 //= require textAngular-sanitize.min
 //= require textAngular.min
 //= require jquery-linedtextarea
+//= require underscore
+//= require_tree ../templates
 //= require_tree ./angular
 //= require_tree ./sets
 //= require_directory .
-
-//textAngular-sanitize replaces angular-sanitize
