@@ -42,6 +42,14 @@ class Survey < ActiveRecord::Base
   after_commit :schedule_export, if: proc { |survey| survey.instrument.auto_export_responses }
   scope :non_roster, -> { where(roster_uuid: nil) }
 
+  def delete_duplicate_responses
+    grouped_responses = responses.group_by {|response| response.uuid}
+    grouped_responses.values.each do |duplicates|
+      duplicates.shift
+      duplicates.map(&:delete)
+    end
+  end
+
   def schedule_export
     job = Sidekiq::ScheduledSet.new.find do |entry|
       entry.item['class'] == 'ExportWorker' && entry.item['args'].first == instrument_id
