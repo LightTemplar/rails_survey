@@ -6,6 +6,8 @@ ActiveAdmin.register Survey do
     end
   end
 
+  sidebar :versionate, partial: 'layouts/version', only: :show
+
   permit_params :instrument_id, :instrument_version_number, :uuid, :device_id, :instrument_title, :device_uuid, :latitude, :longitude, :metadata, :completion_rate
 
   config.sort_order = 'id_desc'
@@ -37,6 +39,13 @@ ActiveAdmin.register Survey do
       end
       render :index
     end
+
+    def show
+      @survey = Survey.includes(versions: :item).find(params[:id])
+      @versions = @survey.versions
+      @survey = @survey.versions[params[:version].to_i].reify if params[:version]
+      show! # it seems to need this
+     end
   end
 
   index do
