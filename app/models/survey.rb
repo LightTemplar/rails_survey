@@ -31,7 +31,7 @@ class Survey < ActiveRecord::Base
   has_many :centralized_scores, class_name: 'Score', foreign_key: :survey_id, dependent: :destroy
   has_many :distributed_scores, class_name: 'Score', foreign_key: :survey_uuid, dependent: :destroy
   acts_as_paranoid
-  has_paper_trail only: [:metadata, :instrument_id]
+  has_paper_trail
   delegate :project, to: :instrument
   validates :device_id, presence: true, allow_blank: false
   validates :uuid, presence: true, allow_blank: false
@@ -100,7 +100,7 @@ class Survey < ActiveRecord::Base
   end
 
   def metadata
-    JSON.parse(read_attribute(:metadata)) unless read_attribute(:metadata).nil?
+    JSON.parse(read_attribute(:metadata)) unless read_attribute(:metadata).blank?
   end
 
   def center_id
