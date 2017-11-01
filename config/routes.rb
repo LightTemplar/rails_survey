@@ -17,6 +17,7 @@ RailsSurvey::Application.routes.draw do
       resources :option_sets do
         resources :options
       end
+      resources :instructions
       resources :projects do
         resources :instruments do
           resources :instrument_question_sets

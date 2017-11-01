@@ -24,25 +24,30 @@ namespace :db do
 
   task sets: :environment do
     10.times do |t|
-      os = OptionSet.create!(title: "Option Set #{t}")
+      os = OptionSet.create!(title: Forgery('lorem_ipsum').title(random: true))
       3.times do |o_n|
-        o = Option.create!(text: "Option #{t}_#{o_n}", option_set_id: os.id)
+        o = Option.create!(text: Forgery('lorem_ipsum').word(random: true), option_set_id: os.id)
       end
+    end
+    10.times do |t|
+      os = Instruction.create!(title: Forgery('lorem_ipsum').title(random: true),
+          text: Forgery('lorem_ipsum').paragraph(random: true))
     end
     10.times do |t|
       qs = QuestionSet.create!(title: "Question Set #{t}")
       5.times do |q_n|
         q = Question.create!(
-          text: "Question #{q_n}",
+          text: Forgery('lorem_ipsum').sentence(random: true),
           question_identifier: "#{t}_q_#{q_n}",
           question_type: Settings.question_types.sample,
           question_set_id: qs.id
         )
         if Settings.question_with_options.include? q.question_type
-          os = OptionSet.find(OptionSet.ids.shuffle.first)
-          q.option_set_id = os.id
+          q.option_set_id = OptionSet.ids.shuffle.first
           q.save!
         end
+        q.instruction_id = Instruction.ids.shuffle.first
+        q.save!
       end
     end
   end

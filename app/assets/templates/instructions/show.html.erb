@@ -1,0 +1,26 @@
+<h4 class="text-center"><strong>{{instruction.title}}</strong></h4>
+<div class="card">
+  <div class="card-body card-padding">
+    <ng-form class="card" name="instructionEditorForm" ng-controller="ShowInstructionCtrl">
+      <div class="card-body card-padding">
+        <div class="row">
+          <label class="col-md-2">Title</label>
+          <div class="col-md-10">
+            <input type="text" class="form-control" name="instruction-title"
+            ng-model="instruction.title" required>
+          </div>
+        </div>
+        <div class="row">
+          <label class="col-md-2">Text</label>
+          <div class="col-md-10">
+            <textarea type="text" class="form-control" name="instruction-text"
+            ng-model="instruction.text" ng-required="true"></textarea>
+          </div>
+        </div>
+          <div class="btn btn-danger" ng-click="deleteInstruction()">Delete</div>
+          <div class="btn btn-success" ng-disabled="instructionEditorForm.$invalid"
+          ng-click="updateInstruction()">Update</div>
+      </div>
+    </ng-form>
+  </div>
+</div>

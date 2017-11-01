@@ -13,8 +13,8 @@ App.controller 'QuestionsCtrl', ['$scope', '$routeParams', '$location', 'Questio
 ]
 
 App.controller 'ShowQuestionCtrl', ['$scope', '$routeParams', '$location', '$route',
- 'Question', 'Setting', 'OptionSet',
- ($scope, $routeParams, $location, $route, Question, Setting, OptionSet) ->
+ 'Question', 'Setting', 'OptionSet', 'Instruction'
+ ($scope, $routeParams, $location, $route, Question, Setting, OptionSet, Instruction) ->
 
   $scope.questionTypes = () ->
     $scope.settings.question_types
@@ -68,5 +68,6 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$routeParams', '$location', '$rou
 
   $scope.settings = Setting.get({})
   $scope.optionSets = OptionSet.query({})
+  $scope.instructions = Instruction.query({})
 
 ]

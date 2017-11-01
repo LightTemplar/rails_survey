@@ -1,8 +1,8 @@
 <ng-form class="card" name="questionEditorForm" ng-controller="ShowQuestionCtrl">
   <div class="card-body card-padding">
     <div class="row m-t-5">
-      <label class="col-md-3">Identifier</label>
-      <div class="col-md-9">
+      <label class="col-md-2">Identifier</label>
+      <div class="col-md-10">
         <input type="text"
         class="form-control"
         name="question-identifier"
@@ -12,8 +12,8 @@
     </div>
 
     <div class="row m-t-5">
-      <label class="col-md-3">Type</label>
-      <div class="col-md-9">
+      <label class="col-md-2">Type</label>
+      <div class="col-md-10">
         <select
         data-placeholder="Select a question type..."
         no-results-text="'This does not match any valid question type'"
@@ -28,8 +28,8 @@
     </div>
 
     <div class="row m-t-5">
-      <label class="col-md-3">Text</label>
-      <div class="col-md-9">
+      <label class="col-md-2">Text</label>
+      <div class="col-md-10">
         <textarea
         class="form-control"
         name="question-text"
@@ -41,15 +41,40 @@
 
     <div class="row m-t-5"
     ng-show="question.question_type && questionTypesWithOptions(question.question_type)">
-      <label class="col-md-3">Option Set</label>
-      <div class="col-md-9">
+      <label class="col-md-2">Option Set</label>
+      <div class="col-md-8">
         <select
+          ng-style="{'width' : 600}"
           name="option-set"
           id="option-set"
           ng-model="question.option_set_id"
           ng-options="set.id as set.title for set in optionSets">
           <option value=""></option>
         </select>
+      </div>
+      <div class="col-md-2" ng-show="question.option_set_id">
+        <a href="/option_sets/{{question.option_set_id}}">
+          <strong>View Options</strong>
+        </a>
+      </div>
+    </div>
+
+    <div class="row m-t-5">
+      <label class="col-md-2">Instruction</label>
+      <div class="col-md-8">
+        <select
+          ng-style="{'width' : 600}"
+          name="instruction"
+          id="instruction"
+          ng-model="question.instruction_id"
+          ng-options="instruction.id as instruction.title for instruction in instructions">
+          <option value=""></option>
+        </select>
+      </div>
+      <div class="col-md-2" ng-show="question.instruction_id">
+        <a href="/instructions/{{question.instruction_id}}">
+          <strong>View Instruction</strong>
+        </a>
       </div>
     </div>
 

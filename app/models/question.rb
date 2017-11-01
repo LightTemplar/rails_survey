@@ -25,6 +25,7 @@
 #  number_in_grid                   :integer
 #  question_set_id                  :integer
 #  option_set_id                    :integer
+#  instruction_id                   :integer
 #
 
 class Question < ActiveRecord::Base

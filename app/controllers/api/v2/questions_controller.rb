@@ -41,7 +41,7 @@ module Api
           params.require(:question).permit(:option_set_id, :question_set_id, :text, :question_type,
             :question_identifier, :follow_up_position, :following_up_question_identifier,
             :reg_ex_validation, :child_update_count, :reg_ex_validation_message,
-            :identifies_survey, :grid_id, :instructions, :number_in_grid,
+            :identifies_survey, :grid_id, :instruction_id, :number_in_grid,
             :instrument_version_number, :critical)
         end
       end

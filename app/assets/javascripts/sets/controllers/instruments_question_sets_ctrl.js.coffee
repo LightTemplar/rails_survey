@@ -1,5 +1,6 @@
-App.controller 'InstrumentQuestionSetsCtrl', ['$scope', '_', '$routeParams', 'InstrumentQuestionSet', 'QuestionSet',
-($scope, _, $routeParams, InstrumentQuestionSet, QuestionSet) ->
+App.controller 'InstrumentQuestionSetsCtrl', ['$scope', '_', '$routeParams', '$location', '$route',
+'InstrumentQuestionSet', 'QuestionSet',
+($scope, _, $routeParams, $location, $route, InstrumentQuestionSet, QuestionSet) ->
 
   $scope.showQuestionSets = false
   $scope.project_id = $routeParams.project_id
@@ -43,9 +44,12 @@ App.controller 'InstrumentQuestionSetsCtrl', ['$scope', '_', '$routeParams', 'In
       iqs.$save({},
         (data, headers) ->
           # TODO Doesn't update UI
-          $scope.instrumentQuestionSets.push(iqs)
+          # $scope.instrumentQuestionSets.push(iqs)
         (result, headers) ->
       )
+      $location.path '/projects/' + $scope.project_id + '/instruments/' +
+      $scope.instrument_id + '/instrument_question_sets'
+      $route.reload()
     angular.forEach deletedQuestionSetIds, (qsi, index) ->
       iqs = _.filter($scope.instrumentQuestionSets, (iqs) -> iqs.question_set_id == qsi)[0]
       iqs = addRouteParameters(iqs)

@@ -38,7 +38,7 @@ gem 'seed_dump', '3.2.4'
 gem 'sidekiq', '~> 4.2', '>= 4.2.10'
 gem 'sidekiq-client-cli', '0.1.7'
 gem 'sinatra', '~> 1.4.5', require: nil
-gem 'sqlite3', '1.3.12'
+gem 'pg', '0.19.0'
 gem 'therubyracer', '0.12.2', platforms: :ruby
 gem 'twitter-bootstrap-rails', '3.2.2'
 gem 'uglifier', '>= 1.3.0'
@@ -46,9 +46,9 @@ gem 'whenever', '0.9.7', require: false
 gem 'wicked_pdf', '1.1.0'
 gem 'wkhtmltopdf-binary', '0.12.3.1'
 gem 'zip-zip', '0.3'
+gem 'forgery', '~> 0.6.0'
 
 group :production do
-  gem 'pg', '0.19.0'
   gem 'rails_12factor', '0.0.3'
 end
 

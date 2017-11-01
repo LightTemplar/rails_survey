@@ -1,0 +1,21 @@
+<h4 class="text-center"><strong>Instructions</strong></h4>
+<div class="card">
+  <div class="card-body card-padding">
+    <div ng-controller="InstructionsCtrl">
+      <div ng-repeat="instruction in instructions">
+        <a href="/instructions/{{instruction.id}}"><strong>{{instruction.title}}</strong></a>
+      </div>
+      <div class="btn btn-primary m-5" ng-click="createInstruction()">New Instruction</div>
+      <ng-form class="row" name="newInstructionForm" ng-show="showNewInstruction">
+          <label class="col-md-2">Title</label>
+          <div class="col-md-8">
+            <input type="text" class="form-control" name="new-instruction"
+            ng-model="newInstruction.title" required>
+          </div>
+          <div class="col-md-1 btn btn-default" ng-click="cancelNewInstruction()">Cancel</div>
+          <div class="col-md-1 btn btn-success" ng-disabled="newInstructionForm.$invalid"
+          ng-click="saveInstruction()">Save</div>
+      </ng-form>
+    </div>
+  </div>
+</div>
