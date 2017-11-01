@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   before_action :store_location
   before_action :authenticate_user!
   before_action :set_project
+  before_action :set_paper_trail_whodunnit
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   def index

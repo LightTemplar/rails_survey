@@ -5,9 +5,9 @@ module Api
       respond_to :json
 
       def create
-        @response = Response.new(response_params)
+        @response = Response.find_or_create_by(uuid: params[:response][:uuid])
         record_device_attributes
-        if @response.save
+        if @response.update_attributes(response_params)
           render json: @response, status: :created
         else
           render nothing: true, status: :unprocessable_entity

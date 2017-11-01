@@ -31,6 +31,7 @@ class Response < ActiveRecord::Base
   has_one :response_image, foreign_key: :response_uuid, primary_key: :uuid
   belongs_to :device_user
   acts_as_paranoid
+  has_paper_trail
   validate :question_existence
   validates :survey, presence: true
   after_destroy :calculate_response_rate

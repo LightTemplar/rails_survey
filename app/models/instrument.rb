@@ -59,6 +59,14 @@ class Instrument < ActiveRecord::Base
   validates :title, presence: true, allow_blank: false
   validates :project_id, presence: true, allow_blank: false
 
+  def delete_duplicate_surveys
+    grouped_surveys = surveys.group_by {|survey| survey.uuid}
+    grouped_surveys.values.each do |duplicates|
+      duplicates.shift
+      duplicates.map(&:delete)
+    end
+  end
+
   def update_special_options
     if special_options != special_options_was
       deleted_special_options = special_options_was - special_options

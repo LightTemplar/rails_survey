@@ -34,7 +34,7 @@ class InstrumentVersion
       end
     end
     Rails.cache.fetch("questions-#{@instrument.id}-#{@version.id}", expires_in: 30.minutes) do
-      questions = []
+      questions = [] # TODO: Fix Singleton can't dumped error
       @version.reify.questions.with_deleted.each do |question|
         versioned_question = versioned(question)
         next unless versioned_question

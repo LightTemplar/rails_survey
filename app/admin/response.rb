@@ -2,6 +2,7 @@ ActiveAdmin.register Response do
   belongs_to :survey
   permit_params :question_id, :text, :other_response, :special_response, :survey_uuid, :time_started, :time_ended, :question_identifier, :uuid, :device_user_id, :question_version
   config.sort_order = 'id_desc'
+  sidebar :versionate, partial: 'layouts/version', only: :show
 
   index do
     selectable_column
@@ -34,5 +35,14 @@ ActiveAdmin.register Response do
       f.input :special_response, collection: Settings.special_responses
     end
     f.actions
+  end
+
+  controller do
+    def show
+      @response = Response.includes(versions: :item).find(params[:id])
+      @versions = @response.versions
+      @response = @response.versions[params[:version].to_i].reify if params[:version]
+      show! # it seems to need this
+     end
   end
 end
