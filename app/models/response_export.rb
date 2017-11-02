@@ -21,23 +21,16 @@ class ResponseExport < ActiveRecord::Base
   has_one :response_images_export, dependent: :destroy
 
   def completion
-    ResponseExportCompletionWorker.perform_in(1.second, id)
     read_attribute(:completion)
   end
 
   def compute_completion
     total = instrument.surveys.count * 3.0
-    long = instrument.get_export_count("#{id}_long")
-    short = instrument.get_export_count("#{id}_short")
-    wide = instrument.get_export_count("#{id}_wide")
-    remainder = long.to_i + short.to_i + wide.to_i
-    if remainder > 0
-      percent = ((total - remainder.to_f) / total) * 100
-      percent = percent.round
-    else
-      percent = 100
-    end
-    if percent >= 100 && !wide_done && !short_done && !long_done
+    return if total == 0.0
+    remainder = %w(long short wide).inject(0){|sum,e| sum += instrument.get_export_count("#{id}_#{e}").to_i}
+    percent = 100
+    percent = (((total - remainder.to_f) / total) * 100).round if remainder > 0
+    if percent >= 100 && (!wide_done || !short_done || !long_done)
       update_columns(short_done: true, long_done: true, wide_done: true)
     end
     update_column(:completion, percent)
@@ -46,8 +39,8 @@ class ResponseExport < ActiveRecord::Base
   def export_file(format)
     csv_data = $redis.get "#{instrument_id}-#{id}-#{format}"
     data = JSON.parse(csv_data)
-    data = data.reject{|arr| arr.all?(&:blank?)}
-    data = data.sort {|ar1,ar2| ar1[0].to_i <=> ar2[0].to_i}
+    data = data.reject { |arr| arr.all?(&:blank?) }
+    data = data.sort { |ar1, ar2| ar1[0].to_i <=> ar2[0].to_i }
     file = Tempfile.new("#{instrument_id}-#{id}-#{format}")
     CSV.open(file, 'w') do |csv|
       csv << csv_headers(format)

@@ -3,6 +3,7 @@ class StatusWorker
   sidekiq_options queue: 'status'
 
   def perform(export_id, format)
+    ResponseExportCompletionWorker.perform_in(1.second, export_id)
     export = ResponseExport.find(export_id)
     if export.instrument.get_export_count("#{export_id}_#{format}") == '0'
       export.instrument.stringify_arrays(format)
