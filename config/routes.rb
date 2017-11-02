@@ -169,7 +169,7 @@ RailsSurvey::Application.routes.draw do
         get :instrument_response_images
       end
     end
-    # get :export_responses
+    get :export_responses
     get 'graphs/daily/' => 'graphs#daily_responses'
     get 'graphs/hourly/' => 'graphs#hourly_responses'
     resources :metrics do
