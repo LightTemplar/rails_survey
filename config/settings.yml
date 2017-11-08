@@ -1,21 +1,19 @@
 # MINIMUM ANDROID VERSION ALLOWED
 minimum_android_version_code: 5
 
-question_types: 
-        ['SELECT_ONE', 'SELECT_MULTIPLE', 'SELECT_ONE_WRITE_OTHER', 'SELECT_MULTIPLE_WRITE_OTHER', 'FREE_RESPONSE', 'SLIDER', 'DATE', 'RATING', 'TIME', 'LIST_OF_TEXT_BOXES', 'INTEGER', 'EMAIL_ADDRESS', 'DECIMAL_NUMBER', 'INSTRUCTIONS', 'MONTH_AND_YEAR', 'YEAR', 'PHONE_NUMBER', 'ADDRESS', 'REAR_PICTURE', 'FRONT_PICTURE', 'SELECT_ONE_IMAGE', 'SELECT_MULTIPLE_IMAGE', 'LIST_OF_INTEGER_BOXES', 'LABELED_SLIDER', 'GEO_LOCATION']
+question_types: ['SELECT_ONE', 'SELECT_MULTIPLE', 'SELECT_ONE_WRITE_OTHER', 'SELECT_MULTIPLE_WRITE_OTHER', 'FREE_RESPONSE', 'SLIDER', 'DATE', 'RATING', 'TIME', 'LIST_OF_TEXT_BOXES', 'INTEGER', 'EMAIL_ADDRESS', 'DECIMAL_NUMBER', 'INSTRUCTIONS', 'MONTH_AND_YEAR', 'YEAR', 'PHONE_NUMBER', 'ADDRESS', 'REAR_PICTURE', 'FRONT_PICTURE', 'SELECT_ONE_IMAGE', 'SELECT_MULTIPLE_IMAGE', 'LIST_OF_INTEGER_BOXES', 'LABELED_SLIDER', 'GEO_LOCATION']
 critical_type_questions: ['SELECT_ONE', 'SELECT_MULTIPLE']
 question_with_options: ['SELECT_ONE', 'SELECT_MULTIPLE', 'SELECT_ONE_WRITE_OTHER', 'SELECT_MULTIPLE_WRITE_OTHER', 'LIST_OF_TEXT_BOXES', 'LIST_OF_INTEGER_BOXES', 'LABELED_SLIDER']
 question_with_images: ['SELECT_ONE_IMAGE', 'SELECT_MULTIPLE_IMAGE']
 question_with_other: ['SELECT_ONE_WRITE_OTHER', 'SELECT_MULTIPLE_WRITE_OTHER']
 question_with_select_multiple: ['SELECT_MULTIPLE', 'SELECT_MULTIPLE_WRITE_OTHER', 'SELECT_MULTIPLE_IMAGE']
 question_with_multiple_skips: ['SELECT_ONE']
+question_with_skips: ['SELECT_ONE']
 question_without_options: ['FREE_RESPONSE', 'SLIDER', 'DATE', 'RATING', 'TIME', 'INTEGER', 'EMAIL_ADDRESS', 'DECIMAL_NUMBER', 'INSTRUCTIONS', 'MONTH_AND_YEAR', 'YEAR', 'PHONE_NUMBER', 'ADDRESS', 'REAR_PICTURE', 'FRONT_PICTURE']
-scoreable_question_types: 
-        ['SELECT_ONE', 'SELECT_MULTIPLE', 'SELECT_ONE_WRITE_OTHER',
-        'SELECT_MULTIPLE_WRITE_OTHER', 'INTEGER', 'DECIMAL_NUMBER', 'SLIDER', 'LABELED_SLIDER', 'RATING', 'LIST_OF_TEXT_BOXES', 'FREE_RESPONSE']
+scoreable_question_types: ['SELECT_ONE', 'SELECT_MULTIPLE', 'SELECT_ONE_WRITE_OTHER', 'SELECT_MULTIPLE_WRITE_OTHER', 'INTEGER', 'DECIMAL_NUMBER', 'SLIDER', 'LABELED_SLIDER', 'RATING', 'LIST_OF_TEXT_BOXES', 'FREE_RESPONSE']
 list_question_types: ['LIST_OF_INTEGER_BOXES', 'LIST_OF_TEXT_BOXES']
 
-rule_types: 
+rule_types:
   instrument_survey_limit_rule:
     constant_name: 'INSTRUMENT_SURVEY_LIMIT_RULE'
     pretty_name: 'Instrument Survey Limit Rule'
@@ -46,7 +44,7 @@ rule_types:
     pretty_name: 'Participant Age Rule'
     params: ['start_age', 'end_age']
     description: 'Limit an instrument so a survey can only be created if the age of the participant falls within the range'
- 
+
 # List delimiter for options
 list_delimiter: ','
 
@@ -82,3 +80,5 @@ danger_zone_days: 3
 metric_keys: ['device_uuid', 'Participant ID', 'Center ID']
 
 roster_types: ['STAFF','CHILD']
+
+display_types: ['SINGLE', 'MULTIPLE', 'TABULAR']

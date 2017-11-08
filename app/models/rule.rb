@@ -3,9 +3,9 @@
 # Table name: rules
 #
 #  id            :integer          not null, primary key
-#  rule_type     :string(255)
+#  rule_type     :string
 #  instrument_id :integer
-#  rule_params   :string(255)
+#  rule_params   :string
 #  created_at    :datetime
 #  updated_at    :datetime
 #  deleted_at    :time

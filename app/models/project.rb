@@ -3,11 +3,11 @@
 # Table name: projects
 #
 #  id                :integer          not null, primary key
-#  name              :string(255)
+#  name              :string
 #  description       :text
 #  created_at        :datetime
 #  updated_at        :datetime
-#  survey_aggregator :string(255)
+#  survey_aggregator :string
 #
 
 class Project < ActiveRecord::Base

@@ -3,11 +3,11 @@
 # Table name: response_images
 #
 #  id                   :integer          not null, primary key
-#  response_uuid        :string(255)
+#  response_uuid        :string
 #  created_at           :datetime
 #  updated_at           :datetime
-#  picture_file_name    :string(255)
-#  picture_content_type :string(255)
+#  picture_file_name    :string
+#  picture_content_type :string
 #  picture_file_size    :integer
 #  picture_updated_at   :datetime
 #

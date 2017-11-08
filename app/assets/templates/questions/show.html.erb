@@ -1,4 +1,5 @@
-<ng-form class="card" name="questionEditorForm" ng-controller="ShowQuestionCtrl">
+<ng-form name="questionEditorForm" ng-controller="ShowQuestionCtrl">
+<div class="card">
   <div class="card-body card-padding">
     <div class="row m-t-5">
       <label class="col-md-2">Identifier</label>
@@ -49,13 +50,16 @@
           id="option-set"
           ng-model="question.option_set_id"
           ng-options="set.id as set.title for set in optionSets">
-          <option value=""></option>
+          <option value="">Select an option set from the list below</option>
         </select>
       </div>
-      <div class="col-md-2" ng-show="question.option_set_id">
-        <a href="/option_sets/{{question.option_set_id}}">
+      <div class="col-md-1" ng-show="question.option_set_id">
+        <a class="btn btn-primary" href="/option_sets/{{question.option_set_id}}">
           <strong>View Options</strong>
         </a>
+      </div>
+      <div class="col-md-1" ng-show="!question.option_set_id">
+        <a class="btn btn-success" href="/option_sets">New Option Set</a>
       </div>
     </div>
 
@@ -68,13 +72,16 @@
           id="instruction"
           ng-model="question.instruction_id"
           ng-options="instruction.id as instruction.title for instruction in instructions">
-          <option value=""></option>
+          <option value="">Select instruction from the list below</option>
         </select>
       </div>
-      <div class="col-md-2" ng-show="question.instruction_id">
-        <a href="/instructions/{{question.instruction_id}}">
+      <div class="col-md-1" ng-show="question.instruction_id">
+        <a class="btn btn-primary" href="/instructions/{{question.instruction_id}}">
           <strong>View Instruction</strong>
         </a>
+      </div>
+      <div class="col-md-1" ng-show="!question.instruction_id">
+        <a class="btn btn-success" href="/instructions">New Instruction</a>
       </div>
     </div>
 
@@ -91,4 +98,5 @@
       </div>
     </div>
   </div>
+</div>
 </ng-form>

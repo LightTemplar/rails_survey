@@ -3,34 +3,33 @@
 # Table name: users
 #
 #  id                     :integer          not null, primary key
-#  email                  :string(255)      default(""), not null
-#  encrypted_password     :string(255)      default(""), not null
-#  reset_password_token   :string(255)
+#  email                  :string           default(""), not null
+#  encrypted_password     :string           default(""), not null
+#  reset_password_token   :string
 #  reset_password_sent_at :datetime
 #  remember_created_at    :datetime
 #  sign_in_count          :integer          default(0), not null
 #  current_sign_in_at     :datetime
 #  last_sign_in_at        :datetime
-#  current_sign_in_ip     :string(255)
-#  last_sign_in_ip        :string(255)
-#  authentication_token   :string(255)
+#  current_sign_in_ip     :string
+#  last_sign_in_ip        :string
+#  authentication_token   :string
 #  created_at             :datetime
 #  updated_at             :datetime
 #  failed_attempts        :integer          default(0)
-#  unlock_token           :string(255)
+#  unlock_token           :string
 #  locked_at              :datetime
-#  last_active_at         :datetime
-#  gauth_secret           :string(255)
-#  gauth_enabled          :string(255)      default("f")
-#  gauth_tmp              :string(255)
+#  gauth_secret           :string
+#  gauth_enabled          :string           default("f")
+#  gauth_tmp              :string
 #  gauth_tmp_datetime     :datetime
-#  invitation_token       :string(255)
+#  invitation_token       :string
 #  invitation_created_at  :datetime
 #  invitation_sent_at     :datetime
 #  invitation_accepted_at :datetime
 #  invitation_limit       :integer
 #  invited_by_id          :integer
-#  invited_by_type        :string(255)
+#  invited_by_type        :string
 #  invitations_count      :integer          default(0)
 #
 

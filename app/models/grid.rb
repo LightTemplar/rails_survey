@@ -4,8 +4,8 @@
 #
 #  id            :integer          not null, primary key
 #  instrument_id :integer
-#  question_type :string(255)
-#  name          :string(255)
+#  question_type :string
+#  name          :string
 #  created_at    :datetime
 #  updated_at    :datetime
 #  instructions  :text

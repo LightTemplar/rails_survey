@@ -3,9 +3,9 @@
 # Table name: device_users
 #
 #  id              :integer          not null, primary key
-#  username        :string(255)      not null
-#  name            :string(255)
-#  password_digest :string(255)
+#  username        :string           not null
+#  name            :string
+#  password_digest :string
 #  active          :boolean          default(FALSE)
 #  created_at      :datetime
 #  updated_at      :datetime

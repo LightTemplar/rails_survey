@@ -1,4 +1,4 @@
-App.controller 'InstructionsCtrl', ['$scope', 'Instruction', ($scope, Instruction) ->
+App.controller 'InstructionsCtrl', ['$scope', '$location', 'Instruction', ($scope, $location, Instruction) ->
   $scope.createInstruction = () ->
     setNewInstruction(new Instruction(), true)
 
@@ -8,9 +8,9 @@ App.controller 'InstructionsCtrl', ['$scope', 'Instruction', ($scope, Instructio
   $scope.saveInstruction = () ->
     $scope.newInstruction.$save({} ,
       (data, headers) ->
-        console.log('success data', data)
         $scope.newInstruction = data
         $scope.instructions.push($scope.newInstruction)
+        $location.path '/instructions/' + data.id
       (result, headers) ->
     )
     $scope.cancelNewInstruction()

@@ -4,7 +4,7 @@
 #
 #  id              :integer          not null, primary key
 #  score_scheme_id :integer
-#  question_type   :string(255)
+#  question_type   :string
 #  min             :float
 #  max             :float
 #  weight          :float

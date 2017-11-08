@@ -4,11 +4,11 @@
 #
 #  id                        :integer          not null, primary key
 #  question_id               :integer
-#  language                  :string(255)
+#  language                  :string
 #  text                      :text
 #  created_at                :datetime
 #  updated_at                :datetime
-#  reg_ex_validation_message :string(255)
+#  reg_ex_validation_message :string
 #  question_changed          :boolean          default(FALSE)
 #  instructions              :text
 #  instrument_translation_id :integer

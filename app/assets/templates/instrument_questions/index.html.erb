@@ -1,0 +1,38 @@
+<h4 class="text-center"><strong>Instrument Questions</strong></h4>
+<div ng-controller="InstrumentQuestionsCtrl">
+  <div class="card">
+    <div class="card-body card-padding">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th class="col-md-1">Number</th>
+            <th class="col-md-2">Type</th>
+            <th class="col-md-2">Identifier</th>
+            <th class="col-md-6">Text</th>
+            <th class="col-md-1">Configure</th>
+          </tr>
+        </thead>
+        <tbody ui-sortable="sortableInstrumentQuestions" ng-model="instrumentQuestions">
+          <tr ng-repeat="instrumentQuestion in instrumentQuestions | orderBy:'number_in_instrument'">
+            <td class="col-md-1">
+              <a class="btn bgm-teal moveInstrumentQuestion">
+                <i class="md-swap-vert">{{instrumentQuestion.number_in_instrument}}</i>
+              </a>
+            </td>
+            <td class="col-md-2">{{instrumentQuestion.type}}</td>
+            <td class="col-md-2">
+              <a href="/question_sets/{{instrumentQuestion.question_set_id}}/questions/{{instrumentQuestion.question_id}}">
+                {{instrumentQuestion.identifier}}
+              </a>
+            </td>
+            <td class="col-md-6">{{instrumentQuestion.text}}</td>
+            <td class="col-md-1"><a class="btn btn-primary"
+              href="/projects/{{project_id}}/instruments/{{instrument_id}}/instrument_questions/{{instrumentQuestion.id}}">
+              View
+            </a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -14,4 +14,25 @@ class InstrumentQuestionSet < ActiveRecord::Base
   belongs_to :question_set
   has_many :questions, through: :question_set
   has_many :options, through: :questions
+  after_create :initialize_instrument_questions
+  before_destroy :destroy_instrument_questions
+
+  private
+
+  def initialize_instrument_questions
+    questions_size = instrument.instrument_questions.size
+    questions.each do |question|
+      questions_size += 1
+      InstrumentQuestion.create!(
+        question_id: question.id,
+        instrument_id: instrument.id,
+        number_in_instrument: questions_size,
+        display_type: Settings.display_types.first
+      )
+    end
+  end
+
+  def destroy_instrument_questions
+    instrument.instrument_questions.destroy_all
+  end
 end

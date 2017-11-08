@@ -7,7 +7,7 @@
 #  text                      :text
 #  created_at                :datetime
 #  updated_at                :datetime
-#  next_question             :string(255)
+#  next_question             :string
 #  number_in_question        :integer
 #  deleted_at                :datetime
 #  instrument_version_number :integer          default(-1)
@@ -15,6 +15,7 @@
 #  critical                  :boolean
 #  complete_survey           :boolean
 #  option_set_id             :integer
+#  identifier                :string
 #
 
 require "spec_helper"

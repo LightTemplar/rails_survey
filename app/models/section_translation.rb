@@ -4,8 +4,8 @@
 #
 #  id                        :integer          not null, primary key
 #  section_id                :integer
-#  language                  :string(255)
-#  text                      :string(255)
+#  language                  :string
+#  text                      :string
 #  created_at                :datetime
 #  updated_at                :datetime
 #  section_changed           :boolean          default(FALSE)

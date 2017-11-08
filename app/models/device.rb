@@ -3,11 +3,12 @@
 # Table name: devices
 #
 #  id         :integer          not null, primary key
-#  identifier :string(255)
+#  identifier :string
 #  created_at :datetime
 #  updated_at :datetime
-#  label      :string(255)
+#  label      :string
 #
+
 class Device < ActiveRecord::Base
   has_many :surveys
   has_many :project_devices

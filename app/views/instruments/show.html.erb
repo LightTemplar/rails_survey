@@ -2,61 +2,71 @@
 
 <div class="card">
   <div class="card-header">
-    <a class="btn btn-primary" href="/projects/<%= @project.id %>/instruments/<%= @instrument.id %>/instrument_question_sets">Instrument Question Sets</a>
-    <%#= link_to 'Instrument Question Sets', project_instrument_instrument_question_sets_path(@project, @instrument), class: 'btn btn-primary' %>
-    <!-- <i class="md-launch">Instrument Question Sets</i> -->
-    <%# end %>
-    <%#= link_to questions_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-    <!-- <i class="md-launch"></i>
-    Individual Questions Editor
-    <%# end %>
-    <%#= link_to project_instrument_grids_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-    <i class="md-view-list"></i>
-    Tabular Questions Editor
-    <%# end %>
-    <%#= link_to csv_export_project_instrument_path(@project, @instrument, format: :csv, filename: "#{@instrument.title}_#{@instrument.current_version_number}.csv"), class: 'btn btn-primary m-5' do %>
-    <i class="md-cloud-download"></i>
-    CSV Export
-    <%# end %>
-    <%#= link_to pdf_export_project_instrument_path(@project, @instrument, format: :pdf, filename: "#{@instrument.title}_#{@instrument.current_version_number}.pdf"), class: 'btn btn-primary m-5' do %>
-    <i class="md-print"></i>
-    PDF Export
-    <%# end %>
-    <%#= link_to project_instrument_instrument_translations_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-    <i class="md-language"></i>
-    Translations
-    <%# end %>
-    <%#= link_to project_instrument_sections_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-    <i class="md-list"></i>
-    Sections
-    <%# end %>
-    <%#= link_to project_instrument_randomized_factors_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-    <i class="md-view-list"></i>
-    Randomized Factors
-    <%# end %>
-    <%#= link_to project_instrument_versions_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-    <i class="md-history"></i>
-    Past Versions
-    <%# end %>
-    <%#= link_to edit_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-    <i class="md-edit"></i>
-    Edit Instrument
-    <%# end %>
-    <%#= link_to move_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-    <i class="md-content-cut"></i>
-    Move Instrument
-    <%# end %>
-    <%#= link_to copy_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5 ' do %>
-    <i class="md-content-copy"></i>
-    Copy Instrument
-    <%# end %>
-    <%#= link_to copy_questions_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-    <i class="md-content-copy"></i>
-    Copy Questions
-    <%# end %>
-    <%#= link_to project_instrument_reorder_questions_path(current_project.id, @instrument.id), class: 'btn btn-primary m-5' do %>
-    <i class="md-unfold-more"></i>
-    Reorder Questions
-    <%# end %>-->
+    <a class="btn btn-primary"
+      href="/projects/<%= @project.id %>/instruments/<%= @instrument.id %>/instrument_question_sets">
+      Question Sets
+    </a>
+    <a class="btn btn-primary"
+      href="/projects/<%= @project.id %>/instruments/<%= @instrument.id %>/instrument_questions">
+      Questions
+    </a>
   </div>
 </div>
+
+<%#= link_to 'Instrument Question Sets', project_instrument_instrument_question_sets_path(@project, @instrument), class: 'btn btn-primary' %>
+<!-- <i class="md-launch">Instrument Question Sets</i> -->
+<%# end %>
+<%#= link_to questions_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
+<!-- <i class="md-launch"></i>
+Individual Questions Editor
+<%# end %>
+<%#= link_to project_instrument_grids_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
+<i class="md-view-list"></i>
+Tabular Questions Editor
+<%# end %>
+<%#= link_to csv_export_project_instrument_path(@project, @instrument, format: :csv, filename: "#{@instrument.title}_#{@instrument.current_version_number}.csv"), class: 'btn btn-primary m-5' do %>
+<i class="md-cloud-download"></i>
+CSV Export
+<%# end %>
+<%#= link_to pdf_export_project_instrument_path(@project, @instrument, format: :pdf, filename: "#{@instrument.title}_#{@instrument.current_version_number}.pdf"), class: 'btn btn-primary m-5' do %>
+<i class="md-print"></i>
+PDF Export
+<%# end %>
+<%#= link_to project_instrument_instrument_translations_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
+<i class="md-language"></i>
+Translations
+<%# end %>
+<%#= link_to project_instrument_sections_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
+<i class="md-list"></i>
+Sections
+<%# end %>
+<%#= link_to project_instrument_randomized_factors_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
+<i class="md-view-list"></i>
+Randomized Factors
+<%# end %>
+<%#= link_to project_instrument_versions_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
+<i class="md-history"></i>
+Past Versions
+<%# end %>
+<%#= link_to edit_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
+<i class="md-edit"></i>
+Edit Instrument
+<%# end %>
+<%#= link_to move_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
+<i class="md-content-cut"></i>
+Move Instrument
+<%# end %>
+<%#= link_to copy_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5 ' do %>
+<i class="md-content-copy"></i>
+Copy Instrument
+<%# end %>
+<%#= link_to copy_questions_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
+<i class="md-content-copy"></i>
+Copy Questions
+<%# end %>
+<%#= link_to project_instrument_reorder_questions_path(current_project.id, @instrument.id), class: 'btn btn-primary m-5' do %>
+<i class="md-unfold-more"></i>
+Reorder Questions
+<%# end %>-->
+<!-- </div>
+</div> -->

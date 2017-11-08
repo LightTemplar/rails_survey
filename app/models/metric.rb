@@ -4,9 +4,9 @@
 #
 #  id            :integer          not null, primary key
 #  instrument_id :integer
-#  name          :string(255)
+#  name          :string
 #  expected      :integer
-#  key_name      :string(255)
+#  key_name      :string
 #  created_at    :datetime
 #  updated_at    :datetime
 #

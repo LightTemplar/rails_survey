@@ -4,9 +4,9 @@
 #
 #  id               :integer          not null, primary key
 #  instrument_id    :integer
-#  language         :string(255)
-#  alignment        :string(255)
-#  title            :string(255)
+#  language         :string
+#  alignment        :string
+#  title            :string
 #  created_at       :datetime
 #  updated_at       :datetime
 #  critical_message :text

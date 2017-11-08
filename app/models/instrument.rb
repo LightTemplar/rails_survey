@@ -3,11 +3,11 @@
 # Table name: instruments
 #
 #  id                      :integer          not null, primary key
-#  title                   :string(255)
+#  title                   :string
 #  created_at              :datetime
 #  updated_at              :datetime
-#  language                :string(255)
-#  alignment               :string(255)
+#  language                :string
+#  alignment               :string
 #  child_update_count      :integer          default(0)
 #  previous_question_count :integer
 #  project_id              :integer
@@ -19,7 +19,7 @@
 #  navigate_to_review_page :boolean          default(FALSE)
 #  critical_message        :text
 #  roster                  :boolean          default(FALSE)
-#  roster_type             :string(255)
+#  roster_type             :string
 #  scorable                :boolean          default(FALSE)
 #  auto_export_responses   :boolean          default(TRUE)
 #
@@ -32,10 +32,11 @@ class Instrument < ActiveRecord::Base
   serialize :special_options, Array
   scope :published, -> { where(published: true) }
   belongs_to :project
-  
+
   has_many :instrument_question_sets
   has_many :questions, through: :instrument_question_sets
   has_many :options, through: :questions
+  has_many :instrument_questions
 
   has_many :surveys
   has_many :responses, through: :surveys

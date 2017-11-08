@@ -4,10 +4,10 @@
 #
 #  id                        :integer          not null, primary key
 #  project_id                :integer
-#  uuid                      :string(255)
+#  uuid                      :string
 #  instrument_id             :integer
-#  identifier                :string(255)
-#  instrument_title          :string(255)
+#  identifier                :string
+#  instrument_title          :string
 #  instrument_version_number :integer
 #  created_at                :datetime
 #  updated_at                :datetime

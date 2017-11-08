@@ -8,10 +8,10 @@
 #  score_sum       :float
 #  created_at      :datetime
 #  updated_at      :datetime
-#  uuid            :string(255)
-#  survey_uuid     :string(255)
-#  device_uuid     :string(255)
-#  device_label    :string(255)
+#  uuid            :string
+#  survey_uuid     :string
+#  device_uuid     :string
+#  device_label    :string
 #
 
 class Score < ActiveRecord::Base

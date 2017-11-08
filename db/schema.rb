@@ -156,6 +156,15 @@ ActiveRecord::Schema.define(version: 20170928193235) do
     t.datetime "updated_at"
   end
 
+  create_table "instrument_questions", force: :cascade do |t|
+    t.integer  "question_id"
+    t.integer  "instrument_id"
+    t.integer  "number_in_instrument"
+    t.string   "display_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "instrument_translations", force: :cascade do |t|
     t.integer  "instrument_id"
     t.string   "language"
@@ -194,6 +203,15 @@ ActiveRecord::Schema.define(version: 20170928193235) do
     t.string   "name"
     t.integer  "expected"
     t.string   "key_name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "next_questions", force: :cascade do |t|
+    t.string   "question_identifier"
+    t.string   "option_identifier"
+    t.string   "next_question_identifier"
+    t.integer  "instrument_question_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -241,6 +259,7 @@ ActiveRecord::Schema.define(version: 20170928193235) do
     t.boolean  "critical"
     t.boolean  "complete_survey"
     t.integer  "option_set_id"
+    t.string   "identifier"
   end
 
   create_table "project_device_users", force: :cascade do |t|

@@ -4,17 +4,16 @@
 #
 #  id                               :integer          not null, primary key
 #  text                             :text
-#  question_type                    :string(255)
-#  question_identifier              :string(255)
+#  question_type                    :string
+#  question_identifier              :string
 #  instrument_id                    :integer
 #  created_at                       :datetime
 #  updated_at                       :datetime
-#  following_up_question_identifier :string(255)
-#  reg_ex_validation                :string(255)
+#  following_up_question_identifier :string
+#  reg_ex_validation                :string
 #  number_in_instrument             :integer
-#  reg_ex_validation_message        :string(255)
+#  reg_ex_validation_message        :string
 #  deleted_at                       :datetime
-#  follow_up_position               :integer          default(0)
 #  identifies_survey                :boolean          default(FALSE)
 #  instructions                     :text             default("")
 #  child_update_count               :integer          default(0)
@@ -23,6 +22,7 @@
 #  section_id                       :integer
 #  critical                         :boolean
 #  number_in_grid                   :integer
+#  follow_up_position               :integer          default(0)
 #  question_set_id                  :integer
 #  option_set_id                    :integer
 #  instruction_id                   :integer

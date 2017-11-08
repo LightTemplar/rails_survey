@@ -3,7 +3,7 @@
 # Table name: api_keys
 #
 #  id           :integer          not null, primary key
-#  access_token :string(255)
+#  access_token :string
 #  created_at   :datetime
 #  updated_at   :datetime
 #

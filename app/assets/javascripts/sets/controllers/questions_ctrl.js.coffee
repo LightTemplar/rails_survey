@@ -69,5 +69,5 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$routeParams', '$location', '$rou
   $scope.settings = Setting.get({})
   $scope.optionSets = OptionSet.query({})
   $scope.instructions = Instruction.query({})
-
+  
 ]

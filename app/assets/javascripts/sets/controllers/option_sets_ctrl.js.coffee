@@ -1,4 +1,4 @@
-App.controller 'OptionSetsCtrl', ['$scope', 'OptionSet', ($scope, OptionSet) ->
+App.controller 'OptionSetsCtrl', ['$scope', '$location', 'OptionSet', ($scope, $location, OptionSet) ->
   $scope.createOptionSet = () ->
     setNewOption(new OptionSet(), true)
 
@@ -8,9 +8,10 @@ App.controller 'OptionSetsCtrl', ['$scope', 'OptionSet', ($scope, OptionSet) ->
   $scope.saveOptionSet = () ->
     $scope.newOptionSet.$save({} ,
       (data, headers) ->
+        $scope.optionSets.push(data)
+        $location.path '/option_sets/' + data.id
       (result, headers) ->
     )
-    $scope.optionSets.push($scope.newOptionSet)
     $scope.cancelNewOptionSet()
 
   setNewOption = (optionSet, status) ->

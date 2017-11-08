@@ -8,7 +8,7 @@
 #  value         :float
 #  created_at    :datetime
 #  updated_at    :datetime
-#  label         :string(255)
+#  label         :string
 #  exists        :boolean
 #  next_question :boolean
 #  deleted_at    :datetime

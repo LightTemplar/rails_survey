@@ -8,12 +8,12 @@
 #  other_response      :text
 #  created_at          :datetime
 #  updated_at          :datetime
-#  survey_uuid         :string(255)
-#  special_response    :string(255)
+#  survey_uuid         :string
+#  special_response    :string
 #  time_started        :datetime
 #  time_ended          :datetime
-#  question_identifier :string(255)
-#  uuid                :string(255)
+#  question_identifier :string
+#  uuid                :string
 #  device_user_id      :integer
 #  question_version    :integer          default(-1)
 #  deleted_at          :datetime

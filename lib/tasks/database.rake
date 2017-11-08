@@ -26,7 +26,10 @@ namespace :db do
     10.times do |t|
       os = OptionSet.create!(title: Forgery('lorem_ipsum').title(random: true))
       3.times do |o_n|
-        o = Option.create!(text: Forgery('lorem_ipsum').word(random: true), option_set_id: os.id)
+        o = Option.create!(
+          text: Forgery('lorem_ipsum').word(random: true),
+          identifier: "#{t}_o_#{o_n}",
+          option_set_id: os.id)
       end
     end
     10.times do |t|
@@ -49,6 +52,18 @@ namespace :db do
         q.instruction_id = Instruction.ids.shuffle.first
         q.save!
       end
+    end
+    i = Instrument.create!(
+      title: 'Test Instrument',
+      project_id: Project.all.first.try(:id),
+      language: 'en',
+      alignment: 'left'
+    )
+    2.times do |t|
+      iqs = InstrumentQuestionSet.create!(
+        instrument_id: i.id,
+        question_set_id: QuestionSet.ids.shuffle.first
+      )
     end
   end
 

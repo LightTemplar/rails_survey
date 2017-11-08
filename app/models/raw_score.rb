@@ -8,8 +8,8 @@
 #  value         :float
 #  created_at    :datetime
 #  updated_at    :datetime
-#  uuid          :string(255)
-#  score_uuid    :string(255)
+#  uuid          :string
+#  score_uuid    :string
 #
 
 class RawScore < ActiveRecord::Base
