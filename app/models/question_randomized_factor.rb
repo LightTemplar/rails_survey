@@ -13,6 +13,7 @@
 class QuestionRandomizedFactor < ActiveRecord::Base
   belongs_to :question, touch: true
   belongs_to :randomized_factor
+  has_many :randomized_options, through: :randomized_factor
   validates :question_id, presence: true
   validates :randomized_factor_id, presence: true
   validates :position, presence: true

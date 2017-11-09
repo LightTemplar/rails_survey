@@ -15,28 +15,28 @@
   <% end %>
 
   <div class="card-body card-padding">
-    <div class="form-group">
+    <div class="row form-group">
       <%= f.label :active, class: 'col-md-2 control-label' %>
       <%= f.check_box :active, class: 'col-md-2' %>
       <span class="col-md-8">If checked, this is the translation used for the language
         <%= @instrument_translation.language %></span>
     </div>
 
-    <div class="form-group">
+    <div class="row form-group">
       <%= f.label :language, 'Translation Language', class: 'col-md-2 control-label' %>
       <div class="col-md-10">
         <%= f.select(:language, options_for_select(Settings.languages, @instrument_translation.language)) %>
       </div>
     </div>
 
-    <div class="form-group">
+    <div class="row form-group">
       <%= f.label :title, 'Instrument Title', class: 'col-md-2 control-label' %>
       <div class="col-md-10">
         <%= f.text_field :title, class: 'fg-line form-control input-md' %>
       </div>
     </div>
 
-    <div class="form-group">
+    <div class="row form-group">
       <%= f.label :critical_message, 'Instrument Critical Message', class: 'col-md-2 control-label' %>
       <div class="col-md-10">
         <%= f.text_area :critical_message, class: 'fg-line form-control input-md' %>
@@ -48,12 +48,22 @@
     <table class="table table-hover">
       <thead>
         <tr>
-          <th>Question Identifier</th>
+          <th>Identifier</th>
           <th><%= @instrument.language %></th>
           <th>Translated Text</th>
         </tr>
       </thead>
       <tbody>
+        <% @randomized_options.each do |randomized_option|%>
+        <tr>
+          <td><%= randomized_option.randomized_factor.title %></td>
+          <td><%= randomized_option.text %></td>
+          <td>
+            <%= text_field_tag "randomized_option_translations[#{randomized_option.id}]",
+            @instrument_translation.translation_for(randomized_option).try(:text), size: '70x5' %>
+          </td>
+        </tr>
+        <% end %>
         <% @questions.each do |question| %>
         <tr>
           <% unless question.instructions.blank? %>
@@ -78,7 +88,7 @@
             <%= question.question_identifier %></td>
           <td><%= option.text %></td>
           <td>
-            <%= text_area_tag "option_translations[#{option.id}]", @instrument_translation.translation_for(option).try(:text), size: '70x5' %>
+            <%= text_field_tag "option_translations[#{option.id}]", @instrument_translation.translation_for(option).try(:text), size: '70x5' %>
           </td>
         </tr>
         <% end %>
@@ -91,7 +101,7 @@
           </td>
           <td><%= question.section.title %></td>
           <td>
-            <%= text_area_tag "section_translations[#{question.section.id}]", @instrument_translation.translation_for(question.section).try(:text), size: '70x5' %>
+            <%= text_field_tag "section_translations[#{question.section.id}]", @instrument_translation.translation_for(question.section).try(:text), size: '70x5' %>
           </td>
         </tr>
         <% end %>
@@ -100,7 +110,7 @@
           <%= question.question_identifier %></td>
         <td><%= question.reg_ex_validation_message %></td>
         <td>
-          <%= text_area_tag "validation_translations[#{question.id}]", @instrument_translation.translation_for(question).try(:reg_ex_validation_message), size: '70x5' %>
+          <%= text_field_tag "validation_translations[#{question.id}]", @instrument_translation.translation_for(question).try(:reg_ex_validation_message), size: '70x5' %>
         </td>
         <% end %>
         <% end %>

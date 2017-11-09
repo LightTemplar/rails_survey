@@ -39,6 +39,7 @@ class Question < ActiveRecord::Base
   has_many :option_skips, through: :options, source: :skips
   has_many :skips, foreign_key: :question_identifier, primary_key: :question_identifier, dependent: :destroy
   has_many :question_randomized_factors, dependent: :destroy
+  has_many :randomized_options, through: :question_randomized_factors
   delegate :project, to: :instrument
   before_save :update_instrument_version, if: proc { |question| question.changed? && !question.child_update_count_changed? }
   before_save :update_question_translation, if: proc { |question| question.text_changed? }
