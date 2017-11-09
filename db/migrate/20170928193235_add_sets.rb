@@ -22,7 +22,7 @@ class AddSets < ActiveRecord::Migration
       t.integer :question_id
       t.integer :instrument_id
       t.integer :number_in_instrument
-      t.string :display_type
+      t.integer :display_id
       t.timestamps
     end
     create_table :next_questions do |t|
@@ -30,6 +30,12 @@ class AddSets < ActiveRecord::Migration
       t.string :option_identifier
       t.string :next_question_identifier
       t.integer :instrument_question_id
+      t.timestamps
+    end
+    create_table :displays do |t|
+      t.string :mode
+      t.string :position
+      t.integer :instrument_id
       t.timestamps
     end
 

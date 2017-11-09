@@ -1,0 +1,31 @@
+<h4 class="text-center"><strong>Question Display Order</strong></h4>
+<div class="card">
+  <div class="card-body card-padding">
+    <div ng-controller="DisplaysCtrl">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th class="col-md-2">Screen Number</th>
+            <th class="col-md-2">Display Mode</th>
+            <th class="col-md-8">Questions</th>
+          </tr>
+        </thead>
+        <tbody ui-sortable="sortableDisplays" ng-model="displays">
+          <tr ng-repeat="display in displays | orderBy:'position'">
+            <td class="col-md-2">{{display.position}}</td>
+            <th class="col-md-2">{{display.mode}}</th>
+            <th class="col-md-6">
+              <ul ng-repeat="instrumentQuestion in display.instrument_questions">
+                <span>{{instrumentQuestion.type}}</span> :
+                <span>{{instrumentQuestion.identifier}}</span>
+              </ul>
+            </th>
+            <th>
+              <div class="btn btn-success" ng-click="edit(display)">Edit</div>
+            </th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

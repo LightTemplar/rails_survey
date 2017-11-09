@@ -37,6 +37,7 @@ class Instrument < ActiveRecord::Base
   has_many :questions, through: :instrument_question_sets
   has_many :options, through: :questions
   has_many :instrument_questions
+  has_many :displays
 
   has_many :surveys
   has_many :responses, through: :surveys

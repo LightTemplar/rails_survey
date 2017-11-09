@@ -1,7 +1,7 @@
 object @instrument_question
 cache @instrument_question
 
-attributes :id, :instrument_id, :question_id, :number_in_instrument, :display_type
+attributes :id, :instrument_id, :question_id, :number_in_instrument, :display_id
 
 node :identifier do |iq|
   iq.question.question_identifier
@@ -21,4 +21,8 @@ end
 
 node :option_set_id do |iq|
   iq.question.option_set_id
+end
+
+child :display do |iq|
+  attributes :id, :position, :mode
 end

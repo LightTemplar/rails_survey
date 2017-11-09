@@ -91,6 +91,12 @@ ActiveRecord::Schema.define(version: 20170928193235) do
 
   add_index "devices", ["identifier"], name: "index_devices_on_identifier", unique: true, using: :btree
 
+  create_table "displays", force: :cascade do |t|
+    t.string  "mode"
+    t.string  "position"
+    t.integer "instrument_id"
+  end
+
   create_table "grid_label_translations", force: :cascade do |t|
     t.integer  "grid_label_id"
     t.integer  "instrument_translation_id"
@@ -160,7 +166,7 @@ ActiveRecord::Schema.define(version: 20170928193235) do
     t.integer  "question_id"
     t.integer  "instrument_id"
     t.integer  "number_in_instrument"
-    t.string   "display_type"
+    t.integer  "display_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

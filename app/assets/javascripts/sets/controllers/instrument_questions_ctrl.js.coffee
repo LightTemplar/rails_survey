@@ -31,9 +31,10 @@ NextQuestion) ->
   # TODO: Does not work if browser refreshed
   $scope.instrumentQuestion = _.first(_.filter(InstrumentQuestions.questions,
     (q) -> q.id == parseInt($routeParams.id)))
-  $scope.options = Option.query({
-    'option_set_id': $scope.instrumentQuestion.option_set_id
-  })
+  if $scope.instrumentQuestion.option_set_id
+    $scope.options = Option.query({
+      'option_set_id': $scope.instrumentQuestion.option_set_id
+    })
   $scope.settings = Setting.get({})
   $scope.nextQuestions = NextQuestion.query({
     'project_id': $scope.project_id,

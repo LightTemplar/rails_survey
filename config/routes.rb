@@ -24,6 +24,7 @@ RailsSurvey::Application.routes.draw do
           resources :instrument_questions do
             resources :next_questions
           end
+          resources :displays
         end
       end
       get 'settings/index'

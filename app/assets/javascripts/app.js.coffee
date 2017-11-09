@@ -47,4 +47,10 @@ window.App = angular.module('Survey',
       .when '/projects/:project_id/instruments/:instrument_id/instrument_questions/:id',
         templateUrl: 'instrument_questions/show.html'
         controller: 'ShowInstrumentQuestionCtrl'
+      .when '/projects/:project_id/instruments/:instrument_id/displays',
+        templateUrl: 'displays/index.html'
+        controller: 'DisplaysCtrl'
+      .when '/projects/:project_id/instruments/:instrument_id/displays/:id',
+        templateUrl: 'displays/show.html'
+        controller: 'ShowDisplayCtrl'
   ])

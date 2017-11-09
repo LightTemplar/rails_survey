@@ -81,4 +81,4 @@ metric_keys: ['device_uuid', 'Participant ID', 'Center ID']
 
 roster_types: ['STAFF','CHILD']
 
-display_types: ['SINGLE', 'MULTIPLE', 'TABULAR']
+display_types: ['SINGLE', 'MULTIPLE', 'TABLE']

@@ -9,7 +9,7 @@
             <th class="col-md-2">Type</th>
             <th class="col-md-2">Identifier</th>
             <th class="col-md-6">Text</th>
-            <th class="col-md-1">Configure</th>
+            <th class="col-md-1">Configuration</th>
           </tr>
         </thead>
         <tbody ui-sortable="sortableInstrumentQuestions" ng-model="instrumentQuestions">
@@ -25,11 +25,15 @@
                 {{instrumentQuestion.identifier}}
               </a>
             </td>
-            <td class="col-md-6">{{instrumentQuestion.text}}</td>
-            <td class="col-md-1"><a class="btn btn-primary"
+            <td class="col-md-4">{{instrumentQuestion.text}}</td>
+            <td class="col-md-3">
+              <a class="btn btn-success"
               href="/projects/{{project_id}}/instruments/{{instrument_id}}/instrument_questions/{{instrumentQuestion.id}}">
-              View
-            </a></td>
+              View</a>
+              <!-- <a class="btn btn-primary"
+              href="">
+              Display</a> -->
+            </td>
           </tr>
         </tbody>
       </table>

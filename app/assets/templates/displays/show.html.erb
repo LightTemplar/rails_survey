@@ -1,0 +1,36 @@
+<h4 class="text-center"><strong>{{display.position}} : {{display.mode}}</strong></h4>
+<div class="card">
+  <div class="card-body card-padding">
+    <div ng-controller="ShowDisplayCtrl">
+      <div class="row">
+        <label class="col-md-4">Screen Display Mode</label>
+        <div class="col-md-8">
+          <select
+          class="form-control"
+          allow-single-deselect="true"
+          data-placeholder="Select an option identifier..."
+          no-results-text="'This does not match any valid option identifier'"
+          name="display-mode"
+          ng-model="display.mode"
+          ng-options="type for type in settings.display_types">
+          <option value=""></option>
+          </select>
+        </div>
+      </div>
+      <h4 class="text-center">Questions</h4>
+      <div class="row" ng-show="display.mode=='MULTIPLE'">
+        <span class="col-md-3" ng-repeat="instrumentQuestion in instrumentQuestions">
+          <input type="checkbox" ng-model="instrumentQuestion.display_id">
+            {{instrumentQuestion.identifier}}
+        </span>
+      </div>
+      <div class="row" ng-show="display.mode=='SINGLE'">
+        <span class="col-md-3" ng-repeat="instrumentQuestion in instrumentQuestions">
+          <input type="radio" ng-model="instrumentQuestion.display_id"
+          ng-value="display.id">
+            {{instrumentQuestion.identifier}}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
