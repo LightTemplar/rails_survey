@@ -1,0 +1,21 @@
+<%= render partial: '/instruments/instrument_header', locals:
+{ subtitle: "#{@display_group.position} : #{@display_group.title}" } %>
+
+<div class="card">
+  <div class="card-body card-padding">
+      <div class="text-center">
+        <strong><%= "Questions in Display Group #{@display_group.title}" %></strong>
+      </div>
+      <% @display_group.questions.each do |question| %>
+      <div class="row">
+        <%= question.question_identifier %>
+      </div>
+      <% end %>
+
+      <div class="row m-5">
+        <%= link_to 'Edit', edit_project_instrument_randomized_display_group_display_group_path(
+          current_project, @instrument, @randomized_display_group, @display_group),
+          class: 'btn btn-primary'%>
+      </div>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+<%= render partial: '/instruments/instrument_header', locals: {subtitle: @randomized_display_group.title} %>
+
+<div class="card">
+  <div class="card-body card-padding">
+      <div class="text-center">
+        <strong>Randomizable Display Groups</strong>
+      </div>
+      <% @randomized_display_group.display_groups.each do |group| %>
+      <div class="row">
+        <label class="col-md-1"><%= group.position %></label>
+        <%= link_to group.title, project_instrument_randomized_display_group_display_group_path(
+          current_project, @instrument, @randomized_display_group, group), class: 'col-md-10' %>
+        <div class="col-md-1">
+          <%= link_to 'Delete', project_instrument_randomized_display_group_display_group_path(
+          current_project, @instrument, @randomized_display_group, group),
+          method: :delete, data: {confirm: 'Are you sure?'}, class: 'm-5 btn btn-danger' %>
+        </div>
+      </div>
+      <% end %>
+      <div class="row m-5">
+        <%= link_to 'New Display Group', new_project_instrument_randomized_display_group_display_group_path(
+          current_project, @instrument, @randomized_display_group), class: 'btn btn-primary' %>
+      </div>
+  </div>
+</div>

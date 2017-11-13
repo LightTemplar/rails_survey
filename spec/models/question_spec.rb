@@ -23,6 +23,7 @@
 #  section_id                       :integer
 #  critical                         :boolean
 #  number_in_grid                   :integer
+#  display_group_id                 :integer
 #
 
 require "spec_helper"

@@ -42,6 +42,7 @@ class Project < ActiveRecord::Base
   has_many :option_scores, through: :score_units
   has_many :score_unit_questions, through: :score_units
   has_many :scores, through: :score_schemes
+  has_many :randomized_display_groups, through: :instruments
   validates :name, presence: true, allow_blank: false
   validates :description, presence: true, allow_blank: true
 

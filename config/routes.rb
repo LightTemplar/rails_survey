@@ -85,6 +85,7 @@ RailsSurvey::Application.routes.draw do
         resources :option_scores, only: [:index]
         resources :scores, only: [:create]
         resources :raw_scores, only: [:create]
+        resources :randomized_display_groups, only: [:index]
         member do
           get :current_time
         end
@@ -133,6 +134,9 @@ RailsSurvey::Application.routes.draw do
         collection do
           post :reorder
         end
+      end
+      resources :randomized_display_groups do
+        resources :display_groups
       end
     end
 

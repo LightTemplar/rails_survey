@@ -3,7 +3,7 @@ class SectionsController < ApplicationController
 
   def index
     @instrument = current_project.instruments.find(params[:instrument_id])
-    @sections = @instrument.sections 
+    @sections = @instrument.sections
   end
 
   def new
@@ -48,7 +48,7 @@ class SectionsController < ApplicationController
   end
 
   def destroy
-     @instrument = current_project.instruments.find(params[:instrument_id])
+    @instrument = current_project.instruments.find(params[:instrument_id])
     @section = @instrument.sections.find(params[:id])
     @section.destroy
     respond_to do |format|

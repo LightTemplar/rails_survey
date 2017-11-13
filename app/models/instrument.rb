@@ -48,6 +48,7 @@ class Instrument < ActiveRecord::Base
   has_many :score_schemes, dependent: :destroy
   has_many :randomized_factors, dependent: :destroy
   has_many :randomized_options, through: :randomized_factors
+  has_many :randomized_display_groups
 
   has_paper_trail on: %i[update destroy]
   acts_as_paranoid

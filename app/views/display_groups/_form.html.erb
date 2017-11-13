@@ -1,0 +1,50 @@
+<%= render partial: '/instruments/instrument_header', locals: {subtitle: "#{@display_group.title}"} %>
+<div class="card">
+  <div class="card-body card-padding">
+    <%= form_for([current_project, @instrument, @randomized_display_group, @display_group]) do |f| %>
+      <% if @display_group.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@display_group.errors.count, "error") %>
+            prohibited this display_group from being saved:</h2>
+          <ul>
+            <% @display_group.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+      <div class="row form-group">
+        <div class="col-sm-3">
+          <%= f.label :title, 'Title', class: 'control-label' %>
+        </div>
+        <div class="col-sm-9">
+          <%= f.text_field :title, class: 'form-control' %>
+        </div>
+      </div>
+      <div class="row form-group">
+        <div class="col-sm-3">
+          <%= f.label :position, 'Position', class: 'control-label' %>
+        </div>
+        <div class="col-sm-9">
+          <%= f.number_field :position, class: 'form-control' %>
+        </div>
+      </div>
+
+      <h4 class="text-center">Questions In Display Group</h4>
+      <div class="row">
+        <% @questions.each do |question| %>
+          <span class="col-md-4">
+            <%= check_box_tag 'display_group[question_ids][]',
+            question.id, @display_group.questions.include?(question) %>
+            <%= question.question_identifier %>
+          </span>
+        <% end %>
+      </div>
+
+      <div class="row m-5">
+        <%= f.submit class: 'btn btn-success' %>
+      </div>
+
+    <% end %>
+  </div>
+</div>

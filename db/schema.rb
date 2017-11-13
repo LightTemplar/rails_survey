@@ -88,6 +88,14 @@ ActiveRecord::Schema.define(version: 20171109185008) do
 
   add_index "devices", ["identifier"], name: "index_devices_on_identifier", unique: true
 
+  create_table "display_groups", force: :cascade do |t|
+    t.string   "title"
+    t.integer  "randomized_display_group_id"
+    t.integer  "position"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
   create_table "grid_label_translations", force: :cascade do |t|
     t.integer  "grid_label_id"
     t.integer  "instrument_translation_id"
@@ -282,9 +290,17 @@ ActiveRecord::Schema.define(version: 20171109185008) do
     t.integer  "section_id"
     t.boolean  "critical"
     t.integer  "number_in_grid"
+    t.integer  "display_group_id"
   end
 
   add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true
+
+  create_table "randomized_display_groups", force: :cascade do |t|
+    t.integer  "instrument_id"
+    t.string   "title"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
 
   create_table "randomized_factors", force: :cascade do |t|
     t.integer  "instrument_id"

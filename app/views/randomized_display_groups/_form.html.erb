@@ -1,0 +1,49 @@
+<%= render partial: '/instruments/instrument_header', locals: {subtitle: "#{@randomized_display_group.title}"} %>
+
+<div class="card">
+  <div class="card-body card-padding">
+    <%= form_for([current_project, @instrument, @randomized_display_group]) do |f| %>
+      <% if @randomized_display_group.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@randomized_display_group.errors.count, "error") %>
+            prohibited this randomized_display_group from being saved:</h2>
+          <ul>
+            <% @randomized_display_group.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+      <div class="row form-group">
+        <div class="col-sm-3">
+          <%= f.label :title, 'Display Group Title', class: 'control-label' %>
+        </div>
+        <div class="col-sm-9">
+          <%= f.text_field :title, class: 'form-control' %>
+        </div>
+      </div>
+
+      <% if @display_groups.size > 0 %>
+        <h4 class="text-center">Display Groups</h4>
+        <% @display_groups.each do |group| %>
+          <div class="row">
+            <%= check_box_tag 'randomized_display_groups[display_group_ids][]',
+            group.id, @randomized_display_group.display_groups.include?(group) %>
+            <%= group.title %>
+          </div>
+        <% end %>
+      <% end %>
+
+      <% if @randomized_display_group.id %>
+        <div class="row m-5">
+          <%= link_to 'New Display Group', new_project_instrument_randomized_display_group_display_group_path(
+            current_project, @instrument, @randomized_display_group), class: 'btn btn-primary' %>
+        </div>
+      <% end %>
+
+      <div class="row m-5">
+        <%= f.submit class: 'btn btn-success' %>
+      </div>
+    <% end %>
+  </div>
+</div>

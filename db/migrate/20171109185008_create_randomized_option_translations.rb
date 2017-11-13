@@ -7,5 +7,17 @@ class CreateRandomizedOptionTranslations < ActiveRecord::Migration
       t.string :language
       t.timestamps null: false
     end
+    create_table :randomized_display_groups do |t|
+      t.integer :instrument_id
+      t.string :title
+      t.timestamps null: false
+    end
+    create_table :display_groups do |t|
+      t.string :title
+      t.integer :randomized_display_group_id
+      t.integer :position
+      t.timestamps null: false
+    end
+    add_column :questions, :display_group_id, :integer
   end
 end
