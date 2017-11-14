@@ -180,6 +180,7 @@ class InstrumentTranslationsController < ApplicationController
   end
 
   def instrument_translation_params
-    params.require(:instrument_translation).permit(:title, :language, :alignment, :critical_message, :active)
+    params.require(:instrument_translation).permit(:title, :language, :alignment,
+      :critical_message, :active)
   end
 end

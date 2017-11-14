@@ -63,7 +63,10 @@
             </div>
             <div class="col-md-7 p-10">
               <div ng-repeat="randomizedFactor in instrument.randomized_factors">
-                <input type="radio" name="{{randomizedQuestionFactor.position}}_{{randomizedFactor.id}}" ng-model="randomizedQuestionFactor.randomized_factor_id" ng-value="randomizedFactor.id" ng-change="updateRandomizedFactorId()"/>
+                <input type="radio"
+                name="{{randomizedQuestionFactor.question_id}}_{{randomizedQuestionFactor.position}}_{{randomizedFactor.id}}"
+                ng-model="randomizedQuestionFactor.randomized_factor_id"
+                ng-value="randomizedFactor.id" ng-change="updateRandomizedFactorId()"/>
                 {{randomizedFactor.title}}
               </div>
             </div>
