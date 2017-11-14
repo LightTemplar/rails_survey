@@ -10,6 +10,6 @@
 #
 
 class RandomizedDisplayGroup < ActiveRecord::Base
-  belongs_to :instrument
+  belongs_to :instrument, touch: true
   has_many :display_groups, dependent: :destroy
 end

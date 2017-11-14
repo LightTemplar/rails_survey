@@ -20,6 +20,7 @@
 #  has_critical_responses    :boolean
 #  roster_uuid               :string(255)
 #  language                  :string(255)
+#  randomization_order       :text
 #
 
 require "spec_helper"

@@ -20,6 +20,7 @@
 #  has_critical_responses    :boolean
 #  roster_uuid               :string(255)
 #  language                  :string(255)
+#  randomization_order       :text
 #
 
 class Survey < ActiveRecord::Base
@@ -125,6 +126,10 @@ class Survey < ActiveRecord::Base
 
   def label
     metadata['survey_label'] if metadata
+  end
+
+  def randomization_order
+    JSON.parse(read_attribute(:randomization_order)) unless read_attribute(:randomization_order).blank?
   end
 
   def versioned_question(question_identifier)

@@ -29,9 +29,9 @@
   <div class="card-header">
     <h2 class="text-center">Survey Responses</h2>
   </div>
-  <% if @survey.metadata %>
   <div class="card-header">
-    <h2 class="text-center">
+  <% if @survey.metadata %>
+    <h4 class="text-center">
       <i class="md-info-outline">
         Survey Metadata
       </i>
@@ -55,8 +55,29 @@
         </tbody>
       </table>
     </div>
-  </div>
   <% end %>
+  <% if @survey.randomization_order %>
+    <h4 class="text-center">Randomization Order</h4>
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Question Identifier</th>
+            <th>Position Shown</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @survey.randomization_order.each_pair do |key, value| %>
+          <tr>
+            <td><%= key %></td>
+            <td><%= value %></td>
+          </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+  </div>
   <% if @survey.language %>
   <div class="row">
     <label class="col-md-4 text-right">

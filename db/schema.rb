@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171109185008) do
+ActiveRecord::Schema.define(version: 20171114012308) do
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.string   "namespace",     limit: 255
@@ -544,6 +544,7 @@ ActiveRecord::Schema.define(version: 20171109185008) do
     t.boolean  "has_critical_responses"
     t.string   "roster_uuid",               limit: 255
     t.string   "language",                  limit: 255
+    t.text     "randomization_order"
   end
 
   add_index "surveys", ["deleted_at"], name: "index_surveys_on_deleted_at"

@@ -11,6 +11,6 @@
 #
 
 class DisplayGroup < ActiveRecord::Base
-  belongs_to :randomized_display_group
+  belongs_to :randomized_display_group, touch: true
   has_many :questions
 end
