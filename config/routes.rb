@@ -10,6 +10,38 @@ RailsSurvey::Application.routes.draw do
     get '(page/:page)', action: :index, on: :collection, as: ''
   end
   namespace :api, defaults: { format: 'json' } do
+    namespace :v3 do
+      resources :projects, only: :index do
+        resources :instruments, only: :index
+        resources :sections, only: :index
+        resources :questions, only: :index
+        resources :options, only: :index
+        resources :randomized_factors, only: :index
+        resources :randomized_options, only: :index
+        resources :question_randomized_factors, only: :index
+        resources :device_users, only: :index
+        resources :images, only: %i[index show]
+        resources :skips, only: :index
+        resources :rules, only: :index
+        resources :score_schemes, only: :index
+        resources :score_units, only: :index
+        resources :option_scores, only: :index
+        resources :score_unit_questions, only: :index
+        resources :android_updates, only: [:index, :show]
+        resources :surveys, only: :create
+        resources :responses, only: :create
+        resources :response_images, only: :create
+        resources :device_sync_entries, only: :create
+        resources :rosters, only: :create
+        resources :scores, only: :create
+        resources :raw_scores, only: :create
+        # resources :grids, only: %i[index show]
+        # resources :grid_labels, only: %i[index show]
+        member do
+          get :current_time
+        end
+      end
+    end
     namespace :v2 do
       resources :question_sets do
         resources :questions

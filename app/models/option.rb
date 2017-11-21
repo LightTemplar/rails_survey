@@ -57,6 +57,7 @@ class Option < ActiveRecord::Base
     text
   end
 
+# TODO: Doesn't work anymore
   def instrument_version
     if instrument && (read_attribute(:instrument_version_number) == -1)
       instrument.current_version_number

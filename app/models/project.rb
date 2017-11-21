@@ -13,6 +13,9 @@
 class Project < ActiveRecord::Base
   include SynchAble
   has_many :instruments, dependent: :destroy
+  has_many :instrument_questions, through: :instruments
+  has_many :questions, through: :instrument_questions
+  has_many :options, through: :questions
   has_many :surveys, through: :instruments
   has_many :project_devices, dependent: :destroy
   has_many :devices, through: :project_devices
@@ -22,9 +25,7 @@ class Project < ActiveRecord::Base
   has_many :users, through: :user_projects
   has_many :response_exports
   has_many :response_images_exports, through: :response_exports
-  has_many :questions, through: :instruments
   has_many :images, through: :questions
-  has_many :options, through: :questions
   has_many :randomized_factors, through: :instruments
   has_many :randomized_options, through: :randomized_factors
   has_many :question_randomized_factors, through: :questions

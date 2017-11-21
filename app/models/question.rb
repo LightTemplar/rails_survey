@@ -30,13 +30,14 @@
 
 class Question < ActiveRecord::Base
   include Translatable
-  default_scope { order('number_in_instrument ASC') }
+  # default_scope { order('number_in_instrument ASC') }
   belongs_to :instrument
   belongs_to :grid
   belongs_to :section
   belongs_to :option_set
   has_many :options, through: :option_set
   belongs_to :question_set
+  belongs_to :instruction
   has_many :responses
   has_many :translations, foreign_key: 'question_id', class_name: 'QuestionTranslation', dependent: :destroy
   has_many :images, dependent: :destroy
