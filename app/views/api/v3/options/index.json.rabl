@@ -1,5 +1,5 @@
 collection @options
-cache @options
+cache ['v3-options', @options]
 
 attributes :id, :identifier, :text, :option_set_id, :deleted_at, :number_in_question,
 :critical, :complete_survey

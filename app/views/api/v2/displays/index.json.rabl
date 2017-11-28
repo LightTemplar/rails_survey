@@ -1,5 +1,5 @@
 collection @displays
-cache @displays
+cache ['v2-displays', @displays]
 
 attributes :id, :position, :mode, :instrument_id
 

@@ -1,10 +1,9 @@
 collection @questions
-cache @questions
+cache ['v3-questions', @questions]
 
-attributes :id, :instrument_id, :display_id, :number_in_instrument, :option_set_id
-
-# attributes :following_up_question_identifier, :deleted_at, :reg_ex_validation,
-# :reg_ex_validation_message, :follow_up_position, :identifies_survey, :section_id
+attributes :id, :instrument_id, :display_id, :number_in_instrument
+# ,:following_up_question_identifier,
+# :follow_up_position, :section_id
 
 node :text do |iq|
   iq.question.text
@@ -22,7 +21,7 @@ node :instructions do |iq|
   iq.question.try(:instruction).try(:text)
 end
 
-node :instrument_version_number do |iq|
+node :instrument_version do |iq|
   iq.instrument.current_version_number
 end
 
@@ -40,6 +39,34 @@ end
 
 node :image_count do |iq|
  iq.question.images.size
+end
+
+node :option_set_id do |iq|
+  iq.question.option_set_id
+end
+
+node :deleted_at do |iq|
+  iq.question.deleted_at
+end
+
+node :identifies_survey do |iq|
+  iq.question.identifies_survey
+end
+
+node :reg_ex_validation do |iq|
+  iq.question.reg_ex_validation
+end
+
+node :reg_ex_validation_message do |iq|
+  iq.question.reg_ex_validation_message
+end
+
+node :following_up_question_identifier do |iq|
+  iq.question.following_up_question_identifier
+end
+
+node :follow_up_position do |iq|
+  iq.question.follow_up_position
 end
 
 # ??? needs to be explored

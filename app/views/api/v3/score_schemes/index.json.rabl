@@ -1,5 +1,5 @@
 collection @score_schemes
-cache @score_schemes
+cache ['v3-score-schemes', @score_schemes]
 
 attributes :id, :title, :instrument_id, :deleted_at
 

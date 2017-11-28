@@ -16,6 +16,8 @@ class Project < ActiveRecord::Base
   has_many :instrument_questions, through: :instruments
   has_many :questions, through: :instrument_questions
   has_many :options, through: :questions
+  has_many :option_sets, through: :questions
+  has_many :displays, through: :instruments
   has_many :surveys, through: :instruments
   has_many :project_devices, dependent: :destroy
   has_many :devices, through: :project_devices

@@ -1,5 +1,5 @@
 collection @instruments
-cache @instruments
+cache ['v3-instruments', @instruments]
 
 attributes :id, :title, :language, :alignment, :child_update_count, :roster,
 :previous_question_count, :deleted_at, :project_id, :published, :special_options,

@@ -28,6 +28,8 @@ RailsSurvey::Application.routes.draw do
         resources :option_scores, only: :index
         resources :score_unit_questions, only: :index
         resources :android_updates, only: [:index, :show]
+        resources :option_sets, only: :index
+        resources :displays, only: :index
         resources :surveys, only: :create
         resources :responses, only: :create
         resources :response_images, only: :create

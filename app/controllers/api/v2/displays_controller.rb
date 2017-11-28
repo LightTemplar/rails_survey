@@ -21,19 +21,19 @@ module Api
       #   end
       # end
 
-      # def update
-      #   instrument_question = @instrument.instrument_questions.find(params[:id])
-      #   respond_with instrument_question.update_attributes(instrument_question_params)
-      # end
+      def update
+        display = @instrument.displays.find(params[:id])
+        respond_with display.update_attributes(display_params)
+      end
 
-      # def destroy
-      #   instrument_question = @instrument.instrument_questions.find(params[:id])
-      #   if instrument_question.destroy
-      #     render nothing: true, status: :ok
-      #   else
-      #     render json: { errors: instrument_question.errors.full_messages }, status: :unprocessable_entity
-      #   end
-      # end
+      def destroy
+        display = @instrument.displays.find(params[:id])
+        if display.destroy
+          render nothing: true, status: :ok
+        else
+          render json: { errors: display.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
 
       private
 

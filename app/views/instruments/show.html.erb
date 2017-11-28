@@ -2,6 +2,7 @@
 
 <div class="card">
   <div class="card-header">
+    <%= link_to 'Edit Instrument', edit_project_instrument_path(@project, @instrument), class: 'btn btn-primary' %>
     <a class="btn btn-primary"
       href="/projects/<%= @project.id %>/instruments/<%= @instrument.id %>/instrument_question_sets">
       Question Sets
@@ -12,7 +13,7 @@
     </a>
     <a class="btn btn-primary"
       href="/projects/<%= @project.id %>/instruments/<%= @instrument.id %>/displays">
-      Questions Display
+      Question Display Order
     </a>
   </div>
 </div>
