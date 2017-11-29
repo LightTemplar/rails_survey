@@ -1,22 +1,22 @@
 <h4 class="text-center"><strong>Translations for {{language}}</strong></h4>
 <div class="card">
   <div class="card-body card-padding">
-    <div ng-controller="OptionTranslationsCtrl">
+    <div ng-controller="InstructionTranslationsCtrl">
       <table class="table table-hover">
         <thead>
           <tr>
-            <th class="col-md-6">Option Text</th>
+            <th class="col-md-6">Instruction Text</th>
             <th class="col-md-6">Translation</th>
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="option in options">
-            <td>{{option.text}}</td>
+          <tr ng-repeat="instruction in instructions">
+            <td>{{instruction.text}}</td>
             <td>
               <textarea
               class="form-control"
-              name="option-translation-{{option.id}}"
-              ng-model="translation_for(option).text">
+              name="instruction-translation-{{instruction.id}}"
+              ng-model="translation_for(instruction).text">
             </textarea>
             </td>
           </tr>

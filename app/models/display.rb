@@ -6,6 +6,8 @@
 #  mode          :string
 #  position      :string
 #  instrument_id :integer
+#  created_at    :datetime
+#  updated_at    :datetime
 #
 
 class Display < ActiveRecord::Base
