@@ -38,8 +38,8 @@ App.controller 'DisplaysCtrl', ['$scope', '$routeParams', '$location', 'Display'
 ]
 
 App.controller 'ShowDisplayCtrl', ['$scope', '$routeParams', 'currentDisplay',
-'Setting', 'InstrumentQuestion', 'Display',
-($scope, $routeParams, currentDisplay, Setting, InstrumentQuestion, Display) ->
+'Setting', 'InstrumentQuestion',
+($scope, $routeParams, currentDisplay, Setting, InstrumentQuestion) ->
   $scope.project_id = $routeParams.project_id
   $scope.instrument_id = $routeParams.instrument_id
   $scope.display = currentDisplay.display
@@ -53,8 +53,8 @@ App.controller 'ShowDisplayCtrl', ['$scope', '$routeParams', 'currentDisplay',
     display.project_id = $scope.project_id
     display.instrument_id = $scope.instrument_id
     display.$update({} ,
-      (data, headers) -> console.log("data", data)
-      (result, headers) -> console.log("result", result)
+      (data, headers) ->
+      (result, headers) ->
     )
     angular.forEach $scope.instrumentQuestions, (q, index) ->
       if q.display_id == true

@@ -49,9 +49,11 @@ RailsSurvey::Application.routes.draw do
         resources :questions
       end
       resources :option_sets do
-        resources :options
+        resources :options, controller: 'option_set_options'
       end
       resources :instructions
+      resources :options
+      resources :option_translations, only: [:index, :create, :update]
       resources :projects do
         resources :instruments do
           resources :instrument_question_sets

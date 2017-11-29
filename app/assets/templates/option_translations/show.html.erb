@@ -1,0 +1,28 @@
+<h4 class="text-center"><strong>Translations for {{language}}</strong></h4>
+<div class="card">
+  <div class="card-body card-padding">
+    <div ng-controller="ShowOptionTranslationsCtrl">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th class="col-md-6">Option Text</th>
+            <th class="col-md-6">Translation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="option in options">
+            <td>{{option.text}}</td>
+            <td>
+              <textarea
+              class="form-control"
+              name="option-translation-{{option.id}}"
+              ng-model="translation_for(option).text">
+            </textarea>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="btn btn-success" ng-click="save()">Save</div>
+    </div>
+  </div>
+</div>
