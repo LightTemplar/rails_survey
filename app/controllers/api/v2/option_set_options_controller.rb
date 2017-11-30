@@ -34,7 +34,7 @@ module Api
         end
 
         def option_params
-          params.require(:option).permit(:option_set_id, :text, :identifier)
+          params.require(:option_set_option).permit(:option_set_id, :text, :identifier)
         end
       end
   end

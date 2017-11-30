@@ -93,4 +93,19 @@ class InstrumentTranslation < ActiveRecord::Base
     when Section then section_translations.where(section_id: object.id).first_or_initialize
     end
   end
+
+  def language_translation_for(object)
+    case object
+    when Question then QuestionTranslation.where('question_id = ? AND language = ?',
+      object.id, language).try(:first)
+    when Option then OptionTranslation.where('option_id = ? AND language = ?',
+      object.id, language).try(:first)
+    when Instruction then InstructionTranslation.where('instruction_id = ? AND language = ?',
+      object.id, language).try(:first)
+    # when Section then SectionTranslation.where('section_id = ? AND language = ?',
+    #   object.id, language).try(:first)
+    # when Grid then grid_translations.where(grid_id: object.id).try(:first)
+    # when GridLabel then grid_label_translations.where(grid_label_id: object.id).try(:first)
+    end
+  end
 end
