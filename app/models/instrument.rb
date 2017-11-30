@@ -34,8 +34,6 @@ class Instrument < ActiveRecord::Base
   belongs_to :project
 
   has_many :instrument_question_sets
-  # has_many :questions, through: :instrument_question_sets
-  # has_many :options, through: :questions
   has_many :instrument_questions
   has_many :questions, through: :instrument_questions
   has_many :options, through: :questions

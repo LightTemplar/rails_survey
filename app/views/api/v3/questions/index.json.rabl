@@ -5,6 +5,10 @@ attributes :id, :instrument_id, :display_id, :number_in_instrument
 # ,:following_up_question_identifier,
 # :follow_up_position, :section_id
 
+# node :id do |iq|
+#   iq.question.id
+# end
+
 node :text do |iq|
   iq.question.text
 end
@@ -67,6 +71,10 @@ end
 
 node :follow_up_position do |iq|
   iq.question.follow_up_position
+end
+
+child :translations do |t|
+  attributes :id, :question_id, :text, :language, :instructions
 end
 
 # ??? needs to be explored

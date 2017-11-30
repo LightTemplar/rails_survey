@@ -11,4 +11,5 @@
 
 class Instruction < ActiveRecord::Base
   has_many :questions
+  has_many :instruction_translations
 end

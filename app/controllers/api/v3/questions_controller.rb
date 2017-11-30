@@ -8,6 +8,7 @@ module Api
         @project = Project.find(params[:project_id])
         # @questions = to_sync(@project.questions, 'questions', params[:last_sync_time])
         @questions = @project.instrument_questions
+        # @question_translations = @project.question_translations
       end
     end
   end

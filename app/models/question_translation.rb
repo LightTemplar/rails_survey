@@ -29,4 +29,10 @@ class QuestionTranslation < ActiveRecord::Base
     self.instructions = instructions_translation.text if instructions_translation
     save
   end
+
+  # Returns translated instructions
+  def instructions
+    question.instruction.instruction_translations.where(language: language).try(:first).try(:text) if question.instruction
+  end
+
 end
