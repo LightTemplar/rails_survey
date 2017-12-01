@@ -12,14 +12,14 @@ module Api
       #   @instrument_question = @instrument.instrument_questions.find(params[:id])
       # end
 
-      # def create
-      #   instrument_question = @instrument.instrument_questions.new(instrument_question_params)
-      #   if instrument_question.save
-      #     render json: instrument_question, status: :created
-      #   else
-      #     render json: { errors: instrument_question.errors.full_messages }, status: :unprocessable_entity
-      #   end
-      # end
+      def create
+        display = @instrument.displays.new(display_params)
+        if display.save
+          render json: display, status: :created
+        else
+          render json: { errors: display.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
 
       def update
         display = @instrument.displays.find(params[:id])

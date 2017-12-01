@@ -13,8 +13,8 @@ App.controller 'QuestionsCtrl', ['$scope', '$routeParams', '$location', 'Questio
 ]
 
 App.controller 'ShowQuestionCtrl', ['$scope', '$routeParams', '$location', '$route',
- 'Question', 'Setting', 'OptionSet', 'Instruction'
- ($scope, $routeParams, $location, $route, Question, Setting, OptionSet, Instruction) ->
+ 'Question', 'Setting', 'OptionSet', 'Instruction', 'InstrumentQuestion',
+ ($scope, $routeParams, $location, $route, Question, Setting, OptionSet, Instruction, InstrumentQuestion) ->
 
   $scope.questionTypes = () ->
     $scope.settings.question_types
@@ -33,8 +33,9 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$routeParams', '$location', '$rou
       )
     else
       $scope.question.$save({} ,
-        (data, headers) -> ,
-        navigateBackAndReload()
+        (data, headers) ->
+          createInstrumentQuestion(data)
+          navigateBackAndReload()
         (result, headers) ->
       )
 
@@ -58,6 +59,15 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$routeParams', '$location', '$rou
     $location.path '/question_sets/' + $routeParams.question_set_id
     $route.reload()
 
+  createInstrumentQuestion = (question) ->
+    if $routeParams.instrument_id
+      iQuestion = new InstrumentQuestion()
+      iQuestion.instrument_id = $routeParams.instrument_id
+      iQuestion.question_id = question.id
+      iQuestion.project_id = $routeParams.project_id
+      iQuestion.number_in_instrument = $routeParams.number_in_instrument
+      iQuestion.$save({})
+
   if $routeParams.id == 'new'
     $scope.question = new Question()
   else if $scope.questions and $routeParams.id
@@ -69,5 +79,5 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$routeParams', '$location', '$rou
   $scope.settings = Setting.get({})
   $scope.optionSets = OptionSet.query({})
   $scope.instructions = Instruction.query({})
-  
+
 ]

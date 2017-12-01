@@ -35,6 +35,18 @@ App.controller 'DisplaysCtrl', ['$scope', '$routeParams', '$location', 'Display'
         display.$update({})
   }
 
+  $scope.newDisplay = () ->
+    display = new Display()
+    display.project_id = $scope.project_id
+    display.instrument_id = $scope.instrument_id
+    display.position = $scope.displays.length + 1
+    display.$save({},
+      (data, headers) ->
+        $scope.displays.push(data)
+        $scope.edit(data)
+      (result, headers) ->
+    )
+
 ]
 
 App.controller 'ShowDisplayCtrl', ['$scope', '$routeParams', 'currentDisplay',

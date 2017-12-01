@@ -1,18 +1,7 @@
 <h4 class="text-center">{{instrumentQuestion.identifier}}</h4>
 <div class="card" ng-controller="ShowInstrumentQuestionCtrl">
   <div class="card-body card-padding">
-    <div class="text-center"><strong>Display</strong></div>
-    <div class="row">
-      <label class="col-md-2">Screen Number :</label>
-      <span class="col-md-2">{{instrumentQuestion.display.position}}</span>
-      <label class="col-md-2">Display Mode :</label>
-      <span class="col-md-2">{{instrumentQuestion.display.mode}}</span>
-      <div class="col-md-4">
-        <div class="btn btn-success" ng-click="changeDisplay()">Change Display</div>
-      </div>
-    </div>
-
-    <div class="row m-t-5" ng-show="instrumentQuestion.option_set_id &&
+    <div class="row" ng-show="instrumentQuestion.option_set_id &&
     questionTypesWithSkipPatterns(instrumentQuestion.type)">
     <div class="text-center"><strong>Skip Patterns</strong></div>
     <li class="text-muted">If the next question to be displayed should be
@@ -106,7 +95,7 @@
             <div class="btn btn-warning" ng-click="cancel()">Cancel</div>
             <div class="btn btn-success" ng-click="save()" ng-disabled="newSkipForm.$invalid">Save</div>
           </div>
-      </div>
+        </div>
       </ng-form>
     </div>
   </div>

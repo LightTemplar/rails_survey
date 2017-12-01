@@ -23,16 +23,16 @@ class InstrumentQuestionSet < ActiveRecord::Base
     questions_size = instrument.instrument_questions.size
     questions.each do |question|
       questions_size += 1
-      display = Display.create!(
-        mode: Settings.display_types.first,
-        position:  questions_size,
-        instrument_id: instrument.id
-      )
+      # display = Display.create!(
+      #   mode: Settings.display_types.first,
+      #   position:  questions_size,
+      #   instrument_id: instrument.id
+      # )
       InstrumentQuestion.create!(
         question_id: question.id,
         instrument_id: instrument.id,
         number_in_instrument: questions_size,
-        display_id: display.id
+        # display_id: display.id
       )
     end
   end

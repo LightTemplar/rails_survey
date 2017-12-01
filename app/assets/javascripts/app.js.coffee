@@ -71,5 +71,5 @@ window.App = angular.module('Survey',
       .when '/instruction_translations/:language',
         templateUrl: 'instruction_translations/show.html'
         controller: 'InstructionTranslationsCtrl'
-        
+
   ])

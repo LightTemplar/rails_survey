@@ -1,14 +1,18 @@
-<h4 class="text-center"><strong>Instrument Question Sets</strong></h4>
 <div ng-controller="InstrumentQuestionSetsCtrl">
+  <div class="row">
+    <h4 class="col-md-6 text-center"><strong>Instrument Question Sets</strong></h4>
+    <div class="col-md-6">
+      <div class="btn btn-sm btn-primary pull-right" ng-click="newInstrumentQuestionSet()">
+        Edit Instrument Question Sets
+      </div>
+    </div>
+  </div>
   <div class="card" ng-show="!showQuestionSets">
     <div class="card-body card-padding">
       <div ng-repeat="instrument_question_set in instrumentQuestionSets">
         <a href="/question_sets/{{instrument_question_set.question_set_id}}">
           {{instrument_question_set.question_set_title}}
         </a>
-      </div>
-      <div class="m-t-5 btn btn-primary" ng-click="newInstrumentQuestionSet()">
-        Edit Question Sets
       </div>
     </div>
   </div>

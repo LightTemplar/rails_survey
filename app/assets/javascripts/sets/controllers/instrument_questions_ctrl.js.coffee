@@ -1,7 +1,13 @@
-App.controller 'InstrumentQuestionsCtrl', ['$scope', '$routeParams', 'InstrumentQuestion',
-'InstrumentQuestions', ($scope, $routeParams, InstrumentQuestion, InstrumentQuestions) ->
+App.controller 'InstrumentQuestionsCtrl', ['$scope', '$routeParams', '$location',
+'$route', 'InstrumentQuestion', 'InstrumentQuestions', 'QuestionSet', 'Question',
+($scope, $routeParams, $location, $route, InstrumentQuestion, InstrumentQuestions,
+QuestionSet, Question) ->
   $scope.project_id = $routeParams.project_id
   $scope.instrument_id = $routeParams.instrument_id
+  $scope.showNewView = false
+  $scope.showFromSet = false
+  $scope.questions = []
+
   $scope.instrumentQuestions = InstrumentQuestion.query({
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id
@@ -18,6 +24,62 @@ App.controller 'InstrumentQuestionsCtrl', ['$scope', '$routeParams', 'Instrument
         instrumentQuestion.instrument_id = $scope.instrument_id
         instrumentQuestion.$update({})
   }
+
+  $scope.questionSets = QuestionSet.query({})
+
+  $scope.newInstrumentQuestion = () ->
+    $scope.showNewView = true
+    $scope.showFromSet = false
+
+  $scope.newIQFromSet = () ->
+    $scope.showFromSet = true
+    $scope.showNewView = false
+
+  $scope.getQuestions = (questionSetId) ->
+    $scope.questions = Question.query({ "question_set_id": questionSetId })
+
+  $scope.next = (questionSetId) ->
+    if questionSetId == undefined
+      questionSet = new QuestionSet()
+      questionSet.title = new Date().getTime().toString()
+      questionSet.$save({},
+        (data, headers) ->
+          $location.path('/question_sets/' + data.id).search({
+            instrument_id: $scope.instrument_id,
+            project_id: $scope.project_id,
+            number_in_instrument: $scope.instrumentQuestions.length + 1
+          })
+        (result, headers) ->
+      )
+    else
+      $location.path('/question_sets/' + questionSetId).search({
+        instrument_id: $scope.instrument_id,
+        project_id: $scope.project_id,
+        number_in_instrument: $scope.instrumentQuestions.length + 1
+      })
+
+  $scope.nextFromSet = () ->
+    angular.forEach $scope.questions, (question, index) ->
+      if question.checked
+        iQuestion = new InstrumentQuestion()
+        iQuestion.instrument_id = $scope.instrument_id
+        iQuestion.question_id = question.id
+        iQuestion.project_id = $scope.project_id
+        iQuestion.number_in_instrument = $scope.instrumentQuestions.length + 1
+        iQuestion.$save({},
+          (data, headers) ->
+            $scope.instrumentQuestions.push(data)
+            $scope.showFromSet = false
+          (result, headers) ->
+        )
+
+  $scope.deleteInstrumentQuestion = (iq) ->
+    iq.project_id = $scope.project_id
+    iq.$delete({},
+      (data, headers) ->
+        $scope.instrumentQuestions.splice($scope.instrumentQuestions.indexOf(iq), 1)
+      (result, headers) ->
+    )
 
 ]
 
@@ -99,6 +161,5 @@ NextQuestion) ->
     nextQuestion.instrument_question_id = $scope.instrumentQuestion.id
     nextQuestion.project_id = $scope.project_id
     nextQuestion.instrument_id = $scope.instrument_id
-
 
 ]

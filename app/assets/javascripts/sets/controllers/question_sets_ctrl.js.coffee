@@ -21,10 +21,11 @@ App.controller 'QuestionSetsCtrl', ['$scope', 'QuestionSet',
 
   setNewQuestion(new QuestionSet(), false)
   $scope.questionSets = QuestionSet.query({})
+
 ]
 
-App.controller 'ShowQuestionSetCtrl', ['$scope', '$routeParams', '$location', 'QuestionSet',
- ($scope, $routeParams, $location, QuestionSet) ->
+App.controller 'ShowQuestionSetCtrl', ['$scope', '$routeParams', '$location',
+'QuestionSet', ($scope, $routeParams, $location, QuestionSet) ->
 
   $scope.updateQuestionSet = () ->
     if $scope.questionSet.id
