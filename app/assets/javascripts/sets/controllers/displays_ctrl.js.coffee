@@ -50,8 +50,8 @@ App.controller 'DisplaysCtrl', ['$scope', '$routeParams', '$location', 'Display'
 ]
 
 App.controller 'ShowDisplayCtrl', ['$scope', '$routeParams', 'currentDisplay',
-'Setting', 'InstrumentQuestion',
-($scope, $routeParams, currentDisplay, Setting, InstrumentQuestion) ->
+'Setting', 'InstrumentQuestion', '$location',
+($scope, $routeParams, currentDisplay, Setting, InstrumentQuestion, $location) ->
   $scope.project_id = $routeParams.project_id
   $scope.instrument_id = $routeParams.instrument_id
   $scope.display = currentDisplay.display
@@ -69,12 +69,30 @@ App.controller 'ShowDisplayCtrl', ['$scope', '$routeParams', 'currentDisplay',
       (result, headers) ->
     )
     angular.forEach $scope.instrumentQuestions, (q, index) ->
+      console.log("question " + q.identifier + " display_id " + q.display_id)
+      q.project_id = $scope.project_id
       if q.display_id == true
-        q.project_id = $scope.project_id
+        console.log("trrrrruuuuuueeee")
         q.display_id = display.id
-        q.$update({} ,
-          (data, headers) ->
-          (result, headers) ->
-        )
+      q.$update({} ,
+        (data, headers) ->
+          $location.path '/projects/' + $scope.project_id + '/instruments/' +
+          $scope.instrument_id + '/displays'
+        (result, headers) ->
+      )
+
+  $scope.optionSelected = (iq) ->
+    console.log(iq)
+
+  $scope.checkOptionSetId = (display, instrumentQuestion) ->
+    instrumentQuestion.display_id = display.id
+    sameDisplay = _.where($scope.instrumentQuestions, {display_id: display.id})
+    angular.forEach sameDisplay, (iQuestion, index) ->
+      if iQuestion.type != instrumentQuestion.type || iQuestion.option_set_id != instrumentQuestion.option_set_id
+        alert("Questions in the same table display need to have the same option set")
+        instrumentQuestion.checked = false
+        instrumentQuestion.display_id = null
+      else
+        instrumentQuestion.display_id = true
 
 ]

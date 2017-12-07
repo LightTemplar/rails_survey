@@ -3,6 +3,11 @@
   <div class="card">
     <div class="card-header">
       <div class="row">
+        <div class="btn btn-sm btn-primary" ng-click="newQuestion()">
+          New Question
+        </div>
+      </div>
+      <!-- <div class="row">
         <div class="col-md-4">
           <div class="btn btn-sm btn-primary" ng-click="newInstrumentQuestion()">
             Add New Question
@@ -10,18 +15,45 @@
         </div>
         <div class="col-md-4">
           <div class="btn btn-sm btn-primary" ng-click="newIQFromSet()">
-            Add Question from sets
+            Add Question From A Set
           </div>
         </div>
         <div class="col-md-4">
           <a class="btn btn-sm btn-primary" href="/projects/{{project_id}}/instruments/{{instrument_id}}/instrument_question_sets">
-            Add All Questions From Set
+            Add All Questions From A Set
           </a>
+        </div>
+      </div> -->
+    </div>
+
+    <div class="card-body card-padding">
+      <div class="row" ng-show="!showNewQuestion" ng-repeat="display in displays">
+        <div class="row">
+          <span>{{display.position}}</span>
+          <span>{{display.mode}}</span>
+        </div>
+      </div>
+      <div class="row" ng-show="showNewQuestion">
+        <label class="col-md-2">Question Display Mode</label>
+        <div class="col-md-10">
+          <select
+          class="form-control"
+          allow-single-deselect="true"
+          name="display-mode"
+          ng-model="display.mode"
+          ng-options="type for type in settings.display_types">
+          <option value=""></option>
+          </select>
+        </div>
+      </div>
+      <div class="row m-t-5" ng-show="!display.id">
+        <div class="btn btn-sm btn-primary pull-right" ng-click="saveDisplay()" ng-show="display.mode">
+          Next
         </div>
       </div>
     </div>
 
-    <div ng-show="showNewView && !showFromSet" class="card-body card-padding">
+    <!-- <div ng-show="showNewView && !showFromSet" class="card-body card-padding">
       <h4 class="text-center"><strong>New Instrument Question</strong></h4>
       <div class="row">
         <label class="col-md-3">Question Set</label>
@@ -40,9 +72,9 @@
     <div class="row text-center m-5">
       <div class="btn btn-success" ng-click="next(questionSetId)">Next</div>
     </div>
-  </div>
+  </div> -->
 
-  <div ng-show="!showNewView && showFromSet" class="card-body card-padding">
+  <!-- <div ng-show="!showNewView && showFromSet" class="card-body card-padding">
     <h4 class="text-center"><strong>New Instrument Question From Set</strong></h4>
     <div class="row">
       <label class="col-md-3">Question Set</label>
@@ -70,9 +102,10 @@
   <div class="row text-center m-5">
     <div class="btn btn-success" ng-click="nextFromSet()">Next</div>
   </div>
-</div>
+</div> -->
 
-<div ng-show="!showNewView && !showFromSet" class="card-body card-padding">
+<!-- <div ng-show="!showNewView && !showFromSet" class="card-body card-padding"> -->
+<!-- <div ng-show="!showNewQuestion" class="card-body card-padding">
   <table class="table table-hover">
     <thead>
       <tr>
@@ -106,6 +139,6 @@
       </tr>
     </tbody>
   </table>
-</div>
+</div> -->
 </div>
 </div>

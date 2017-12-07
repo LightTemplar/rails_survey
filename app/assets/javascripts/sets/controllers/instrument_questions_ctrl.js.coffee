@@ -1,11 +1,12 @@
 App.controller 'InstrumentQuestionsCtrl', ['$scope', '$routeParams', '$location',
 '$route', 'InstrumentQuestion', 'InstrumentQuestions', 'QuestionSet', 'Question',
-($scope, $routeParams, $location, $route, InstrumentQuestion, InstrumentQuestions,
-QuestionSet, Question) ->
+'Setting', 'Display', ($scope, $routeParams, $location, $route, InstrumentQuestion,
+InstrumentQuestions, QuestionSet, Question, Setting, Display) ->
   $scope.project_id = $routeParams.project_id
   $scope.instrument_id = $routeParams.instrument_id
   $scope.showNewView = false
   $scope.showFromSet = false
+  $scope.showNewQuestion = false
   $scope.questions = []
 
   $scope.instrumentQuestions = InstrumentQuestion.query({
@@ -26,6 +27,27 @@ QuestionSet, Question) ->
   }
 
   $scope.questionSets = QuestionSet.query({})
+  $scope.settings = Setting.get({})
+  $scope.displays = Display.query({
+    'project_id': $scope.project_id,
+    'instrument_id': $scope.instrument_id
+  })
+
+  $scope.newQuestion = () ->
+    $scope.showNewQuestion = true
+    $scope.display = new Display()
+    $scope.display.project_id = $scope.project_id
+    $scope.display.instrument_id = $scope.instrument_id
+    $scope.display.position = $scope.displays.length + 1
+
+  $scope.saveDisplay = () ->
+    $scope.display.$save({},
+      (data, headers) ->
+        $scope.display.id = data.id
+        $scope.displays.push(data)
+        # $scope.edit(data)
+      (result, headers) ->
+    )
 
   $scope.newInstrumentQuestion = () ->
     $scope.showNewView = true

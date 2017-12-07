@@ -12,7 +12,7 @@
 #
 
 class InstrumentQuestion < ActiveRecord::Base
-  belongs_to :instrument
+  belongs_to :instrument, touch: true
   belongs_to :question
   belongs_to :display, touch: true
   has_many :next_questions

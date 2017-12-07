@@ -21,26 +21,22 @@
       <div class="row" ng-show="display.mode=='MULTIPLE'">
         <span class="col-md-3" ng-repeat="instrumentQuestion in instrumentQuestions">
           <input type="checkbox" ng-model="instrumentQuestion.display_id"
-          ng-checked="instrumentQuestion.display_id == display.id"
-          ng-disabled="instrumentQuestion.display_id &&
-          instrumentQuestion.display_id != display.id">
+          ng-checked="instrumentQuestion.display_id == display.id">
             {{instrumentQuestion.identifier}}
         </span>
       </div>
       <div class="row" ng-show="display.mode=='SINGLE'">
         <span class="col-md-3" ng-repeat="instrumentQuestion in instrumentQuestions">
-          <input type="radio" ng-model="instrumentQuestion.display_id"
-          ng-value="display.id" ng-disabled="instrumentQuestion.display_id &&
-          instrumentQuestion.display_id != display.id">
+          <input type="radio" name="displayQuestions" ng-model="instrumentQuestion.display_id"
+          ng-value="display.id" ng-change="optionSelected(instrumentQuestion)">
             {{instrumentQuestion.identifier}}
         </span>
       </div>
       <div class="row" ng-show="display.mode=='TABLE'">
         <span class="col-md-3" ng-repeat="instrumentQuestion in instrumentQuestions">
-          <input type="checkbox" ng-model="instrumentQuestion.display_id"
+          <input type="checkbox" ng-model="instrumentQuestion.checked"
           ng-checked="instrumentQuestion.display_id == display.id"
-          ng-disabled="instrumentQuestion.display_id &&
-          instrumentQuestion.display_id != display.id">
+          ng-change="checkOptionSetId(display, instrumentQuestion)">
             {{instrumentQuestion.identifier}}
         </span>
       </div>
