@@ -12,6 +12,6 @@
 #
 
 class RandomizedOptionTranslation < ActiveRecord::Base
-  belongs_to :instrument_translation
+  belongs_to :instrument_translation, touch: true
   belongs_to :randomized_option
 end

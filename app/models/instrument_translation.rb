@@ -40,7 +40,8 @@ class InstrumentTranslation < ActiveRecord::Base
   end
 
   def deactive_language_translations
-    InstrumentTranslation.where('id != ? AND language = ?', id, language).update_all(active: false)
+    InstrumentTranslation.where('id != ? AND language = ? AND instrument_id = ?',
+      id, language, instrument_id).update_all(active: false)
   end
 
   def translate_using_google
