@@ -70,12 +70,13 @@ namespace :survey do
     end
 
     group_identifiers = group_score_schemes.collect { |item| item.qids }.flatten
+    group_identifiers = group_identifiers.uniq
     group_response_scores = []
 
     # Score individual responses
     response_scores.each do |sc|
       scheme = scoring_schemes.find{|obj| obj.qid == sc.qid && obj.question_type == sc.question_type}
-      if scheme #Only score those that have scoring schemes
+      if scheme # Only score those that have scoring schemes
         if scheme.description == 'Indexed' || scheme.description == 'Matching'
           reference = nil
           if scheme.reference_qid
@@ -93,20 +94,26 @@ namespace :survey do
         sc.domain = scheme.domain
         sc.sub_domain = scheme.sub_domain
         scores.push(sc)
-
-      elsif group_identifiers.find{|ob| ob == sc.qid}
+      end
+      # Add to group schemes if it qualifies
+      if group_identifiers.include?(sc.qid)
         group_response_scores.push(sc)
       end
     end
     puts 'individual scores added: ' + scores.size.to_s
 
     # Score group responses
-    Center.get_centers.each do |center|
+    center_ids = group_response_scores.collect { |grs| grs.center_id }.uniq
+    center_ids.each do |id|
+      center = Center.get_centers.find_all { |ct| ct.id == id }.first
       group_score_schemes.each do |group_scheme|
-        center_grs = group_response_scores.find_all{|grs| grs.center_id == center.id}
+        center_grs = []
+        group_scheme.qids.each do |qid|
+          cgr = group_response_scores.find_all {|grs| grs.center_id == center.id && grs.qid == qid}
+          center_grs = center_grs + cgr
+        end
         score_group = GroupScore.new(group_scheme.name, group_scheme.qids, center.id,
-                                     center_grs.try(:first).try(:instrument_id),
-                                     center_grs.try(:first).try(:question_type))
+          center_grs.try(:first).try(:instrument_id), center_grs.try(:first).try(:question_type))
         score_group.raw_score = group_scheme.score(center_grs)
         score_group.scheme_description = group_scheme.name
         score_group.weight = group_scheme.assign_weight

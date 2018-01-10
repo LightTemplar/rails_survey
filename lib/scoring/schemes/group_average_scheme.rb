@@ -20,16 +20,16 @@ class GroupAverageScheme < ScoringScheme
       index_score_hash = {}
       str.strip.split.each do |index_score|
         index_score_arr = index_score.split(';')
-        ranges = index_score_arr[0].split('...')
-        index_score_hash[ranges[0].to_f.next_float...ranges[1].to_f] = index_score_arr[1]
+        ranges = index_score_arr[0].split('..')
+        index_score_hash[ranges[0].to_f.next_float..ranges[1].to_f] = index_score_arr[1]
       end
       @key_score_mapping = index_score_hash
     elsif name == 'consecutive_days_off'
       index_score_hash = {}
       str.strip.split.each do |index_score|
         index_score_arr = index_score.split(';')
-        ranges = index_score_arr[0].split('...')
-        index_score_hash[ranges[0].to_f...ranges[1].to_f] = index_score_arr[1]
+        ranges = index_score_arr[0].split('..')
+        index_score_hash[ranges[0].to_f..ranges[1].to_f] = index_score_arr[1]
       end
       @key_score_mapping = index_score_hash
     elsif name == 'caregivers_per_week'
@@ -57,32 +57,38 @@ class GroupAverageScheme < ScoringScheme
     return nil if center_responses.blank? || key_score_mapping.blank?
     scores = []
     center_responses.each do |res|
-      if res.response #TODO ??
-      list_responses = res.response.split(',')
-      indexes = index.split(',')
-      if indexes.size == 1
-        response = list_responses[indexes[0].to_i]
-        if is_number(response)
-          if key_score_mapping.values.first.class == Hash
-            center_code = Center.get_centers.find{|ctr| ctr.id == res.center_id}.code
-            resp_score_hash = key_score_mapping[center_code].select{|range| range === response.to_f}
-            scores << resp_score_hash.values.first unless resp_score_hash.blank?
+      if res.response
+        list_responses = CSV.parse_line(res.response)
+        indexes = index.split(',')
+        if indexes.size == 1
+          response = list_responses[indexes[0].to_i]
+          if is_number(response)
+            if key_score_mapping.values.first.class == Hash
+              center_code = Center.get_centers.find{|ctr| ctr.id == res.center_id}.code
+              resp_score_hash = key_score_mapping[center_code].select{|range| range === response.to_f}
+              scores << resp_score_hash.values.first unless resp_score_hash.blank?
+            else
+              resp = key_score_mapping.select{|k| k === response.to_f}
+              scores << resp.values.first unless resp.blank?
+            end
           else
-            resp = key_score_mapping.select{|k| k === response.to_f}
-            scores << resp.values.first unless resp.blank?
+            none = ['no', 'ninguno', 'ninguna']
+            scores << 1 if response && none.include?(response.strip.downcase)
           end
         else
-          #TODO what to do with non-numbers
+          if !list_responses[indexes[0].to_i].blank? && !list_responses[indexes[1].to_i].blank?
+            if is_number(list_responses[indexes[0].to_i]) && is_number(list_responses[indexes[1].to_i])
+              resp = (list_responses[indexes[0].to_i].to_f / list_responses[indexes[1].to_i].to_f).round(2)
+              response_score_mapping = key_score_mapping.select{|k| k === resp}
+              scores << response_score_mapping.values.first unless response_score_mapping.blank?
+            else
+              # TODO Not exactly --- extracts first number or 0
+              resp = (list_responses[indexes[0].to_i].to_f / list_responses[indexes[1].to_i].to_f).round(2)
+              response_score_mapping = key_score_mapping.select{|k| k === resp}
+              scores << response_score_mapping.values.first unless response_score_mapping.blank?
+            end
+          end
         end
-      else
-        if is_number(list_responses[indexes[0].to_i]) && is_number(list_responses[indexes[1].to_i])
-          resp = (list_responses[indexes[0].to_i].to_f / list_responses[indexes[1].to_i].to_f).round(2)
-          response_score_mapping = key_score_mapping.select{|k| k === resp}
-          scores << response_score_mapping.values.first unless response_score_mapping.blank?
-        else
-          #TODO deal with non-numbers
-        end
-      end
       end
     end
     (scores.map(&:to_f).reduce(:+) / scores.size).round(2) unless scores.blank?
