@@ -44,3 +44,5 @@ config/deploy/production.rb
 
 # Ignore OS files
 *.DS_Store
+
+exports.csv

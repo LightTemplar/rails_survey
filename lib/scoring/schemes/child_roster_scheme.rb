@@ -62,35 +62,39 @@ class ChildRosterScheme < ScoringScheme
     roster_date = children_sheet.row(1)[11] if roster_date.blank?
     roster_date = children_sheet.row(1)[9] if roster_date.class != Date
     children_sheet.drop(3).each do |row|
-      next unless is_correct_id(row[1]) && !row[12].blank?
       arrival_date = row[4]
-      days_in_center = nil
+      next unless is_correct_id(row[1]) && !row[12].blank? && arrival_date.class.name == 'Date'
+      days_together = nil
       if row[12].class == String
         numbers = row[12].scan(/\d+/)
         if row[12].include?('año') && row[12].include?('mes')
-          days_in_center = (numbers[0].to_i * DAYS_PER_YEAR) + (numbers[1].to_i * DAYS_PER_MONTH)
+          days_together = (numbers[0].to_i * DAYS_PER_YEAR) + (numbers[1].to_i * DAYS_PER_MONTH)
         elsif row[12].include?('mes') && row[12].include?('sem')
-          days_in_center = (numbers[0].to_i * DAYS_PER_MONTH) + (numbers[1].to_i * DAYS_PER_WEEK)
+          days_together = (numbers[0].to_i * DAYS_PER_MONTH) + (numbers[1].to_i * DAYS_PER_WEEK)
         elsif row[12].include?('mes') && row[12].include?('dia')
-          days_in_center = (numbers[0].to_i * DAYS_PER_MONTH) + numbers[1].to_i
+          days_together = (numbers[0].to_i * DAYS_PER_MONTH) + numbers[1].to_i
         elsif row[12].include?('mes')
           if numbers[1] && numbers[2]
-            days_in_center = numbers[0].to_i * DAYS_PER_MONTH + ((numbers[1].to_f / numbers[2].to_f) * DAYS_PER_MONTH)
+            days_together = numbers[0].to_i * DAYS_PER_MONTH + ((numbers[1].to_f / numbers[2].to_f) * DAYS_PER_MONTH)
           else
-            days_in_center = numbers[0].to_i * DAYS_PER_MONTH
+            days_together = numbers[0].to_i * DAYS_PER_MONTH
           end
         elsif row[12].include?('año')
-          days_in_center = row[12].scan(/\d+/)[0].to_i * DAYS_PER_YEAR
+          days_together = row[12].scan(/\d+/)[0].to_i * DAYS_PER_YEAR
         elsif row[12].include?('mes')
-          days_in_center = row[12].scan(/\d+/)[0].to_i * DAYS_PER_MONTH
+          days_together = row[12].scan(/\d+/)[0].to_i * DAYS_PER_MONTH
         elsif row[12].downcase.include?('sem')
-          days_in_center = row[12].scan(/\d+/)[0].to_i * DAYS_PER_WEEK
+          days_together = row[12].scan(/\d+/)[0].to_i * DAYS_PER_WEEK
         elsif row[12].include?('dia') || row[12].include?('día')
-          days_in_center = row[12].scan(/\d+/)[0].to_i
+          days_together = row[12].scan(/\d+/)[0].to_i
         end
+      end
+      days_in_center = (roster_date - arrival_date).to_i
+      ratio = days_together.to_f / days_in_center.to_f
+      resp = key_score_mapping.select{|k| k === ratio}
+      lag_time_scores << resp.values.first unless resp.blank?
+    end
+    get_roster_score(lag_time_scores, center_id)
+  end
 
-    end
-      get_roster_score(lag_time_scores, center_id)
-    end
-end
 end
