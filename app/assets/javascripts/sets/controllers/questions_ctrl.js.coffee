@@ -1,11 +1,16 @@
 App.controller 'QuestionsCtrl', ['$scope', '$routeParams', '$location', 'Question',
 ($scope, $routeParams, $location, Question) ->
+  $scope.multiple = $routeParams.multiple
 
   $scope.newQuestion = () ->
     $location.path '/question_sets/' + $scope.questionSet.id + '/questions/new'
 
   $scope.editQuestion = (question) ->
     $scope.currentQuestion = question
+
+  $scope.done = () ->
+    $location.path('/projects/' + $routeParams.project_id + '/instruments/' +
+    $routeParams.instrument_id + '/instrument_questions').search({})
 
   if $routeParams.id
     $scope.questions = Question.query({"question_set_id": $routeParams.id})
@@ -14,7 +19,8 @@ App.controller 'QuestionsCtrl', ['$scope', '$routeParams', '$location', 'Questio
 
 App.controller 'ShowQuestionCtrl', ['$scope', '$routeParams', '$location', '$route',
  'Question', 'Setting', 'OptionSet', 'Instruction', 'InstrumentQuestion',
- ($scope, $routeParams, $location, $route, Question, Setting, OptionSet, Instruction, InstrumentQuestion) ->
+ ($scope, $routeParams, $location, $route, Question, Setting, OptionSet,
+ Instruction, InstrumentQuestion) ->
 
   $scope.questionTypes = () ->
     $scope.settings.question_types
@@ -34,7 +40,9 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$routeParams', '$location', '$rou
     else
       $scope.question.$save({} ,
         (data, headers) ->
-          createInstrumentQuestion(data)
+          if $routeParams.instrument_id && $routeParams.display_id
+              $scope.multiple = 1 #$routeParams.multiple
+              createInstrumentQuestion(data)
           navigateBackAndReload()
         (result, headers) ->
       )
@@ -65,8 +73,15 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$routeParams', '$location', '$rou
       iQuestion.instrument_id = $routeParams.instrument_id
       iQuestion.question_id = question.id
       iQuestion.project_id = $routeParams.project_id
+      iQuestion.display_id = $routeParams.display_id
       iQuestion.number_in_instrument = $routeParams.number_in_instrument
-      iQuestion.$save({})
+      iQuestion.$save({},
+        (data, headers) ->
+          if !$routeParams.multiple
+            $location.path('/projects/' + $routeParams.project_id + '/instruments/' +
+            $routeParams.instrument_id + '/instrument_questions').search({})
+        (result, headers) ->
+      )
 
   if $routeParams.id == 'new'
     $scope.question = new Question()

@@ -20,5 +20,8 @@
         </tr>
       </tbody>
     </table>
-  <div class="m-t-5 btn btn-primary" ng-click="newQuestion()">Add Question</div>
+    <div class="row m-t-5 ">
+      <div ng-show="multiple" class="btn btn-primary" ng-click="done()">Done</div>
+      <div class="btn btn-primary" ng-click="newQuestion()">Add Question</div>
+    </div>
 </div>

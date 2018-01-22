@@ -1,13 +1,14 @@
 App.controller 'InstrumentQuestionsCtrl', ['$scope', '$routeParams', '$location',
 '$route', 'InstrumentQuestion', 'InstrumentQuestions', 'QuestionSet', 'Question',
-'Setting', 'Display', ($scope, $routeParams, $location, $route, InstrumentQuestion,
-InstrumentQuestions, QuestionSet, Question, Setting, Display) ->
+'Setting', 'Display', 'currentDisplay', ($scope, $routeParams, $location, $route, InstrumentQuestion,
+InstrumentQuestions, QuestionSet, Question, Setting, Display, currentDisplay) ->
   $scope.project_id = $routeParams.project_id
   $scope.instrument_id = $routeParams.instrument_id
   $scope.showNewView = false
   $scope.showFromSet = false
   $scope.showNewQuestion = false
   $scope.questions = []
+  $scope.question_origins = ['New Question', 'Question From Set', 'Multiple Questions From Set']
 
   $scope.instrumentQuestions = InstrumentQuestion.query({
     'project_id': $scope.project_id,
@@ -33,9 +34,22 @@ InstrumentQuestions, QuestionSet, Question, Setting, Display) ->
     'instrument_id': $scope.instrument_id
   })
 
+  $scope.sortableDisplays = {
+    cursor: 'move',
+    handle: '.moveDisplay',
+    axis: 'y',
+    stop: (e, ui) ->
+      angular.forEach $scope.displays, (display, index) ->
+        display.position = index + 1
+        display.project_id = $scope.project_id
+        display.instrument_id = $scope.instrument_id
+        display.$update({})
+  }
+
   $scope.newQuestion = () ->
     $scope.showNewQuestion = true
     $scope.display = new Display()
+    $scope.display.question_origin = ''
     $scope.display.project_id = $scope.project_id
     $scope.display.instrument_id = $scope.instrument_id
     $scope.display.position = $scope.displays.length + 1
@@ -49,6 +63,22 @@ InstrumentQuestions, QuestionSet, Question, Setting, Display) ->
       (result, headers) ->
     )
 
+  $scope.edit = (display) ->
+    currentDisplay.display = display
+    $location.path '/projects/' + $scope.project_id + '/instruments/' +
+    $scope.instrument_id + '/displays/' + display.id
+
+  $scope.delete = (display) ->
+    if confirm('Are you sure you want to delete this display group?')
+      if display.id
+        display.project_id = $scope.project_id
+        display.instrument_id = $scope.instrument_id
+        display.$delete({} ,
+          (data, headers) ->
+            $scope.displays.splice($scope.displays.indexOf(display), 1)
+          (result, headers) ->
+        )
+
   $scope.newInstrumentQuestion = () ->
     $scope.showNewView = true
     $scope.showFromSet = false
@@ -61,7 +91,7 @@ InstrumentQuestions, QuestionSet, Question, Setting, Display) ->
     $scope.questions = Question.query({ "question_set_id": questionSetId })
 
   $scope.next = (questionSetId) ->
-    if questionSetId == undefined
+    if (questionSetId == undefined || questionSetId == "-1")
       questionSet = new QuestionSet()
       questionSet.title = new Date().getTime().toString()
       questionSet.$save({},
@@ -69,7 +99,9 @@ InstrumentQuestions, QuestionSet, Question, Setting, Display) ->
           $location.path('/question_sets/' + data.id).search({
             instrument_id: $scope.instrument_id,
             project_id: $scope.project_id,
-            number_in_instrument: $scope.instrumentQuestions.length + 1
+            number_in_instrument: $scope.instrumentQuestions.length + 1,
+            display_id: $scope.display.id,
+            multiple: $scope.display.mode != 'SINGLE'
           })
         (result, headers) ->
       )
@@ -77,8 +109,49 @@ InstrumentQuestions, QuestionSet, Question, Setting, Display) ->
       $location.path('/question_sets/' + questionSetId).search({
         instrument_id: $scope.instrument_id,
         project_id: $scope.project_id,
-        number_in_instrument: $scope.instrumentQuestions.length + 1
+        number_in_instrument: $scope.instrumentQuestions.length + 1,
+        display_id: $scope.display.id,
+        multiple: $scope.display.mode != 'SINGLE'
       })
+
+  $scope.nextQS = (id) ->
+    $scope.showQuestionSelectionFromQS = true
+    $scope.questionSetQuestions = Question.query({"question_set_id": id})
+    $scope.instrumentQuestion = new InstrumentQuestion()
+    $scope.instrumentQuestion.instrument_id = $scope.instrument_id
+    $scope.instrumentQuestion.project_id = $scope.project_id
+    $scope.instrumentQuestion.number_in_instrument = $scope.instrumentQuestions.length + 1
+    $scope.instrumentQuestion.display_id = $scope.display.id
+
+  $scope.saveIQ = (instrumentQuestion) ->
+    instrumentQuestion.$save({},
+      (data, headers) ->
+        $route.reload()
+      (result, headers) ->
+    )
+
+  $scope.nextQuestions = (id) ->
+    $scope.showQuestionSelectionFromQS = true
+    $scope.questionSetQuestions = Question.query({"question_set_id": id})
+
+  $scope.saveIQs = () ->
+    selectedQuestions = _.where($scope.questionSetQuestions, {selected: true})
+    responseCount = 0
+    angular.forEach $scope.questionSetQuestions, (q, i) ->
+      if q.selected
+        iq = new InstrumentQuestion()
+        iq.instrument_id = $scope.instrument_id
+        iq.project_id = $scope.project_id
+        iq.number_in_instrument = $scope.instrumentQuestions.length + 1
+        iq.display_id = $scope.display.id
+        iq.question_id = q.id
+        iq.$save({},
+          (data, headers) ->
+            responseCount += 1
+            if responseCount ==  selectedQuestions.length
+              $route.reload()
+          (result, headers) ->
+        )
 
   $scope.nextFromSet = () ->
     angular.forEach $scope.questions, (question, index) ->

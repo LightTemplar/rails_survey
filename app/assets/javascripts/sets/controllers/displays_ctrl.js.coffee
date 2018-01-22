@@ -69,10 +69,8 @@ App.controller 'ShowDisplayCtrl', ['$scope', '$routeParams', 'currentDisplay',
       (result, headers) ->
     )
     angular.forEach $scope.instrumentQuestions, (q, index) ->
-      console.log("question " + q.identifier + " display_id " + q.display_id)
       q.project_id = $scope.project_id
       if q.display_id == true
-        console.log("trrrrruuuuuueeee")
         q.display_id = display.id
       q.$update({} ,
         (data, headers) ->
@@ -82,7 +80,9 @@ App.controller 'ShowDisplayCtrl', ['$scope', '$routeParams', 'currentDisplay',
       )
 
   $scope.optionSelected = (iq) ->
-    console.log(iq)
+    angular.forEach $scope.instrumentQuestions, (q, index) ->
+      if q.display_id == iq.display_id && iq != q
+        q.display_id = null
 
   $scope.checkOptionSetId = (display, instrumentQuestion) ->
     instrumentQuestion.display_id = display.id
