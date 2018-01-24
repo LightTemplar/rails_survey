@@ -1,34 +1,16 @@
 <h4 class="text-center"><strong>Instrument Questions</strong></h4>
 <div ng-controller="InstrumentQuestionsCtrl">
   <div class="card">
-    <!-- <div class="card-header"> -->
-      <!-- <div class="row m-t-5">
-        <div class="btn btn-sm btn-primary" ng-click="newQuestion()">
-          New Question
-        </div>
-      </div> -->
-      <!-- <div class="row">
-        <div class="col-md-4">
-          <div class="btn btn-sm btn-primary" ng-click="newInstrumentQuestion()">
-            Add New Question
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="btn btn-sm btn-primary" ng-click="newIQFromSet()">
-            Add Question From A Set
-          </div>
-        </div>
-        <div class="col-md-4">
-          <a class="btn btn-sm btn-primary" href="/projects/{{project_id}}/instruments/{{instrument_id}}/instrument_question_sets">
-            Add All Questions From A Set
-          </a>
-        </div>
-      </div> -->
-    <!-- </div> -->
-
     <div class="card-body card-padding">
-      <div ui-sortable="sortableDisplays" ng-model="displays">
-        <div ng-show="!showNewQuestion" ng-repeat="display in displays | orderBy:'position'">
+      <div class="row">
+        <label class="col-md-2">Screen Number</label>
+        <label class="col-md-2">Display Type</label>
+        <label class="col-md-6">Questions On Screen</label>
+        <label class="col-md-2">Actions</label>
+      </div>
+      <div class="m-t-5" ui-sortable="sortableDisplays" ng-model="displays">
+        <!-- Convert position used in filter to numeric -->
+        <div ng-show="!showNewQuestion" ng-repeat="display in displays | orderBy: '1 * position'">
           <div class="row">
             <div class="col-md-2">
               <div class="btn bgm-teal m-5 moveDisplay">
@@ -36,153 +18,208 @@
               </div>
             </div>
             <div class="col-md-2">
-              <div class="btn btn-sm btn-primary">
+              <div class="btn btn-sm btn-success" ng-click="edit(display)">
                 {{display.mode}}
               </div>
             </div>
             <div class="col-md-6">
               <ul ng-repeat="instrumentQuestion in display.instrument_questions">
                 <span>{{instrumentQuestion.type}}</span> :
-                <span>{{instrumentQuestion.identifier}}</span>
+                <span>
+                  <a href="/projects/{{project_id}}/instruments/{{instrument_id}}/instrument_questions/{{instrumentQuestion.id}}">
+                  {{instrumentQuestion.identifier}}
+                  </a>
+                </span>
               </ul>
             </div>
             <div class="col-md-2">
-              <div class="btn btn-success" ng-click="edit(display)">Edit</div>
+              <div class="btn btn-success" ng-click="showDisplay(display)">Edit</div>
               <div class="btn btn-danger" ng-click="delete(display)">Delete</div>
             </div>
           </div>
+
+          <!-- Test -->
+          <div class="m-20" ng-show="currentDisplay == display">
+            <div class="row">
+              <label class="col-md-2">Display Mode</label>
+              <div class="col-md-8">
+                <select
+                class="form-control"
+                allow-single-deselect="true"
+                name="display-mode"
+                ng-model="display.mode"
+                ng-change="validateMode(display)"
+                ng-options="type for type in settings.display_types">
+                <option value=""></option>
+                </select>
+              </div>
+              <div ng-show="showSaveDisplay" class="col-md-2">
+                <div class="btn btn-success" ng-click="saveDisplay(display)">Save</div>
+              </div>
+              <!-- TODO Add listeners to validate questions based on display mode -->
+            </div>
+            <div class="row">
+              <label class="col-md-1">Number</label>
+              <label class="col-md-2">Type</label>
+              <label class="col-md-3">Identifier</label>
+              <label class="col-md-4">Text</label>
+              <label class="col-md-2">Actions</label>
+            </div>
+            <div class="row m-b-5" ng-repeat="question in displayQuestions(display)">
+              <div class="col-md-1">{{question.number_in_instrument}}</div>
+              <div class="col-md-2">{{question.type}}</div>
+              <div class="col-md-3">{{question.identifier}}</div>
+              <div class="col-md-4">{{question.text}}</div>
+              <div class="col-md-2">
+                <a class="btn btn-primary"
+                href="/question_sets/{{question.question_set_id}}/questions/{{question.question_id}}">
+                View</a>
+                <div class="btn btn-danger" ng-click="removeInstrumentQuestion(question)">Remove</div>
+              </div>
+            </div>
+            <div class="row m-5" ng-hide="display.mode == 'SINGLE'">
+              <div class="btn btn-primary pull-right" ng-click="addQuestionToDisplay(display)">Add Question</div>
+            </div>
+            <div class="m-10"></div>
+          </div>
+          <!-- Test -->
+
         </div>
       </div>
 
-      <div class="row" ng-show="showNewQuestion">
-        <label class="col-md-2">Question Display Mode</label>
-        <div class="col-md-10">
-          <select
-          class="form-control"
-          allow-single-deselect="true"
-          name="display-mode"
-          ng-model="display.mode"
-          ng-options="type for type in settings.display_types">
-          <option value=""></option>
-          </select>
-        </div>
-      </div>
-      <div class="row m-t-5" ng-show="!display.id">
-        <div class="btn btn-sm btn-primary pull-right" ng-click="saveDisplay()" ng-show="display.mode">
-          Next
-        </div>
-      </div>
-      <div class="row m-t-5" ng-show="display.id">
-        <label class="col-md-2">Question Origin</label>
-        <div class="col-md-10">
-          <select
+      <div ng-show="showNewQuestion">
+        <div class="row">
+          <label class="col-md-2">Question Display Mode</label>
+          <div class="col-md-10">
+            <select
             class="form-control"
             allow-single-deselect="true"
-            name="question-origin"
-            ng-model="display.question_origin"
-            ng-options="origin as origin for origin in question_origins">
+            name="display-mode"
+            ng-model="display.mode"
+            ng-options="type for type in settings.display_types">
             <option value=""></option>
-          </select>
-        </div>
-      </div>
-      <div ng-show="display.question_origin == 'New Question'">
-        <div class="row">
-          <label class="col-md-3">Destination Question Set</label>
-          <div class="col-md-9">
-            <select
-              class="form-control"
-              allow-single-deselect="true"
-              data-placeholder="Select question set to host question"
-              name="new-question-question-set"
-              ng-model="questionSetId">
-              <option value=""></option>
-              <option value="-1">Create New</option>
-              <option ng-repeat="set in questionSets" value="{{set.id}}">{{set.title}}</option>
             </select>
           </div>
         </div>
-        <div ng-show="questionSetId">
-          <div ng-show="questionSetId == -1" class="text-center bgm-yellow">
-            This will create a new question set and add the question to it
-          </div>
-          <div ng-show="questionSetId != -1" class="text-center bgm-yellow">
-            The new question will be added to this question set
+        <div class="row m-t-5" ng-show="!display.id">
+          <div class="btn btn-sm btn-primary pull-right" ng-click="saveDisplay(display)" ng-show="display.mode">
+            Next
           </div>
         </div>
-        <div class="row m-t-5" ng-show="questionSetId">
-          <div class="btn btn-sm btn-success pull-right" ng-click="next(questionSetId)">Next</div>
-        </div>
-      </div>
-      <div ng-show="display.question_origin == 'Question From Set'">
-        <div class="row">
-          <label class="col-md-3">Source Question Set</label>
-          <div class="col-md-9">
+        <div class="row m-t-5" ng-show="display.id">
+          <label class="col-md-2">Question Origin</label>
+          <div class="col-md-10">
             <select
               class="form-control"
               allow-single-deselect="true"
-              name="existing-question-question-set"
-              ng-model="existingQuestionSetId"
-              ng-options="qset.id as qset.title for qset in questionSets">
+              name="question-origin"
+              ng-model="display.question_origin"
+              ng-options="origin as origin for origin in question_origins">
               <option value=""></option>
             </select>
           </div>
         </div>
-        <div class="row m-t-5" ng-show="existingQuestionSetId && !showQuestionSelectionFromQS">
-          <div class="btn btn btn-success pull-right" ng-click="nextQS(existingQuestionSetId)">Next</div>
-        </div>
-        <div ng-show="showQuestionSelectionFromQS">
-          <div class="row m-t-5">
-            <label class="col-md-3">Select Question From Set</label>
-            <div class="col-md-9">
-              <div ng-repeat="question in questionSetQuestions">
-                <input type="radio" ng-model="instrumentQuestion.question_id"
-                  value="{{question.id}}" />
-                <label>{{question.question_identifier}}</label>
-              </div>
-            </div>
-          </div>
-          <div class="row m-t-5">
-            <div class="btn btn-sm btn-success pull-right" ng-click="saveIQ(instrumentQuestion)">Save</div>
-          </div>
-        </div>
-      </div>
 
-      <div ng-show="display.question_origin == 'Multiple Questions From Set'">
-        <div class="row">
-          <label class="col-md-3">Source Question Set</label>
-          <div class="col-md-9">
-            <select
-              class="form-control"
-              allow-single-deselect="true"
-              name="existing-question-question-set"
-              ng-model="existingQuestionsSetId"
-              ng-options="qset.id as qset.title for qset in questionSets">
-              <option value=""></option>
-            </select>
-          </div>
-        </div>
-        <div class="row m-t-5" ng-show="existingQuestionsSetId && !showQuestionSelectionFromQS">
-          <div class="btn btn btn-success pull-right" ng-click="nextQuestions(existingQuestionsSetId)">Next</div>
-        </div>
-        <div ng-show="showQuestionSelectionFromQS">
-          <div class="row m-t-5">
-            <label class="col-md-3">Select Questions From Set</label>
+        <div ng-show="display.question_origin == 'New Question'">
+          <div class="row">
+            <label class="col-md-3">Destination Question Set</label>
             <div class="col-md-9">
-              <div ng-repeat="question in questionSetQuestions">
-                <input type="checkbox" ng-model="question.selected" />
-                <label>{{question.question_identifier}}</label>
-              </div>
+              <select
+                class="form-control"
+                allow-single-deselect="true"
+                data-placeholder="Select question set to host question"
+                name="new-question-question-set"
+                ng-model="questionSetId">
+                <option value=""></option>
+                <option value="-1">Create New</option>
+                <option ng-repeat="set in questionSets" value="{{set.id}}">{{set.title}}</option>
+              </select>
             </div>
           </div>
-          <div class="row m-t-5">
-            <div class="btn btn-sm btn-success pull-right" ng-click="saveIQs()">Save</div>
+          <div ng-show="questionSetId">
+            <div ng-show="questionSetId == -1" class="text-center bgm-yellow">
+              This will create a new question set and add the question to it
+            </div>
+            <div ng-show="questionSetId != -1" class="text-center bgm-yellow">
+              The new question will be added to this question set
+            </div>
+          </div>
+          <div class="row m-t-5" ng-show="questionSetId">
+            <div class="btn btn-sm btn-success pull-right" ng-click="next(questionSetId)">Next</div>
+          </div>
+        </div>
+
+        <div ng-show="display.question_origin == 'Question From Set'">
+          <div class="row">
+            <label class="col-md-3">Source Question Set</label>
+            <div class="col-md-9">
+              <select
+                class="form-control"
+                allow-single-deselect="true"
+                name="existing-question-question-set"
+                ng-model="existingQuestionSetId"
+                ng-options="qset.id as qset.title for qset in questionSets">
+                <option value=""></option>
+              </select>
+            </div>
+          </div>
+          <div class="row m-t-5" ng-show="existingQuestionSetId && !showQuestionSelectionFromQS">
+            <div class="btn btn btn-success pull-right" ng-click="nextQS(existingQuestionSetId)">Next</div>
+          </div>
+          <div ng-show="showQuestionSelectionFromQS">
+            <div class="row m-t-5">
+              <label class="col-md-3">Select Question From Set</label>
+              <div class="col-md-9">
+                <div ng-repeat="question in questionSetQuestions">
+                  <input type="radio" ng-model="instrumentQuestion.question_id"
+                    value="{{question.id}}" />
+                  <label>{{question.question_identifier}}</label>
+                </div>
+              </div>
+            </div>
+            <div class="row m-t-5">
+              <div class="btn btn-sm btn-success pull-right" ng-click="saveIQ(instrumentQuestion)">Save</div>
+            </div>
+          </div>
+        </div>
+
+        <div ng-show="display.question_origin == 'Multiple Questions From Set'">
+          <div class="row">
+            <label class="col-md-3">Source Question Set</label>
+            <div class="col-md-9">
+              <select
+                class="form-control"
+                allow-single-deselect="true"
+                name="existing-question-question-set"
+                ng-model="existingQuestionsSetId"
+                ng-options="qset.id as qset.title for qset in questionSets">
+                <option value=""></option>
+              </select>
+            </div>
+          </div>
+          <div class="row m-t-5" ng-show="existingQuestionsSetId && !showQuestionSelectionFromQS">
+            <div class="btn btn btn-success pull-right" ng-click="nextQuestions(existingQuestionsSetId)">Next</div>
+          </div>
+          <div ng-show="showQuestionSelectionFromQS">
+            <div class="row m-t-5">
+              <label class="col-md-3">Select Questions From Set</label>
+              <div class="col-md-9">
+                <div ng-repeat="question in questionSetQuestions">
+                  <input type="checkbox" ng-model="question.selected" />
+                  <label>{{question.question_identifier}}</label>
+                </div>
+              </div>
+            </div>
+            <div class="row m-t-5">
+              <div class="btn btn-sm btn-success pull-right" ng-click="saveIQs()">Save</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="row m-10" ng-show="!showNewQuestion">
-      <div class="btn btn-sm btn-primary pull-right m-5" ng-click="newQuestion()">
+      <div class="btn btn-sm btn-primary pull-right m-5" ng-click="newQuestion(null)">
         New Question Display
       </div>
     </div>

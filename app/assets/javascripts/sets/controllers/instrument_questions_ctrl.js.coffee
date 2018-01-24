@@ -1,7 +1,9 @@
 App.controller 'InstrumentQuestionsCtrl', ['$scope', '$routeParams', '$location',
 '$route', 'InstrumentQuestion', 'InstrumentQuestions', 'QuestionSet', 'Question',
-'Setting', 'Display', 'currentDisplay', ($scope, $routeParams, $location, $route, InstrumentQuestion,
-InstrumentQuestions, QuestionSet, Question, Setting, Display, currentDisplay) ->
+'Setting', 'Display', 'currentDisplay', '$window', ($scope, $routeParams, $location,
+$route, InstrumentQuestion, InstrumentQuestions, QuestionSet, Question, Setting,
+Display, currentDisplay, $window) ->
+
   $scope.project_id = $routeParams.project_id
   $scope.instrument_id = $routeParams.instrument_id
   $scope.showNewView = false
@@ -10,6 +12,7 @@ InstrumentQuestions, QuestionSet, Question, Setting, Display, currentDisplay) ->
   $scope.questions = []
   $scope.question_origins = ['New Question', 'Question From Set', 'Multiple Questions From Set']
 
+  $scope.display = new Display()
   $scope.instrumentQuestions = InstrumentQuestion.query({
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id
@@ -39,14 +42,39 @@ InstrumentQuestions, QuestionSet, Question, Setting, Display, currentDisplay) ->
     handle: '.moveDisplay',
     axis: 'y',
     stop: (e, ui) ->
+      questionCount = 1
       angular.forEach $scope.displays, (display, index) ->
         display.position = index + 1
         display.project_id = $scope.project_id
         display.instrument_id = $scope.instrument_id
         display.$update({})
+        # TODO Inefficient
+        angular.forEach $scope.displayQuestions(display), (iq, counter) ->
+          iq.number_in_instrument = questionCount
+          questionCount += 1
+          iq.project_id = $scope.project_id
+          iq.instrument_id = $scope.instrument_id
+          iq.$update({})
   }
 
-  $scope.newQuestion = () ->
+  $scope.validateMode = (display) ->
+    $scope.showSaveDisplay = true
+    if display.mode == 'SINGLE' && $scope.displayQuestions(display).length > 1
+      $window.alert("The display mode is SINGLE but there is more than one
+      question on this display. Please delete the extra question(s) and save
+      the display.")
+    else if display.mode == 'TABLE' && $scope.displayQuestions(display).length > 1 &&
+    _.pluck($scope.displayQuestions(display), 'option_set_id').length > 1
+      $window.alert("The questions in this TABLE display do not have the same option set!
+      Please delete the questions that don't belong to it.")
+
+  $scope.displayQuestions = (display) ->
+    _.where($scope.instrumentQuestions, {display_id: display.id})
+
+  $scope.validTableQuestions = (questions) ->
+
+
+  $scope.newQuestion = (display) ->
     $scope.showNewQuestion = true
     $scope.display = new Display()
     $scope.display.question_origin = ''
@@ -54,14 +82,39 @@ InstrumentQuestions, QuestionSet, Question, Setting, Display, currentDisplay) ->
     $scope.display.instrument_id = $scope.instrument_id
     $scope.display.position = $scope.displays.length + 1
 
-  $scope.saveDisplay = () ->
-    $scope.display.$save({},
-      (data, headers) ->
-        $scope.display.id = data.id
-        $scope.displays.push(data)
-        # $scope.edit(data)
-      (result, headers) ->
-    )
+  $scope.showDisplay = (display) ->
+    if $scope.currentDisplay == display
+      $scope.currentDisplay = null
+    else
+      $scope.currentDisplay = display
+
+  $scope.addQuestionToDisplay = (display) ->
+    $scope.showNewQuestion = true
+    $scope.display = display
+
+  $scope.removeInstrumentQuestion = (iq) ->
+    if confirm('Are you sure you want to delete this question from the instrument?')
+      if iq.id
+        iq.project_id = $scope.project_id
+        iq.instrument_id = $scope.instrument_id
+        iq.$delete({} ,
+          (data, headers) ->
+            $scope.instrumentQuestions.splice($scope.instrumentQuestions.indexOf(iq), 1)
+          (result, headers) ->
+        )
+
+  $scope.saveDisplay = (display) ->
+    display.project_id = $scope.project_id
+    display.instrument_id = $scope.instrument_id
+    if display.id
+      display.$update({})
+    else
+      display.$save({},
+        (data, headers) ->
+          $scope.display.id = data.id
+          $scope.displays.push(data)
+        (result, headers) ->
+      )
 
   $scope.edit = (display) ->
     currentDisplay.display = display
@@ -78,14 +131,6 @@ InstrumentQuestions, QuestionSet, Question, Setting, Display, currentDisplay) ->
             $scope.displays.splice($scope.displays.indexOf(display), 1)
           (result, headers) ->
         )
-
-  $scope.newInstrumentQuestion = () ->
-    $scope.showNewView = true
-    $scope.showFromSet = false
-
-  $scope.newIQFromSet = () ->
-    $scope.showFromSet = true
-    $scope.showNewView = false
 
   $scope.getQuestions = (questionSetId) ->
     $scope.questions = Question.query({ "question_set_id": questionSetId })
@@ -182,6 +227,7 @@ App.controller 'ShowInstrumentQuestionCtrl', ['$scope', '$routeParams',
 'InstrumentQuestion', 'Setting', 'Option', 'InstrumentQuestions', 'NextQuestion',
 ($scope, $routeParams, InstrumentQuestion, Setting, Option, InstrumentQuestions,
 NextQuestion) ->
+
   $scope.showNewNextQuestion = false
   $scope.project_id = $routeParams.project_id
   $scope.instrument_id = $routeParams.instrument_id
