@@ -1,4 +1,5 @@
-App.controller 'OptionsCtrl', ['$scope', 'Option', '$routeParams', ($scope, Option, $routeParams) ->
+App.controller 'OptionsCtrl', ['$scope', 'Option', '$routeParams', '$location',
+($scope, Option, $routeParams, $location) ->
 
   $scope.options = Option.query({"option_set_id": $routeParams.id})
 
@@ -8,7 +9,10 @@ App.controller 'OptionsCtrl', ['$scope', 'Option', '$routeParams', ($scope, Opti
     $scope.options.push(option)
 
   $scope.editOption = (option) ->
-    $scope.currentOption = option
+    if $scope.currentOption == option
+      $scope.currentOption = null
+    else
+      $scope.currentOption = option
 
   $scope.saveOption = (option) ->
     option.option_set_id = $scope.optionSet.id
@@ -34,5 +38,8 @@ App.controller 'OptionsCtrl', ['$scope', 'Option', '$routeParams', ($scope, Opti
             $scope.currentOption = null
           (result, headers) ->
         )
+
+  $scope.back = () ->
+    $location.path '/option_sets/'
 
 ]

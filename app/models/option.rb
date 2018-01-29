@@ -39,6 +39,7 @@ class Option < ActiveRecord::Base
   acts_as_paranoid
 
   validates :text, presence: true, allow_blank: false
+  validates :identifier, presence: true, uniqueness: true
 
   amoeba do
     enable

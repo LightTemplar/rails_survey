@@ -28,15 +28,15 @@
       </div>
     </div>
 
-    <div class="row m-t-5">
+    <div class="row m-5">
       <label class="col-md-2">Text</label>
       <div class="col-md-10">
-        <textarea
-        class="form-control"
-        name="question-text"
-        ng-model="question.text"
-        ng-required="true">
-      </textarea>
+        <text-angular
+          ta-toolbar="toolBar"
+          textarea-class="form-control"
+          ng-model="question.text"
+          ng-required="true">
+      </text-angular>
     </div>
   </div>
 

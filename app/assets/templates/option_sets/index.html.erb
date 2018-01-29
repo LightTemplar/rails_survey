@@ -12,16 +12,20 @@
       </div>
       <div class="btn btn-primary m-5" ng-click="createOptionSet()">New Option Set</div>
       <ng-form name="newOptionSetEditorForm" ng-show="showNewOptionSet">
-          <div class="row">
-            <label class="col-md-2">Title</label>
-            <div class="col-md-8">
-              <input type="text" class="form-control" name="new-option-set"
-              ng-model="newOptionSet.title" required>
-            </div>
-            <div class="col-md-1 btn btn-default" ng-click="cancelNewOptionSet()">Cancel</div>
-            <div class="col-md-1 btn btn-success" ng-disabled="newOptionSetEditorForm.$invalid"
+        <div class="row">
+          <label class="col-md-2">Title</label>
+          <div class="col-md-8">
+            <input type="text" class="form-control" name="new-option-set"
+            ng-model="newOptionSet.title" required>
+          </div>
+          <div class="col-md-1">
+            <div class="btn btn-default" ng-click="cancelNewOptionSet()">Cancel</div>
+          </div>
+          <div class="col-md-1">
+            <div class="btn btn-success" ng-disabled="newOptionSetEditorForm.$invalid"
             ng-click="saveOptionSet()">Save</div>
           </div>
+        </div>
       </ng-form>
     </div>
   </div>

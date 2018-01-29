@@ -96,3 +96,33 @@ App.controller 'ShowDisplayCtrl', ['$scope', '$routeParams', 'currentDisplay',
         instrumentQuestion.display_id = true
 
 ]
+
+App.controller 'DisplayCtrl', ['$scope', ($scope) ->
+  $scope.displayQuestions = _.where($scope.instrumentQuestions, {display_id: $scope.display.id})
+
+  $scope.sortableInstrumentQuestions = {
+    cursor: 'move',
+    handle: '.moveInstrumentQuestion',
+    axis: 'y',
+    stop: (e, ui) ->
+      lastDisplay = $scope.displays[$scope.display.position - 2]
+      lastQN = lastDisplay.instrument_questions[lastDisplay.instrument_questions.length - 1].number_in_instrument
+      angular.forEach $scope.displayQuestions, (instrumentQuestion, index) ->
+        instrumentQuestion.number_in_instrument = lastQN + index + 1
+        instrumentQuestion.project_id = $scope.project_id
+        instrumentQuestion.instrument_id = $scope.instrument_id
+        instrumentQuestion.$update({})
+  }
+
+  $scope.removeInstrumentQuestion = (iq) ->
+    if confirm('Are you sure you want to delete this question from the instrument?')
+      if iq.id
+        iq.project_id = $scope.project_id
+        iq.instrument_id = $scope.instrument_id
+        iq.$delete({} ,
+          (data, headers) ->
+            $scope.displayQuestions.splice($scope.displayQuestions.indexOf(iq), 1)
+          (result, headers) ->
+        )
+
+]

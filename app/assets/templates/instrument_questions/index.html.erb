@@ -2,7 +2,7 @@
 <div ng-controller="InstrumentQuestionsCtrl">
   <div class="card">
     <div class="card-body card-padding">
-      <div class="row">
+      <div class="row" ng-show="!showNewQuestion">
         <label class="col-md-2">Screen Number</label>
         <label class="col-md-2">Display Type</label>
         <label class="col-md-6">Questions On Screen</label>
@@ -40,6 +40,14 @@
 
           <!-- Test -->
           <div class="m-20" ng-show="currentDisplay == display">
+            <h5 class="text-center">Display Details</h5>
+            <div class="row">
+              <label class="col-md-2">Display Title</label>
+              <div class="col-md-10">
+                <input class="form-control" type="text"
+                ng-change="validateMode(display)" ng-model="display.title" />
+              </div>
+            </div>
             <div class="row">
               <label class="col-md-2">Display Mode</label>
               <div class="col-md-8">
@@ -53,11 +61,12 @@
                 <option value=""></option>
                 </select>
               </div>
-              <div ng-show="showSaveDisplay" class="col-md-2">
-                <div class="btn btn-success" ng-click="saveDisplay(display)">Save</div>
-              </div>
               <!-- TODO Add listeners to validate questions based on display mode -->
             </div>
+            <div ng-show="showSaveDisplay" class="row m-5">
+              <div class="btn btn-success pull-right" ng-click="saveDisplay(display)">Save Display</div>
+            </div>
+            <h5 class="text-center">Questions On Screen</h5>
             <div class="row">
               <label class="col-md-1">Number</label>
               <label class="col-md-2">Type</label>
@@ -65,16 +74,24 @@
               <label class="col-md-4">Text</label>
               <label class="col-md-2">Actions</label>
             </div>
-            <div class="row m-b-5" ng-repeat="question in displayQuestions(display)">
-              <div class="col-md-1">{{question.number_in_instrument}}</div>
-              <div class="col-md-2">{{question.type}}</div>
-              <div class="col-md-3">{{question.identifier}}</div>
-              <div class="col-md-4">{{question.text}}</div>
-              <div class="col-md-2">
-                <a class="btn btn-primary"
-                href="/question_sets/{{question.question_set_id}}/questions/{{question.question_id}}">
-                View</a>
-                <div class="btn btn-danger" ng-click="removeInstrumentQuestion(question)">Remove</div>
+            <div ng-controller="DisplayCtrl">
+              <div class="m-t-5" ui-sortable="sortableInstrumentQuestions" ng-model="displayQuestions">
+                <div class="row m-b-5" ng-repeat="question in displayQuestions | orderBy: '1 * number_in_instrument'">
+                  <div class="col-md-1">
+                    <div class="btn btn-sm moveInstrumentQuestion">
+                      {{question.number_in_instrument}}
+                    </div>
+                  </div>
+                  <div class="col-md-2">{{question.type}}</div>
+                  <div class="col-md-3">{{question.identifier}}</div>
+                  <div class="col-md-4" ng-bind-html="question.text | ToTrustedHtml"></div>
+                  <div class="col-md-2">
+                    <a class="btn btn-primary"
+                    href="/question_sets/{{question.question_set_id}}/questions/{{question.question_id}}">
+                    View</a>
+                    <div class="btn btn-danger" ng-click="removeInstrumentQuestion(question)">Remove</div>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="row m-5" ng-hide="display.mode == 'SINGLE'">
@@ -89,7 +106,13 @@
 
       <div ng-show="showNewQuestion">
         <div class="row">
-          <label class="col-md-2">Question Display Mode</label>
+          <label class="col-md-2">Display Title</label>
+          <div class="col-md-10">
+            <input class="form-control" type="text" ng-model="display.title" />
+          </div>
+        </div>
+        <div class="row m-5">
+          <label class="col-md-2">Display Mode</label>
           <div class="col-md-10">
             <select
             class="form-control"
@@ -223,93 +246,5 @@
         New Question Display
       </div>
     </div>
-
-    <!-- <div ng-show="showNewView && !showFromSet" class="card-body card-padding">
-      <h4 class="text-center"><strong>New Instrument Question</strong></h4>
-      <div class="row">
-        <label class="col-md-3">Question Set</label>
-        <div class="col-md-9">
-          <select
-          class="form-control"
-          allow-single-deselect="true"
-          data-placeholder="Select question set to host question"
-          name="new-question-question-set"
-          ng-model="questionSetId"
-          ng-options="set.id as set.title for set in questionSets">
-          <option value="">None</option>
-        </select>
-      </div>
-    </div>
-    <div class="row text-center m-5">
-      <div class="btn btn-success" ng-click="next(questionSetId)">Next</div>
-    </div>
-  </div> -->
-
-  <!-- <div ng-show="!showNewView && showFromSet" class="card-body card-padding">
-    <h4 class="text-center"><strong>New Instrument Question From Set</strong></h4>
-    <div class="row">
-      <label class="col-md-3">Question Set</label>
-      <div class="col-md-9">
-        <select
-        class="form-control"
-        allow-single-deselect="true"
-        data-placeholder="Select question set to choose questions from"
-        name="new-question-from-question-set"
-        ng-model="questionSetId"
-        ng-change="getQuestions(questionSetId)"
-        ng-options="set.id as set.title for set in questionSets">
-      </select>
-    </div>
-  </div>
-  <div class="row" ng-show="questionSetId">
-    <h5 class=text-center>Questions In Set</h5>
-    <div class="row">
-      <span class="col-md-4" ng-repeat="question in questions">
-        <input type="checkbox" ng-model="question.checked" />
-        {{question.question_identifier}}
-      </span>
-    </div>
-  </div>
-  <div class="row text-center m-5">
-    <div class="btn btn-success" ng-click="nextFromSet()">Next</div>
-  </div>
-</div> -->
-
-<!-- <div ng-show="!showNewView && !showFromSet" class="card-body card-padding"> -->
-<!-- <div ng-show="!showNewQuestion" class="card-body card-padding">
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th class="col-md-1">Number</th>
-        <th class="col-md-2">Type</th>
-        <th class="col-md-2">Identifier</th>
-        <th class="col-md-4">Text</th>
-        <th class="col-md-1">Actions</th>
-      </tr>
-    </thead>
-    <tbody ui-sortable="sortableInstrumentQuestions" ng-model="instrumentQuestions">
-      <tr ng-repeat="instrumentQuestion in instrumentQuestions | orderBy:'number_in_instrument'">
-        <td class="col-md-1">
-          <a class="btn bgm-teal moveInstrumentQuestion">
-            <i class="md-swap-vert">{{instrumentQuestion.number_in_instrument}}</i>
-          </a>
-        </td>
-        <td class="col-md-2">{{instrumentQuestion.type}}</td>
-        <td class="col-md-2">
-          <a href="/question_sets/{{instrumentQuestion.question_set_id}}/questions/{{instrumentQuestion.question_id}}">
-            {{instrumentQuestion.identifier}}
-          </a>
-        </td>
-        <td class="col-md-4">{{instrumentQuestion.text}}</td>
-        <td class="col-md-3">
-          <a class="btn btn-success" href="/projects/{{project_id}}/instruments/{{instrument_id}}/instrument_questions/{{instrumentQuestion.id}}">
-            Logic
-          </a>
-          <div class="btn btn-danger" ng-click="deleteInstrumentQuestion(instrumentQuestion)">Delete</div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div> -->
 </div>
 </div>

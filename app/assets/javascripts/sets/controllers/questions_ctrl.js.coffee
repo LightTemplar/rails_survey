@@ -22,6 +22,13 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$routeParams', '$location', '$rou
  ($scope, $routeParams, $location, $route, Question, Setting, OptionSet,
  Instruction, InstrumentQuestion) ->
 
+  $scope.toolBar = [
+      ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'pre', 'quote'],
+      ['justifyLeft', 'justifyCenter', 'justifyRight', 'indent', 'outdent'],
+      ['bold', 'italics', 'underline', 'strikeThrough', 'ul', 'ol', 'redo', 'undo', 'clear'],
+      ['html', 'wordcount', 'charcount']
+  ]
+
   $scope.questionTypes = () ->
     $scope.settings.question_types
 
@@ -41,7 +48,7 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$routeParams', '$location', '$rou
       $scope.question.$save({} ,
         (data, headers) ->
           if $routeParams.instrument_id && $routeParams.display_id
-              $scope.multiple = 1 #$routeParams.multiple
+              # $scope.multiple = 1 #$routeParams.multiple
               createInstrumentQuestion(data)
           navigateBackAndReload()
         (result, headers) ->
@@ -85,6 +92,7 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$routeParams', '$location', '$rou
 
   if $routeParams.id == 'new'
     $scope.question = new Question()
+    $scope.question.text = ''
   else if $scope.questions and $routeParams.id
     $scope.question = _.first(_.filter($scope.questions, (q) -> q.id == $routeParams.id))
   else if $routeParams.id and not $scope.questions

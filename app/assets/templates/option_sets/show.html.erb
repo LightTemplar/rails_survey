@@ -7,9 +7,13 @@
         <div class="col-md-9">
           <input type="text" class="form-control" name="option-set" ng-model="optionSet.title" required>
         </div>
-        <div class="col-md-1 btn btn-danger" ng-click="deleteOptionSet()">Delete</div>
-        <div class="col-md-1 btn btn-success" ng-disabled="optionSetEditorForm.$invalid"
-        ng-click="updateOptionSet()">Save</div>
+        <div class="col-md-1">
+          <div class="btn btn-danger" ng-click="deleteOptionSet()">Delete</div>
+        </div>
+        <div class="col-md-1">
+          <div class="btn btn-success" ng-disabled="optionSetEditorForm.$invalid"
+          ng-click="updateOptionSet()">Save</div>
+        </div>
       </div>
       <div ng-include='"options/index.html"'></div>
     </ng-form>

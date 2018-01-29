@@ -8,9 +8,9 @@ module Api
         @displays = @instrument.displays.order(:position).includes(:instrument_questions)
       end
 
-      # def show
-      #   @instrument_question = @instrument.instrument_questions.find(params[:id])
-      # end
+      def show
+        @display = @instrument.displays.find(params[:id])
+      end
 
       def create
         display = @instrument.displays.new(display_params)
@@ -43,7 +43,7 @@ module Api
       end
 
       def display_params
-        params.require(:display).permit(:instrument_id, :position, :mode)
+        params.require(:display).permit(:instrument_id, :position, :mode, :title)
       end
     end
   end

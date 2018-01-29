@@ -12,23 +12,23 @@ Display, currentDisplay, $window) ->
   $scope.questions = []
   $scope.question_origins = ['New Question', 'Question From Set', 'Multiple Questions From Set']
 
-  $scope.display = new Display()
+  # $scope.display = new Display()
   $scope.instrumentQuestions = InstrumentQuestion.query({
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id
   }, -> InstrumentQuestions.questions = $scope.instrumentQuestions )
 
-  $scope.sortableInstrumentQuestions = {
-    cursor: 'move',
-    handle: '.moveInstrumentQuestion',
-    axis: 'y',
-    stop: (e, ui) ->
-      angular.forEach $scope.instrumentQuestions, (instrumentQuestion, index) ->
-        instrumentQuestion.number_in_instrument = index + 1
-        instrumentQuestion.project_id = $scope.project_id
-        instrumentQuestion.instrument_id = $scope.instrument_id
-        instrumentQuestion.$update({})
-  }
+  # $scope.sortableInstrumentQuestions = {
+  #   cursor: 'move',
+  #   handle: '.moveInstrumentQuestion',
+  #   axis: 'y',
+  #   stop: (e, ui) ->
+  #     angular.forEach $scope.instrumentQuestions, (instrumentQuestion, index) ->
+  #       instrumentQuestion.number_in_instrument = index + 1
+  #       instrumentQuestion.project_id = $scope.project_id
+  #       instrumentQuestion.instrument_id = $scope.instrument_id
+  #       instrumentQuestion.$update({})
+  # }
 
   $scope.questionSets = QuestionSet.query({})
   $scope.settings = Setting.get({})
@@ -71,12 +71,10 @@ Display, currentDisplay, $window) ->
   $scope.displayQuestions = (display) ->
     _.where($scope.instrumentQuestions, {display_id: display.id})
 
-  $scope.validTableQuestions = (questions) ->
-
-
   $scope.newQuestion = (display) ->
     $scope.showNewQuestion = true
     $scope.display = new Display()
+    $scope.display.title = ''
     $scope.display.question_origin = ''
     $scope.display.project_id = $scope.project_id
     $scope.display.instrument_id = $scope.instrument_id
@@ -92,16 +90,16 @@ Display, currentDisplay, $window) ->
     $scope.showNewQuestion = true
     $scope.display = display
 
-  $scope.removeInstrumentQuestion = (iq) ->
-    if confirm('Are you sure you want to delete this question from the instrument?')
-      if iq.id
-        iq.project_id = $scope.project_id
-        iq.instrument_id = $scope.instrument_id
-        iq.$delete({} ,
-          (data, headers) ->
-            $scope.instrumentQuestions.splice($scope.instrumentQuestions.indexOf(iq), 1)
-          (result, headers) ->
-        )
+  # $scope.removeInstrumentQuestion = (iq) ->
+  #   if confirm('Are you sure you want to delete this question from the instrument?')
+  #     if iq.id
+  #       iq.project_id = $scope.project_id
+  #       iq.instrument_id = $scope.instrument_id
+  #       iq.$delete({} ,
+  #         (data, headers) ->
+  #           $scope.instrumentQuestions.splice($scope.instrumentQuestions.indexOf(iq), 1)
+  #         (result, headers) ->
+  #       )
 
   $scope.saveDisplay = (display) ->
     display.project_id = $scope.project_id
@@ -115,6 +113,7 @@ Display, currentDisplay, $window) ->
           $scope.displays.push(data)
         (result, headers) ->
       )
+    $scope.showSaveDisplay = false
 
   $scope.edit = (display) ->
     currentDisplay.display = display
@@ -182,12 +181,13 @@ Display, currentDisplay, $window) ->
   $scope.saveIQs = () ->
     selectedQuestions = _.where($scope.questionSetQuestions, {selected: true})
     responseCount = 0
+    previousQuestionCount = $scope.instrumentQuestions.length
     angular.forEach $scope.questionSetQuestions, (q, i) ->
       if q.selected
         iq = new InstrumentQuestion()
         iq.instrument_id = $scope.instrument_id
         iq.project_id = $scope.project_id
-        iq.number_in_instrument = $scope.instrumentQuestions.length + 1
+        iq.number_in_instrument = previousQuestionCount + 1
         iq.display_id = $scope.display.id
         iq.question_id = q.id
         iq.$save({},
@@ -197,6 +197,7 @@ Display, currentDisplay, $window) ->
               $route.reload()
           (result, headers) ->
         )
+        previousQuestionCount += 1
 
   $scope.nextFromSet = () ->
     angular.forEach $scope.questions, (question, index) ->

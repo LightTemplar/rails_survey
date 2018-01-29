@@ -1,12 +1,19 @@
 <div ng-controller="OptionsCtrl">
-      <h4 class="text-center"><strong>Options In Set</strong></h4>
+  <h4 class="text-center"><strong>Options In Set</strong></h4>
   <div ng-repeat="option in options">
-    <div class="row">
-      <a class="col-md-2" ng-click="editOption(option)">{{option.text}} </a>
+    <div class="row m-5">
+      <a ng-click="editOption(option)">{{option.text}} </a>
     </div>
     <div ng-show="currentOption == option">
       <div ng-include='"options/show.html"'></div>
     </div>
   </div>
-  <div class="m-5 btn btn-primary" ng-click="newOption()">Add Option</div>
+  <div class="row m-5">
+    <div class="col-md-6">
+      <div class="pull-left btn btn-default" ng-click="back()">Back</div>
+    </div>
+    <div class="col-md-6">
+      <div class="pull-right btn btn-primary" ng-click="newOption()">Add Option</div>
+    </div>
+  </div>
 </div>

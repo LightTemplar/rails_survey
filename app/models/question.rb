@@ -55,8 +55,8 @@ class Question < ActiveRecord::Base
   has_paper_trail
   acts_as_paranoid
 
-  # validates :question_identifier, uniqueness: true, presence: true, allow_blank: false
-  # validates :text, presence: true, allow_blank: false
+  validates :question_identifier, uniqueness: true, presence: true, allow_blank: false
+  validates :text, presence: true, allow_blank: false
   # validates :number_in_instrument, presence: true, allow_blank: false
 
   amoeba do

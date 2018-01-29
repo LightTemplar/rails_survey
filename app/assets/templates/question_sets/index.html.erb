@@ -15,9 +15,13 @@
             <input type="text" class="form-control" name="new-question-set"
             ng-model="newQuestionSet.title" required>
           </div>
-          <div class="col-md-1 btn btn-default" ng-click="cancelNewQuestionSet()">Cancel</div>
-          <div class="col-md-1 btn btn-success" ng-disabled="newQuestionSetForm.$invalid"
-          ng-click="saveQuestionSet()">Save</div>
+          <div class="col-md-1">
+            <div class="btn btn-default" ng-click="cancelNewQuestionSet()">Cancel</div>
+          </div>
+         <div class="col-md-1">
+           <div class="btn btn-success" ng-disabled="newQuestionSetForm.$invalid"
+            ng-click="saveQuestionSet()">Save</div>
+         </div>
       </ng-form>
     </div>
   </div>
