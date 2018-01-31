@@ -20,11 +20,13 @@ App.controller 'OptionsCtrl', ['$scope', 'Option', '$routeParams', '$location',
       $scope.currentOption.$update({} ,
         (data, headers) -> ,
         (result, headers) ->
+          alert(result.data.errors)
       )
     else
       $scope.currentOption.$save({} ,
         (data, headers) -> ,
         (result, headers) ->
+          alert(result.data.errors)
       )
     $scope.currentOption = null
 

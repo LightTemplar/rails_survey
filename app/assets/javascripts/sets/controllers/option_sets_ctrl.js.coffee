@@ -21,6 +21,15 @@ App.controller 'OptionSetsCtrl', ['$scope', '$location', 'OptionSet', ($scope, $
   setNewOption(new OptionSet(), false)
   $scope.optionSets = OptionSet.query({})
 
+  $scope.deleteOptionSet = (optionSet) ->
+    if confirm('Are you sure you want to delete' + optionSet.title + '?')
+      if optionSet.id
+        optionSet.$delete({} ,
+          (data, headers) ->
+            $scope.optionSets.splice($scope.optionSets.indexOf(optionSet), 1)
+          (result, headers) ->
+        )
+
 ]
 
 App.controller 'ShowOptionSetCtrl', ['$scope', '$routeParams', '$location', 'OptionSet', 'Option',
@@ -32,15 +41,6 @@ App.controller 'ShowOptionSetCtrl', ['$scope', '$routeParams', '$location', 'Opt
         (data, headers) ->
         (result, headers) ->
       )
-
-  $scope.deleteOptionSet = () ->
-    if confirm('Are you sure you want to delete this option set?')
-      if $scope.optionSet.id
-        $scope.optionSet.$delete({} ,
-          (data, headers) ->
-            $location.path '/option_sets'
-          (result, headers) ->
-        )
 
   if $scope.optionSets and $routeParams.id
     $scope.optionSet = _.first(_.filter($scope.optionSets, (qs) -> qs.id == $routeParams.id))

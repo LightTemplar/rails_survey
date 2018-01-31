@@ -15,6 +15,15 @@ App.controller 'QuestionSetsCtrl', ['$scope', 'QuestionSet',
     $scope.questionSets.push($scope.newQuestionSet)
     $scope.cancelNewQuestionSet()
 
+  $scope.deleteQuestionSet = (questionSet) ->
+    if confirm('Are you sure you want to delete ' + questionSet.title + '?')
+      if questionSet.id
+        questionSet.$delete({} ,
+          (data, headers) ->
+            $scope.questionSets.splice($scope.questionSets.indexOf(questionSet), 1)
+          (result, headers) ->
+        )
+
   setNewQuestion = (questionSet, status) ->
     $scope.newQuestionSet = questionSet
     $scope.showNewQuestionSet = status
@@ -24,8 +33,8 @@ App.controller 'QuestionSetsCtrl', ['$scope', 'QuestionSet',
 
 ]
 
-App.controller 'ShowQuestionSetCtrl', ['$scope', '$routeParams', '$location',
-'QuestionSet', ($scope, $routeParams, $location, QuestionSet) ->
+App.controller 'ShowQuestionSetCtrl', ['$scope', '$routeParams', 'QuestionSet',
+($scope, $routeParams, QuestionSet) ->
 
   $scope.updateQuestionSet = () ->
     if $scope.questionSet.id
@@ -33,15 +42,6 @@ App.controller 'ShowQuestionSetCtrl', ['$scope', '$routeParams', '$location',
         (data, headers) ->
         (result, headers) ->
       )
-
-  $scope.deleteQuestionSet = () ->
-    if confirm('Are you sure you want to delete this question set?')
-      if $scope.questionSet.id
-        $scope.questionSet.$delete({} ,
-          (data, headers) ->
-            $location.path '/question_sets'
-          (result, headers) ->
-        )
 
   if $scope.questionSets and $routeParams.id
     $scope.questionSet = _.first(_.filter($scope.questionSets, (qs) -> qs.id == $routeParams.id))
