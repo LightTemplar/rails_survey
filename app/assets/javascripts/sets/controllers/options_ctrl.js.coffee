@@ -3,8 +3,19 @@ App.controller 'OptionsCtrl', ['$scope', 'Option', '$routeParams', '$location',
 
   $scope.options = Option.query({"option_set_id": $routeParams.id})
 
+  $scope.sortableOptions = {
+    cursor: 'move',
+    handle: '.moveOption',
+    axis: 'y',
+    stop: (e, ui) ->
+      angular.forEach $scope.options, (option, index) ->
+        option.number_in_question = index
+        option.$update({})
+  }
+
   $scope.newOption = () ->
     option = new Option()
+    option.number_in_question = $scope.options.length
     $scope.currentOption = option
     $scope.options.push(option)
 
@@ -30,14 +41,13 @@ App.controller 'OptionsCtrl', ['$scope', 'Option', '$routeParams', '$location',
       )
     $scope.currentOption = null
 
-  $scope.deleteOption = () ->
-    if confirm('Are you sure you want to delete this option?')
-      if $scope.currentOption.id
-        $scope.currentOption.$delete({} ,
+  $scope.deleteOption = (option) ->
+    if confirm('Are you sure you want to delete ' + option.text + '?')
+      if option.id
+        option.$delete({} ,
           (data, headers) ->
-            index = $scope.options.indexOf($scope.currentOption)
+            index = $scope.options.indexOf(option)
             $scope.options.splice(index,1)
-            $scope.currentOption = null
           (result, headers) ->
         )
 

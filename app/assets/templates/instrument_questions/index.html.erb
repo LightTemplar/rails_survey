@@ -23,10 +23,10 @@
               <!-- </div> -->
             </div>
             <div class="col-md-6">
-              <span ng-repeat="instrumentQuestion in display.instrument_questions">
+              <span ng-repeat="instrumentQuestion in display.instrument_questions | orderBy: '1 * number_in_instrument'">
                 <a class="btn btn-sm btn-info m-5"
                 href="/projects/{{project_id}}/instruments/{{instrument_id}}/instrument_questions/{{instrumentQuestion.id}}">
-                {{instrumentQuestion.identifier}}
+                <span class="c-black">{{instrumentQuestion.number_in_instrument}}.</span> {{instrumentQuestion.identifier}}
                 </a>
               </span>
             </div>
