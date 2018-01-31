@@ -12,6 +12,9 @@ App.controller 'QuestionsCtrl', ['$scope', '$routeParams', '$location', 'Questio
     $location.path('/projects/' + $routeParams.project_id + '/instruments/' +
     $routeParams.instrument_id + '/instrument_questions').search({})
 
+  $scope.back = () ->
+    $location.path '/question_sets/'
+
   if $routeParams.id
     $scope.questions = Question.query({"question_set_id": $routeParams.id})
 

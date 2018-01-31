@@ -4,7 +4,7 @@
     <div class="card-body card-padding">
       <div class="row" ng-show="!showNewQuestion">
         <label class="col-md-2">Screen Number</label>
-        <label class="col-md-2">Display Type</label>
+        <label class="col-md-2">Display Type/Name</label>
         <label class="col-md-6">Questions On Screen</label>
         <label class="col-md-2">Actions</label>
       </div>
@@ -18,19 +18,17 @@
               </div>
             </div>
             <div class="col-md-2">
-              <div class="btn btn-sm btn-success" ng-click="edit(display)">
-                {{display.mode}}
-              </div>
+              <!-- <div class="btn btn-sm btn-success" ng-click="edit(display)"> -->
+                <strong>{{display.mode}}</strong> <i>{{display.title}}</i>
+              <!-- </div> -->
             </div>
             <div class="col-md-6">
-              <ul ng-repeat="instrumentQuestion in display.instrument_questions">
-                <span>{{instrumentQuestion.type}}</span> :
-                <span>
-                  <a href="/projects/{{project_id}}/instruments/{{instrument_id}}/instrument_questions/{{instrumentQuestion.id}}">
-                  {{instrumentQuestion.identifier}}
-                  </a>
-                </span>
-              </ul>
+              <span ng-repeat="instrumentQuestion in display.instrument_questions">
+                <a class="btn btn-sm btn-info m-5"
+                href="/projects/{{project_id}}/instruments/{{instrument_id}}/instrument_questions/{{instrumentQuestion.id}}">
+                {{instrumentQuestion.identifier}}
+                </a>
+              </span>
             </div>
             <div class="col-md-2">
               <div class="btn btn-success" ng-click="showDisplay(display)">Edit</div>
