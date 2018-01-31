@@ -10,25 +10,12 @@ Display, currentDisplay, $window) ->
   $scope.showFromSet = false
   $scope.showNewQuestion = false
   $scope.questions = []
-  $scope.question_origins = ['New Question', 'Question From Set', 'Multiple Questions From Set']
+  $scope.question_origins = ['New Question', 'From Set']
 
-  # $scope.display = new Display()
   $scope.instrumentQuestions = InstrumentQuestion.query({
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id
   }, -> InstrumentQuestions.questions = $scope.instrumentQuestions )
-
-  # $scope.sortableInstrumentQuestions = {
-  #   cursor: 'move',
-  #   handle: '.moveInstrumentQuestion',
-  #   axis: 'y',
-  #   stop: (e, ui) ->
-  #     angular.forEach $scope.instrumentQuestions, (instrumentQuestion, index) ->
-  #       instrumentQuestion.number_in_instrument = index + 1
-  #       instrumentQuestion.project_id = $scope.project_id
-  #       instrumentQuestion.instrument_id = $scope.instrument_id
-  #       instrumentQuestion.$update({})
-  # }
 
   $scope.questionSets = QuestionSet.query({})
   $scope.settings = Setting.get({})
@@ -71,7 +58,7 @@ Display, currentDisplay, $window) ->
   $scope.displayQuestions = (display) ->
     _.where($scope.instrumentQuestions, {display_id: display.id})
 
-  $scope.newQuestion = (display) ->
+  $scope.newQuestion = () ->
     $scope.showNewQuestion = true
     $scope.display = new Display()
     $scope.display.title = ''
@@ -89,17 +76,6 @@ Display, currentDisplay, $window) ->
   $scope.addQuestionToDisplay = (display) ->
     $scope.showNewQuestion = true
     $scope.display = display
-
-  # $scope.removeInstrumentQuestion = (iq) ->
-  #   if confirm('Are you sure you want to delete this question from the instrument?')
-  #     if iq.id
-  #       iq.project_id = $scope.project_id
-  #       iq.instrument_id = $scope.instrument_id
-  #       iq.$delete({} ,
-  #         (data, headers) ->
-  #           $scope.instrumentQuestions.splice($scope.instrumentQuestions.indexOf(iq), 1)
-  #         (result, headers) ->
-  #       )
 
   $scope.saveDisplay = (display) ->
     display.project_id = $scope.project_id
@@ -121,7 +97,7 @@ Display, currentDisplay, $window) ->
     $scope.instrument_id + '/displays/' + display.id
 
   $scope.delete = (display) ->
-    if confirm('Are you sure you want to delete this display group?')
+    if confirm('Are you sure you want to delete ' + display.title + '?')
       if display.id
         display.project_id = $scope.project_id
         display.instrument_id = $scope.instrument_id
@@ -158,69 +134,43 @@ Display, currentDisplay, $window) ->
         multiple: $scope.display.mode != 'SINGLE'
       })
 
-  $scope.nextQS = (id) ->
+  $scope.nextInstrumentQuestion = (id) ->
     $scope.showQuestionSelectionFromQS = true
     $scope.questionSetQuestions = Question.query({"question_set_id": id})
-    $scope.instrumentQuestion = new InstrumentQuestion()
-    $scope.instrumentQuestion.instrument_id = $scope.instrument_id
-    $scope.instrumentQuestion.project_id = $scope.project_id
-    $scope.instrumentQuestion.number_in_instrument = $scope.instrumentQuestions.length + 1
-    $scope.instrumentQuestion.display_id = $scope.display.id
+    if $scope.display.mode == 'SINGLE'
+      $scope.instrumentQuestion = new InstrumentQuestion()
+      $scope.instrumentQuestion.instrument_id = $scope.instrument_id
+      $scope.instrumentQuestion.project_id = $scope.project_id
+      $scope.instrumentQuestion.number_in_instrument = $scope.instrumentQuestions.length + 1
+      $scope.instrumentQuestion.display_id = $scope.display.id
 
-  $scope.saveIQ = (instrumentQuestion) ->
-    instrumentQuestion.$save({},
-      (data, headers) ->
-        $route.reload()
-      (result, headers) ->
-    )
-
-  $scope.nextQuestions = (id) ->
-    $scope.showQuestionSelectionFromQS = true
-    $scope.questionSetQuestions = Question.query({"question_set_id": id})
-
-  $scope.saveIQs = () ->
-    selectedQuestions = _.where($scope.questionSetQuestions, {selected: true})
-    responseCount = 0
-    previousQuestionCount = $scope.instrumentQuestions.length
-    angular.forEach $scope.questionSetQuestions, (q, i) ->
-      if q.selected
-        iq = new InstrumentQuestion()
-        iq.instrument_id = $scope.instrument_id
-        iq.project_id = $scope.project_id
-        iq.number_in_instrument = previousQuestionCount + 1
-        iq.display_id = $scope.display.id
-        iq.question_id = q.id
-        iq.$save({},
-          (data, headers) ->
-            responseCount += 1
-            if responseCount ==  selectedQuestions.length
-              $route.reload()
-          (result, headers) ->
-        )
-        previousQuestionCount += 1
-
-  $scope.nextFromSet = () ->
-    angular.forEach $scope.questions, (question, index) ->
-      if question.checked
-        iQuestion = new InstrumentQuestion()
-        iQuestion.instrument_id = $scope.instrument_id
-        iQuestion.question_id = question.id
-        iQuestion.project_id = $scope.project_id
-        iQuestion.number_in_instrument = $scope.instrumentQuestions.length + 1
-        iQuestion.$save({},
-          (data, headers) ->
-            $scope.instrumentQuestions.push(data)
-            $scope.showFromSet = false
-          (result, headers) ->
-        )
-
-  $scope.deleteInstrumentQuestion = (iq) ->
-    iq.project_id = $scope.project_id
-    iq.$delete({},
-      (data, headers) ->
-        $scope.instrumentQuestions.splice($scope.instrumentQuestions.indexOf(iq), 1)
-      (result, headers) ->
-    )
+  $scope.saveInstrumentQuestions = () ->
+    if $scope.display.mode == 'SINGLE'
+      $scope.instrumentQuestion.$save({},
+        (data, headers) ->
+          $route.reload()
+        (result, headers) ->
+      )
+    else
+      selectedQuestions = _.where($scope.questionSetQuestions, {selected: true})
+      responseCount = 0
+      previousQuestionCount = $scope.instrumentQuestions.length
+      angular.forEach $scope.questionSetQuestions, (q, i) ->
+        if q.selected
+          iq = new InstrumentQuestion()
+          iq.instrument_id = $scope.instrument_id
+          iq.project_id = $scope.project_id
+          iq.number_in_instrument = previousQuestionCount + 1
+          iq.display_id = $scope.display.id
+          iq.question_id = q.id
+          iq.$save({},
+            (data, headers) ->
+              responseCount += 1
+              if responseCount ==  selectedQuestions.length
+                $route.reload()
+            (result, headers) ->
+          )
+          previousQuestionCount += 1
 
 ]
 

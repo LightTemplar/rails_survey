@@ -9,11 +9,11 @@ child :instrument_questions do
   end
 
   node :identifier do |iq|
-    iq.question.question_identifier
+    iq.question.question_identifier if iq.question
   end
 
   node :type do |iq|
-    iq.question.question_type
+    iq.question.question_type if iq.question
   end
 
   node :number_in_instrument do |iq|
