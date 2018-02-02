@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180129215131) do
+ActiveRecord::Schema.define(version: 20180201210006) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -224,6 +224,16 @@ ActiveRecord::Schema.define(version: 20180129215131) do
     t.datetime "updated_at"
   end
 
+  create_table "multiple_skips", force: :cascade do |t|
+    t.string   "question_identifier"
+    t.string   "option_identifier"
+    t.string   "skip_question_identifier"
+    t.integer  "instrument_question_id"
+    t.datetime "deleted_at"
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
   create_table "next_questions", force: :cascade do |t|
     t.string   "question_identifier"
     t.string   "option_identifier"
@@ -231,6 +241,7 @@ ActiveRecord::Schema.define(version: 20180129215131) do
     t.integer  "instrument_question_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "deleted_at"
   end
 
   create_table "option_scores", force: :cascade do |t|

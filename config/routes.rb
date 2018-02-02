@@ -31,6 +31,7 @@ RailsSurvey::Application.routes.draw do
         resources :option_sets, only: :index
         resources :displays, only: :index
         resources :next_questions, only: :index
+        resources :multiple_skips, only: :index
         resources :surveys, only: :create
         resources :responses, only: :create
         resources :response_images, only: :create
@@ -63,6 +64,7 @@ RailsSurvey::Application.routes.draw do
           resources :instrument_question_sets
           resources :instrument_questions do
             resources :next_questions
+            resources :multiple_skips
           end
           resources :displays
         end

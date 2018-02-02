@@ -16,6 +16,7 @@ class Project < ActiveRecord::Base
   has_many :instrument_questions, through: :instruments
   has_many :questions, through: :instrument_questions
   has_many :next_questions, through: :instrument_questions
+  has_many :multiple_skips, through: :instrument_questions
   # has_many :question_translations, through: :questions, source: 'translations'
   has_many :options, through: :questions
   has_many :option_sets, through: :questions
