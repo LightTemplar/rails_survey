@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180201210006) do
+ActiveRecord::Schema.define(version: 20180202124818) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -262,6 +262,7 @@ ActiveRecord::Schema.define(version: 20180201210006) do
     t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "special",    default: false
   end
 
   create_table "option_translations", force: :cascade do |t|
@@ -362,6 +363,7 @@ ActiveRecord::Schema.define(version: 20180201210006) do
     t.integer  "question_set_id"
     t.integer  "option_set_id"
     t.integer  "instruction_id"
+    t.integer  "special_option_set_id"
   end
 
   add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true, using: :btree

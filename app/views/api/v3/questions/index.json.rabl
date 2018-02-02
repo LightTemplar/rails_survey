@@ -49,6 +49,10 @@ node :option_set_id do |iq|
   iq.question.option_set_id if iq.question
 end
 
+node :special_option_set_id do |iq|
+  iq.question.special_option_set_id if iq.question
+end
+
 node :deleted_at do |iq|
   iq.question.deleted_at if iq.question
 end

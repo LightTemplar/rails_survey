@@ -18,7 +18,7 @@ class Project < ActiveRecord::Base
   has_many :next_questions, through: :instrument_questions
   has_many :multiple_skips, through: :instrument_questions
   # has_many :question_translations, through: :questions, source: 'translations'
-  has_many :options, through: :questions
+  # has_many :options, through: :questions
   has_many :option_sets, through: :questions
   has_many :displays, through: :instruments
   has_many :surveys, through: :instruments
@@ -50,6 +50,14 @@ class Project < ActiveRecord::Base
   has_many :scores, through: :score_schemes
   validates :name, presence: true, allow_blank: false
   validates :description, presence: true, allow_blank: true
+
+  def options
+    instrument_ids = instruments.where(published: true).pluck(:id)
+    question_ids = InstrumentQuestion.where(instrument_id: instrument_ids).pluck(:question_id).uniq
+    questions = Question.where(id: question_ids)
+    option_set_ids = questions.pluck(:option_set_id) + questions.pluck(:special_option_set_id)
+    options = Option.where(option_set_id: option_set_ids.uniq)
+  end
 
   def non_responsive_devices
     devices.includes(:surveys).where('surveys.updated_at < ?', Settings.danger_zone_days.days.ago).order('surveys.updated_at ASC')

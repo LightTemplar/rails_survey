@@ -26,6 +26,7 @@
 #  question_set_id                  :integer
 #  option_set_id                    :integer
 #  instruction_id                   :integer
+#  special_option_set_id            :integer
 #
 
 class Question < ActiveRecord::Base
@@ -35,6 +36,7 @@ class Question < ActiveRecord::Base
   belongs_to :grid
   belongs_to :section
   belongs_to :option_set
+  belongs_to :special_option_set, class_name: 'OptionSet'
   has_many :options, through: :option_set
   belongs_to :question_set
   belongs_to :instruction

@@ -103,7 +103,10 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$routeParams', '$location', '$rou
     'id': $routeParams.id})
 
   $scope.settings = Setting.get({})
-  $scope.optionSets = OptionSet.query({})
+  $scope.allOptionSets = OptionSet.query({}, ->
+    $scope.optionSets = _.where($scope.allOptionSets, {special: false})
+    $scope.specialOptionSets = _.where($scope.allOptionSets, {special: true})
+  )
   $scope.instructions = Instruction.query({})
 
 ]

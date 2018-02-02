@@ -3,14 +3,20 @@
   <div class="card-body card-padding">
     <ng-form name="optionSetEditorForm">
       <div class="row">
-        <label class="col-md-1">Title</label>
+        <label class="col-md-2">Title</label>
         <div class="col-md-10">
-          <input type="text" class="form-control" name="option-set" ng-model="optionSet.title" required>
+          <input type="text" class="form-control" name="option-set-title" ng-model="optionSet.title" required>
         </div>
-        <div class="col-md-1">
-          <div class="btn btn-success" ng-disabled="optionSetEditorForm.$invalid" ng-click="updateOptionSet()">
-            Save
-          </div>
+      </div>
+      <div class="row m-t-5">
+        <label class="col-md-2">Special Options</label>
+        <div class="col-md-10">
+          <input type="checkbox" name="option-set-special" ng-model="optionSet.special">
+        </div>
+      </div>
+      <div class="row m-5">
+        <div class="btn btn-success pull-right" ng-disabled="optionSetEditorForm.$invalid" ng-click="updateOptionSet()">
+          Save
         </div>
       </div>
       <div ng-include='"options/index.html"'></div>

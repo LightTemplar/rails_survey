@@ -26,6 +26,7 @@
 #  question_set_id                  :integer
 #  option_set_id                    :integer
 #  instruction_id                   :integer
+#  special_option_set_id            :integer
 #
 
 require "spec_helper"

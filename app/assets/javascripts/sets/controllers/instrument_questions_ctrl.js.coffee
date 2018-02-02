@@ -182,15 +182,27 @@ NextQuestion, MultipleSkip) ->
 
   $scope.showNewNextQuestion = false
   $scope.showMultiSkips = true
+  $scope.options = []
   $scope.project_id = $routeParams.project_id
   $scope.instrument_id = $routeParams.instrument_id
   # TODO: Does not work if browser refreshed
   $scope.instrumentQuestion = _.first(_.filter(InstrumentQuestions.questions,
     (q) -> q.id == parseInt($routeParams.id)))
+
   if $scope.instrumentQuestion.option_set_id
-    $scope.options = Option.query({
+    nonSpecialOptions = Option.query({
       'option_set_id': $scope.instrumentQuestion.option_set_id
-    })
+    }, ->
+      $scope.options = $scope.options.concat(nonSpecialOptions)
+    )
+
+  if $scope.instrumentQuestion.special_option_set_id
+    specialOptions = Option.query({
+      'option_set_id': $scope.instrumentQuestion.special_option_set_id
+    }, ->
+      $scope.options = $scope.options.concat(specialOptions)
+    )
+
   $scope.settings = Setting.get({})
   $scope.nextQuestions = NextQuestion.query({
     'project_id': $scope.project_id,

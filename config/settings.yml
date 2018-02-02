@@ -64,7 +64,7 @@ languages: [
           ]
 
 # Special Responses
-special_responses: ['SKIP', 'NA', 'RF', 'DK']
+special_responses: ['DK', 'RF', 'MI', 'NA']
 any_default_non_empty_response: 'ANY RESPONSE'
 skipped_question_special_response: 'SKIP'
 

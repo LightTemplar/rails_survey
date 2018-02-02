@@ -36,7 +36,7 @@ module Api
       end
 
       def option_set_params
-        params.require(:option_set).permit(:title)
+        params.require(:option_set).permit(:title, :special)
       end
 
     end

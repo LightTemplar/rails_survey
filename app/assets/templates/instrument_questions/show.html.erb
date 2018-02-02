@@ -1,106 +1,107 @@
 <h4 class="text-center">{{instrumentQuestion.identifier}}</h4>
 <div class="card" ng-controller="ShowInstrumentQuestionCtrl">
   <div class="card-body card-padding">
-    <div class="row" ng-show="instrumentQuestion.option_set_id &&
-    questionTypesWithSkipPatterns(instrumentQuestion.type)">
-    <div class="text-center"><strong>Skip Patterns</strong></div>
-    <li class="text-muted">If the next question to be displayed should be
-      a different one from the one that immediately follows this question,
-      select that specific question to jump to for each of the options below.
-    </li>
-    <li class="text-muted">Check the Complete Survey box if the selection of
-      the option should lead to the end of the survey.
-    </li>
-    <div class="row">
-      <label class="col-md-4"><u>Chosen Option</u></label>
-      <label class="col-md-4"><u>Question To Skip To</u></label>
-      <label class="col-md-2"><u>Complete Survey</u></label>
-      <label class="col-md-2"><u>Actions</u></label>
-    </div>
-    <div class="row" ng-repeat="nextQuestion in nextQuestions">
-      <div class="col-md-4">
-        <select
-        class="form-control"
-        allow-single-deselect="true"
-        data-placeholder="Select an option identifier..."
-        no-results-text="'This does not match any valid option identifier'"
-        name="skip-pattern-option"
-        ng-model="nextQuestion.option_identifier"
-        ng-options="o.identifier as o.identifier for o in options">
-        <option value="">None</option>
-        </select>
+    <div class="row" ng-show="(instrumentQuestion.option_set_id &&
+    questionTypesWithSkipPatterns(instrumentQuestion.type)) ||
+    instrumentQuestion.special_option_set_id">
+      <div class="text-center"><strong>Skip Patterns</strong></div>
+      <li class="text-muted">If the next question to be displayed should be
+        a different one from the one that immediately follows this question,
+        select that specific question to jump to for each of the options below.
+      </li>
+      <li class="text-muted">Check the Complete Survey box if the selection of
+        the option should lead to the end of the survey.
+      </li>
+      <div class="row">
+        <label class="col-md-4"><u>Chosen Option</u></label>
+        <label class="col-md-4"><u>Question To Skip To</u></label>
+        <label class="col-md-2"><u>Complete Survey</u></label>
+        <label class="col-md-2"><u>Actions</u></label>
       </div>
-      <div class="col-md-4">
-        <select
-        class="form-control"
-        allow-single-deselect="true"
-        data-placeholder="Select a question identifier..."
-        no-results-text="'This does not match any valid question identifier'"
-        name="skip-pattern-question"
-        ng-model="nextQuestion.next_question_identifier"
-        ng-options="q.identifier as q.identifier for q in questionsAfter(instrumentQuestion)">
-        <option value="">None</option>
-        </select>
-      </div>
-      <div class="col-md-2">
-        <input type="checkbox" ng-model="nextQuestion.complete_survey">
-      </div>
-      <div class="col-md-2">
-        <div class="btn btn-success" ng-click="update(nextQuestion)">Update</div>
-        <div class="btn btn-danger" ng-click="delete(nextQuestion)">Delete</div>
-      </div>
-    </div>
-
-    <div class="row m-5">
-      <div class="btn btn-primary pull-right" ng-click="addNextQuestion()">Add Skip Pattern</div>
-    </div>
-
-    <div ng-show="showNewNextQuestion">
-      <ng-form name="newSkipForm">
-        <div class="row">
-          <label class="col-md-4"><u>Chosen Option</u></label>
-          <label class="col-md-4"><u>Question To Skip To</u></label>
-          <label class="col-md-2"><u>Complete Survey</u></label>
-          <label class="col-md-2"><u>Actions</u></label>
+      <div class="row" ng-repeat="nextQuestion in nextQuestions">
+        <div class="col-md-4">
+          <select
+          class="form-control"
+          allow-single-deselect="true"
+          data-placeholder="Select an option identifier..."
+          no-results-text="'This does not match any valid option identifier'"
+          name="skip-pattern-option"
+          ng-model="nextQuestion.option_identifier"
+          ng-options="o.identifier as o.text for o in options">
+          <option value="">None</option>
+          </select>
         </div>
-        <div class="row">
-          <div class="col-md-4">
-            <select
-            class="form-control"
-            allow-single-deselect="true"
-            data-placeholder="Select an option identifier..."
-            no-results-text="'This does not match any valid option identifier'"
-            name="skip-pattern-option"
-            ng-model="newNextQuestion.option_identifier"
-            ng-options="o.identifier as o.identifier for o in options"
-            ng-required>
-            <option value="">None</option>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <select
-            class="form-control"
-            allow-single-deselect="true"
-            data-placeholder="Select a question identifier..."
-            no-results-text="'This does not match any valid question identifier'"
-            name="skip-pattern-question"
-            ng-model="newNextQuestion.next_question_identifier"
-            ng-options="q.identifier as q.identifier for q in questionsAfter(instrumentQuestion)"
-            ng-required>
-            <option value="">None</option>
-            </select>
-          </div>
-          <div class="col-md-2">
-            <input type="checkbox" ng-model="newNextQuestion.complete_survey">
-          </div>
-          <div class="col-md-2">
-            <div class="btn btn-warning" ng-click="cancel()">Cancel</div>
-            <div class="btn btn-success" ng-click="save()" ng-disabled="newSkipForm.$invalid">Save</div>
-          </div>
+        <div class="col-md-4">
+          <select
+          class="form-control"
+          allow-single-deselect="true"
+          data-placeholder="Select a question identifier..."
+          no-results-text="'This does not match any valid question identifier'"
+          name="skip-pattern-question"
+          ng-model="nextQuestion.next_question_identifier"
+          ng-options="q.identifier as q.identifier for q in questionsAfter(instrumentQuestion)">
+          <option value="">None</option>
+          </select>
         </div>
-      </ng-form>
+        <div class="col-md-2">
+          <input type="checkbox" ng-model="nextQuestion.complete_survey">
+        </div>
+        <div class="col-md-2">
+          <div class="btn btn-success" ng-click="update(nextQuestion)">Update</div>
+          <div class="btn btn-danger" ng-click="delete(nextQuestion)">Delete</div>
+        </div>
+      </div>
+
+      <div class="row m-5">
+        <div class="btn btn-primary pull-right" ng-click="addNextQuestion()">Add Skip Pattern</div>
+      </div>
+
+      <div ng-show="showNewNextQuestion">
+        <ng-form name="newSkipForm">
+          <div class="row">
+            <label class="col-md-4"><u>Chosen Option</u></label>
+            <label class="col-md-4"><u>Question To Skip To</u></label>
+            <label class="col-md-2"><u>Complete Survey</u></label>
+            <label class="col-md-2"><u>Actions</u></label>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <select
+              class="form-control"
+              allow-single-deselect="true"
+              data-placeholder="Select an option identifier..."
+              no-results-text="'This does not match any valid option identifier'"
+              name="new-skip-pattern-option"
+              ng-model="newNextQuestion.option_identifier"
+              ng-options="o.identifier as o.text for o in options"
+              ng-required>
+              <option value="">None</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <select
+              class="form-control"
+              allow-single-deselect="true"
+              data-placeholder="Select a question identifier..."
+              no-results-text="'This does not match any valid question identifier'"
+              name="new-skip-pattern-question"
+              ng-model="newNextQuestion.next_question_identifier"
+              ng-options="q.identifier as q.identifier for q in questionsAfter(instrumentQuestion)"
+              ng-required>
+              <option value="">None</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <input type="checkbox" ng-model="newNextQuestion.complete_survey">
+            </div>
+            <div class="col-md-2">
+              <div class="btn btn-warning" ng-click="cancel()">Cancel</div>
+              <div class="btn btn-success" ng-click="save()" ng-disabled="newSkipForm.$invalid">Save</div>
+            </div>
+          </div>
+        </ng-form>
+      </div>
     </div>
-  </div>
 
   <div class="row" ng-show="instrumentQuestion.option_set_id && questionTypesWithMultipleSkips(instrumentQuestion.type)">
     <div class="text-center"><strong>Multiple Skip Patterns</strong></div>

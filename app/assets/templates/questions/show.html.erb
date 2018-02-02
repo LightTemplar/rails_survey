@@ -40,28 +40,47 @@
     </div>
   </div>
 
-  <div class="row m-t-5"
-  ng-show="question.question_type && questionTypesWithOptions(question.question_type)">
-  <label class="col-md-2">Option Set</label>
-  <div class="col-md-8">
-    <select
-    ng-style="{'width' : 600}"
-    name="option-set"
-    id="option-set"
-    ng-model="question.option_set_id"
-    ng-options="set.id as set.title for set in optionSets">
-    <option value="">Select an option set from the list below</option>
-  </select>
-</div>
-<div class="col-md-1" ng-show="question.option_set_id">
-  <a class="btn btn-primary" href="/option_sets/{{question.option_set_id}}">
-    <strong>View Options</strong>
-  </a>
-</div>
-<div class="col-md-1" ng-show="!question.option_set_id">
-  <a class="btn btn-success" href="/option_sets">New Option Set</a>
-</div>
-</div>
+  <div class="row m-t-5" ng-show="question.question_type && questionTypesWithOptions(question.question_type)">
+    <label class="col-md-2">Option Set</label>
+    <div class="col-md-8">
+      <select
+        ng-style="{'width' : 600}"
+        name="option-set"
+        id="option-set"
+        ng-model="question.option_set_id"
+        ng-options="set.id as set.title for set in optionSets">
+        <option value="">Select an option set from the list below</option>
+      </select>
+    </div>
+    <div class="col-md-1" ng-show="question.option_set_id">
+      <a class="btn btn-primary" href="/option_sets/{{question.option_set_id}}">
+        <strong>View Options</strong>
+      </a>
+    </div>
+    <div class="col-md-1" ng-show="!question.option_set_id">
+      <a class="btn btn-success" href="/option_sets">New Option Set</a>
+    </div>
+  </div>
+
+  <div class="row m-t-5">
+    <label class="col-md-2">Special Options</label>
+    <div class="col-md-8">
+      <select
+        ng-style="{'width' : 600}"
+        name="special-option-set"
+        id="special-option-set"
+        ng-model="question.special_option_set_id"
+        ng-options="set.id as set.title for set in specialOptionSets">
+        <option value=""></option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <a ng-show="question.special_option_set_id" class="btn btn-primary" href="/option_sets/{{question.special_option_set_id}}">
+        <strong>View Special Options</strong>
+      </a>
+      <a ng-hide="question.special_option_set_id" class="btn btn-success" href="/option_sets">New Special Option Set</a>
+    </div>
+  </div>
 
 <div class="row m-t-5">
   <label class="col-md-2">Instruction</label>

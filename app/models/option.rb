@@ -35,6 +35,7 @@ class Option < ActiveRecord::Base
   # after_save :record_instrument_version_number
   # after_save :sanitize_next_question
   # after_save :check_parent_criticality
+  after_save :set_special
   has_paper_trail
   acts_as_paranoid
 
@@ -91,4 +92,9 @@ class Option < ActiveRecord::Base
   def check_parent_criticality
     update_columns(critical: nil) if critical && !question.critical
   end
+
+  def set_special
+    update_columns(special: true) if option_set.special
+  end
+  
 end
