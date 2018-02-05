@@ -272,16 +272,21 @@ class Instrument < ActiveRecord::Base
   end
 
   def short_headers
-    %w[identifier survey_id question_identifier question_text response_text response_label special_response other_response]
+    %w[identifier survey_id question_identifier question_text response_text
+      response_label special_response other_response]
   end
 
   def long_headers
-    %w[qid short_qid instrument_id instrument_version_number question_version_number instrument_title survey_id survey_uuid device_id device_uuid device_label question_type question_text response response_labels special_response other_response response_time_started response_time_ended device_user_id device_user_username] + metadata_keys
+    %w[qid short_qid instrument_id instrument_version_number question_version_number
+      instrument_title survey_id survey_uuid device_id device_uuid device_label
+      question_type question_text response response_labels special_response
+      other_response response_time_started response_time_ended device_user_id
+      device_user_username position] + randomized_option_keys + metadata_keys
   end
 
   def wide_headers
     variable_identifiers = []
-    question_identifier_variables = %w[_short_qid _question_type _label _special _other _version _text _start_time _end_time]
+    question_identifier_variables = %w[_short_qid _question_type _label _special _other _version _text _start_time _end_time _position]
     instrument_questions = Rails.cache.fetch("instrument-questions-#{id}-#{questions.maximum('updated_at')}", expires_in: 30.minutes) do
       questions
     end
@@ -290,8 +295,16 @@ class Instrument < ActiveRecord::Base
       question_identifier_variables.each do |variable|
         variable_identifiers << question.question_identifier + variable unless variable_identifiers.include? question.question_identifier + variable
       end
+      unless question.question_randomized_factors.blank?
+        question.question_randomized_factors.each do |qrf|
+          variable_identifiers << "#{question.question_identifier}_#{qrf.randomized_factor.title}"
+        end
+      end
     end
-    %w[survey_id survey_uuid device_identifier device_label latitude longitude instrument_id instrument_version_number instrument_title survey_start_time survey_end_time device_user_id device_user_username] + metadata_keys + variable_identifiers
+    %w[survey_id survey_uuid device_identifier device_label latitude longitude
+      instrument_id instrument_version_number instrument_title survey_start_time
+      survey_end_time device_user_id device_user_username] + metadata_keys +
+      variable_identifiers
   end
 
   def metadata_keys
@@ -305,6 +318,14 @@ class Instrument < ActiveRecord::Base
       end
       m_keys
     end
+  end
+
+  def randomized_option_keys
+    keys = []
+    randomized_factors.each do |factor|
+      keys << factor.title
+    end
+    keys
   end
 
   def stringify_arrays(format)

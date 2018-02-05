@@ -227,6 +227,18 @@ class Survey < ActiveRecord::Base
       row[start_time_index] = response.time_started if start_time_index
       end_time_index = headers[response.question_identifier + '_end_time']
       row[end_time_index] = response.time_ended if end_time_index
+      position_index = headers[response.question_identifier + '_position']
+      row[position_index] = position_shown(response) if position_index
+      if response.randomized_data
+        response.randomized_data.each do |k, v|
+          unless k.blank?
+            qrf = response.question.question_randomized_factors.where(position: k.to_i).first
+            ro = RandomizedOption.where(id: v.to_i).first if qrf
+            rf_index = headers["#{response.question_identifier}_#{qrf.randomized_factor.title}"] if qrf
+            row[rf_index] = ro.text if ro && rf_index
+          end
+        end
+      end
     end
     device_user_id_index = headers['device_user_id']
     device_user_username_index = headers['device_user_username']
@@ -249,7 +261,24 @@ class Survey < ActiveRecord::Base
     end
     responses.each do |response|
       row = Rails.cache.fetch("w_l_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 30.minutes) do
-        [response.question_identifier, "q_#{response.question_id}", instrument_id, response.instrument_version_number, response.question_version, instrument_title, id, response.survey_uuid, device_id, device_uuid, device_label, versioned_question(response.question_identifier).try(:question_type), sanitize(versioned_question(response.question_identifier).try(:text)), response.text, option_labels(response), response.special_response, response.other_response, response.time_started, response.time_ended, response.device_user.try(:id), response.device_user.try(:username)]
+        [response.question_identifier, "q_#{response.question_id}", instrument_id,
+          response.instrument_version_number, response.question_version, instrument_title,
+          id, response.survey_uuid, device_id, device_uuid, device_label,
+          versioned_question(response.question_identifier).try(:question_type),
+          sanitize(versioned_question(response.question_identifier).try(:text)),
+          response.text, option_labels(response), response.special_response,
+          response.other_response, response.time_started, response.time_ended,
+          response.device_user.try(:id), response.device_user.try(:username),
+          position_shown(response)]
+      end
+      if response.randomized_data
+        response.randomized_data.each do |k, v|
+          unless k.blank?
+            qrf = response.question.question_randomized_factors.where(position: k.to_i).first
+            ro = RandomizedOption.where(id: v.to_i).first if qrf
+            row[headers[qrf.randomized_factor.title]] = ro.text if ro
+          end
+        end
       end
       if metadata
         metadata.each do |k, v|
@@ -260,6 +289,14 @@ class Survey < ActiveRecord::Base
         "long-keys-#{instrument_id}-#{instrument.response_export.id}", row)
     end
     decrement_export_count("#{instrument.response_export.id}_long")
+  end
+
+  def position_shown(response)
+    if randomization_order && randomization_order[response.question_identifier]
+      randomization_order[response.question_identifier]
+    else
+      response.question.number_in_instrument if response.question
+    end
   end
 
   def push_to_redis(key_one, key_two, data)

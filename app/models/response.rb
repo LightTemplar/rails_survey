@@ -61,4 +61,8 @@ class Response < ActiveRecord::Base
   def time_taken_in_seconds
     time_ended - time_started if time_ended && time_started
   end
+
+  def randomized_data
+    JSON.parse(read_attribute(:randomized_data)) unless read_attribute(:randomized_data).blank?
+  end
 end
