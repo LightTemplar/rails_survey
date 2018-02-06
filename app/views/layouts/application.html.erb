@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="Survey">
   <head>
+    <base href="<%= ENV['BASE_URL'] %>" /> <%# TODO: merge with window._base_url %>
     <title>iSEE</title>
     <%= stylesheet_link_tag 'application', media: 'all' %>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -18,7 +19,7 @@
     <meta charset="utf-8">
   </head>
 
-  <body ng-app="Survey">
+  <body>
     <header id="header">
       <%= render 'layouts/header' %>
     </header>

@@ -11,7 +11,7 @@ window.App = angular.module('Survey',
     # TODO Why is locationProvider needed for routeProvider to work?
     $locationProvider.html5Mode
       enabled: true
-      requireBase: false
+      requireBase: true
 
     $routeProvider
       .when '/question_sets',
