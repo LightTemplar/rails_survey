@@ -105,10 +105,10 @@ App.controller 'DisplayCtrl', ['$scope', ($scope) ->
     handle: '.moveInstrumentQuestion',
     axis: 'y',
     stop: (e, ui) ->
-      lastDisplay = $scope.displays[$scope.display.position - 2]
-      lastQN = lastDisplay.instrument_questions[lastDisplay.instrument_questions.length - 1].number_in_instrument
+      previousDisplay = $scope.displays[$scope.display.position - 2]
+      lastQuestion = _.max(previousDisplay.instrument_questions, (q) -> q.number_in_instrument)
       angular.forEach $scope.displayQuestions, (instrumentQuestion, index) ->
-        instrumentQuestion.number_in_instrument = lastQN + index + 1
+        instrumentQuestion.number_in_instrument = lastQuestion.number_in_instrument + index + 1
         instrumentQuestion.project_id = $scope.project_id
         instrumentQuestion.instrument_id = $scope.instrument_id
         instrumentQuestion.$update({})

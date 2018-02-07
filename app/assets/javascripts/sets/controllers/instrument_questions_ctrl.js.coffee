@@ -180,8 +180,6 @@ App.controller 'ShowInstrumentQuestionCtrl', ['$scope', '$routeParams',
 ($scope, $routeParams, InstrumentQuestion, Setting, Option, InstrumentQuestions,
 NextQuestion, MultipleSkip) ->
 
-  $scope.showNewNextQuestion = false
-  $scope.showMultiSkips = true
   $scope.options = []
   $scope.project_id = $routeParams.project_id
   $scope.instrument_id = $routeParams.instrument_id
@@ -229,41 +227,35 @@ NextQuestion, MultipleSkip) ->
       questionType in $scope.settings.question_with_multiple_skips
 
   $scope.addNextQuestion = () ->
-    $scope.showNewNextQuestion = true
     $scope.newNextQuestion = new NextQuestion()
     $scope.newNextQuestion.instrument_question_id = $scope.instrumentQuestion.id
     $scope.newNextQuestion.question_identifier = $scope.instrumentQuestion.identifier
     $scope.newNextQuestion.project_id = $scope.project_id
     $scope.newNextQuestion.instrument_id = $scope.instrument_id
+    $scope.nextQuestions.push($scope.newNextQuestion)
 
-  $scope.cancel = () ->
-    $scope.showNewNextQuestion = false
-    $scope.newNextQuestion = null
-
-  $scope.save = () ->
-    exists = _.findWhere($scope.nextQuestions, {option_identifier: $scope.newNextQuestion.option_identifier})
-    if exists
-      alert 'Skip for Option is already set!'
-    else
-      $scope.newNextQuestion.$save({} ,
-        (data, headers) ->
-          $scope.nextQuestions.push(data)
-          $scope.showNewNextQuestion = false
-        (result, headers) ->
-      )
-
-  $scope.update = (nextQuestion) ->
+  $scope.saveSkip = (nextQuestion) ->
     setRouteParameters(nextQuestion)
     exists = _.where($scope.nextQuestions, {option_identifier: nextQuestion.option_identifier})
     if exists.length > 1
       alert 'Skip for Option is already set!'
     else
-      nextQuestion.$update({} ,
-        (data, headers) ->
-        (result, headers) ->
-      )
+      if nextQuestion.id
+        nextQuestion.$update({} ,
+          (data, headers) ->
+            nextQuestion = data
+          (result, headers) ->
+            alert(result.data.errors)
+        )
+      else
+        nextQuestion.$save({} ,
+          (data, headers) ->
+            nextQuestion = data
+          (result, headers) ->
+            alert(result.data.errors)
+        )
 
-  $scope.delete = (nextQuestion) ->
+  $scope.deleteSkip = (nextQuestion) ->
     if confirm('Are you sure you want to delete this skip pattern?')
       setRouteParameters(nextQuestion)
       if nextQuestion.id
@@ -271,23 +263,12 @@ NextQuestion, MultipleSkip) ->
           (data, headers) ->
             $scope.nextQuestions.splice($scope.nextQuestions.indexOf(nextQuestion), 1)
           (result, headers) ->
+            alert(result.data.errors)
         )
+      else
+        $scope.nextQuestions.splice($scope.nextQuestions.indexOf(nextQuestion), 1)
 
-  $scope.updateSkip = (multiSkip) ->
-    exists = _.where($scope.multipleSkips, {
-      option_identifier: multiSkip.option_identifier,
-      skip_question_identifier: multiSkip.skip_question_identifier
-    })
-    if exists.length > 1
-      alert 'Skip for Option is already set!'
-    else
-      setRouteParameters(multiSkip)
-      multiSkip.$update({} ,
-        (data, headers) ->
-        (result, headers) ->
-      )
-
-  $scope.deleteSkip = (multiSkip) ->
+  $scope.deleteMultiSkip = (multiSkip) ->
     if confirm('Are you sure you want to delete this skip?')
       setRouteParameters(multiSkip)
       if multiSkip.id
@@ -295,34 +276,41 @@ NextQuestion, MultipleSkip) ->
           (data, headers) ->
             $scope.multipleSkips.splice($scope.multipleSkips.indexOf(multiSkip, 1))
           (result, headers) ->
+            alert(result.data.errors)
         )
+      else
+        $scope.multipleSkips.splice($scope.multipleSkips.indexOf(multiSkip, 1))
 
   $scope.addMultiSkip = () ->
-    $scope.showMultiSkips = false
-    $scope.skipQuestion = new MultipleSkip()
-    $scope.skipQuestion.question_identifier = $scope.instrumentQuestion.identifier
+    skipQuestion = new MultipleSkip()
+    skipQuestion.question_identifier = $scope.instrumentQuestion.identifier
+    setRouteParameters(skipQuestion)
+    $scope.multipleSkips.push(skipQuestion)
 
-  $scope.saveSkip = () ->
-    exists = _.findWhere($scope.multipleSkips, {
-      option_identifier: $scope.skipQuestion.option_identifier,
-      skip_question_identifier: $scope.skipQuestion.skip_question_identifier,
-      instrument_question_id: $scope.skipQuestion.instrument_question_id
+  $scope.saveMultiSkip = (multiSkip) ->
+    exists = _.where($scope.multipleSkips, {
+      option_identifier: multiSkip.option_identifier,
+      skip_question_identifier: multiSkip.skip_question_identifier,
+      instrument_question_id: multiSkip.instrument_question_id
     })
-    if exists
+    if exists.length > 1
       alert 'Skip question for option is already set!'
     else
-      setRouteParameters($scope.skipQuestion)
-      $scope.skipQuestion.$save({} ,
-        (data, headers) ->
-          $scope.multipleSkips.push(data)
-          $scope.skipQuestion = null
-          $scope.showMultiSkips = true
-        (result, headers) ->
-      )
-
-  $scope.cancelSkip = () ->
-    $scope.showMultiSkips = true
-    $scope.skipQuestion = null
+      setRouteParameters(multiSkip)
+      if multiSkip.id
+        multiSkip.$update({} ,
+          (data, headers) ->
+            multiSkip = data
+          (result, headers) ->
+            alert(result.data.errors)
+        )
+      else
+        multiSkip.$save({} ,
+          (data, headers) ->
+            multiSkip = data
+          (result, headers) ->
+            alert(result.data.errors)
+        )
 
   setRouteParameters = (nextQuestion) ->
     nextQuestion.instrument_question_id = $scope.instrumentQuestion.id
