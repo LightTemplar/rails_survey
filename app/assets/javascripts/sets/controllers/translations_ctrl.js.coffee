@@ -1,9 +1,17 @@
-App.controller 'LanguageTranslationsCtrl', ['$scope', 'Setting',
-($scope, Setting) ->
+App.controller 'LanguageTranslationsCtrl', ['$scope', '$routeParams', '$location', 'Setting',
+($scope, $routeParams, $location, Setting) ->
   $scope.settings = Setting.get({}, ->
     $scope.settings.languages.splice(0,1)
     $scope.languages = $scope.settings.languages
   )
+
+  $scope.languageSelected = (language) ->
+    if $routeParams.question_set_id
+      $location.path('/question_translations/' + language).search({
+        question_set_id: $routeParams.question_set_id
+      })
+    else
+      $location.path('/question_translations/' + language)
 
 ]
 
@@ -33,28 +41,51 @@ App.controller 'OptionTranslationsCtrl', ['$scope', '$routeParams', 'Setting',
 ]
 
 App.controller 'QuestionTranslationsCtrl', ['$scope', '$routeParams', 'Setting',
-'Questions', 'QuestionTranslation', ($scope, $routeParams, Setting, Questions,
-QuestionTranslation) ->
-  $scope.language = $routeParams.language
-  $scope.questions = Questions.query({})
-  $scope.question_translations = QuestionTranslation.query({'language': $scope.language})
+'Questions', 'QuestionTranslation', 'Question', ($scope, $routeParams, Setting,
+Questions, QuestionTranslation, Question) ->
+  $scope.toolBar = [
+      ['justifyLeft', 'justifyCenter', 'justifyRight'],
+      ['bold', 'italics', 'underline', 'ul', 'ol', 'clear'],
+      ['html', 'wordcount', 'charcount']
+  ]
 
-  $scope.translation_for = (question) ->
-    qt = _.findWhere($scope.question_translations, {question_id: question.id})
+  $scope.translationFor = (question) ->
+    qt = _.findWhere($scope.questionTranslations, {question_id: question.id})
     if qt == undefined
       qt = new QuestionTranslation()
       qt.language = $scope.language
       qt.question_id = question.id
       qt.text = ""
-      $scope.question_translations.push(qt)
+      $scope.questionTranslations.push(qt)
     qt
 
   $scope.save = () ->
-    angular.forEach $scope.question_translations, (qt, index) ->
+    angular.forEach $scope.questionTranslations, (qt, index) ->
       if qt.id
-        qt.$update({})
+        qt.$update({},
+          (data, headers) ->
+            getQuestions()
+          (result, headers) ->
+            getQuestions()
+        )
       else if qt.text != ""
-        qt.$save({})
+        qt.$save({},
+          (data, headers) ->
+            getQuestions()
+          (result, headers) ->
+            getQuestions()
+        )
+
+  getQuestions = () ->
+    if $routeParams.question_set_id
+      $scope.questions = Question.query({'question_set_id': $routeParams.question_set_id})
+      $scope.questionTranslations = QuestionTranslation.query({'language': $scope.language})
+    else
+      $scope.questions = Questions.query({}) # All the questions
+      $scope.questionTranslations = QuestionTranslation.query({'language': $scope.language})
+
+  $scope.language = $routeParams.language
+  getQuestions()
 
 ]
 

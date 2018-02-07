@@ -1,5 +1,4 @@
-App.controller 'QuestionSetsCtrl', ['$scope', 'QuestionSet',
-($scope, QuestionSet) ->
+App.controller 'QuestionSetsCtrl', ['$scope', 'QuestionSet', ($scope, QuestionSet) ->
 
   $scope.createQuestionSet = () ->
     setNewQuestion(new QuestionSet(), true)
@@ -33,8 +32,14 @@ App.controller 'QuestionSetsCtrl', ['$scope', 'QuestionSet',
 
 ]
 
-App.controller 'ShowQuestionSetCtrl', ['$scope', '$routeParams', 'QuestionSet',
-($scope, $routeParams, QuestionSet) ->
+App.controller 'ShowQuestionSetCtrl', ['$scope', '$routeParams', '$location', 'QuestionSet',
+($scope, $routeParams, $location, QuestionSet) ->
+
+  $scope.questionTranslations = (questionSet) ->
+    $location.path('/question_translations/').search({
+      question_set_id: questionSet.id
+    })
+
 
   $scope.updateQuestionSet = () ->
     if $scope.questionSet.id

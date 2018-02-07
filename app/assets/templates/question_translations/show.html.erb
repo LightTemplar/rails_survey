@@ -1,28 +1,30 @@
-<h4 class="text-center"><strong>Translations for {{language}}</strong></h4>
+<h4 class="text-center"><strong>{{language.toUpperCase()}} Translations</strong></h4>
 <div class="card">
   <div class="card-body card-padding">
     <div ng-controller="QuestionTranslationsCtrl">
       <table class="table table-hover">
         <thead>
-          <tr>
-            <th class="col-md-6">Question Text</th>
-            <th class="col-md-6">Translation</th>
+          <tr class="row">
+            <th class="col-md-4">Question Text</th>
+            <th class="col-md-8">Translation</th>
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="question in questions">
-            <td>{{question.text}}</td>
-            <td>
-              <textarea
-              class="form-control"
-              name="question-translation-{{question.id}}"
-              ng-model="translation_for(question).text">
-            </textarea>
+          <tr class="row" ng-repeat="question in questions">
+            <td class="col-md-4" ng-bind-html="question.text | ToTrustedHtml"></td>
+            <td class="col-md-8">
+              <text-angular
+                ta-toolbar="toolBar"
+                name="question-translation-{{question.id}}"
+                ng-model="translationFor(question).text">
+              </text-angular>
             </td>
           </tr>
         </tbody>
       </table>
-      <div class="btn btn-success" ng-click="save()">Save</div>
+      <div class="row m-5">
+        <div class="btn btn-success pull-right" ng-click="save()">Save</div>
+      </div>
     </div>
   </div>
 </div>

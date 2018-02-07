@@ -1,22 +1,26 @@
-<h4 class="text-center"><strong>{{questionSet.title}}</strong></h4>
-<div class="card">
-  <div class="card-body card-padding">
-    <ng-form class="card" name="questionSetEditorForm"
-    ng-controller="ShowQuestionSetCtrl">
+<div ng-controller="ShowQuestionSetCtrl">
+  <h4 class="text-center"><strong>{{questionSet.title}}</strong></h4>
+  <div class="row m-5">
+    <div class="btn btn-primary" ng-click="questionTranslations(questionSet)">Translations</div>
+  </div>
+  <div class="card">
     <div class="card-body card-padding">
-      <div class="row">
-        <label class="col-md-1">Title</label>
-        <div class="col-md-10">
-          <input type="text" class="form-control" name="question-set"
-          ng-model="questionSet.title" required>
+      <ng-form class="card" name="questionSetEditorForm">
+        <div class="card-body card-padding">
+          <div class="row">
+            <label class="col-md-1">Title</label>
+            <div class="col-md-10">
+              <input type="text" class="form-control" name="question-set"
+              ng-model="questionSet.title" required>
+            </div>
+            <div class="col-md-1">
+              <div class="btn btn-success" ng-disabled="questionSetEditorForm.$invalid"
+              ng-click="updateQuestionSet()">Update</div>
+            </div>
+          </div>
+          <div ng-include='"questions/index.html"'></div>
         </div>
-        <div class="col-md-1">
-          <div class="btn btn-success" ng-disabled="questionSetEditorForm.$invalid"
-          ng-click="updateQuestionSet()">Update</div>
-        </div>
-      </div>
-      <div ng-include='"questions/index.html"'></div>
+      </ng-form>
     </div>
-  </ng-form>
-</div>
+  </div>
 </div>
