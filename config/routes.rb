@@ -251,6 +251,7 @@ RailsSurvey::Application.routes.draw do
   get '/pictures/:id/:style.:format', controller: 'response_images', action: 'show'
   get 'home/privacy'
   resources :android_updates, only: %i[index show]
-  # Handled by ngRoute
+  # Handled by AngularJS
+  # get '*path.html' => 'application#index', :layout => 0
   get '*path' => 'application#index'
 end

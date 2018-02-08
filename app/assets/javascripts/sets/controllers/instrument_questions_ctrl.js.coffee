@@ -1,11 +1,11 @@
-App.controller 'InstrumentQuestionsCtrl', ['$scope', '$routeParams', '$location',
-'$route', 'InstrumentQuestion', 'InstrumentQuestions', 'QuestionSet', 'Question',
-'Setting', 'Display', 'currentDisplay', '$window', ($scope, $routeParams, $location,
-$route, InstrumentQuestion, InstrumentQuestions, QuestionSet, Question, Setting,
+App.controller 'InstrumentQuestionsCtrl', ['$scope', '$stateParams', '$location',
+'$state', 'InstrumentQuestion', 'InstrumentQuestions', 'QuestionSet', 'Question',
+'Setting', 'Display', 'currentDisplay', '$window', ($scope, $stateParams, $location,
+$state, InstrumentQuestion, InstrumentQuestions, QuestionSet, Question, Setting,
 Display, currentDisplay, $window) ->
 
-  $scope.project_id = $routeParams.project_id
-  $scope.instrument_id = $routeParams.instrument_id
+  $scope.project_id = $stateParams.project_id
+  $scope.instrument_id = $stateParams.instrument_id
   $scope.showNewView = false
   $scope.showFromSet = false
   $scope.showNewQuestion = false
@@ -148,7 +148,7 @@ Display, currentDisplay, $window) ->
     if $scope.display.mode == 'SINGLE'
       $scope.instrumentQuestion.$save({},
         (data, headers) ->
-          $route.reload()
+          $state.reload()
         (result, headers) ->
       )
     else
@@ -167,25 +167,25 @@ Display, currentDisplay, $window) ->
             (data, headers) ->
               responseCount += 1
               if responseCount ==  selectedQuestions.length
-                $route.reload()
+                $state.reload()
             (result, headers) ->
           )
           previousQuestionCount += 1
 
 ]
 
-App.controller 'ShowInstrumentQuestionCtrl', ['$scope', '$routeParams',
+App.controller 'ShowInstrumentQuestionCtrl', ['$scope', '$stateParams',
 'InstrumentQuestion', 'Setting', 'Option', 'InstrumentQuestions', 'NextQuestion',
 'MultipleSkip',
-($scope, $routeParams, InstrumentQuestion, Setting, Option, InstrumentQuestions,
+($scope, $stateParams, InstrumentQuestion, Setting, Option, InstrumentQuestions,
 NextQuestion, MultipleSkip) ->
 
   $scope.options = []
-  $scope.project_id = $routeParams.project_id
-  $scope.instrument_id = $routeParams.instrument_id
+  $scope.project_id = $stateParams.project_id
+  $scope.instrument_id = $stateParams.instrument_id
   # TODO: Does not work if browser refreshed
   $scope.instrumentQuestion = _.first(_.filter(InstrumentQuestions.questions,
-    (q) -> q.id == parseInt($routeParams.id)))
+    (q) -> q.id == parseInt($stateParams.id)))
 
   if $scope.instrumentQuestion.option_set_id
     nonSpecialOptions = Option.query({

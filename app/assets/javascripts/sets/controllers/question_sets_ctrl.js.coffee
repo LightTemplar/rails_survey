@@ -32,8 +32,8 @@ App.controller 'QuestionSetsCtrl', ['$scope', 'QuestionSet', ($scope, QuestionSe
 
 ]
 
-App.controller 'ShowQuestionSetCtrl', ['$scope', '$routeParams', '$location', 'QuestionSet',
-($scope, $routeParams, $location, QuestionSet) ->
+App.controller 'ShowQuestionSetCtrl', ['$scope', '$stateParams', '$location', 'QuestionSet',
+($scope, $stateParams, $location, QuestionSet) ->
 
   $scope.questionTranslations = (questionSet) ->
     $location.path('/question_translations/').search({
@@ -48,9 +48,9 @@ App.controller 'ShowQuestionSetCtrl', ['$scope', '$routeParams', '$location', 'Q
         (result, headers) ->
       )
 
-  if $scope.questionSets and $routeParams.id
-    $scope.questionSet = _.first(_.filter($scope.questionSets, (qs) -> qs.id == $routeParams.id))
-  else if $routeParams.id and not $scope.questionSets
-    $scope.questionSet = QuestionSet.get({'id': $routeParams.id})
+  if $scope.questionSets and $stateParams.id
+    $scope.questionSet = _.first(_.filter($scope.questionSets, (qs) -> qs.id == $stateParams.id))
+  else if $stateParams.id and not $scope.questionSets
+    $scope.questionSet = QuestionSet.get({'id': $stateParams.id})
 
 ]

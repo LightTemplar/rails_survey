@@ -10,7 +10,7 @@
   <div class="card" ng-show="!showQuestionSets">
     <div class="card-body card-padding">
       <div ng-repeat="instrument_question_set in instrumentQuestionSets">
-        <a href="/question_sets/{{instrument_question_set.question_set_id}}">
+        <a href="{{baseUrl}}/question_sets/{{instrument_question_set.question_set_id}}">
           {{instrument_question_set.question_set_title}}
         </a>
       </div>

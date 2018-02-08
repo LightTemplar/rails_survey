@@ -25,7 +25,7 @@
             <div class="col-md-6">
               <span ng-repeat="instrumentQuestion in display.instrument_questions | orderBy: '1 * number_in_instrument'">
                 <a class="btn btn-sm btn-info m-5"
-                href="/projects/{{project_id}}/instruments/{{instrument_id}}/instrument_questions/{{instrumentQuestion.id}}">
+                href="{{baseUrl}}/projects/{{project_id}}/instruments/{{instrument_id}}/instrument_questions/{{instrumentQuestion.id}}">
                 <span class="c-black">{{instrumentQuestion.number_in_instrument}}.</span> {{instrumentQuestion.identifier}}
                 </a>
               </span>
@@ -85,7 +85,7 @@
                   <div class="col-md-4" ng-bind-html="question.text | ToTrustedHtml"></div>
                   <div class="col-md-2">
                     <a class="btn btn-primary"
-                    href="/question_sets/{{question.question_set_id}}/questions/{{question.question_id}}">
+                    href="{{baseUrl}}/question_sets/{{question.question_set_id}}/questions/{{question.question_id}}">
                     View</a>
                     <div class="btn btn-danger" ng-click="removeInstrumentQuestion(question)">Remove</div>
                   </div>

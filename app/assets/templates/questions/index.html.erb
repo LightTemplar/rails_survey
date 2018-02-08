@@ -11,7 +11,7 @@
       <tbody ng-repeat="question in questions | orderBy: 'id'">
         <tr>
           <td>
-            <a href="/question_sets/{{questionSet.id}}/questions/{{question.id}}">
+            <a href="{{baseUrl}}/question_sets/{{questionSet.id}}/questions/{{question.id}}">
               <strong>{{question.question_identifier}}</strong>
             </a>
           </td>

@@ -1,12 +1,12 @@
 <h4 class="text-center"><strong>Instructions</strong></h4>
 <div class="card">
   <div class="card-header">
-    <a class="btn" href="/instruction_translations">Instruction Translations</a>
+    <a class="btn" href="{{baseUrl}}/instruction_translations">Instruction Translations</a>
   </div>
   <div class="card-body card-padding">
     <div ng-controller="InstructionsCtrl">
       <div ng-repeat="instruction in instructions">
-        <a href="/instructions/{{instruction.id}}"><strong>{{instruction.title}}</strong></a>
+        <a href="{{baseUrl}}/instructions/{{instruction.id}}"><strong>{{instruction.title}}</strong></a>
       </div>
       <div class="btn btn-primary m-5" ng-click="createInstruction()">New Instruction</div>
       <ng-form class="row" name="newInstructionForm" ng-show="showNewInstruction">

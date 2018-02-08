@@ -23,8 +23,8 @@ App.controller 'InstructionsCtrl', ['$scope', '$location', 'Instruction', ($scop
   $scope.instructions = Instruction.query({})
 ]
 
-App.controller 'ShowInstructionCtrl', ['$scope', '$routeParams', '$location', 'Instruction',
- ($scope, $routeParams, $location, Instruction) ->
+App.controller 'ShowInstructionCtrl', ['$scope', '$stateParams', '$location', 'Instruction',
+ ($scope, $stateParams, $location, Instruction) ->
 
   $scope.updateInstruction = () ->
     if $scope.instruction.id
@@ -42,9 +42,9 @@ App.controller 'ShowInstructionCtrl', ['$scope', '$routeParams', '$location', 'I
           (result, headers) ->
         )
 
-  if $scope.instructions and $routeParams.id
-    $scope.instruction = _.first(_.filter($scope.instructions, (qs) -> qs.id == $routeParams.id))
-  else if $routeParams.id and not $scope.instructions
-    $scope.instruction = Instruction.get({'id': $routeParams.id})
+  if $scope.instructions and $stateParams.id
+    $scope.instruction = _.first(_.filter($scope.instructions, (qs) -> qs.id == $stateParams.id))
+  else if $stateParams.id and not $scope.instructions
+    $scope.instruction = Instruction.get({'id': $stateParams.id})
 
 ]

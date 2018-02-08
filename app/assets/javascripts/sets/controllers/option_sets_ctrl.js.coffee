@@ -32,8 +32,8 @@ App.controller 'OptionSetsCtrl', ['$scope', '$location', 'OptionSet', ($scope, $
 
 ]
 
-App.controller 'ShowOptionSetCtrl', ['$scope', '$routeParams', '$location', 'OptionSet', 'Option',
- ($scope, $routeParams, $location, OptionSet, Option) ->
+App.controller 'ShowOptionSetCtrl', ['$scope', '$stateParams', '$location', 'OptionSet', 'Option',
+ ($scope, $stateParams, $location, OptionSet, Option) ->
 
   $scope.updateOptionSet = () ->
     if $scope.optionSet.id
@@ -42,12 +42,12 @@ App.controller 'ShowOptionSetCtrl', ['$scope', '$routeParams', '$location', 'Opt
         (result, headers) ->
       )
 
-  if $scope.optionSets and $routeParams.id
-    $scope.optionSet = _.first(_.filter($scope.optionSets, (qs) -> qs.id == $routeParams.id))
-  else if $routeParams.id and not $scope.optionSets
-    $scope.optionSet = OptionSet.get({'id': $routeParams.id})
+  if $scope.optionSets and $stateParams.id
+    $scope.optionSet = _.first(_.filter($scope.optionSets, (qs) -> qs.id == $stateParams.id))
+  else if $stateParams.id and not $scope.optionSets
+    $scope.optionSet = OptionSet.get({'id': $stateParams.id})
 
-  if $routeParams.id
-    $scope.options = Option.query({"option_set_id": $routeParams.id})
+  if $stateParams.id
+    $scope.options = Option.query({"option_set_id": $stateParams.id})
 
 ]

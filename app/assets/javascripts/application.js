@@ -21,8 +21,7 @@
 //= require rangy-selectionsaverestore.min
 //= require bootstrap3-wysihtml5.all.min
 //= require angular
-//= require angular-route
-//= require angular-rails-templates
+//= require angular-ui-router.min
 //= require angular-resource
 //= require angular-animate
 //= require angular-cookies
@@ -34,6 +33,7 @@
 //= require ui-bootstrap-tpls
 //= require angular-messages
 //= require checklist-model
+//= require angular-rails-templates
 //= require app
 //= require loading-bar.min
 //= require d3

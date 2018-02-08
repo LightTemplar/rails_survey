@@ -1,7 +1,7 @@
-App.controller 'OptionsCtrl', ['$scope', 'Option', '$routeParams', '$location',
-($scope, Option, $routeParams, $location) ->
+App.controller 'OptionsCtrl', ['$scope', 'Option', '$stateParams', '$location',
+($scope, Option, $stateParams, $location) ->
 
-  $scope.options = Option.query({"option_set_id": $routeParams.id})
+  $scope.options = Option.query({"option_set_id": $stateParams.id})
 
   $scope.sortableOptions = {
     cursor: 'move',

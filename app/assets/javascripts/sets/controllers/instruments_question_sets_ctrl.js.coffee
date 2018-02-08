@@ -1,10 +1,10 @@
-App.controller 'InstrumentQuestionSetsCtrl', ['$scope', '_', '$routeParams', '$location', '$route',
+App.controller 'InstrumentQuestionSetsCtrl', ['$scope', '_', '$stateParams', '$location', '$state',
 'InstrumentQuestionSet', 'QuestionSet',
-($scope, _, $routeParams, $location, $route, InstrumentQuestionSet, QuestionSet) ->
+($scope, _, $stateParams, $location, $state, InstrumentQuestionSet, QuestionSet) ->
 
   $scope.showQuestionSets = false
-  $scope.project_id = $routeParams.project_id
-  $scope.instrument_id = $routeParams.instrument_id
+  $scope.project_id = $stateParams.project_id
+  $scope.instrument_id = $stateParams.instrument_id
   $scope.instrumentQuestionSets = InstrumentQuestionSet.query({
     "project_id": $scope.project_id,
     "instrument_id": $scope.instrument_id
@@ -49,7 +49,7 @@ App.controller 'InstrumentQuestionSetsCtrl', ['$scope', '_', '$routeParams', '$l
       )
       $location.path '/projects/' + $scope.project_id + '/instruments/' +
       $scope.instrument_id + '/instrument_question_sets'
-      $route.reload()
+      $state.reload()
     angular.forEach deletedQuestionSetIds, (qsi, index) ->
       iqs = _.filter($scope.instrumentQuestionSets, (iqs) -> iqs.question_set_id == qsi)[0]
       iqs = addRouteParameters(iqs)

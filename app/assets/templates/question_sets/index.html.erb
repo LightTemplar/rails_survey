@@ -1,13 +1,13 @@
 <h4 class="text-center"><strong>Question Sets</strong></h4>
 <div class="row m-5">
-  <a class="btn btn-primary" href="/question_translations">Translations</a>
+  <a class="btn btn-primary" href="{{baseUrl}}/question_translations">Translations</a>
 </div>
 <div class="card">
   <div class="card-body card-padding">
     <div ng-controller="QuestionSetsCtrl">
       <div ng-repeat="questionSet in questionSets">
         <div class="row m-5">
-          <a class="col-md-10" href="/question_sets/{{questionSet.id}}">
+          <a class="col-md-10" href="{{baseUrl}}/question_sets/{{questionSet.id}}">
             <strong>{{questionSet.title}}</strong>
           </a>
           <div class="col-md-2">

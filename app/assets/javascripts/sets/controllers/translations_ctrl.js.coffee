@@ -1,23 +1,23 @@
-App.controller 'LanguageTranslationsCtrl', ['$scope', '$routeParams', '$location', 'Setting',
-($scope, $routeParams, $location, Setting) ->
+App.controller 'LanguageTranslationsCtrl', ['$scope', '$stateParams', '$location', 'Setting',
+($scope, $stateParams, $location, Setting) ->
   $scope.settings = Setting.get({}, ->
     $scope.settings.languages.splice(0,1)
     $scope.languages = $scope.settings.languages
   )
 
   $scope.languageSelected = (language) ->
-    if $routeParams.question_set_id
+    if $stateParams.question_set_id
       $location.path('/question_translations/' + language).search({
-        question_set_id: $routeParams.question_set_id
+        question_set_id: $stateParams.question_set_id
       })
     else
       $location.path('/question_translations/' + language)
 
 ]
 
-App.controller 'OptionTranslationsCtrl', ['$scope', '$routeParams', 'Setting',
-'Options', 'OptionTranslation', ($scope, $routeParams, Setting, Options, OptionTranslation) ->
-  $scope.language = $routeParams.language
+App.controller 'OptionTranslationsCtrl', ['$scope', '$stateParams', 'Setting',
+'Options', 'OptionTranslation', ($scope, $stateParams, Setting, Options, OptionTranslation) ->
+  $scope.language = $stateParams.language
   $scope.options = Options.query({})
   $scope.option_translations = OptionTranslation.query({'language': $scope.language})
 
@@ -40,8 +40,8 @@ App.controller 'OptionTranslationsCtrl', ['$scope', '$routeParams', 'Setting',
 
 ]
 
-App.controller 'QuestionTranslationsCtrl', ['$scope', '$routeParams', 'Setting',
-'Questions', 'QuestionTranslation', 'Question', ($scope, $routeParams, Setting,
+App.controller 'QuestionTranslationsCtrl', ['$scope', '$stateParams', 'Setting',
+'Questions', 'QuestionTranslation', 'Question', ($scope, $stateParams, Setting,
 Questions, QuestionTranslation, Question) ->
   $scope.toolBar = [
       ['justifyLeft', 'justifyCenter', 'justifyRight'],
@@ -77,22 +77,22 @@ Questions, QuestionTranslation, Question) ->
         )
 
   getQuestions = () ->
-    if $routeParams.question_set_id
-      $scope.questions = Question.query({'question_set_id': $routeParams.question_set_id})
+    if $stateParams.question_set_id
+      $scope.questions = Question.query({'question_set_id': $stateParams.question_set_id})
       $scope.questionTranslations = QuestionTranslation.query({'language': $scope.language})
     else
       $scope.questions = Questions.query({}) # All the questions
       $scope.questionTranslations = QuestionTranslation.query({'language': $scope.language})
 
-  $scope.language = $routeParams.language
+  $scope.language = $stateParams.language
   getQuestions()
 
 ]
 
-App.controller 'InstructionTranslationsCtrl', ['$scope', '$routeParams', 'Setting',
-'Instruction', 'InstructionTranslation', ($scope, $routeParams, Setting, Instruction,
+App.controller 'InstructionTranslationsCtrl', ['$scope', '$stateParams', 'Setting',
+'Instruction', 'InstructionTranslation', ($scope, $stateParams, Setting, Instruction,
 InstructionTranslation) ->
-  $scope.language = $routeParams.language
+  $scope.language = $stateParams.language
   $scope.instructions = Instruction.query({})
   $scope.instruction_translations = InstructionTranslation.query({'language': $scope.language})
 

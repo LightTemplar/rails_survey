@@ -1,13 +1,13 @@
 <h4 class="text-center"><strong>Option Sets</strong></h4>
 <div class="card">
   <div class="card-header">
-    <a class="btn" href="/option_translations">Option Translations</a>
+    <a class="btn" href="{{baseUrl}}/option_translations">Option Translations</a>
   </div>
   <div class="card-body card-padding">
     <div ng-controller="OptionSetsCtrl">
       <div ng-repeat="optionSet in optionSets">
         <div class="row m-5">
-          <a class="col-md-10" href="/option_sets/{{optionSet.id}}">
+          <a class="col-md-10" href="{{baseUrl}}/option_sets/{{optionSet.id}}">
             <strong>{{optionSet.title}}</strong>
           </a>
           <div class="col-md-2">

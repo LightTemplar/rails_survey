@@ -43,5 +43,12 @@ module RailsSurvey
     config.autoload_paths += Dir[Rails.root.join('app', 'scorers', '{*/}')]
     config.action_controller.include_all_helpers = false
     config.active_record.raise_in_transactional_callbacks = true
+
+    # config.angular_templates.module_name    = 'templates'
+    # config.angular_templates.ignore_prefix  = %w(templates/)
+    # config.angular_templates.inside_paths   = [File.join('app', 'assets')]
+    # config.angular_templates.markups        = %w(erb)
+    # config.angular_templates.extension      = 'html'
+
   end
 end

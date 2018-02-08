@@ -1,6 +1,6 @@
-App.controller 'QuestionsCtrl', ['$scope', '$routeParams', '$location', 'Question',
-($scope, $routeParams, $location, Question) ->
-  $scope.multiple = $routeParams.multiple
+App.controller 'QuestionsCtrl', ['$scope', '$stateParams', '$location', 'Question',
+($scope, $stateParams, $location, Question) ->
+  $scope.multiple = $stateParams.multiple
 
   $scope.newQuestion = () ->
     $location.path '/question_sets/' + $scope.questionSet.id + '/questions/new'
@@ -9,20 +9,20 @@ App.controller 'QuestionsCtrl', ['$scope', '$routeParams', '$location', 'Questio
     $scope.currentQuestion = question
 
   $scope.done = () ->
-    $location.path('/projects/' + $routeParams.project_id + '/instruments/' +
-    $routeParams.instrument_id + '/instrument_questions').search({})
+    $location.path('/projects/' + $stateParams.project_id + '/instruments/' +
+    $stateParams.instrument_id + '/instrument_questions').search({})
 
   $scope.back = () ->
     $location.path '/question_sets/'
 
-  if $routeParams.id
-    $scope.questions = Question.query({"question_set_id": $routeParams.id})
+  if $stateParams.id
+    $scope.questions = Question.query({"question_set_id": $stateParams.id})
 
 ]
 
-App.controller 'ShowQuestionCtrl', ['$scope', '$routeParams', '$location', '$route',
+App.controller 'ShowQuestionCtrl', ['$scope', '$stateParams', '$location', '$state',
  'Question', 'Setting', 'OptionSet', 'Instruction', 'InstrumentQuestion',
- ($scope, $routeParams, $location, $route, Question, Setting, OptionSet,
+ ($scope, $stateParams, $location, $state, Question, Setting, OptionSet,
  Instruction, InstrumentQuestion) ->
 
   $scope.toolBar = [
@@ -40,7 +40,7 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$routeParams', '$location', '$rou
       questionType in $scope.settings.question_with_options
 
   $scope.saveQuestion = () ->
-    $scope.question.question_set_id = $routeParams.question_set_id
+    $scope.question.question_set_id = $stateParams.question_set_id
     if $scope.question.id
       $scope.question.$update({} ,
         (data, headers) -> ,
@@ -50,8 +50,8 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$routeParams', '$location', '$rou
     else
       $scope.question.$save({} ,
         (data, headers) ->
-          if $routeParams.instrument_id && $routeParams.display_id
-              # $scope.multiple = 1 #$routeParams.multiple
+          if $stateParams.instrument_id && $stateParams.display_id
+              # $scope.multiple = 1 #$stateParams.multiple
               createInstrumentQuestion(data)
           navigateBackAndReload()
         (result, headers) ->
@@ -60,47 +60,47 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$routeParams', '$location', '$rou
   $scope.cancel = () ->
     if not $scope.question.id
       $scope.question = null
-    $location.path '/question_sets/' + $routeParams.question_set_id
+    $location.path '/question_sets/' + $stateParams.question_set_id
 
   $scope.deleteQuestion = () ->
     if confirm('Are you sure you want to delete this question?')
       if $scope.question.id
         $scope.question.$delete({},
         (data, headers) ->
-          $location.path '/question_sets/' + $routeParams.question_set_id
+          $location.path '/question_sets/' + $stateParams.question_set_id
         (result, headers) ->
         )
       else
-        $location.path '/question_sets/' + $routeParams.question_set_id
+        $location.path '/question_sets/' + $stateParams.question_set_id
 
   navigateBackAndReload = () ->
-    $location.path '/question_sets/' + $routeParams.question_set_id
-    $route.reload()
+    $location.path '/question_sets/' + $stateParams.question_set_id
+    $state.reload()
 
   createInstrumentQuestion = (question) ->
-    if $routeParams.instrument_id
+    if $stateParams.instrument_id
       iQuestion = new InstrumentQuestion()
-      iQuestion.instrument_id = $routeParams.instrument_id
+      iQuestion.instrument_id = $stateParams.instrument_id
       iQuestion.question_id = question.id
-      iQuestion.project_id = $routeParams.project_id
-      iQuestion.display_id = $routeParams.display_id
-      iQuestion.number_in_instrument = $routeParams.number_in_instrument
+      iQuestion.project_id = $stateParams.project_id
+      iQuestion.display_id = $stateParams.display_id
+      iQuestion.number_in_instrument = $stateParams.number_in_instrument
       iQuestion.$save({},
         (data, headers) ->
-          if !$routeParams.multiple
-            $location.path('/projects/' + $routeParams.project_id + '/instruments/' +
-            $routeParams.instrument_id + '/instrument_questions').search({})
+          if !$stateParams.multiple
+            $location.path('/projects/' + $stateParams.project_id + '/instruments/' +
+            $stateParams.instrument_id + '/instrument_questions').search({})
         (result, headers) ->
       )
 
-  if $routeParams.id == 'new'
+  if $stateParams.id == 'new'
     $scope.question = new Question()
     $scope.question.text = ''
-  else if $scope.questions and $routeParams.id
-    $scope.question = _.first(_.filter($scope.questions, (q) -> q.id == $routeParams.id))
-  else if $routeParams.id and not $scope.questions
-    $scope.question = Question.get({'question_set_id': $routeParams.question_set_id,
-    'id': $routeParams.id})
+  else if $scope.questions and $stateParams.id
+    $scope.question = _.first(_.filter($scope.questions, (q) -> q.id == $stateParams.id))
+  else if $stateParams.id and not $scope.questions
+    $scope.question = Question.get({'question_set_id': $stateParams.question_set_id,
+    'id': $stateParams.id})
 
   $scope.settings = Setting.get({})
   $scope.allOptionSets = OptionSet.query({}, ->

@@ -1,7 +1,7 @@
-App.controller 'DisplaysCtrl', ['$scope', '$routeParams', '$location', 'Display', 'currentDisplay',
-($scope, $routeParams, $location, Display, currentDisplay) ->
-  $scope.project_id = $routeParams.project_id
-  $scope.instrument_id = $routeParams.instrument_id
+App.controller 'DisplaysCtrl', ['$scope', '$stateParams', '$location', 'Display', 'currentDisplay',
+($scope, $stateParams, $location, Display, currentDisplay) ->
+  $scope.project_id = $stateParams.project_id
+  $scope.instrument_id = $stateParams.instrument_id
 
   $scope.displays = Display.query({
     'project_id': $scope.project_id,
@@ -49,11 +49,11 @@ App.controller 'DisplaysCtrl', ['$scope', '$routeParams', '$location', 'Display'
 
 ]
 
-App.controller 'ShowDisplayCtrl', ['$scope', '$routeParams', 'currentDisplay',
+App.controller 'ShowDisplayCtrl', ['$scope', '$stateParams', 'currentDisplay',
 'Setting', 'InstrumentQuestion', '$location',
-($scope, $routeParams, currentDisplay, Setting, InstrumentQuestion, $location) ->
-  $scope.project_id = $routeParams.project_id
-  $scope.instrument_id = $routeParams.instrument_id
+($scope, $stateParams, currentDisplay, Setting, InstrumentQuestion, $location) ->
+  $scope.project_id = $stateParams.project_id
+  $scope.instrument_id = $stateParams.instrument_id
   $scope.display = currentDisplay.display
   $scope.settings = Setting.get({})
   $scope.instrumentQuestions = InstrumentQuestion.query({

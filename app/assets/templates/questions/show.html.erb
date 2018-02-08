@@ -53,12 +53,12 @@
       </select>
     </div>
     <div class="col-md-1" ng-show="question.option_set_id">
-      <a class="btn btn-primary" href="/option_sets/{{question.option_set_id}}">
+      <a class="btn btn-primary" href="{{baseUrl}}/option_sets/{{question.option_set_id}}">
         <strong>View Options</strong>
       </a>
     </div>
     <div class="col-md-1" ng-show="!question.option_set_id">
-      <a class="btn btn-success" href="/option_sets">New Option Set</a>
+      <a class="btn btn-success" href="{{baseUrl}}/option_sets">New Option Set</a>
     </div>
   </div>
 
@@ -75,10 +75,10 @@
       </select>
     </div>
     <div class="col-md-2">
-      <a ng-show="question.special_option_set_id" class="btn btn-primary" href="/option_sets/{{question.special_option_set_id}}">
+      <a ng-show="question.special_option_set_id" class="btn btn-primary" href="{{baseUrl}}/option_sets/{{question.special_option_set_id}}">
         <strong>View Special Options</strong>
       </a>
-      <a ng-hide="question.special_option_set_id" class="btn btn-success" href="/option_sets">New Special Option Set</a>
+      <a ng-hide="question.special_option_set_id" class="btn btn-success" href="{{baseUrl}}/option_sets">New Special Option Set</a>
     </div>
   </div>
 
@@ -95,12 +95,12 @@
     </select>
   </div>
   <div class="col-md-1" ng-show="question.instruction_id">
-    <a class="btn btn-primary" href="/instructions/{{question.instruction_id}}">
+    <a class="btn btn-primary" href="{{baseUrl}}/instructions/{{question.instruction_id}}">
       <strong>View Instruction</strong>
     </a>
   </div>
   <div class="col-md-1" ng-show="!question.instruction_id">
-    <a class="btn btn-success" href="/instructions">New Instruction</a>
+    <a class="btn btn-success" href="{{baseUrl}}/instructions">New Instruction</a>
   </div>
 </div>
 
