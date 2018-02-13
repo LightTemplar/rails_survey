@@ -43,15 +43,16 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$stateParams', '$location', '$sta
     $scope.question.question_set_id = $stateParams.question_set_id
     if $scope.question.id
       $scope.question.$update({} ,
-        (data, headers) -> ,
-        navigateBackAndReload()
+        (data, headers) ->
+          $scope.question = data
+          navigateBackAndReload()
         (result, headers) ->
       )
     else
       $scope.question.$save({} ,
         (data, headers) ->
+          $scope.question = data
           if $stateParams.instrument_id && $stateParams.display_id
-              # $scope.multiple = 1 #$stateParams.multiple
               createInstrumentQuestion(data)
           navigateBackAndReload()
         (result, headers) ->
@@ -74,8 +75,7 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$stateParams', '$location', '$sta
         $location.path '/question_sets/' + $stateParams.question_set_id
 
   navigateBackAndReload = () ->
-    $location.path '/question_sets/' + $stateParams.question_set_id
-    $state.reload()
+    $location.path('/question_sets/' + $stateParams.question_set_id)
 
   createInstrumentQuestion = (question) ->
     if $stateParams.instrument_id
@@ -93,7 +93,7 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$stateParams', '$location', '$sta
         (result, headers) ->
       )
 
-  if $stateParams.id == 'new'
+  if $state.current.name == "questionSetNewQuestion"
     $scope.question = new Question()
     $scope.question.text = ''
   else if $scope.questions and $stateParams.id

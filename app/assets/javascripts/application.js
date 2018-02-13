@@ -49,5 +49,4 @@
 //= require underscore
 //= require_tree ../templates
 //= require_tree ./angular
-//= require_tree ./sets
 //= require_directory .

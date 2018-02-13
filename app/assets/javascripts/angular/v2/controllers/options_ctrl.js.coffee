@@ -52,6 +52,6 @@ App.controller 'OptionsCtrl', ['$scope', 'Option', '$stateParams', '$location',
         )
 
   $scope.back = () ->
-    $location.path '/option_sets/'
+    $location.path('/option_sets')
 
 ]
