@@ -1,0 +1,18 @@
+<div class="card text-capitalize" ng-controller="ProjectCtrl">
+  <div class="card-body table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Project Name</th>
+          <th>Project Description</th>
+        </tr>
+      </thead>
+      <tbody ng-repeat="project in projects">
+        <tr>
+          <td><a ui-sref="project({id: project.id})">{{project.name}}</a></td>
+          <td>{{project.description}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

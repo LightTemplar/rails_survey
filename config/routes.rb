@@ -153,8 +153,6 @@ RailsSurvey::Application.routes.draw do
     end
   end
 
-  root to: 'projects#index'
-  get 'home/privacy'
   resources :projects do
     member do
       get :instrument_export
@@ -247,11 +245,12 @@ RailsSurvey::Application.routes.draw do
     end
   end
   resources :request_roles, only: [:index]
+  resources :android_updates, only: %i[index show]
+
   get '/photos/:id/:style.:format', controller: 'api/v1/frontend/images', action: 'show'
   get '/pictures/:id/:style.:format', controller: 'response_images', action: 'show'
   get 'home/privacy'
-  resources :android_updates, only: %i[index show]
+  root to: 'projects#index'
   # Handled by AngularJS
-  # get '*path.html' => 'application#index', :layout => 0
-  get '*path' => 'application#index'
+  get '*path' => 'projects#index'
 end

@@ -35,6 +35,7 @@
 //= require checklist-model
 //= require angular-rails-templates
 //= require app
+//= require routes
 //= require loading-bar.min
 //= require d3
 //= require nv.d3

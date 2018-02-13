@@ -1,0 +1,7 @@
+<div class="card" ng-controller="ShowInstrumentCtrl">
+  <div class="card-header">
+    <%#= link_to 'Edit', edit_project_instrument_path(@project, @instrument), class: 'btn btn-primary' %>
+    <%#= link_to 'Translations', project_instrument_instrument_translations_path('{{project_id}}', '{{id}}'), class: 'btn btn-primary' %>
+    <a ui-sref="instrumentQuestions({project_id: project_id, instrument_id: id})">Questions</a>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-<div class="card text-capitalize">
+<!-- <div class="card text-capitalize">
   <div class="card-body table-responsive">
     <table class="table table-striped">
       <thead>
@@ -9,13 +9,24 @@
       </thead>
 
       <tbody>
-        <% @projects.each do |project| %>
+        <%# @projects.each do |project| %>
         <tr>
-          <td><%= link_to project.name, project %></td>
-          <td><%= project.description %></td>
+          <td><%#= link_to project.name, project %></td>
+          <td><%#= project.description %></td>
         </tr>
-        <% end %>
+        <%# end %>
       </tbody>
     </table>
+  </div>
+</div> -->
+
+<div ui-view>
+  <div class="card">
+    <div class="card card-body card-padding">
+      <h5><a ui-sref="projects">Projects</a></h5>
+      <h5><a ui-sref="questionSets">Question Sets</a></h5>
+      <h5><a ui-sref="optionSets">Option Sets</a></h5>
+      <h5><a ui-sref="instructions">Instruction Sets</a></h5>
+    </div>
   </div>
 </div>
