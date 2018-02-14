@@ -62,14 +62,6 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
       url: '/projects/:project_id/instruments/:instrument_id/instrument_questions/:id'
       templateUrl: 'instrument_questions/show.html'
       controller: 'ShowInstrumentQuestionCtrl'
-    .state 'displays',
-      url: '/projects/:project_id/instruments/:instrument_id/displays'
-      templateUrl: 'displays/index.html'
-      controller: 'DisplaysCtrl'
-    .state 'display',
-      url: '/projects/:project_id/instruments/:instrument_id/displays/:id'
-      templateUrl: 'displays/show.html'
-      controller: 'ShowDisplayCtrl'
     .state 'optionTranslations',
       url: '/option_translations'
       templateUrl: 'option_translations/index.html'

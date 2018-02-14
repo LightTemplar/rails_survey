@@ -29,20 +29,24 @@ Display, currentDisplay, $window) ->
     handle: '.moveDisplay',
     axis: 'y',
     stop: (e, ui) ->
-      questionCount = 1
-      angular.forEach $scope.displays, (display, index) ->
-        display.position = index + 1
-        display.project_id = $scope.project_id
-        display.instrument_id = $scope.instrument_id
-        display.$update({})
-        # TODO Inefficient
-        angular.forEach $scope.displayQuestions(display), (iq, counter) ->
+      $scope.renumberDisplaysAndQuestions()
+  }
+
+  $scope.renumberDisplaysAndQuestions = () ->
+    questionCount = 1
+    angular.forEach $scope.displays, (display, index) ->
+      display.position = index + 1
+      display.project_id = $scope.project_id
+      display.instrument_id = $scope.instrument_id
+      display.$update({})
+      currentDisplayQuestions = $scope.displayQuestions(display)
+      angular.forEach currentDisplayQuestions, (iq, counter) ->
+        if iq.number_in_instrument != questionCount
           iq.number_in_instrument = questionCount
-          questionCount += 1
           iq.project_id = $scope.project_id
           iq.instrument_id = $scope.instrument_id
           iq.$update({})
-  }
+        questionCount = questionCount + 1
 
   $scope.validateMode = (display) ->
     $scope.showSaveDisplay = true
@@ -56,7 +60,7 @@ Display, currentDisplay, $window) ->
       Please delete the questions that don't belong to it.")
 
   $scope.displayQuestions = (display) ->
-    _.where($scope.instrumentQuestions, {display_id: display.id})
+    _.sortBy(_.where($scope.instrumentQuestions, {display_id: display.id}), 'number_in_instrument')
 
   $scope.newQuestion = () ->
     $scope.showNewQuestion = true
