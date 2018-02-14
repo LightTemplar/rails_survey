@@ -153,103 +153,104 @@ RailsSurvey::Application.routes.draw do
     end
   end
 
-  resources :projects do
-    member do
-      get :instrument_export
-    end
-    collection do
-      get :question_sets
-    end
-    resources :score_schemes do
-      member do
-        get 'score/:survey_id', action: 'score', as: 'score'
-      end
-    end
-    resources :scores
-    resources :instruments do
-      member do
-        get :csv_export
-        get :pdf_export
-        get :translation_template_export
-        get :export_responses
-        get :move
-        get :copy
-        get :copy_questions
-        get :questions
-        match :update_move, action: :update_move, via: %i[patch put]
-        match :update_copy, action: :update_copy, via: %i[patch put]
-      end
-      resources :instrument_translations do
-        member do
-          get :show_pdf
-        end
-        collection do
-          get :new_gt
-        end
-        collection do
-          post :import_translation
-        end
-      end
-      resources :versions, only: %i[index show]
-      resources :sections
-      resources :grids
-      resources :randomized_factors
-      resources :reorder_questions, only: [:index] do
-        collection do
-          post :reorder
-        end
-      end
-    end
+  # resources :projects do
+  #   member do
+  #     get :instrument_export
+  #   end
+  #   collection do
+  #     get :question_sets
+  #   end
+  #   resources :score_schemes do
+  #     member do
+  #       get 'score/:survey_id', action: 'score', as: 'score'
+  #     end
+  #   end
+  #   resources :scores
+  #   resources :instruments do
+  #     member do
+  #       get :csv_export
+  #       get :pdf_export
+  #       get :translation_template_export
+  #       get :export_responses
+  #       get :move
+  #       get :copy
+  #       get :copy_questions
+  #       get :questions
+  #       match :update_move, action: :update_move, via: %i[patch put]
+  #       match :update_copy, action: :update_copy, via: %i[patch put]
+  #     end
+  #     resources :instrument_translations do
+  #       member do
+  #         get :show_pdf
+  #       end
+  #       collection do
+  #         get :new_gt
+  #       end
+  #       collection do
+  #         post :import_translation
+  #       end
+  #     end
+  #     resources :versions, only: %i[index show]
+  #     resources :sections
+  #     resources :grids
+  #     resources :randomized_factors
+  #     resources :reorder_questions, only: [:index] do
+  #       collection do
+  #         post :reorder
+  #       end
+  #     end
+  #   end
+  #
+  #   resources :rules
+  #   resources :device_users
+  #   resources :responses
+  #   resources :surveys, concerns: :paginatable do
+  #     collection do
+  #       get 'instrument_surveys/:instrument_id', action: :instrument_surveys, as: 'instrument'
+  #     end
+  #     member do
+  #       get :identifier_surveys
+  #     end
+  #   end
+  #   resources :notifications, only: [:index]
+  #   resources :devices, only: %i[index show] do
+  #     resources :device_sync_entries, only: [:index]
+  #   end
+  #   resources :response_images, only: [:show]
+  #   resources :graphs, only: [:index]
+  #   resources :response_exports do
+  #     member do
+  #       # get :project_responses_long
+  #       # get :project_responses_wide
+  #       # get :project_responses_short
+  #       get :instrument_responses_long
+  #       get :instrument_responses_wide
+  #       get :instrument_responses_short
+  #       get :project_response_images
+  #       get :instrument_response_images
+  #     end
+  #   end
+  #   # get :export_responses
+  #   get 'graphs/daily/' => 'graphs#daily_responses'
+  #   get 'graphs/hourly/' => 'graphs#hourly_responses'
+  #   resources :metrics do
+  #     resources :stats do
+  #       collection do
+  #         get :crunch
+  #       end
+  #     end
+  #   end
+  #   resources :rosters do
+  #     resources :surveys
+  #   end
+  # end
+  # resources :request_roles, only: [:index]
+  # resources :android_updates, only: %i[index show]
+  #
+  # get '/photos/:id/:style.:format', controller: 'api/v1/frontend/images', action: 'show'
+  # get '/pictures/:id/:style.:format', controller: 'response_images', action: 'show'
+  # get 'home/privacy'
 
-    resources :rules
-    resources :device_users
-    resources :responses
-    resources :surveys, concerns: :paginatable do
-      collection do
-        get 'instrument_surveys/:instrument_id', action: :instrument_surveys, as: 'instrument'
-      end
-      member do
-        get :identifier_surveys
-      end
-    end
-    resources :notifications, only: [:index]
-    resources :devices, only: %i[index show] do
-      resources :device_sync_entries, only: [:index]
-    end
-    resources :response_images, only: [:show]
-    resources :graphs, only: [:index]
-    resources :response_exports do
-      member do
-        # get :project_responses_long
-        # get :project_responses_wide
-        # get :project_responses_short
-        get :instrument_responses_long
-        get :instrument_responses_wide
-        get :instrument_responses_short
-        get :project_response_images
-        get :instrument_response_images
-      end
-    end
-    # get :export_responses
-    get 'graphs/daily/' => 'graphs#daily_responses'
-    get 'graphs/hourly/' => 'graphs#hourly_responses'
-    resources :metrics do
-      resources :stats do
-        collection do
-          get :crunch
-        end
-      end
-    end
-    resources :rosters do
-      resources :surveys
-    end
-  end
-  resources :request_roles, only: [:index]
-  resources :android_updates, only: %i[index show]
-
-  get '/photos/:id/:style.:format', controller: 'api/v1/frontend/images', action: 'show'
-  get '/pictures/:id/:style.:format', controller: 'response_images', action: 'show'
-  get 'home/privacy'
   root to: 'projects#index'
   # Handled by AngularJS
   get '*path' => 'projects#index'

@@ -9,26 +9,22 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
     .state 'projects',
       url: '/projects'
       templateUrl: 'projects/index.html'
-      controller: 'ProjectCtrl'
+      controller: 'ProjectsCtrl'
     .state 'project',
       url: '/projects/:id'
       templateUrl: 'projects/show.html'
-      controller: 'ProjectCtrl'
-    .state 'instruments',
-      url: '/projects/:id/instruments'
-      templateUrl: 'instruments/index.html'
-      controller: 'InstrumentCtrl'
+      controller: 'ShowProjectCtrl'
     .state 'instrument',
       url: '/projects/:project_id/instruments/:id'
       templateUrl: 'instruments/show.html'
       controller: 'ShowInstrumentCtrl'
     .state 'questionSets',
       url: '/question_sets'
-      templateUrl: "<%= asset_path('question_sets/index.html') %>"
+      templateUrl: 'question_sets/index.html'
       controller: 'QuestionSetsCtrl'
     .state 'questionSet',
       url: '/question_sets/:id'
-      templateUrl: "<%= asset_path('question_sets/show.html') %>"
+      templateUrl: 'question_sets/show.html'
       controller: 'ShowQuestionSetCtrl'
     .state 'questionSetquestions',
       url: '/question_sets/:question_set_id/questions/:id'
@@ -63,6 +59,7 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
       templateUrl: 'instrument_questions/index.html'
       controller: 'InstrumentQuestionsCtrl'
     .state 'instrumentQuestion',
+      url: '/projects/:project_id/instruments/:instrument_id/instrument_questions/:id'
       templateUrl: 'instrument_questions/show.html'
       controller: 'ShowInstrumentQuestionCtrl'
     .state 'displays',

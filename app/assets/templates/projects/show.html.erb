@@ -1,7 +1,80 @@
-<div class="card">
-  <div class="card-body card-padding">
+<div class="card" ng-controller="ShowProjectCtrl">
+  <div class="row m-5 text-center">
     {{project.description}}
   </div>
+  <div class="card-body card-padding">
+    <div class="row m-5" ng-show="showInstruments">
+      <div class="btn btn-primary pull-right" ng-click="newInstrument()">New Instrument</div>
+    </div>
+    <div ng-show="showInstruments">
+      <div class="row m-5">
+        <input type="search" ng-model="q.title" placeholder="Filter instruments..."
+        class="form-control tm-search text-center">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Published</th>
+                <th>Current Version</th>
+                <th># questions</th>
+                <th>Created at</th>
+                <th>Last updated</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="instrument in instruments | filter:q">
+                <td>{{instrument.id}}</td>
+                <td><a ui-sref='instrument({project_id: project.id, id: instrument.id})'>
+                  {{instrument.title}}</a>
+                </td>
+                <td>{{instrument.published}}</td>
+                <td>{{instrument.current_version_number}}</td>
+                <td>{{instrument.question_count}}</td>
+                <td>{{instrument.created_at | date:'short'}}</td>
+                <td>{{instrument.updated_at | date:'short'}}</td>
+                <td>
+                  <span class="btn btn-primary" ng-click="editInstrument(instrument)">
+                    Edit
+                  </span>
+                  <span class="btn btn-danger" ng-click="deleteInstrument(instrument)">
+                    Delete
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div ng-hide="showInstruments">
+      <div class="row">
+        <label class="col-md-2 control-label">Instrument Title</label>
+        <div class="col-md-10">
+          <input class="form-control input-sm" type="text" ng-model="instrument.title" required />
+        </div>
+      </div>
+      <div class="row m-t-5">
+        <label class="col-md-2 control-label">Instrument Language</label>
+        <div class="col-md-10">
+          <select
+            ng-model="instrument.language"
+            ng-options="language[1] as language[0] for language in languages"
+          >
+          </select>
+        </div>
+      </div>
+      <div class="row m-t-5">
+        <label class="col-md-2 control-label">Published</label>
+        <div class="col-md-10">
+          <input type="checkbox" ng-model="instrument.published" />
+        </div>
+      </div>
+      <div class="row m-t-5">
+        <div class="btn btn-success pull-right" ng-click="saveInstrument(instrument)">Save</div>
+      </div>
+    </div>
+  </div>
 </div>
-
-<div ng-include='"instruments/index.html"'></div>
