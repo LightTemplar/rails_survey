@@ -83,7 +83,7 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
       templateUrl: 'question_translations/index.html'
       controller: 'LanguageTranslationsCtrl'
     .state 'languageQuestionTranslations',
-      url: '/question_translations/:language'
+      url: '/question_translations/:language?instrument_id'
       templateUrl: 'question_translations/show.html'
       controller: 'QuestionTranslationsCtrl'
     .state 'instructionTranslations',
@@ -94,6 +94,10 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
       url: '/instruction_translations/:language'
       templateUrl: 'instruction_translations/show.html'
       controller: 'InstructionTranslationsCtrl'
+    .state 'instrumentTranslations',
+      url: '/projects/:project_id/instruments/:instrument_id/instrument_translations'
+      templateUrl: 'instrument_translations/index.html'
+      controller: 'InstrumentTranslationsCtrl'
 
   # $urlRouterProvider.otherwise($injector, $location) ->
   #   console.log('otherwise')

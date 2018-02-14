@@ -67,6 +67,7 @@ RailsSurvey::Application.routes.draw do
             resources :multiple_skips
           end
           resources :displays
+          resources :instrument_translations
         end
       end
       get 'settings/index'

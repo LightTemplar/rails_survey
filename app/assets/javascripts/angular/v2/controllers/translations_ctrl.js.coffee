@@ -77,12 +77,15 @@ Questions, QuestionTranslation, Question) ->
         )
 
   getQuestions = () ->
+    $scope.questionTranslations = QuestionTranslation.query({'language': $scope.language})
     if $stateParams.question_set_id
       $scope.questions = Question.query({'question_set_id': $stateParams.question_set_id})
-      $scope.questionTranslations = QuestionTranslation.query({'language': $scope.language})
+    else if $stateParams.instrument_id
+      # Instrument questions
+      $scope.questions = Questions.query({'instrument_id': $stateParams.instrument_id})
     else
-      $scope.questions = Questions.query({}) # All the questions
-      $scope.questionTranslations = QuestionTranslation.query({'language': $scope.language})
+      # All questions
+      $scope.questions = Questions.query({})
 
   $scope.language = $stateParams.language
   getQuestions()
