@@ -11,6 +11,7 @@ Display, currentDisplay, $window) ->
   $scope.showNewQuestion = false
   $scope.questions = []
   $scope.question_origins = ['New Question', 'From Set']
+  $scope.selectall = false
 
   $scope.instrumentQuestions = InstrumentQuestion.query({
     'project_id': $scope.project_id,
@@ -175,6 +176,13 @@ Display, currentDisplay, $window) ->
             (result, headers) ->
           )
           previousQuestionCount += 1
+
+  $scope.selectAll = () ->
+    angular.forEach $scope.questionSetQuestions, (question, index) ->
+      if $scope.selectall
+        question.selected = true
+      else
+        question.selected = false
 
 ]
 

@@ -207,6 +207,7 @@
               <div class="row m-t-5">
                 <label class="col-md-3">Select Questions From Set</label>
                 <div class="col-md-9">
+                  <label><input type="checkbox" ng-model="selectall" ng-click="selectAll()"> Select all</label>
                   <div ng-repeat="question in questionSetQuestions">
                     <input type="checkbox" ng-model="question.selected"/>
                     <label>{{question.question_identifier}}</label>
