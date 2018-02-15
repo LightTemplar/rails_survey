@@ -159,7 +159,16 @@ Display, currentDisplay, $window) ->
     else
       selectedQuestions = _.where($scope.questionSetQuestions, {selected: true})
       responseCount = 0
-      previousQuestionCount = $scope.instrumentQuestions.length
+      previousQuestion = _.last($scope.displayQuestions($scope.display))
+      if previousQuestion
+        previousQuestionCount = previousQuestion.number_in_instrument
+      else
+        previousDisplay = $scope.displays[$scope.display.position - 2]
+        if previousDisplay
+          lastQuestion = _.last($scope.displayQuestions(previousDisplay))
+          previousQuestionCount = lastQuestion.number_in_instrument
+        else
+          previousQuestionCount = 0
       angular.forEach $scope.questionSetQuestions, (q, i) ->
         if q.selected
           iq = new InstrumentQuestion()
@@ -172,8 +181,13 @@ Display, currentDisplay, $window) ->
             (data, headers) ->
               responseCount += 1
               if responseCount ==  selectedQuestions.length
-                $state.reload()
+                $scope.showNewQuestion = false
+                $scope.currentDisplay = null
+                iq.identifier = q.question_identifier
+                $scope.instrumentQuestions.push(iq)
+                $scope.renumberDisplaysAndQuestions()
             (result, headers) ->
+              alert(result.data.errors)
           )
           previousQuestionCount += 1
 
