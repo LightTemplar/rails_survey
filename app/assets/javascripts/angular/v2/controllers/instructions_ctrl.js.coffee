@@ -1,4 +1,5 @@
 App.controller 'InstructionsCtrl', ['$scope', '$location', 'Instruction', ($scope, $location, Instruction) ->
+
   $scope.createInstruction = () ->
     setNewInstruction(new Instruction(), true)
 
@@ -31,11 +32,17 @@ App.controller 'InstructionsCtrl', ['$scope', '$location', 'Instruction', ($scop
 
   setNewInstruction(new Instruction(), false)
   $scope.instructions = Instruction.query({})
-  
+
 ]
 
 App.controller 'ShowInstructionCtrl', ['$scope', '$stateParams', '$state', 'Instruction',
  ($scope, $stateParams, $state, Instruction) ->
+
+  $scope.toolBar = [
+      ['justifyLeft', 'justifyCenter', 'justifyRight'],
+      ['bold', 'italics', 'underline', 'ul', 'ol', 'clear'],
+      ['html']
+  ]
 
   $scope.updateInstruction = () ->
     if $scope.instruction.id

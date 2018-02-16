@@ -13,8 +13,11 @@
         <div class="row">
           <label class="col-md-2">Text</label>
           <div class="col-md-10">
-            <textarea type="text" class="form-control" name="instruction-text"
-            ng-model="instruction.text" ng-required="true"></textarea>
+            <text-angular
+              ta-toolbar="toolBar"
+              name="instruction-text"
+              ng-model="instruction.text">
+            </text-angular>
           </div>
         </div>
         <div class="row m-5">

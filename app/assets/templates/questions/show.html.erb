@@ -49,7 +49,7 @@
         id="option-set"
         ng-model="question.option_set_id"
         ng-options="set.id as set.title for set in optionSets">
-        <option value="">Select an option set from the list below</option>
+        <option value=""></option>
       </select>
     </div>
     <div class="col-md-1" ng-show="question.option_set_id">
@@ -91,7 +91,7 @@
     id="instruction"
     ng-model="question.instruction_id"
     ng-options="instruction.id as instruction.title for instruction in instructions">
-      <option value="">Select instruction from the list below</option>
+      <option value=""></option>
     </select>
   </div>
   <div class="col-md-1" ng-show="question.instruction_id">

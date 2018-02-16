@@ -26,10 +26,10 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$stateParams', '$location', '$sta
  Instruction, InstrumentQuestion) ->
 
   $scope.toolBar = [
-      ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'pre', 'quote'],
-      ['justifyLeft', 'justifyCenter', 'justifyRight', 'indent', 'outdent'],
-      ['bold', 'italics', 'underline', 'strikeThrough', 'ul', 'ol', 'redo', 'undo', 'clear'],
-      ['html', 'wordcount', 'charcount']
+      ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p'],
+      ['justifyLeft', 'justifyCenter', 'justifyRight'],
+      ['bold', 'italics', 'underline', 'strikeThrough', 'ul', 'ol'],
+      ['html']
   ]
 
   $scope.questionTypes = () ->
