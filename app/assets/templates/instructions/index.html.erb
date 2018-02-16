@@ -1,11 +1,13 @@
 <h4 class="text-center"><strong>Instructions</strong></h4>
+<div class="row m-5">
+  <a class="btn btn-primary" href="{{baseUrl}}/instruction_translations">Translations</a>
+</div>
 <div class="card">
-  <div class="card-header">
-    <a class="btn" href="{{baseUrl}}/instruction_translations">Instruction Translations</a>
-  </div>
   <div class="card-body card-padding">
     <div ng-controller="InstructionsCtrl">
-      <div ng-repeat="instruction in instructions">
+      <input type="search" ng-model="i.title" placeholder="Filter instructions ..."
+      class="form-control tm-search text-center">
+      <div ng-repeat="instruction in instructions | filter:i">
         <div class="row m-5">
           <div class="col-md-10">
             <a href="{{baseUrl}}/instructions/{{instruction.id}}"><strong>{{instruction.title}}</strong></a>
