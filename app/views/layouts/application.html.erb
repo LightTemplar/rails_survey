@@ -37,7 +37,34 @@
     <section id="main">
       <aside id="sidebar">
         <div class="sidebar-inner c-overflow">
-          <%= render 'layouts/sidebar' %>
+          <%#= render 'layouts/sidebar' %>
+          <% if current_user %>
+          <ul class="main-menu">
+            <% if current_user.admin_user? %>
+              <li>
+                <%= link_to admin_dashboard_path, target: :_blank do %>
+                <i class="md md-verified-user"></i>Admin Dashboard
+                <% end %>
+              </li>
+            <% end %>
+            <li class="sub-menu">
+              <a href=""><i class="md md-dashboard"></i>Components Bank</a>
+              <ul>
+                <li><a href="{{baseUrl}}/question_sets">Questions</a></li>
+                <li><a href="{{baseUrl}}/option_sets">Options</a></li>
+                <li><a href="{{baseUrl}}/instructions">Instructions</a></li>
+              </ul>
+            </li>
+            <li class="sub-menu">
+              <a href=""><i class="md md-home"></i>Projects</a>
+              <ul>
+                <% current_user.projects.each do |project| %>
+                  <li><a href='<%= "{{baseUrl}}/projects/#{project.id}" %>'><%= project.name %></a></li>
+                <% end %>
+              </ul>
+            </li>
+          </ul>
+          <% end %>
         </div>
       </aside>
 

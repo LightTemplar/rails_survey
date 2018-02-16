@@ -179,12 +179,12 @@ Display, currentDisplay, $window) ->
           iq.question_id = q.id
           iq.$save({},
             (data, headers) ->
+              iq.identifier = q.question_identifier
+              $scope.instrumentQuestions.push(iq)
               responseCount += 1
               if responseCount ==  selectedQuestions.length
                 $scope.showNewQuestion = false
                 $scope.currentDisplay = null
-                iq.identifier = q.question_identifier
-                $scope.instrumentQuestions.push(iq)
                 $scope.renumberDisplaysAndQuestions()
             (result, headers) ->
               alert(result.data.errors)
