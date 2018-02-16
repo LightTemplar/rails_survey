@@ -1,5 +1,5 @@
-App.controller 'OptionsCtrl', ['$scope', 'Option', '$stateParams', '$location',
-($scope, Option, $stateParams, $location) ->
+App.controller 'OptionsCtrl', ['$scope', 'Option', '$stateParams', '$state',
+($scope, Option, $stateParams, $state) ->
 
   $scope.options = Option.query({"option_set_id": $stateParams.id})
 
@@ -52,6 +52,6 @@ App.controller 'OptionsCtrl', ['$scope', 'Option', '$stateParams', '$location',
         )
 
   $scope.back = () ->
-    $location.path('/option_sets')
+    $state.go('optionSets')
 
 ]

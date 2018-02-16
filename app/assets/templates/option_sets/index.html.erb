@@ -15,7 +15,8 @@
           </div>
         </div>
       </div>
-      <div class="btn btn-primary m-5" ng-click="createOptionSet()">New Option Set</div>
+      <div ng-hide="showNewOptionSet" class="btn btn-primary m-5"
+        ng-click="createOptionSet()">New Option Set</div>
       <ng-form name="newOptionSetEditorForm" ng-show="showNewOptionSet">
         <div class="row">
           <label class="col-md-2">Title</label>

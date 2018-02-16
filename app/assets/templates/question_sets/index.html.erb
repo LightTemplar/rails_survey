@@ -15,7 +15,8 @@
           </div>
         </div>
       </div>
-      <div class="btn btn-primary m-5" ng-click="createQuestionSet()">New Question Set</div>
+      <div ng-hide="showNewQuestionSet" class="btn btn-primary m-5"
+      ng-click="createQuestionSet()">New Question Set</div>
       <ng-form class="row" name="newQuestionSetForm" ng-show="showNewQuestionSet">
           <label class="col-md-2">Title</label>
           <div class="col-md-8">

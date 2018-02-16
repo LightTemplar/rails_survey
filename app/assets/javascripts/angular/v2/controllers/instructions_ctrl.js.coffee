@@ -15,32 +15,36 @@ App.controller 'InstructionsCtrl', ['$scope', '$location', 'Instruction', ($scop
     )
     $scope.cancelNewInstruction()
 
+  $scope.deleteInstruction = (instruction) ->
+    if confirm('Are you sure you want to delete ' + instruction.title + '?')
+      if instruction.id
+        instruction.$delete({} ,
+          (data, headers) ->
+            $scope.instructions.splice($scope.instructions.indexOf(instruction), 1)
+          (result, headers) ->
+            alert(result.data.errors)
+        )
+
   setNewInstruction = (instruction, status) ->
     $scope.newInstruction = instruction
     $scope.showNewInstruction = status
 
   setNewInstruction(new Instruction(), false)
   $scope.instructions = Instruction.query({})
+  
 ]
 
-App.controller 'ShowInstructionCtrl', ['$scope', '$stateParams', '$location', 'Instruction',
- ($scope, $stateParams, $location, Instruction) ->
+App.controller 'ShowInstructionCtrl', ['$scope', '$stateParams', '$state', 'Instruction',
+ ($scope, $stateParams, $state, Instruction) ->
 
   $scope.updateInstruction = () ->
     if $scope.instruction.id
       $scope.instruction.$update({} ,
         (data, headers) ->
+          $state.go('instructions')
         (result, headers) ->
+          alert(result.data.errors)
       )
-
-  $scope.deleteInstruction = () ->
-    if confirm('Are you sure you want to delete this instruction?')
-      if $scope.instruction.id
-        $scope.instruction.$delete({} ,
-          (data, headers) ->
-            $location.path '/instructions'
-          (result, headers) ->
-        )
 
   if $scope.instructions and $stateParams.id
     $scope.instruction = _.first(_.filter($scope.instructions, (qs) -> qs.id == $stateParams.id))

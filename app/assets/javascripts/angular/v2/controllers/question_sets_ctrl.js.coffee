@@ -1,4 +1,5 @@
-App.controller 'QuestionSetsCtrl', ['$scope', 'QuestionSet', ($scope, QuestionSet) ->
+App.controller 'QuestionSetsCtrl', ['$scope', '$state', 'QuestionSet',
+($scope, $state, QuestionSet) ->
 
   $scope.createQuestionSet = () ->
     setNewQuestion(new QuestionSet(), true)
@@ -9,10 +10,10 @@ App.controller 'QuestionSetsCtrl', ['$scope', 'QuestionSet', ($scope, QuestionSe
   $scope.saveQuestionSet = () ->
     $scope.newQuestionSet.$save({} ,
       (data, headers) ->
+        onQuestionSetSaved(data)
       (result, headers) ->
+        alert(result.data.errors)
     )
-    $scope.questionSets.push($scope.newQuestionSet)
-    $scope.cancelNewQuestionSet()
 
   $scope.deleteQuestionSet = (questionSet) ->
     if confirm('Are you sure you want to delete ' + questionSet.title + '?')
@@ -21,7 +22,13 @@ App.controller 'QuestionSetsCtrl', ['$scope', 'QuestionSet', ($scope, QuestionSe
           (data, headers) ->
             $scope.questionSets.splice($scope.questionSets.indexOf(questionSet), 1)
           (result, headers) ->
+            alert(result.data.errors)
         )
+
+  onQuestionSetSaved = (questionSet) ->
+    $scope.questionSets.push(questionSet)
+    $scope.cancelNewQuestionSet()
+    $state.go('questionSet', { id: questionSet.id })
 
   setNewQuestion = (questionSet, status) ->
     $scope.newQuestionSet = questionSet

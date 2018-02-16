@@ -1,5 +1,5 @@
-App.controller 'QuestionsCtrl', ['$scope', '$stateParams', '$location', 'Question',
-($scope, $stateParams, $location, Question) ->
+App.controller 'QuestionsCtrl', ['$scope', '$state', '$stateParams', '$location', 'Question',
+($scope, $state, $stateParams, $location, Question) ->
   $scope.multiple = $stateParams.multiple
 
   $scope.newQuestion = () ->
@@ -13,7 +13,7 @@ App.controller 'QuestionsCtrl', ['$scope', '$stateParams', '$location', 'Questio
     $stateParams.instrument_id + '/instrument_questions').search({})
 
   $scope.back = () ->
-    $location.path '/question_sets/'
+    $state.go('questionSets')
 
   if $stateParams.id
     $scope.questions = Question.query({"question_set_id": $stateParams.id})
