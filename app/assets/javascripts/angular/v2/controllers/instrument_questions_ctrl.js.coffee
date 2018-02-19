@@ -151,6 +151,9 @@ Display, currentDisplay, $window) ->
 
   $scope.saveInstrumentQuestions = () ->
     if $scope.display.mode == 'SINGLE'
+      question = _.findWhere($scope.questionSetQuestions, { id: $scope.instrumentQuestion.question_id})
+      if question
+        $scope.instrumentQuestion.identifier = getInstrumentQuestionIdentifier(question)
       $scope.instrumentQuestion.$save({},
         (data, headers) ->
           $state.reload()
@@ -177,9 +180,9 @@ Display, currentDisplay, $window) ->
           iq.number_in_instrument = previousQuestionCount + 1
           iq.display_id = $scope.display.id
           iq.question_id = q.id
+          iq.identifier = getInstrumentQuestionIdentifier(q)
           iq.$save({},
             (data, headers) ->
-              iq.identifier = q.question_identifier
               $scope.instrumentQuestions.push(iq)
               responseCount += 1
               if responseCount ==  selectedQuestions.length
@@ -190,6 +193,13 @@ Display, currentDisplay, $window) ->
               alert(result.data.errors)
           )
           previousQuestionCount += 1
+
+  getInstrumentQuestionIdentifier = (question) ->
+    iq = _.findWhere($scope.instrumentQuestions, { identifier: question.question_identifier})
+    if iq
+      question.question_identifier + '_' + new Date().getTime().toString(36).split('').reverse().join('')
+    else
+      question.question_identifier
 
   $scope.selectAll = () ->
     angular.forEach $scope.questionSetQuestions, (question, index) ->

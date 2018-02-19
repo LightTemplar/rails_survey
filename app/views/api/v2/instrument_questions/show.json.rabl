@@ -1,11 +1,7 @@
 object @instrument_question
 cache @instrument_question
 
-attributes :id, :instrument_id, :question_id, :number_in_instrument, :display_id
-
-node :identifier do |iq|
-  iq.question.question_identifier if iq.question
-end
+attributes :id, :instrument_id, :question_id, :number_in_instrument, :display_id, :identifier
 
 node :type do |iq|
   iq.question.question_type if iq.question

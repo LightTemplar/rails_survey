@@ -19,6 +19,14 @@ App.controller 'DisplayCtrl', ['$scope', ($scope) ->
         instrumentQuestion.$update({})
   }
 
+  $scope.updateInstrumentQuestion = (iq) ->
+    iq.project_id = $scope.project_id
+    iq.$update({},
+      (data, headers) ->
+      (result, headers) ->
+        alert(result.data.errors)
+    )
+
   $scope.removeInstrumentQuestion = (iq) ->
     if confirm('Are you sure you want to delete ' + iq.identifier + ' from the instrument?')
       if iq.id

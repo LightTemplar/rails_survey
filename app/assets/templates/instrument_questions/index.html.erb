@@ -67,8 +67,8 @@
               <label class="col-md-1">Number</label>
               <label class="col-md-2">Type</label>
               <label class="col-md-3">Identifier</label>
-              <label class="col-md-4">Text</label>
-              <label class="col-md-2">Actions</label>
+              <label class="col-md-3">Text</label>
+              <label class="col-md-3">Actions</label>
             </div>
             <div ng-controller="DisplayCtrl">
               <div class="m-t-5" ui-sortable="sortableInstrumentQuestions" ng-model="displayQuestions">
@@ -78,10 +78,13 @@
                       {{question.number_in_instrument}}
                     </div>
                   </div>
-                  <div class="col-md-2">{{question.type}}</div>
-                  <div class="col-md-3">{{question.identifier}}</div>
-                  <div class="col-md-4" ng-bind-html="question.text | ToTrustedHtml"></div>
-                  <div class="col-md-2">
+                  <div class="col-md-2">{{question.type | limitTo:20}}</div>
+                  <div class="col-md-3">
+                    <input class="form-control input-sm" type="text" ng-model="question.identifier"  required/>
+                  </div>
+                  <div class="col-md-3" ng-bind-html="question.text | ToTrustedHtml"></div>
+                  <div class="col-md-3">
+                    <div class="btn btn-sm btn-success" ng-click="updateInstrumentQuestion(question)">Save</div>
                     <a class="btn btn-primary"
                     href="{{baseUrl}}/question_sets/{{question.question_set_id}}/questions/{{question.question_id}}">
                     View</a>

@@ -9,6 +9,8 @@
 #  display_id           :integer
 #  created_at           :datetime
 #  updated_at           :datetime
+#  identifier           :string
+#  deleted_at           :datetime
 #
 
 class InstrumentQuestion < ActiveRecord::Base
@@ -18,4 +20,9 @@ class InstrumentQuestion < ActiveRecord::Base
   has_many :next_questions
   has_many :multiple_skips
   has_many :translations, through: :question
+  acts_as_paranoid
+  has_paper_trail
+  validates :identifier, presence: true
+  validates :identifier, uniqueness: { scope: :instrument_id,
+    message: 'instrument already has this identifier' }
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180202124818) do
+ActiveRecord::Schema.define(version: 20180219143445) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -98,7 +98,10 @@ ActiveRecord::Schema.define(version: 20180202124818) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "title"
+    t.datetime "deleted_at"
   end
+
+  add_index "displays", ["deleted_at"], name: "index_displays_on_deleted_at", using: :btree
 
   create_table "grid_label_translations", force: :cascade do |t|
     t.integer  "grid_label_id"
@@ -164,7 +167,10 @@ ActiveRecord::Schema.define(version: 20180202124818) do
     t.text     "text"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "deleted_at"
   end
+
+  add_index "instructions", ["deleted_at"], name: "index_instructions_on_deleted_at", using: :btree
 
   create_table "instrument_question_sets", force: :cascade do |t|
     t.integer  "instrument_id"
@@ -180,7 +186,11 @@ ActiveRecord::Schema.define(version: 20180202124818) do
     t.integer  "display_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "identifier"
+    t.datetime "deleted_at"
   end
+
+  add_index "instrument_questions", ["deleted_at"], name: "index_instrument_questions_on_deleted_at", using: :btree
 
   create_table "instrument_translations", force: :cascade do |t|
     t.integer  "instrument_id"

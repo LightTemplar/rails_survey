@@ -18,7 +18,8 @@ node :question_type do |iq|
 end
 
 node :question_identifier do |iq|
-  iq.question.question_identifier if iq.question
+  # iq.question.question_identifier if iq.question
+  iq.identifier
 end
 
 node :instructions do |iq|
