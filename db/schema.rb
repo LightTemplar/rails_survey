@@ -192,6 +192,14 @@ ActiveRecord::Schema.define(version: 20180219143445) do
 
   add_index "instrument_questions", ["deleted_at"], name: "index_instrument_questions_on_deleted_at", using: :btree
 
+  create_table "instrument_rules", force: :cascade do |t|
+    t.integer  "instrument_id"
+    t.integer  "rule_id"
+    t.datetime "deleted_at"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
   create_table "instrument_translations", force: :cascade do |t|
     t.integer  "instrument_id"
     t.string   "language"
@@ -475,7 +483,6 @@ ActiveRecord::Schema.define(version: 20180219143445) do
 
   create_table "rules", force: :cascade do |t|
     t.string   "rule_type"
-    t.integer  "instrument_id"
     t.string   "rule_params"
     t.datetime "created_at"
     t.datetime "updated_at"

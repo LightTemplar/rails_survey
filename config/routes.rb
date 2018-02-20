@@ -21,7 +21,6 @@ RailsSurvey::Application.routes.draw do
         resources :question_randomized_factors, only: :index
         resources :device_users, only: :index
         resources :images, only: %i[index show]
-        resources :skips, only: :index
         resources :rules, only: :index
         resources :score_schemes, only: :index
         resources :score_units, only: :index
@@ -59,6 +58,7 @@ RailsSurvey::Application.routes.draw do
       resources :instruction_translations, only: [:index, :create, :update]
       resources :options
       resources :option_translations, only: [:index, :create, :update]
+      resources :rules
       resources :projects do
         resources :instruments do
           resources :instrument_question_sets
@@ -68,6 +68,7 @@ RailsSurvey::Application.routes.draw do
           end
           resources :displays
           resources :instrument_translations
+          resources :instrument_rules
         end
       end
       get 'settings/index'

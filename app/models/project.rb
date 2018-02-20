@@ -18,7 +18,7 @@ class Project < ActiveRecord::Base
   has_many :next_questions, through: :instrument_questions
   has_many :multiple_skips, through: :instrument_questions
   # has_many :question_translations, through: :questions, source: 'translations'
-  # has_many :options, through: :questions
+  has_many :options, through: :questions
   has_many :option_sets, through: :questions
   has_many :displays, through: :instruments
   has_many :surveys, through: :instruments
@@ -37,8 +37,8 @@ class Project < ActiveRecord::Base
   has_many :sections, through: :instruments
   has_many :project_device_users
   has_many :device_users, through: :project_device_users
-  has_many :skips, through: :options
-  has_many :rules, through: :instruments
+  # has_many :skips, through: :options
+  has_many :instrument_rules, through: :instruments
   has_many :grids, through: :instruments
   has_many :grid_labels, through: :grids
   has_many :metrics, through: :instruments
@@ -51,12 +51,16 @@ class Project < ActiveRecord::Base
   validates :name, presence: true, allow_blank: false
   validates :description, presence: true, allow_blank: true
 
-  def options
-    instrument_ids = instruments.where(published: true).pluck(:id)
-    question_ids = InstrumentQuestion.where(instrument_id: instrument_ids).pluck(:question_id).uniq
+  def api_options
+    question_ids = api_instrument_questions.pluck(:question_id).uniq
     questions = Question.where(id: question_ids)
     option_set_ids = questions.pluck(:option_set_id) + questions.pluck(:special_option_set_id)
     options = Option.where(option_set_id: option_set_ids.uniq)
+  end
+
+  def api_instrument_questions
+    instrument_ids = instruments.where(published: true).pluck(:id)
+    InstrumentQuestion.where(instrument_id: instrument_ids)
   end
 
   def non_responsive_devices

@@ -38,14 +38,14 @@ class Instrument < ActiveRecord::Base
   has_many :questions, through: :instrument_questions
   has_many :options, through: :questions
   has_many :displays
-
+  has_many :instrument_rules
   has_many :surveys
   has_many :responses, through: :surveys
   has_many :response_images, through: :responses
   has_many :translations, foreign_key: 'instrument_id', class_name: 'InstrumentTranslation', dependent: :destroy
   has_one :response_export
   has_many :sections, dependent: :destroy
-  has_many :rules, dependent: :destroy
+  has_many :rules, through: :instrument_rules
   has_many :grids, dependent: :destroy
   has_many :grid_labels, through: :grids
   has_many :metrics, dependent: :destroy
