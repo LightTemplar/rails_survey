@@ -48,7 +48,8 @@
         name="option-set"
         id="option-set"
         ng-model="question.option_set_id"
-        ng-options="set.id as set.title for set in optionSets">
+        ng-options="set.id as set.title for set in optionSets"
+        required>
         <option value=""></option>
       </select>
     </div>

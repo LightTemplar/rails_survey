@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180219143445) do
+ActiveRecord::Schema.define(version: 20180220201246) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -102,6 +102,16 @@ ActiveRecord::Schema.define(version: 20180219143445) do
   end
 
   add_index "displays", ["deleted_at"], name: "index_displays_on_deleted_at", using: :btree
+
+  create_table "follow_up_questions", force: :cascade do |t|
+    t.string   "question_identifier"
+    t.string   "following_up_question_identifier"
+    t.integer  "position"
+    t.integer  "instrument_question_id"
+    t.datetime "deleted_at"
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+  end
 
   create_table "grid_label_translations", force: :cascade do |t|
     t.integer  "grid_label_id"
@@ -298,7 +308,6 @@ ActiveRecord::Schema.define(version: 20180219143445) do
     t.text     "text"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "next_question"
     t.integer  "number_in_question"
     t.datetime "deleted_at"
     t.integer  "instrument_version_number", default: -1
@@ -364,20 +373,18 @@ ActiveRecord::Schema.define(version: 20180219143445) do
     t.integer  "instrument_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "following_up_question_identifier"
     t.string   "reg_ex_validation"
     t.integer  "number_in_instrument"
     t.string   "reg_ex_validation_message"
     t.datetime "deleted_at"
-    t.boolean  "identifies_survey",                default: false
-    t.text     "instructions",                     default: ""
-    t.integer  "child_update_count",               default: 0
+    t.boolean  "identifies_survey",         default: false
+    t.text     "instructions",              default: ""
+    t.integer  "child_update_count",        default: 0
     t.integer  "grid_id"
-    t.integer  "instrument_version_number",        default: -1
+    t.integer  "instrument_version_number", default: -1
     t.integer  "section_id"
     t.boolean  "critical"
     t.integer  "number_in_grid"
-    t.integer  "follow_up_position",               default: 0
     t.integer  "question_set_id"
     t.integer  "option_set_id"
     t.integer  "instruction_id"

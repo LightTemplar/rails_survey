@@ -7,7 +7,6 @@
 #  text                      :text
 #  created_at                :datetime
 #  updated_at                :datetime
-#  next_question             :string
 #  number_in_question        :integer
 #  deleted_at                :datetime
 #  instrument_version_number :integer          default(-1)

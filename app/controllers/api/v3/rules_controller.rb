@@ -5,7 +5,7 @@ module Api
 
       def index
         project = Project.find(params[:project_id])
-        @instrument_rules = project.instrument_rules
+        @instrument_rules = project.instrument_rules.with_deleted
       end
     end
   end

@@ -34,7 +34,7 @@ class Instrument < ActiveRecord::Base
   belongs_to :project
 
   has_many :instrument_question_sets
-  has_many :instrument_questions
+  has_many :instrument_questions, dependent: :destroy
   has_many :questions, through: :instrument_questions
   has_many :options, through: :questions
   has_many :displays
@@ -135,10 +135,6 @@ class Instrument < ActiveRecord::Base
       if question.reg_ex_validation_message
         format << ['', '', '', "Regular expression failure message for #{question.question_identifier}",
                    question.reg_ex_validation_message]
-      end
-      if question.following_up_question_identifier
-        format << ['', '', '', 'Following up on question', question.following_up_question_identifier]
-        format << ['', '', '', 'Follow up position', question.follow_up_position]
       end
       if question.identifies_survey
         format << ['', '', '', 'Question identifies survey', 'YES']

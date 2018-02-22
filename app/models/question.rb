@@ -2,31 +2,29 @@
 #
 # Table name: questions
 #
-#  id                               :integer          not null, primary key
-#  text                             :text
-#  question_type                    :string
-#  question_identifier              :string
-#  instrument_id                    :integer
-#  created_at                       :datetime
-#  updated_at                       :datetime
-#  following_up_question_identifier :string
-#  reg_ex_validation                :string
-#  number_in_instrument             :integer
-#  reg_ex_validation_message        :string
-#  deleted_at                       :datetime
-#  identifies_survey                :boolean          default(FALSE)
-#  instructions                     :text             default("")
-#  child_update_count               :integer          default(0)
-#  grid_id                          :integer
-#  instrument_version_number        :integer          default(-1)
-#  section_id                       :integer
-#  critical                         :boolean
-#  number_in_grid                   :integer
-#  follow_up_position               :integer          default(0)
-#  question_set_id                  :integer
-#  option_set_id                    :integer
-#  instruction_id                   :integer
-#  special_option_set_id            :integer
+#  id                        :integer          not null, primary key
+#  text                      :text
+#  question_type             :string
+#  question_identifier       :string
+#  instrument_id             :integer
+#  created_at                :datetime
+#  updated_at                :datetime
+#  reg_ex_validation         :string
+#  number_in_instrument      :integer
+#  reg_ex_validation_message :string
+#  deleted_at                :datetime
+#  identifies_survey         :boolean          default(FALSE)
+#  instructions              :text             default("")
+#  child_update_count        :integer          default(0)
+#  grid_id                   :integer
+#  instrument_version_number :integer          default(-1)
+#  section_id                :integer
+#  critical                  :boolean
+#  number_in_grid            :integer
+#  question_set_id           :integer
+#  option_set_id             :integer
+#  instruction_id            :integer
+#  special_option_set_id     :integer
 #
 
 class Question < ActiveRecord::Base
@@ -47,12 +45,14 @@ class Question < ActiveRecord::Base
   has_many :option_skips, through: :options, source: :skips
   has_many :skips, foreign_key: :question_identifier, primary_key: :question_identifier, dependent: :destroy
   has_many :question_randomized_factors, dependent: :destroy
+  has_many :instrument_questions, dependent: :destroy
   delegate :project, to: :instrument
   before_save :update_instrument_version, if: proc { |question| question.changed? && !question.child_update_count_changed? }
   before_save :update_question_translation, if: proc { |question| question.text_changed? }
   after_save :record_instrument_version
   before_destroy :update_instrument_version
   after_update :update_dependent_records
+  after_save :touch_instrument_questions
   # after_create :create_special_options, if: proc { |question| question.instrument}
   has_paper_trail
   acts_as_paranoid
@@ -69,7 +69,6 @@ class Question < ActiveRecord::Base
     nullify :number_in_instrument
     nullify :question_identifier
     nullify :following_up_question_identifier
-    set follow_up_position: 0
   end
 
   def create_special_options(special_options = instrument.special_options)
@@ -171,6 +170,10 @@ class Question < ActiveRecord::Base
   end
 
   private
+
+  def touch_instrument_questions
+    instrument_questions.update_all(updated_at: Time.now)
+  end
 
   def update_instrument_version
     instrument.update_instrument_version unless instrument.nil?

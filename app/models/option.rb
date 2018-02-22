@@ -7,7 +7,6 @@
 #  text                      :text
 #  created_at                :datetime
 #  updated_at                :datetime
-#  next_question             :string
 #  number_in_question        :integer
 #  deleted_at                :datetime
 #  instrument_version_number :integer          default(-1)
@@ -33,7 +32,6 @@ class Option < ActiveRecord::Base
   # before_save :update_option_translation, if: proc { |option| option.text_changed? }
   # before_destroy :update_instrument_version
   # after_save :record_instrument_version_number
-  # after_save :sanitize_next_question
   # after_save :check_parent_criticality
   after_save :set_special
   has_paper_trail
@@ -45,14 +43,6 @@ class Option < ActiveRecord::Base
   amoeba do
     enable
     include_association :translations
-    nullify :next_question
-  end
-
-  def sanitize_next_question
-    unless next_question.blank?
-      next_qst = instrument.questions.where(question_identifier: next_question)
-      update_columns(next_question: nil) if next_qst.blank?
-    end
   end
 
   def to_s
@@ -96,5 +86,5 @@ class Option < ActiveRecord::Base
   def set_special
     update_columns(special: true) if option_set.special
   end
-  
+
 end

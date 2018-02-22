@@ -2,8 +2,6 @@ collection @questions
 cache ['v3-questions', @questions]
 
 attributes :id, :instrument_id, :display_id, :number_in_instrument
-# ,:following_up_question_identifier,
-# :follow_up_position, :section_id
 
 # node :id do |iq|
 #   iq.question.id
@@ -68,14 +66,6 @@ end
 
 node :reg_ex_validation_message do |iq|
   iq.question.reg_ex_validation_message if iq.question
-end
-
-node :following_up_question_identifier do |iq|
-  iq.question.following_up_question_identifier if iq.question
-end
-
-node :follow_up_position do |iq|
-  iq.question.follow_up_position if iq.question
 end
 
 child :translations do |t|

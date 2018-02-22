@@ -1,6 +1,6 @@
 ActiveAdmin.register Question do
   belongs_to :instrument
-  permit_params :text, :question_type, :question_identifier, :instrument_id, :following_up_question_identifier, :reg_ex_validation, :number_in_instrument, :follow_up_position, :reg_ex_validation_message, :identifies_survey, :instructions
+  permit_params :text, :question_type, :question_identifier, :instrument_id, :reg_ex_validation, :number_in_instrument, :reg_ex_validation_message, :identifies_survey, :instructions
   config.per_page = 10
   config.sort_order = 'id_asc'
   config.clear_action_items!
@@ -31,8 +31,6 @@ ActiveAdmin.register Question do
       row (:instructions) { |qst| raw(qst.instructions) }
       row :instrument_id
       row :number_in_instrument
-      row :following_up_question_identifier
-      row :follow_up_position
       row :reg_ex_validation
       row :reg_ex_validation_message
       row :identifies_survey
@@ -50,11 +48,9 @@ ActiveAdmin.register Question do
       f.input :text
       f.input :question_type, collection: Settings.question_types
       f.input :question_identifier
-      f.input :following_up_question_identifier
       f.input :reg_ex_validation
       f.input :reg_ex_validation_message
       f.input :number_in_instrument
-      f.input :follow_up_position
       f.input :identifies_survey
       f.input :instructions
     end

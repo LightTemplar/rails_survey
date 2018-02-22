@@ -212,9 +212,9 @@ Display, currentDisplay, $window) ->
 
 App.controller 'ShowInstrumentQuestionCtrl', ['$scope', '$stateParams',
 'InstrumentQuestion', 'Setting', 'Option', 'InstrumentQuestions', 'NextQuestion',
-'MultipleSkip',
+'MultipleSkip', 'FollowUpQuestion', 'Question',
 ($scope, $stateParams, InstrumentQuestion, Setting, Option, InstrumentQuestions,
-NextQuestion, MultipleSkip) ->
+NextQuestion, MultipleSkip, FollowUpQuestion, Question) ->
 
   $scope.options = []
   $scope.project_id = $stateParams.project_id
@@ -250,6 +250,12 @@ NextQuestion, MultipleSkip) ->
     'instrument_question_id': $scope.instrumentQuestion.id
   })
 
+  $scope.followingUpQuestions = FollowUpQuestion.query({
+    'project_id': $scope.project_id,
+    'instrument_id': $scope.instrument_id,
+    'instrument_question_id': $scope.instrumentQuestion.id
+  })
+
   $scope.questionTypesWithSkipPatterns = (questionType) ->
     if $scope.settings.question_with_skips
       questionType in $scope.settings.question_with_skips
@@ -258,9 +264,76 @@ NextQuestion, MultipleSkip) ->
     InstrumentQuestions.questions.slice(question.number_in_instrument,
     InstrumentQuestions.questions.length)
 
+  $scope.questionsBefore = (question) ->
+    InstrumentQuestions.questions.slice(0, (question.number_in_instrument - 1))
+
   $scope.questionTypesWithMultipleSkips = (questionType) ->
     if $scope.settings.question_with_multiple_skips
       questionType in $scope.settings.question_with_multiple_skips
+
+  $scope.followUpQuestions = (question) ->
+    questions = []
+    if $scope.settings.question_types_with_follow_ups
+      angular.forEach $scope.questionsBefore(question), (q, i) ->
+        if q.type in $scope.settings.question_types_with_follow_ups
+          questions.push(q)
+    questions
+
+  $scope.addFollowUp = () ->
+    followup = new FollowUpQuestion()
+    followup.position = $scope.followingUpQuestions.length
+    followup.instrument_question_id = $scope.instrumentQuestion.id
+    followup.question_identifier = $scope.instrumentQuestion.identifier
+    $scope.followingUpQuestions.push(followup)
+
+  $scope.saveFollowUps = () ->
+    count = 0
+    index = $scope.instrumentQuestion.text.indexOf("[followup]")
+    while (index > -1)
+      ++count
+      index = $scope.instrumentQuestion.text.indexOf("[followup]", ++index)
+    if count == $scope.followingUpQuestions.length
+      $scope.instrumentQuestion.project_id = $scope.project_id
+      question = new Question()
+      question.id = $scope.instrumentQuestion.question_id
+      question.question_set_id = $scope.instrumentQuestion.question_set_id
+      question.text = $scope.instrumentQuestion.text
+      question.$update({},
+        (data, headers) ->
+        (result, headers) ->
+          alert(result.data.errors)
+      )
+      angular.forEach $scope.followingUpQuestions, (followup, index) ->
+        followup.project_id = $scope.project_id
+        followup.instrument_id = $scope.instrument_id
+        if followup.id
+          followup.$update({} ,
+            (data, headers) ->
+            (result, headers) ->
+              alert(result.data.errors)
+          )
+        else
+          followup.$save({},
+            (data, headers) ->
+            (result, headers) ->
+              alert(result.data.errors)
+          )
+    else
+      alert('You need to insert the right number of "[followup]" in the question text')
+
+  $scope.deleteFollowUp = (followup) ->
+    followup.project_id = $scope.project_id
+    followup.instrument_id = $scope.instrument_id
+    if confirm('Are you sure you want to delete this followup?')
+      if followup.id
+        followup.$delete({},
+          (data, headers) ->
+            $scope.followingUpQuestions.splice($scope.followingUpQuestions.indexOf(followup), 1)
+          (result, headers) ->
+            alert(result.data.errors)
+        )
+      else
+        $scope.followingUpQuestions.splice($scope.followingUpQuestions.indexOf(followup), 1)
 
   $scope.addNextQuestion = () ->
     $scope.newNextQuestion = new NextQuestion()
