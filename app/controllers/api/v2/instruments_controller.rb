@@ -5,7 +5,7 @@ module Api
 
       def index
         project = Project.find params[:project_id]
-        respond_with project.instruments.order('title') if current_user && project
+        @instruments = project.instruments.order('title') if current_user && project
       end
 
       def show

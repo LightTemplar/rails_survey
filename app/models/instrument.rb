@@ -37,7 +37,7 @@ class Instrument < ActiveRecord::Base
   has_many :instrument_questions, dependent: :destroy
   has_many :questions, through: :instrument_questions
   has_many :options, through: :questions
-  has_many :displays
+  has_many :displays, dependent: :destroy
   has_many :instrument_rules
   has_many :surveys
   has_many :responses, through: :surveys
@@ -99,7 +99,7 @@ class Instrument < ActiveRecord::Base
   end
 
   def question_count
-    questions.count
+    instrument_questions.count
   end
 
   def survey_instrument_versions

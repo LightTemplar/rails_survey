@@ -49,7 +49,7 @@
         id="option-set"
         ng-model="question.option_set_id"
         ng-options="set.id as set.title for set in optionSets"
-        required>
+        ng-required="questionTypesWithOptions(question.question_type)">
         <option value=""></option>
       </select>
     </div>

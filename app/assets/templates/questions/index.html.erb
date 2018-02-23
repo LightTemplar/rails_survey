@@ -1,18 +1,18 @@
 <div ng-controller="QuestionsCtrl">
   <h4 class="text-center"><strong>Questions In Set</strong></h4>
     <div class="row m-5">
-      <label class="col-md-1">Identifier</label>
+      <label class="col-md-3">Identifier</label>
       <label class="col-md-3">Type</label>
-      <label class="col-md-8">Text</label>
+      <label class="col-md-6">Text</label>
     </div>
     <div class="row m-5" ng-repeat="question in questions | orderBy: 'id'">
-      <div class="col-md-1">
+      <div class="col-md-3">
         <a href="{{baseUrl}}/question_sets/{{questionSet.id}}/questions/{{question.id}}">
           <strong>{{question.question_identifier}}</strong>
         </a>
       </div>
       <div class="col-md-3">{{question.question_type}}</div>
-      <div class="col-md-8" ng-bind-html="question.text | limitTo:100"></div>
+      <div class="col-md-6" ng-bind-html="question.text | limitTo:100"></div>
     </div>
     <div class="row m-5 ">
       <div ng-show="multiple" class="btn btn-primary pull-left" ng-click="done()">Done</div>

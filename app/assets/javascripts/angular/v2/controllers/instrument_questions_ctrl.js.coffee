@@ -151,14 +151,18 @@ Display, currentDisplay, $window) ->
 
   $scope.saveInstrumentQuestions = () ->
     if $scope.display.mode == 'SINGLE'
-      question = _.findWhere($scope.questionSetQuestions, { id: $scope.instrumentQuestion.question_id})
+      question = _.findWhere($scope.questionSetQuestions, { id: parseInt($scope.instrumentQuestion.question_id) })
       if question
         $scope.instrumentQuestion.identifier = getInstrumentQuestionIdentifier(question)
-      $scope.instrumentQuestion.$save({},
-        (data, headers) ->
-          $state.reload()
-        (result, headers) ->
-      )
+        $scope.instrumentQuestion.$save({},
+          (data, headers) ->
+            $scope.instrumentQuestions.push(data)
+            $scope.showNewQuestion = false
+            $scope.currentDisplay = null
+            $scope.renumberDisplaysAndQuestions()
+          (result, headers) ->
+            alert(result.data.errors)
+        )
     else
       selectedQuestions = _.where($scope.questionSetQuestions, {selected: true})
       responseCount = 0

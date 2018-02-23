@@ -14,13 +14,7 @@
 
 class Display < ActiveRecord::Base
   belongs_to :instrument
-  has_many :instrument_questions
-  before_destroy :unset_instrument_questions
+  has_many :instrument_questions, dependent: :destroy
   acts_as_paranoid
   has_paper_trail
-  private
-
-  def unset_instrument_questions
-    instrument_questions.update_all(display_id: nil)
-  end
 end
