@@ -124,9 +124,9 @@ class Instrument < ActiveRecord::Base
       format << [question.number_in_instrument, question.question_identifier, question.question_type, sanitizer.sanitize(question.instructions), sanitizer.sanitize(question.text)] + translations_for_object(question)
       question.options.each do |option|
         format << ['', '', '', "Option for question #{question.question_identifier}", option.text] + translations_for_object(option)
-        if option.next_question
-          format << ['', '', '', "For option #{option}, SKIP TO question", option.next_question]
-        end
+        # if option.next_question
+        #   format << ['', '', '', "For option #{option}, SKIP TO question", option.next_question]
+        # end
         next unless option.skips
         option.skips.each do |skip|
           format << ['', '', '', "For option #{option.text}, SKIP question", skip.question_identifier]

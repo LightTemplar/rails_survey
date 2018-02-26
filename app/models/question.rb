@@ -51,7 +51,7 @@ class Question < ActiveRecord::Base
   before_save :update_question_translation, if: proc { |question| question.text_changed? }
   after_save :record_instrument_version
   before_destroy :update_instrument_version
-  after_update :update_dependent_records
+  # after_update :update_dependent_records
   after_save :touch_instrument_questions
   # after_create :create_special_options, if: proc { |question| question.instrument}
   has_paper_trail
@@ -183,16 +183,16 @@ class Question < ActiveRecord::Base
     update_column(:instrument_version_number, instrument_version)
   end
 
-  def update_dependent_records
-    if question_identifier_was && question_identifier != question_identifier_was
-      skips_to_update = Skip.where(question_identifier: question_identifier_was)
-      skips_to_update.update_all(question_identifier: question_identifier) unless skips_to_update.blank?
-      options_to_update = Option.where(next_question: question_identifier_was)
-      options_to_update.update_all(next_question: question_identifier) unless options_to_update.blank?
-      follow_ups_to_update = Question.where(following_up_question_identifier: question_identifier_was)
-      follow_ups_to_update.update_all(following_up_question_identifier: question_identifier) unless follow_ups_to_update.blank?
-    end
-  end
+  # def update_dependent_records
+  #   if question_identifier_was && question_identifier != question_identifier_was
+  #     skips_to_update = Skip.where(question_identifier: question_identifier_was)
+  #     skips_to_update.update_all(question_identifier: question_identifier) unless skips_to_update.blank?
+  #     options_to_update = Option.where(next_question: question_identifier_was)
+  #     options_to_update.update_all(next_question: question_identifier) unless options_to_update.blank?
+  #     follow_ups_to_update = Question.where(following_up_question_identifier: question_identifier_was)
+  #     follow_ups_to_update.update_all(following_up_question_identifier: question_identifier) unless follow_ups_to_update.blank?
+  #   end
+  # end
 
   def create_special_option(option_text)
     options.create(text: option_text, special: true, number_in_question: options.size + 1) if options.where(text: option_text).blank?

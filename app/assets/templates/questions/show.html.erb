@@ -16,17 +16,18 @@
         <label class="col-md-2">Type</label>
         <div class="col-md-10">
           <select
-          data-placeholder="Select a question type..."
-          no-results-text="'This does not match any valid question type'"
-          name="question-type"
-          id="question-type"
-          ng-model="question.question_type"
-          ng-options="type for type in questionTypes()"
-          required>
-          <option value=""></option>
-        </select>
+            class="form-control"
+            data-placeholder="Select a question type..."
+            no-results-text="'This does not match any valid question type'"
+            name="question-type"
+            id="question-type"
+            ng-model="question.question_type"
+            ng-options="type for type in questionTypes()"
+            required>
+            <option value=""></option>
+          </select>
+        </div>
       </div>
-    </div>
 
     <div class="row m-5">
       <label class="col-md-2">Text</label>
@@ -44,6 +45,7 @@
     <label class="col-md-2">Option Set</label>
     <div class="col-md-8">
       <select
+        class="form-control"
         ng-style="{'width' : 600}"
         name="option-set"
         id="option-set"
@@ -67,6 +69,7 @@
     <label class="col-md-2">Special Options</label>
     <div class="col-md-8">
       <select
+        class="form-control"
         ng-style="{'width' : 600}"
         name="special-option-set"
         id="special-option-set"
@@ -87,6 +90,7 @@
   <label class="col-md-2">Instruction</label>
   <div class="col-md-8">
     <select
+    class="form-control"
     ng-style="{'width' : 600}"
     name="instruction"
     id="instruction"
@@ -108,7 +112,7 @@
 <div class="row m-t-5">
   <label class="col-md-2">Identifiers Survey</label>
   <div class="col-md-10">
-    <input type="checkbox" ng-model="question.identifies_survey" name="identifies-survey">
+    <input class="form-control" type="checkbox" ng-model="question.identifies_survey" name="identifies-survey">
   </div>
 </div>
 
