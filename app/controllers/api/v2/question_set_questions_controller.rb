@@ -31,6 +31,11 @@ module Api
         respond_with question.destroy
       end
 
+      def copy
+        question = @question_set.questions.find(params[:id])
+        respond_with question.copy
+      end
+
       private
 
       def set_question_set

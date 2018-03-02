@@ -5,14 +5,15 @@
 <div class="card">
   <div class="card-body card-padding">
     <div ng-controller="OptionSetsCtrl">
-      <input type="search" ng-model="os.title" placeholder="Filter option sets ..."
+      <input type="search" ng-model="os" placeholder="Filter option sets ..."
       class="form-control tm-search text-center">
-      <div ng-repeat="optionSet in optionSets | filter:os">
+      <div ng-repeat="optionSet in optionSets | filter: os track by optionSet.id">
         <div class="row m-5">
           <a class="col-md-10" href="{{baseUrl}}/option_sets/{{optionSet.id}}">
             <strong>{{optionSet.title}}</strong>
           </a>
           <div class="col-md-2">
+            <div class="btn btn-primary" ng-click="copyOptionSet(optionSet)">Copy</div>
             <div class="btn btn-danger" ng-click="deleteOptionSet(optionSet)">Delete</div>
           </div>
         </div>

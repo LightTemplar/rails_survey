@@ -71,6 +71,18 @@ class Question < ActiveRecord::Base
     nullify :following_up_question_identifier
   end
 
+  def copy
+    new_copy = self.dup
+    new_copy.question_identifier = question_identifier + Time.now.to_i.to_s
+    new_copy.save!
+    translations.each do |t|
+      new_t = t.dup
+      new_t.question_id = new_copy.id
+      new_t.save!
+    end
+    new_copy
+  end
+
   def create_special_options(special_options = instrument.special_options)
     skip_option_callbacks
     unless special_options.blank?

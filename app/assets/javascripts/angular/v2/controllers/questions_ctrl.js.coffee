@@ -15,6 +15,24 @@ App.controller 'QuestionsCtrl', ['$scope', '$state', '$stateParams', '$location'
   $scope.back = () ->
     $state.go('questionSets')
 
+  $scope.copyQuestion = (question) ->
+    question.$copy({},
+      (data, headers) ->
+        $state.reload()
+      (result, headers) ->
+        alert(result.data.errors)
+    )
+
+  $scope.deleteQuestion = (question) ->
+    if confirm('Are you sure you want to delete this question?')
+      if question.id
+        question.$delete({},
+          (data, headers) ->
+            $scope.questions.splice($scope.questions.indexOf(question), 1)
+          (result, headers) ->
+            alert(result.data.errors)
+        )
+
   if $stateParams.id
     $scope.questions = Question.query({"question_set_id": $stateParams.id})
 

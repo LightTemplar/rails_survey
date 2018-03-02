@@ -1,4 +1,5 @@
-App.controller 'OptionSetsCtrl', ['$scope', '$location', 'OptionSet', ($scope, $location, OptionSet) ->
+App.controller 'OptionSetsCtrl', ['$scope', '$location', 'OptionSet', '$state',
+($scope, $location, OptionSet, $state) ->
   $scope.createOptionSet = () ->
     setNewOption(new OptionSet(), true)
 
@@ -28,7 +29,16 @@ App.controller 'OptionSetsCtrl', ['$scope', '$location', 'OptionSet', ($scope, $
           (data, headers) ->
             $scope.optionSets.splice($scope.optionSets.indexOf(optionSet), 1)
           (result, headers) ->
+            alert(result.data.errors)
         )
+
+  $scope.copyOptionSet = (optionSet) ->
+    optionSet.$copy({},
+      (data, headers) ->
+        $state.reload()
+      (result, headers) ->
+        alert(result.data.errors)
+    )
 
 ]
 

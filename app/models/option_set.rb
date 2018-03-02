@@ -14,6 +14,24 @@ class OptionSet < ActiveRecord::Base
   has_many :questions
   after_save :set_option_specialty
 
+  def copy
+    new_copy = self.dup
+    new_copy.title = title + Time.now.to_i.to_s
+    new_copy.save!
+    options.each do |op|
+      new_op = op.dup
+      new_op.identifier = op.identifier + Time.now.to_i.to_s
+      new_op.option_set_id = new_copy.id
+      new_op.save!
+      op.translations.each do |ot|
+        new_ot = ot.dup
+        new_ot.option_id = new_op.id
+        new_ot.save!
+      end
+    end
+    new_copy
+  end
+
   private
 
   def set_option_specialty

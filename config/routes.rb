@@ -48,10 +48,17 @@ RailsSurvey::Application.routes.draw do
     end
     namespace :v2 do
       resources :question_sets do
-        resources :questions, controller: 'question_set_questions'
+        resources :questions, controller: 'question_set_questions' do
+          member do
+            get :copy
+          end
+        end
       end
       resources :option_sets do
         resources :options, controller: 'option_set_options'
+        member do
+          get :copy
+        end
       end
       resources :questions
       resources :question_translations, only: [:index, :create, :update]
