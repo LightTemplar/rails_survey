@@ -78,6 +78,9 @@ RailsSurvey::Application.routes.draw do
           resources :displays
           resources :instrument_translations
           resources :instrument_rules
+          member do
+            get :copy
+          end
         end
       end
       get 'settings/index'

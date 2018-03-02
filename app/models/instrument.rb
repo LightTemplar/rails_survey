@@ -61,6 +61,58 @@ class Instrument < ActiveRecord::Base
   validates :title, presence: true, allow_blank: false
   validates :project_id, presence: true, allow_blank: false
 
+  def copy(project, display)
+    instrument_copy = self.dup
+    instrument_copy.project_id = project.id
+    instrument_copy.title = title + "_#{Time.now.to_i}"
+    instrument_copy.save!
+    if display == 'AS_IT_IS'
+      displays.each do |display|
+        display_copy = display.dup
+        display_copy.instrument_id = instrument_copy.id
+        display_copy.save!
+        display.instrument_questions.each do |iq|
+          copy_instrument_question(iq, display_copy.id, instrument_copy.id)
+        end
+      end
+    elsif display == 'ONE_QUESTION_PER_SCREEN'
+      index = 0
+      instrument_questions.order(:number_in_instrument).each do |iq|
+        index += 1
+        display_copy = Display.create!(mode: 'SINGLE', position: index, instrument_id: instrument_copy.id, title: index.to_s)
+        copy_instrument_question(iq, display_copy.id, instrument_copy.id)
+      end
+    elsif display = 'ALL_QUESTIONS_ON_ONE_SCREEN'
+      display_copy = Display.create!(mode: 'MULTIPLE', position: 1, instrument_id: instrument_copy.id, title: 'Questions')
+      instrument_questions.order(:number_in_instrument).each do |iq|
+        copy_instrument_question(iq, display_copy.id, instrument_copy.id)
+      end
+    end
+    instrument_copy
+  end
+
+  def copy_instrument_question(iq, display_id, instrument_id)
+    iq_copy = iq.dup
+    iq_copy.display_id = display_id
+    iq_copy.instrument_id = instrument_id
+    iq_copy.save!
+    iq.next_questions.each do |nq|
+      nq_copy = nq.dup
+      nq_copy.instrument_question_id = iq_copy.id
+      nq_copy.save!
+    end
+    iq.multiple_skips.each do |ms|
+      ms_copy = ms.dup
+      ms_copy.instrument_question_id = iq_copy.id
+      ms_copy.save!
+    end
+    iq.follow_up_questions.each do |fuq|
+      fuq_copy = fuq.dup
+      fuq_copy.instrument_question_id = iq_copy.id
+      fuq_copy.save!
+    end
+  end
+
   def delete_duplicate_surveys
     grouped_surveys = surveys.group_by {|survey| survey.uuid}
     grouped_surveys.values.each do |duplicates|

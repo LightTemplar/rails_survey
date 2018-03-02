@@ -35,6 +35,18 @@ module Api
         respond_with instrument.destroy
       end
 
+      def copy
+        project = current_user.projects.find(params[:project_id])
+        instrument = project.instruments.find(params[:id])
+        destination = current_user.projects.find(params[:destination_project_id])
+        instrument_copy = instrument.copy(destination, params[:display_type]) if destination
+        if destination && instrument_copy
+          render json: instrument_copy, status: :created
+        else
+          render json: { errors: 'instrument copy unsuccessfull' }, status: :unprocessable_entity
+        end
+      end
+
       private
 
       def instrument_params

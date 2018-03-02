@@ -93,3 +93,4 @@ metric_keys: ['device_uuid', 'Participant ID', 'Center ID']
 roster_types: ['STAFF','CHILD']
 
 display_types: ['SINGLE', 'MULTIPLE', 'TABLE']
+copy_display_types: ['AS_IT_IS', 'ONE_QUESTION_PER_SCREEN', 'ALL_QUESTIONS_ON_ONE_SCREEN']
