@@ -45,3 +45,40 @@ App.controller 'DisplayCtrl', ['$scope', ($scope) ->
     $scope.$parent.renumberDisplaysAndQuestions()
 
 ]
+
+App.controller 'ShowDisplayCtrl', ['$scope', '$stateParams', 'Display', 'Instrument', 'Setting',
+ '$state', ($scope, $stateParams, Display, Instrument, Setting, $state) ->
+  $scope.project_id = $stateParams.project_id
+  $scope.instrument_id = $stateParams.instrument_id
+  $scope.id = $stateParams.id
+  $scope.showCopy = false
+
+  $scope.display = Display.get({
+    'project_id': $scope.project_id,
+    'instrument_id': $scope.instrument_id,
+    'id': $scope.id
+  })
+  $scope.settings = Setting.get({}, ->
+    $scope.displayTypes = $scope.settings.copy_display_types
+    $scope.displayTypes.splice($scope.displayTypes.indexOf('ALL_QUESTIONS_ON_ONE_SCREEN'), 1)
+  )
+  $scope.instruments = Instrument.query({
+    'project_id': $scope.project_id
+  })
+
+  $scope.copyQuestions = () ->
+    $scope.showCopy = !$scope.showCopy
+
+  $scope.saveCopy = () ->
+    $scope.display.project_id = $scope.project_id
+    $scope.display.$copy({
+      destination_instrument_id: $scope.display.destination_instrument_id,
+      display_type: $scope.display.display_type
+      },
+      (data, headers) ->
+        $state.go('project', { id: $scope.project_id })
+      (result, headers) ->
+        alert(result.data.errors)
+    )
+
+]

@@ -35,10 +35,20 @@ module Api
         end
       end
 
+      def copy
+        display = @instrument.displays.find(params[:id])
+        destination = @project.instruments.find(params[:destination_instrument_id])
+        if destination && display.copy(destination, params[:display_type])
+          render json: destination, status: :created
+        else
+          render json: { errors: 'display copy unsuccessfull' }, status: :unprocessable_entity
+        end
+      end
+
       private
 
       def set_instrument_project
-        @project = Project.find(params[:project_id])
+        @project = current_user.projects.find(params[:project_id])
         @instrument = @project.instruments.find(params[:instrument_id])
       end
 

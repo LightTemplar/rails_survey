@@ -75,7 +75,11 @@ RailsSurvey::Application.routes.draw do
             resources :multiple_skips
             resources :follow_up_questions
           end
-          resources :displays
+          resources :displays do
+            member do
+              get :copy
+            end
+          end
           resources :instrument_translations
           resources :instrument_rules
           member do

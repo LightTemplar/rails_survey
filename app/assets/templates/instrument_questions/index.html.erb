@@ -18,7 +18,10 @@
               </div>
             </div>
             <div class="col-md-2">
-              <strong>{{display.mode}}</strong> <i>{{display.title}}</i>
+              <strong>{{display.mode}}</strong>
+              <a ui-sref="display({project_id: project_id, instrument_id: instrument_id, id: display.id})">
+                <i>{{display.title}}</i>
+              </a>
             </div>
             <div class="col-md-6">
               <span ng-repeat="instrumentQuestion in displayQuestions(display) | orderBy: '1 * number_in_instrument'">

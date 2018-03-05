@@ -4,13 +4,13 @@ module Api
       respond_to :json
 
       def index
-        project = Project.find params[:project_id]
-        @instruments = project.instruments.order('title') if current_user && project
+        project = current_user.projects.find params[:project_id]
+        @instruments = project.instruments.order('title') if project
       end
 
       def show
-        project = Project.find params[:project_id]
-        respond_with project.instruments.find(params[:id]) if current_user && project
+        project = current_user.projects.find params[:project_id]
+        respond_with project.instruments.find(params[:id]) if project
       end
 
       def create

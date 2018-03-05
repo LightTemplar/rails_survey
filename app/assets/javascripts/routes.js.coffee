@@ -98,6 +98,10 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
       url: '/projects/:project_id/instruments/:instrument_id/instrument_rules'
       templateUrl: 'instrument_rules/index.html'
       controller: 'InstrumentRulesCtrl'
+    .state 'display',
+      url: '/projects/:project_id/instruments/:instrument_id/displays/:id'
+      templateUrl: 'displays/show.html'
+      controller: 'ShowDisplayCtrl'
 
   # $urlRouterProvider.otherwise($injector, $location) ->
   #   console.log('otherwise')

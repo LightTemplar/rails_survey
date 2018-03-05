@@ -1,0 +1,36 @@
+<div class="card" ng-controller="DisplayCtrl">
+  <div class="card-header">
+    <div class="btn btn-primary" ng-click="copyQuestions()">Copy Questions</div>
+  </div>
+  <div class="card-body card-padding">
+    <div ng-show="showCopy">
+      <div class="row">
+        <label class="col-md-3">Destination Instrument</label>
+        <div class="col-md-9">
+          <select
+          class="form-control"
+          name="destination-instrument"
+          id="destination-instrument"
+          ng-model="display.destination_instrument_id"
+          ng-options="instrument.id as instrument.title for instrument in instruments"
+          required>
+          <option value=""></option>
+          </select>
+        </div>
+      </div>
+      <div class="row m-t-5">
+        <label class="col-md-3">Question Display Type</label>
+        <div class="col-md-9">
+          <div ng-repeat="type in displayTypes">
+            <input type="radio" ng-model="display.display_type"
+            value="{{type}}" name="display-display-type" required/>
+            <label>{{ type }}</label>
+          </div>
+        </div>
+      </div>
+      <div class="row m-5">
+        <div class="btn btn-success pull-right" ng-click="saveCopy()">Save</div>
+      </div>
+    </div>
+  </div>
+</div>
