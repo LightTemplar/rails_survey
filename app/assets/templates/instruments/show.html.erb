@@ -1,18 +1,22 @@
-<div class="card" ng-controller="ShowInstrumentCtrl">
-  <div class="card-header">
-    <a ui-sref="instrumentQuestions({project_id: project_id, instrument_id: id})"
+<div ng-controller="ShowInstrumentCtrl">
+  <div class="card">
+    <div class="card-body card-padding">
+      <a ui-sref="instrumentQuestions({project_id: project_id, instrument_id: id})"
       class="btn btn-primary">Questions</a>
-    <a ui-sref="instrumentTranslations({project_id: project_id, instrument_id: id})"
+      <a ui-sref="instrumentTranslations({project_id: project_id, instrument_id: id})"
       class="btn btn-primary">Translations</a>
-    <a ui-sref="instrumentRules({project_id: project_id, instrument_id: id})"
+      <a ui-sref="instrumentRules({project_id: project_id, instrument_id: id})"
       class="btn btn-primary">Rules</a>
-    <div class="btn btn-primary" ng-click="copyInstrument()">Copy</div>
+      <div class="btn btn-primary" ng-click="copyInstrument()">Copy</div>
+      <div class="btn btn-primary" ng-click="reOrderQuestions()">Reorder</div>
+    </div>
   </div>
-  <div class="card-body card-padding" ng-show="showCopy">
-    <div class="row">
-      <label class="col-md-3">Destination Instrument</label>
-      <div class="col-md-9">
-        <select
+  <div class="card" ng-show="showCopy">
+    <div class="card-body card-padding">
+      <div class="row">
+        <label class="col-md-3">Destination Instrument</label>
+        <div class="col-md-9">
+          <select
           class="form-control"
           name="destination-project"
           id="destination-project"
@@ -20,21 +24,30 @@
           ng-options="project.id as project.name for project in projects"
           required>
           <option value=""></option>
-        </select>
-      </div>
-    </div>
-    <div class="row m-t-5">
-      <label class="col-md-3">Question Display Type</label>
-      <div class="col-md-9">
-        <div ng-repeat="type in displayTypes">
-          <input type="radio" ng-model="instrument.display_type"
-            value="{{type}}" name="instrument-display-type" required/>
-          <label>{{ type }}</label>
+          </select>
         </div>
       </div>
+      <div class="row m-t-5">
+        <label class="col-md-3">Question Display Type</label>
+        <div class="col-md-9">
+          <div ng-repeat="type in displayTypes">
+            <input type="radio" ng-model="instrument.display_type"
+            value="{{type}}" name="instrument-display-type" required/>
+            <label>{{ type }}</label>
+          </div>
+        </div>
+      </div>
+      <div class="row m-5">
+        <div class="btn btn-success pull-right" ng-click="saveCopy()">Save</div>
+      </div>
     </div>
-    <div class="row m-5">
-      <div class="btn btn-success pull-right" ng-click="saveCopy()">Save</div>
+  </div>
+  <div class="card" ng-show="showReOrder">
+    <div class="card-body card-padding">
+      <textarea class="form-control" ng-model="instrument.order" rows="{{numRows}}"></textarea>
+      <div class="row m-5">
+        <div class="btn btn-primary pull-right" ng-click="saveOrder()">Save Order</div>
+      </div>
     </div>
   </div>
 </div>

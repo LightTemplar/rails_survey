@@ -47,6 +47,16 @@ module Api
         end
       end
 
+      def reorder
+        project = current_user.projects.find(params[:project_id])
+        instrument = project.instruments.find(params[:id])
+        if instrument.reorder(params[:order])
+          render json: :ok, status: :created
+        else
+          render json: { errors: 'question reorder unsuccessfull' }, status: :unprocessable_entity
+        end
+      end
+
       private
 
       def instrument_params

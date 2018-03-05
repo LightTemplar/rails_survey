@@ -403,6 +403,32 @@ class Instrument < ActiveRecord::Base
     end
   end
 
+  def reorder(order)
+    ActiveRecord::Base.transaction do
+      reordered_displays = order.strip.split("\n\n")
+      display_position = 1
+      number_in_instrument = 1
+      preserved_displays = []
+      preserved_questions = []
+      reordered_displays.each do |dis|
+        display_string = dis.split(/: /)
+        display = displays.find(display_string[0].to_i)
+        display.update_attribute(:position, display_position) if display
+        display_position += 1
+        preserved_displays << display
+        display_and_questions = display_string[1].split(/\n\t/)
+        display_and_questions.drop(1).each do |qid|
+          iq = instrument_questions.where(identifier: qid).first
+          iq.update_attribute(:number_in_instrument, number_in_instrument) if iq
+          number_in_instrument += 1
+          preserved_questions << iq
+        end
+      end
+      (displays - preserved_displays).each(&:destroy)
+      (instrument_questions - preserved_questions).each(&:destroy)
+    end
+  end
+
   private
 
   def update_question_count
