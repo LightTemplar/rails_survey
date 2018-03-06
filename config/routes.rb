@@ -16,6 +16,7 @@ RailsSurvey::Application.routes.draw do
         resources :sections, only: :index
         resources :questions, only: :index
         resources :options, only: :index
+        resources :option_in_option_sets, only: :index
         resources :randomized_factors, only: :index
         resources :randomized_options, only: :index
         resources :question_randomized_factors, only: :index
@@ -56,6 +57,7 @@ RailsSurvey::Application.routes.draw do
       end
       resources :option_sets do
         resources :options, controller: 'option_set_options'
+        resources :option_in_option_sets
         member do
           get :copy
         end

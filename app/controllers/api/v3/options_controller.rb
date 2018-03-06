@@ -5,7 +5,7 @@ module Api
 
       def index
         @project = Project.find(params[:project_id])
-        @options = @project.api_options
+        @options = @project.api_options.uniq # Return unique records
       end
     end
   end

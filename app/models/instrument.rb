@@ -82,7 +82,7 @@ class Instrument < ActiveRecord::Base
         display_copy = Display.create!(mode: 'SINGLE', position: index, instrument_id: instrument_copy.id, title: index.to_s)
         iq.copy(display_copy.id, instrument_copy.id)
       end
-    elsif display = 'ALL_QUESTIONS_ON_ONE_SCREEN'
+    elsif display == 'ALL_QUESTIONS_ON_ONE_SCREEN'
       display_copy = Display.create!(mode: 'MULTIPLE', position: 1, instrument_id: instrument_copy.id, title: 'Questions')
       instrument_questions.order(:number_in_instrument).each do |iq|
         iq.copy(display_copy.id, instrument_copy.id)

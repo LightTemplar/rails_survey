@@ -1,57 +1,36 @@
-App.controller 'OptionsCtrl', ['$scope', 'Option', '$stateParams', '$state',
-($scope, Option, $stateParams, $state) ->
-
-  $scope.options = Option.query({"option_set_id": $stateParams.id})
-
-  $scope.sortableOptions = {
-    cursor: 'move',
-    handle: '.moveOption',
-    axis: 'y',
-    stop: (e, ui) ->
-      angular.forEach $scope.options, (option, index) ->
-        option.number_in_question = index
-        option.$update({})
-  }
+App.controller 'OptionsCtrl', ['$scope', 'Option', ($scope, Option) ->
+  $scope.options = Option.query({})
 
   $scope.newOption = () ->
     option = new Option()
-    option.number_in_question = $scope.options.length
-    $scope.currentOption = option
-    $scope.options.push(option)
+    $scope.options.unshift(option)
 
-  $scope.editOption = (option) ->
-    if $scope.currentOption == option
-      $scope.currentOption = null
-    else
-      $scope.currentOption = option
-
-  $scope.saveOption = (option) ->
-    option.option_set_id = $scope.optionSet.id
-    if $scope.currentOption.id
-      $scope.currentOption.$update({} ,
-        (data, headers) -> ,
+  $scope.updateOption = (option) ->
+    if option.id
+      option.$update({} ,
+        (data, headers) ->
+          option = data
         (result, headers) ->
           alert(result.data.errors)
       )
     else
-      $scope.currentOption.$save({} ,
-        (data, headers) -> ,
+      option.$save({} ,
+        (data, headers) ->
+          option = data
         (result, headers) ->
           alert(result.data.errors)
       )
-    $scope.currentOption = null
 
   $scope.deleteOption = (option) ->
     if confirm('Are you sure you want to delete ' + option.text + '?')
       if option.id
         option.$delete({} ,
           (data, headers) ->
-            index = $scope.options.indexOf(option)
-            $scope.options.splice(index,1)
+            $scope.options.splice($scope.options.indexOf(option), 1)
           (result, headers) ->
+            alert(result.data.errors)
         )
-
-  $scope.back = () ->
-    $state.go('optionSets')
+      else
+        $scope.options.splice($scope.options.indexOf(option), 1)
 
 ]

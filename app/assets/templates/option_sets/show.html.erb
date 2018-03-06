@@ -20,8 +20,44 @@
             Save
           </div>
         </div>
-        <div ng-include='"options/index.html"'></div>
       </ng-form>
+    </div>
+  </div>
+
+  <h4 class="text-center"><strong>Optins in {{optionSet.title}}</strong></h4>
+  <div class="card">
+    <div class="card-body card-padding">
+      <div class="row">
+        <label class="col-md-2">Position</label>
+        <label class="col-md-8">Option</label>
+        <label class="col-md-2">Actions</label>
+      </div>
+    <div ng-repeat="optionInOptionSet in optionInOptionSets">
+      <div class="row">
+        <div class="col-md-2">
+          <input type="number" class="form-control" ng-model="optionInOptionSet.number_in_question" required />
+        </div>
+        <div class="col-md-8">
+          <select
+            class="form-control"
+            ng-style="{'width' : 600}"
+            name="option-id"
+            id="option-id"
+            ng-model="optionInOptionSet.option_id"
+            ng-options="option.id as option.text for option in options"
+            ng-required="true">
+            <option value=""></option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <div class="btn btn-danger" ng-click="deleteOption(optionInOptionSet)">Delete</div>
+        </div>
+      </div>
+    </div>
+    <div class="row m-t-5">
+      <div class="btn btn-primary pull-left" ng-click="addOption()">Add Option</div>
+      <div class="btn btn-success pull-right" ng-click="saveOptions()">Save Options</div>
+    </div>
     </div>
   </div>
 </div>

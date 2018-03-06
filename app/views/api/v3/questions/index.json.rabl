@@ -1,7 +1,7 @@
 collection @questions
 cache ['v3-questions', @questions]
 
-attributes :id, :instrument_id, :display_id, :number_in_instrument
+attributes :id, :instrument_id, :display_id, :number_in_instrument, :deleted_at
 
 # node :id do |iq|
 #   iq.question.id
@@ -52,9 +52,9 @@ node :special_option_set_id do |iq|
   iq.question.special_option_set_id if iq.question
 end
 
-node :deleted_at do |iq|
-  iq.question.deleted_at if iq.question
-end
+# node :deleted_at do |iq|
+#   iq.question.deleted_at if iq.question
+# end
 
 node :identifies_survey do |iq|
   iq.question.identifies_survey if iq.question

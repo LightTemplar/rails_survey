@@ -102,6 +102,10 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
       url: '/projects/:project_id/instruments/:instrument_id/displays/:id'
       templateUrl: 'displays/show.html'
       controller: 'ShowDisplayCtrl'
+    .state 'options',
+      url: '/options'
+      templateUrl: 'options/index.html'
+      controller: 'OptionsCtrl'
 
   # $urlRouterProvider.otherwise($injector, $location) ->
   #   console.log('otherwise')

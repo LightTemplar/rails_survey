@@ -23,11 +23,13 @@ class Option < ActiveRecord::Base
   scope :special_options, -> { where(special: true) }
   scope :regular, -> { where(special: false) }
   belongs_to :question
-  belongs_to :option_set
+  # belongs_to :option_set
+  has_many :option_in_option_sets
+  has_many :option_sets, through: :option_in_option_sets
   delegate :instrument, to: :question, allow_nil: true
   delegate :project, to: :question
   has_many :translations, foreign_key: 'option_id', class_name: 'OptionTranslation', dependent: :destroy
-  has_many :skips, dependent: :destroy
+  # has_many :skips, dependent: :destroy
   # before_save :update_instrument_version, if: proc { |option| option.changed? }
   # before_save :update_option_translation, if: proc { |option| option.text_changed? }
   # before_destroy :update_instrument_version
@@ -43,6 +45,11 @@ class Option < ActiveRecord::Base
   amoeba do
     enable
     include_association :translations
+  end
+
+  def to_option_in_option_set
+    OptionInOptionSet.create!(option_id: id, option_set_id: option_set_id,
+      number_in_question: number_in_question) if id && option_set_id && number_in_question
   end
 
   def to_s
@@ -84,7 +91,7 @@ class Option < ActiveRecord::Base
   end
 
   def set_special
-    update_columns(special: true) if option_set.special
+    # update_columns(special: true) if option_set.special
   end
 
 end

@@ -7,12 +7,17 @@
 #  created_at :datetime
 #  updated_at :datetime
 #  special    :boolean          default(FALSE)
+#  deleted_at :datetime
 #
 
 class OptionSet < ActiveRecord::Base
-  has_many :options, dependent: :destroy
+  # has_many :options, dependent: :destroy
+  has_many :option_in_option_sets
+  has_many :options, through: :option_in_option_sets
   has_many :questions
   after_save :set_option_specialty
+  has_paper_trail
+  acts_as_paranoid
 
   def copy
     new_copy = self.dup
@@ -35,10 +40,10 @@ class OptionSet < ActiveRecord::Base
   private
 
   def set_option_specialty
-    if special
-      options.update_all(special: true)
-    else
-      options.update_all(special: false)
-    end
+    # if special
+    #   options.update_all(special: true)
+    # else
+    #   options.update_all(special: false)
+    # end
   end
 end

@@ -42,22 +42,63 @@ App.controller 'OptionSetsCtrl', ['$scope', '$location', 'OptionSet', '$state',
 
 ]
 
-App.controller 'ShowOptionSetCtrl', ['$scope', '$stateParams', '$location', 'OptionSet', 'Option',
- ($scope, $stateParams, $location, OptionSet, Option) ->
+App.controller 'ShowOptionSetCtrl', ['$scope', '$stateParams', '$state',
+'OptionSet', 'Option', 'OptionInOptionSet', ($scope, $stateParams, $state,
+OptionSet, Option, OptionInOptionSet) ->
+
+  $scope.optionSet = OptionSet.get({'id': $stateParams.id})
+  $scope.optionInOptionSets = OptionInOptionSet.query({'option_set_id': $stateParams.id})
+  $scope.options = Option.query({})
+  $scope.counter = 0
 
   $scope.updateOptionSet = () ->
     if $scope.optionSet.id
       $scope.optionSet.$update({} ,
         (data, headers) ->
+          $scope.optionSet = data
         (result, headers) ->
+          alert(result.data.errors)
       )
 
-  if $scope.optionSets and $stateParams.id
-    $scope.optionSet = _.first(_.filter($scope.optionSets, (qs) -> qs.id == $stateParams.id))
-  else if $stateParams.id and not $scope.optionSets
-    $scope.optionSet = OptionSet.get({'id': $stateParams.id})
+  $scope.addOption = () ->
+    optionInOptionSet = new OptionInOptionSet()
+    optionInOptionSet.number_in_question = $scope.optionInOptionSets.length
+    optionInOptionSet.option_set_id = $stateParams.id
+    $scope.optionInOptionSets.push(optionInOptionSet)
 
-  if $stateParams.id
-    $scope.options = Option.query({"option_set_id": $stateParams.id})
+  $scope.saveOptions = () ->
+    angular.forEach $scope.optionInOptionSets, (option, index) ->
+      if option.id
+        option.$update({},
+          (data, headers) ->
+            $scope.counter += 1
+            reloadPage()
+          (result, headers) ->
+            alert(result.data.errors)
+        )
+      else
+        option.$save({},
+          (data, headers) ->
+            $scope.counter += 1
+            reloadPage()
+          (result, headers) ->
+            alert(result.data.errors)
+        )
 
+  reloadPage = () ->
+    if $scope.counter == $scope.optionInOptionSets.length
+      $state.reload()
+
+  $scope.deleteOption = (optionInOptionSet) ->
+    if confirm('Are you sure you want to delete this option from the set?')
+      if optionInOptionSet.id
+        optionInOptionSet.$delete({},
+          (data, headers) ->
+            $scope.optionInOptionSets.splice($scope.optionInOptionSets.indexOf(optionInOptionSet), 1)
+          (result, headers) ->
+            alert(result.data.errors)
+        )
+      else
+        $scope.optionInOptionSets.splice($scope.optionInOptionSets.indexOf(optionInOptionSet), 1)
+        
 ]

@@ -21,6 +21,7 @@ class Project < ActiveRecord::Base
   # has_many :question_translations, through: :questions, source: 'translations'
   has_many :options, through: :questions
   has_many :option_sets, through: :questions
+  has_many :option_in_option_sets, through: :option_sets
   has_many :displays, through: :instruments
   has_many :surveys, through: :instruments
   has_many :project_devices, dependent: :destroy
