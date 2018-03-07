@@ -57,12 +57,17 @@ class Project < ActiveRecord::Base
     question_ids = api_instrument_questions.pluck(:question_id).uniq
     questions = Question.where(id: question_ids)
     option_set_ids = questions.pluck(:option_set_id) + questions.pluck(:special_option_set_id)
-    options = Option.where(option_set_id: option_set_ids.uniq)
+    option_sets = OptionSet.where(id: option_set_ids.uniq)
+    options = option_sets.collect(&:options).flatten.uniq
   end
 
   def api_instrument_questions
     instrument_ids = instruments.where(published: true).pluck(:id)
     InstrumentQuestion.where(instrument_id: instrument_ids)
+  end
+
+  def special_option_sets
+    questions.uniq.collect(&:special_option_set).uniq.compact
   end
 
   def non_responsive_devices

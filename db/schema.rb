@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180306151625) do
+ActiveRecord::Schema.define(version: 20180307181441) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -273,12 +273,13 @@ ActiveRecord::Schema.define(version: 20180306151625) do
   end
 
   create_table "option_in_option_sets", force: :cascade do |t|
-    t.integer  "option_id",          null: false
-    t.integer  "option_set_id",      null: false
-    t.integer  "number_in_question", null: false
+    t.integer  "option_id",                          null: false
+    t.integer  "option_set_id",                      null: false
+    t.integer  "number_in_question",                 null: false
     t.datetime "deleted_at"
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+    t.boolean  "special",            default: false
   end
 
   create_table "option_scores", force: :cascade do |t|
@@ -314,17 +315,13 @@ ActiveRecord::Schema.define(version: 20180306151625) do
   end
 
   create_table "options", force: :cascade do |t|
-    t.integer  "question_id"
     t.text     "text"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "number_in_question"
     t.datetime "deleted_at"
     t.integer  "instrument_version_number", default: -1
-    t.boolean  "special",                   default: false
     t.boolean  "critical"
     t.boolean  "complete_survey"
-    t.integer  "option_set_id"
     t.string   "identifier"
   end
 

@@ -11,11 +11,10 @@
 #
 
 class OptionSet < ActiveRecord::Base
-  # has_many :options, dependent: :destroy
   has_many :option_in_option_sets
   has_many :options, through: :option_in_option_sets
   has_many :questions
-  after_save :set_option_specialty
+  after_save :set_option_specialty, if: proc { |option_set| option_set.special_changed? }
   has_paper_trail
   acts_as_paranoid
 
@@ -40,10 +39,10 @@ class OptionSet < ActiveRecord::Base
   private
 
   def set_option_specialty
-    # if special
-    #   options.update_all(special: true)
-    # else
-    #   options.update_all(special: false)
-    # end
+    if special
+      option_in_option_sets.update_all(special: true)
+    else
+      option_in_option_sets.update_all(special: false)
+    end
   end
 end

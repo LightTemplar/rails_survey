@@ -9,11 +9,21 @@
 #  deleted_at         :datetime
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
+#  special            :boolean          default(FALSE)
 #
 
 class OptionInOptionSet < ActiveRecord::Base
+  default_scope { order('special ASC, number_in_question ASC') }
   belongs_to :option
   belongs_to :option_set
   has_paper_trail
   acts_as_paranoid
+  after_save :set_special
+
+  private
+
+  def set_special
+    update_columns(special: true) if option_set.special
+  end
+
 end

@@ -3,31 +3,26 @@
 # Table name: options
 #
 #  id                        :integer          not null, primary key
-#  question_id               :integer
 #  text                      :text
 #  created_at                :datetime
 #  updated_at                :datetime
-#  number_in_question        :integer
 #  deleted_at                :datetime
 #  instrument_version_number :integer          default(-1)
-#  special                   :boolean          default(FALSE)
 #  critical                  :boolean
 #  complete_survey           :boolean
-#  option_set_id             :integer
 #  identifier                :string
 #
 
 class Option < ActiveRecord::Base
   include Translatable
-  default_scope { order('special ASC, number_in_question ASC') }
-  scope :special_options, -> { where(special: true) }
-  scope :regular, -> { where(special: false) }
-  belongs_to :question
+  # scope :special_options, -> { where(special: true) }
+  # scope :regular, -> { where(special: false) }
+  # belongs_to :question
   # belongs_to :option_set
   has_many :option_in_option_sets
   has_many :option_sets, through: :option_in_option_sets
-  delegate :instrument, to: :question, allow_nil: true
-  delegate :project, to: :question
+  # delegate :instrument, to: :question, allow_nil: true
+  # delegate :project, to: :question
   has_many :translations, foreign_key: 'option_id', class_name: 'OptionTranslation', dependent: :destroy
   # has_many :skips, dependent: :destroy
   # before_save :update_instrument_version, if: proc { |option| option.changed? }
@@ -35,7 +30,6 @@ class Option < ActiveRecord::Base
   # before_destroy :update_instrument_version
   # after_save :record_instrument_version_number
   # after_save :check_parent_criticality
-  after_save :set_special
   has_paper_trail
   acts_as_paranoid
 
@@ -88,10 +82,6 @@ class Option < ActiveRecord::Base
 
   def check_parent_criticality
     update_columns(critical: nil) if critical && !question.critical
-  end
-
-  def set_special
-    # update_columns(special: true) if option_set.special
   end
 
 end

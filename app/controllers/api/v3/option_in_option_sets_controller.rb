@@ -5,7 +5,8 @@ module Api
 
       def index
         @project = Project.find(params[:project_id])
-        @option_in_option_sets = @project.option_in_option_sets.uniq # Return unique records
+        @option_in_option_sets = (@project.option_in_option_sets.uniq +
+        @project.special_option_sets.map(&:option_in_option_sets)).flatten.compact
       end
     end
   end

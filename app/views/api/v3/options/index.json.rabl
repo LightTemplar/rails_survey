@@ -1,11 +1,10 @@
 collection @options
 cache ['v3-options', @options]
 
-attributes :id, :identifier, :text, :option_set_id, :deleted_at, :number_in_question,
-:critical, :complete_survey, :special
+attributes :id, :identifier, :text, :deleted_at, :critical, :complete_survey
 
 node :instrument_version_number do |o|
- o.instrument_version
+ -1
 end
 
 child :translations do
