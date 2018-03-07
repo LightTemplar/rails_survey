@@ -33,21 +33,24 @@
         <label class="col-md-2">Actions</label>
       </div>
     <div ng-repeat="optionInOptionSet in optionInOptionSets">
-      <div class="row">
+      <div class="row m-5">
         <div class="col-md-2">
           <input type="number" class="form-control" ng-model="optionInOptionSet.number_in_question" required />
         </div>
-        <div class="col-md-8">
-          <select
-            class="form-control"
-            ng-style="{'width' : 600}"
-            name="option-id"
-            id="option-id"
-            ng-model="optionInOptionSet.option_id"
-            ng-options="option.id as option.text for option in options"
-            ng-required="true">
-            <option value=""></option>
-          </select>
+        <div class="col-md-8 select-box">
+          <ui-select ng-model="optionInOptionSet.option_id" class="form-control"
+          title="Choose an option" append-to-body="true">
+            <ui-select-match placeholder="Select or search an option in the list...">
+              {{$select.selected.identifier}}
+            </ui-select-match>
+            <ui-select-choices repeat="option.id as option in options |
+            propertyFilter: {identifier: $select.search, text: $select.search}">
+              <div ng-bind-html="option.identifier | highlight: $select.search"></div>
+              <small>
+                <span ng-bind-html="option.text | highlight: $select.search"></span>
+              </small>
+            </ui-select-choices>
+          </ui-select>
         </div>
         <div class="col-md-2">
           <div class="btn btn-danger" ng-click="deleteOption(optionInOptionSet)">Delete</div>

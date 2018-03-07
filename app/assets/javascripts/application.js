@@ -27,6 +27,7 @@
 //= require angular-cookies
 //= require angular-filter.min
 //= require angular-ui-utils.min
+//= require select.min
 //= require sortable
 //= require socket.io.min
 //= require theme-functions
