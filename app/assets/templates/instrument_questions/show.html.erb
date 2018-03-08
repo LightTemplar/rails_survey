@@ -73,7 +73,7 @@
           name="skip-pattern-option"
           ng-model="nextQuestion.option_identifier"
           ng-options="o.identifier as o.text for o in options">
-          <option value="">None</option>
+          <option value=""></option>
           </select>
         </div>
         <div class="col-md-4">
@@ -82,7 +82,7 @@
             name="skip-pattern-question"
             ng-model="nextQuestion.next_question_identifier"
             ng-options="q.identifier as q.identifier for q in questionsAfter(instrumentQuestion)">
-            <option value="">None</option>
+            <option value=""></option>
           </select>
         </div>
         <div class="col-md-2">

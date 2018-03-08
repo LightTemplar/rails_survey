@@ -216,9 +216,9 @@ Display, currentDisplay, $window) ->
 
 App.controller 'ShowInstrumentQuestionCtrl', ['$scope', '$stateParams',
 'InstrumentQuestion', 'Setting', 'Option', 'InstrumentQuestions', 'NextQuestion',
-'MultipleSkip', 'FollowUpQuestion', 'Question',
+'MultipleSkip', 'FollowUpQuestion', 'Question', 'OptionInOptionSet',
 ($scope, $stateParams, InstrumentQuestion, Setting, Option, InstrumentQuestions,
-NextQuestion, MultipleSkip, FollowUpQuestion, Question) ->
+NextQuestion, MultipleSkip, FollowUpQuestion, Question, OptionInOptionSet) ->
 
   $scope.options = []
   $scope.project_id = $stateParams.project_id
@@ -227,19 +227,22 @@ NextQuestion, MultipleSkip, FollowUpQuestion, Question) ->
   $scope.instrumentQuestion = _.first(_.filter(InstrumentQuestions.questions,
     (q) -> q.id == parseInt($stateParams.id)))
 
-  if $scope.instrumentQuestion.option_set_id
-    nonSpecialOptions = Option.query({
-      'option_set_id': $scope.instrumentQuestion.option_set_id
-    }, ->
-      $scope.options = $scope.options.concat(nonSpecialOptions)
-    )
-
-  if $scope.instrumentQuestion.special_option_set_id
-    specialOptions = Option.query({
-      'option_set_id': $scope.instrumentQuestion.special_option_set_id
-    }, ->
-      $scope.options = $scope.options.concat(specialOptions)
-    )
+  allOptions = Option.query({}, ->
+    if $scope.instrumentQuestion.option_set_id
+      optionInOptionSets = OptionInOptionSet.query({'option_set_id': $scope.instrumentQuestion.option_set_id}, ->
+        angular.forEach optionInOptionSets, (oios, index) ->
+          option = _.findWhere(allOptions, {id: oios.option_id})
+          if option
+            $scope.options.push(option)
+      )
+    if $scope.instrumentQuestion.special_option_set_id
+      specialOptionInOptionSets = OptionInOptionSet.query({'option_set_id': $scope.instrumentQuestion.special_option_set_id}, ->
+        angular.forEach specialOptionInOptionSets, (oios, index) ->
+          so = _.findWhere(allOptions, {id: oios.option_id})
+          if so
+            $scope.options.push(so)
+      )
+  )
 
   $scope.settings = Setting.get({})
   $scope.nextQuestions = NextQuestion.query({
@@ -265,8 +268,8 @@ NextQuestion, MultipleSkip, FollowUpQuestion, Question) ->
       questionType in $scope.settings.question_with_skips
 
   $scope.questionsAfter = (question) ->
-    InstrumentQuestions.questions.slice(question.number_in_instrument,
-    InstrumentQuestions.questions.length)
+    questions = _.sortBy(InstrumentQuestions.questions, 'number_in_instrument')
+    questions.slice(question.number_in_instrument, questions.length)
 
   $scope.questionsBefore = (question) ->
     InstrumentQuestions.questions.slice(0, (question.number_in_instrument - 1))
