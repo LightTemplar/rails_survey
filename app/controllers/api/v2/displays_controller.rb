@@ -9,7 +9,7 @@ module Api
       end
 
       def show
-        @display = @instrument.displays.find(params[:id])
+        @display = @instrument.displays.includes(:instrument_questions).find(params[:id])
       end
 
       def create

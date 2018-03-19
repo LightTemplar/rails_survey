@@ -1,9 +1,14 @@
 App.controller 'ShowInstrumentCtrl', ['$scope', '$stateParams', 'Instrument', 'Project', 'Setting',
 '$state', 'Display', 'InstrumentQuestion', ($scope, $stateParams, Instrument, Project, Setting,
 $state, Display, InstrumentQuestion) ->
-  $scope.projects = Project.query({})
   $scope.project_id = $stateParams.project_id
   $scope.id = $stateParams.id
+  
+  $scope.instrument = Instrument.get({
+    'project_id': $scope.project_id,
+    'id': $scope.id
+  })
+  $scope.projects = Project.query({})
   $scope.settings = Setting.get({}, ->
     $scope.displayTypes = $scope.settings.copy_display_types
   )

@@ -39,7 +39,7 @@ gem 'sidekiq', '~> 4.2', '>= 4.2.10'
 gem 'sidekiq-client-cli', '0.1.7'
 gem 'sinatra', '~> 1.4.5', require: nil
 gem 'sprockets', '~> 3.7', '>= 3.7.1'
-gem 'pg', '0.19.0'
+gem 'pg', '0.21.0'
 gem 'therubyracer', '0.12.2', platforms: :ruby
 gem 'twitter-bootstrap-rails', '3.2.2'
 gem 'uglifier', '>= 1.3.0'

@@ -1,20 +1,144 @@
-<div class="card" ng-controller="DisplayCtrl">
-  <div class="card-header">
-    <div class="btn btn-primary" ng-click="copyQuestions()">Copy Questions</div>
+<div ng-controller="ShowDisplayCtrl">
+  <h4 class="text-center">{{instrument.title}}</h4>
+  <h5 class="text-center">{{display.title}}</h5>
+  <div class="card">
+    <div class="card-header">
+      <div class="btn btn-primary" ng-click="showDisplayQuestions()">Questions</div>
+      <div class="btn btn-primary" ng-click="copyQuestions()">Copy</div>
+    </div>
   </div>
-  <div class="card-body card-padding">
-    <div ng-show="showCopy">
-      <div class="row">
-        <label class="col-md-3">Destination Instrument</label>
-        <div class="col-md-9">
-          <select
-          class="form-control"
-          name="destination-instrument"
-          id="destination-instrument"
-          ng-model="display.destination_instrument_id"
-          ng-options="instrument.id as instrument.title for instrument in instruments"
-          required>
-          <option value=""></option>
+  <div class="card">
+    <div class="card-body card-padding">
+      <div ng-show="showQuestions">
+        <section>
+          <div class="row">
+            <label class="col-md-2">Display Title</label>
+            <div class="col-md-10">
+              <input class="form-control" type="text"
+              ng-change="validateMode(display)" ng-model="display.title" />
+            </div>
+          </div>
+          <div class="row">
+            <label class="col-md-2">Display Mode</label>
+            <div class="col-md-10">
+              <select
+              class="form-control"
+              name="display-mode"
+              ng-model="display.mode"
+              ng-change="validateMode(display)"
+              ng-options="type for type in settings.display_types">
+              <option value=""></option>
+              </select>
+            </div>
+          </div>
+          <div ng-show="showSaveDisplay" class="row m-5">
+            <div class="btn btn-success pull-right" ng-click="saveDisplay()">Save Display</div>
+          </div>
+        </section>
+        <h4 class="text-center">Questions In Display</h4>
+        <div class="row">
+          <label class="col-md-1">Number In Instrument</label>
+          <label class="col-md-2">Type</label>
+          <label class="col-md-4">Text</label>
+          <label class="col-md-3">Identifier</label>
+          <label class="col-md-2">Actions</label>
+        </div>
+        <!-- <div class="m-t-5" ui-sortable="sortableInstrumentQuestions" ng-model="displayQuestions"> -->
+          <div class="row m-b-5" ng-repeat="question in displayQuestions | orderBy: '1 * number_in_instrument'">
+            <div class="col-md-1">
+              <!-- <div class="btn btn-sm moveInstrumentQuestion">
+                {{question.number_in_instrument}}
+              </div> -->
+              <a title="Link to question logic e.g skip patterns and followups"
+              ui-sref="instrumentQuestion({project_id: project_id, instrument_id: instrument_id, id: question.id})">
+                {{question.number_in_instrument}}
+              </a>
+            </div>
+            <div class="col-md-2">
+              <a title="Link to original question" ui-sref="questionSetQuestion({question_set_id: question.question_set_id, id: question.question_id})">
+                {{question.type | limitTo:25}}
+              </a>
+            </div>
+            <div class="col-md-4" ng-bind-html="question.text | ToTrustedHtml"></div>
+            <div class="col-md-3">
+              <input class="form-control input-sm" type="text" ng-model="question.identifier"  required/>
+            </div>
+            <div class="col-md-2">
+              <div class="btn btn-sm btn-success" ng-click="updateInstrumentQuestion(question)">Update Id</div>
+              <div class="btn btn-danger" ng-click="removeInstrumentQuestion(question)">Remove</div>
+            </div>
+          </div>
+        <!-- </div> -->
+        <div class="row m-5" ng-hide="display.mode == 'SINGLE' && displayQuestions.length == 1">
+          <div class="btn btn-primary pull-right" ng-click="addQuestionToDisplay()">Add Question(s)</div>
+        </div>
+      </div>
+      <div ng-show="showAddQuestion">
+        <div class="row">
+          <label class="col-md-3">Source Question Set</label>
+          <div class="col-md-9">
+            <select
+              class="form-control"
+              allow-single-deselect="true"
+              name="source-question-set"
+              ng-model="display.question_set_id"
+              ng-change="getQuestionSetQuestions()"
+              ng-options="qset.id as qset.title for qset in questionSets">
+              <option value=""></option>
+            </select>
+          </div>
+        </div>
+        <ng-form name="singleDisplayForm" ng-show="display.mode == 'SINGLE' && display.question_set_id" >
+          <div class="row m-t-5">
+            <label class="col-md-3">Select Question From Set</label>
+            <div class="col-md-9">
+              <div ng-repeat="question in questionSetQuestions | orderBy: '1 * id'">
+                <input type="radio" ng-model="instrumentQuestion.question_id"
+                  value="{{question.id}}" name="question.id" required/>
+                  <span ng-bind-html="(question.question_identifier) + ' : ' + (question.text)"></span>
+              </div>
+            </div>
+          </div>
+          <div class="row m-t-5">
+            <div class="btn btn-sm btn-success pull-right"
+            ng-disabled="singleDisplayForm.$invalid"
+            ng-click="saveInstrumentQuestions()">Save</div>
+          </div>
+        </ng-form>
+        <ng-form name="multipleDisplayForm" ng-hide="display.mode == 'SINGLE'" >
+          <div class="row m-t-5">
+            <label class="col-md-3">Select Questions From Set</label>
+            <div class="col-md-9">
+              <label ng-show="display.question_set_id && questionSetQuestions.length > 0">
+                <input type="checkbox" ng-model="selectall" ng-click="selectAll()"> Select all
+              </label>
+              <div ng-repeat="question in questionSetQuestions | orderBy: '1 * id'">
+                <input type="checkbox" ng-model="question.selected"/>
+                <span ng-bind-html="(question.question_identifier) + ' : ' + (question.text)"></span>
+              </div>
+            </div>
+          </div>
+          <div class="row m-t-5">
+            <div class="btn btn-sm btn-success pull-right" ng-disabled="multipleDisplayForm.$invalid"
+              ng-click="saveInstrumentQuestions()">
+              Save
+            </div>
+          </div>
+        </ng-form>
+      </div>
+      <div ng-show="showCopy">
+        <h4 class="text-center">Copy Display Questions</h4>
+        <div class="row">
+          <label class="col-md-3">Destination Instrument</label>
+          <div class="col-md-9">
+            <select
+            class="form-control"
+            name="destination-instrument"
+            id="destination-instrument"
+            ng-model="display.destination_instrument_id"
+            ng-options="instrument.id as instrument.title for instrument in instruments"
+            required>
+            <option value=""></option>
           </select>
         </div>
       </div>
@@ -33,4 +157,5 @@
       </div>
     </div>
   </div>
+</div>
 </div>

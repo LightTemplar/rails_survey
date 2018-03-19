@@ -26,7 +26,7 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
       url: '/question_sets/:id'
       templateUrl: 'question_sets/show.html'
       controller: 'ShowQuestionSetCtrl'
-    .state 'questionSetquestions',
+    .state 'questionSetQuestion',
       url: '/question_sets/:question_set_id/questions/:id'
       templateUrl: 'questions/show.html'
       controller: 'ShowQuestionCtrl'

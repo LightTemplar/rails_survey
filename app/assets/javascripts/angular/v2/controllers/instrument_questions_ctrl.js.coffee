@@ -1,22 +1,26 @@
 App.controller 'InstrumentQuestionsCtrl', ['$scope', '$stateParams', '$location',
 '$state', 'InstrumentQuestion', 'InstrumentQuestions', 'QuestionSet', 'Question',
-'Setting', 'Display', 'currentDisplay', '$window', ($scope, $stateParams, $location,
+'Setting', 'Display', 'currentDisplay', 'Instrument', ($scope, $stateParams, $location,
 $state, InstrumentQuestion, InstrumentQuestions, QuestionSet, Question, Setting,
-Display, currentDisplay, $window) ->
+Display, currentDisplay, Instrument) ->
 
   $scope.project_id = $stateParams.project_id
   $scope.instrument_id = $stateParams.instrument_id
   $scope.showNewView = false
   $scope.showFromSet = false
-  $scope.showNewQuestion = false
+  $scope.showNewDisplay = false
   $scope.questions = []
   $scope.question_origins = ['New Question', 'From Set']
   $scope.selectall = false
 
+  $scope.instrument = Instrument.get({
+    'project_id': $scope.project_id,
+    'id': $scope.instrument_id
+  })
   $scope.instrumentQuestions = InstrumentQuestion.query({
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id
-  }, -> InstrumentQuestions.questions = $scope.instrumentQuestions )
+  }) #, -> InstrumentQuestions.questions = $scope.instrumentQuestions )
 
   $scope.questionSets = QuestionSet.query({})
   $scope.settings = Setting.get({})
@@ -52,19 +56,19 @@ Display, currentDisplay, $window) ->
   $scope.validateMode = (display) ->
     $scope.showSaveDisplay = true
     if display.mode == 'SINGLE' && $scope.displayQuestions(display).length > 1
-      $window.alert("The display mode is SINGLE but there is more than one
+      alert("The display mode is SINGLE but there is more than one
       question on this display. Please delete the extra question(s) and save
       the display.")
     else if display.mode == 'TABLE' && $scope.displayQuestions(display).length > 1 &&
     _.pluck($scope.displayQuestions(display), 'option_set_id').length > 1
-      $window.alert("The questions in this TABLE display do not have the same option set!
+      alert("The questions in this TABLE display do not have the same option set!
       Please delete the questions that don't belong to it.")
 
   $scope.displayQuestions = (display) ->
     _.sortBy(_.where($scope.instrumentQuestions, {display_id: display.id}), 'number_in_instrument')
 
-  $scope.newQuestion = () ->
-    $scope.showNewQuestion = true
+  $scope.newDisplay = () ->
+    $scope.showNewDisplay = true
     $scope.display = new Display()
     $scope.display.title = ''
     $scope.display.question_origin = ''
@@ -79,7 +83,7 @@ Display, currentDisplay, $window) ->
       $scope.currentDisplay = display
 
   $scope.addQuestionToDisplay = (display) ->
-    $scope.showNewQuestion = true
+    $scope.showNewDisplay = true
     $scope.display = display
 
   $scope.saveDisplay = (display) ->
@@ -90,11 +94,14 @@ Display, currentDisplay, $window) ->
     else
       display.$save({},
         (data, headers) ->
-          $scope.display.id = data.id
           $scope.displays.push(data)
+          $state.go('display', { project_id: $scope.project_id,
+          instrument_id: $scope.instrument_id,
+          id: data.id
+          })
         (result, headers) ->
+          alert(result.data.errors)
       )
-    $scope.showSaveDisplay = false
 
   $scope.edit = (display) ->
     currentDisplay.display = display
@@ -157,7 +164,7 @@ Display, currentDisplay, $window) ->
         $scope.instrumentQuestion.$save({},
           (data, headers) ->
             $scope.instrumentQuestions.push(data)
-            $scope.showNewQuestion = false
+            $scope.showNewDisplay = false
             $scope.currentDisplay = null
             $scope.renumberDisplaysAndQuestions()
           (result, headers) ->
@@ -190,7 +197,7 @@ Display, currentDisplay, $window) ->
               $scope.instrumentQuestions.push(iq)
               responseCount += 1
               if responseCount ==  selectedQuestions.length
-                $scope.showNewQuestion = false
+                $scope.showNewDisplay = false
                 $scope.currentDisplay = null
                 $scope.renumberDisplaysAndQuestions()
             (result, headers) ->
@@ -223,10 +230,18 @@ NextQuestion, MultipleSkip, FollowUpQuestion, Question, OptionInOptionSet) ->
   $scope.options = []
   $scope.project_id = $stateParams.project_id
   $scope.instrument_id = $stateParams.instrument_id
-  # TODO: Does not work if browser refreshed
-  $scope.instrumentQuestion = _.first(_.filter(InstrumentQuestions.questions,
-    (q) -> q.id == parseInt($stateParams.id)))
-
+  $scope.id = $stateParams.id
+  # $scope.instrumentQuestion = _.first(_.filter(InstrumentQuestions.questions,
+  #   (q) -> q.id == parseInt($stateParams.id)))
+  $scope.instrumentQuestion = InstrumentQuestion.get({
+    'project_id': $scope.project_id,
+    'instrument_id': $scope.instrument_id,
+    'id': $scope.id
+  })
+  $scope.instrumentQuestions = InstrumentQuestion.query({
+    'project_id': $scope.project_id,
+    'instrument_id': $scope.instrument_id
+  })
   allOptions = Option.query({}, ->
     if $scope.instrumentQuestion.option_set_id
       optionInOptionSets = OptionInOptionSet.query({'option_set_id': $scope.instrumentQuestion.option_set_id}, ->
@@ -248,19 +263,19 @@ NextQuestion, MultipleSkip, FollowUpQuestion, Question, OptionInOptionSet) ->
   $scope.nextQuestions = NextQuestion.query({
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id,
-    'instrument_question_id': $scope.instrumentQuestion.id
+    'instrument_question_id': $scope.id
   })
 
   $scope.multipleSkips = MultipleSkip.query({
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id,
-    'instrument_question_id': $scope.instrumentQuestion.id
+    'instrument_question_id': $scope.id
   })
 
   $scope.followingUpQuestions = FollowUpQuestion.query({
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id,
-    'instrument_question_id': $scope.instrumentQuestion.id
+    'instrument_question_id': $scope.id
   })
 
   $scope.questionTypesWithSkipPatterns = (questionType) ->
@@ -268,11 +283,11 @@ NextQuestion, MultipleSkip, FollowUpQuestion, Question, OptionInOptionSet) ->
       questionType in $scope.settings.question_with_skips
 
   $scope.questionsAfter = (question) ->
-    questions = _.sortBy(InstrumentQuestions.questions, 'number_in_instrument')
+    questions = _.sortBy($scope.instrumentQuestions, 'number_in_instrument')
     questions.slice(question.number_in_instrument, questions.length)
 
   $scope.questionsBefore = (question) ->
-    InstrumentQuestions.questions.slice(0, (question.number_in_instrument - 1))
+    $scope.instrumentQuestions.slice(0, (question.number_in_instrument - 1))
 
   $scope.questionTypesWithMultipleSkips = (questionType) ->
     if $scope.settings.question_with_multiple_skips

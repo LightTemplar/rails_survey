@@ -10,6 +10,12 @@ RailsSurvey::Application.routes.draw do
     get '(page/:page)', action: :index, on: :collection, as: ''
   end
   namespace :api, defaults: { format: 'json' } do
+    namespace :v4 do
+      resources :projects, only: [:index, :show] do
+        resources :instruments, only: [:index, :show]
+      end
+    end
+
     namespace :v3 do
       resources :projects, only: :index do
         resources :instruments, only: :index

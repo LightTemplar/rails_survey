@@ -1,8 +1,9 @@
 <div ng-controller="ShowInstrumentCtrl">
+  <h4 class="text-center">{{instrument.title}}</h4>
   <div class="card">
     <div class="card-body card-padding">
       <a ui-sref="instrumentQuestions({project_id: project_id, instrument_id: id})"
-      class="btn btn-primary">Questions</a>
+      class="btn btn-primary">Question Displays</a>
       <a ui-sref="instrumentTranslations({project_id: project_id, instrument_id: id})"
       class="btn btn-primary">Translations</a>
       <a ui-sref="instrumentRules({project_id: project_id, instrument_id: id})"

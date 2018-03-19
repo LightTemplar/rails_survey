@@ -1,16 +1,18 @@
-<h4 class="text-center"><strong>Instrument Questions</strong></h4>
+<h4 class="text-center">{{instrument.title}}</h4>
+<h5 class="text-center"><strong>Instrument Questions</strong></h5>
 <div ng-controller="InstrumentQuestionsCtrl">
   <div class="card">
     <div class="card-body card-padding">
-      <div class="row" ng-show="!showNewQuestion">
+      <div class="row" ng-show="!showNewDisplay">
         <label class="col-md-2">Screen Number</label>
-        <label class="col-md-2">Display Type/Name</label>
-        <label class="col-md-6">Questions On Screen</label>
+        <label class="col-md-2">Display Type</label>
+        <label class="col-md-4">Display Title</label>
+        <label class="col-md-2">Question Count</label>
         <label class="col-md-2">Actions</label>
       </div>
       <div class="m-t-5" ui-sortable="sortableDisplays" ng-model="displays">
         <!-- Convert position used in filter to numeric -->
-        <div ng-show="!showNewQuestion" ng-repeat="display in displays | orderBy: '1 * position'">
+        <div ng-show="!showNewDisplay" ng-repeat="display in displays | orderBy: '1 * position'">
           <div class="row">
             <div class="col-md-2">
               <div class="btn bgm-teal m-5 moveDisplay" title="Drag up/down to re-number the displays.">
@@ -18,27 +20,30 @@
               </div>
             </div>
             <div class="col-md-2">
-              <strong>{{display.mode}}</strong>
+              {{display.mode}}
+            </div>
+            <div class="col-md-4">
               <a ui-sref="display({project_id: project_id, instrument_id: instrument_id, id: display.id})">
-                <i>{{display.title}}</i>
+                {{display.title}}
               </a>
             </div>
-            <div class="col-md-6">
-              <span ng-repeat="instrumentQuestion in displayQuestions(display) | orderBy: '1 * number_in_instrument'">
+            <div class="col-md-2">
+              {{display.instrument_questions.length}}
+              <!-- <span ng-repeat="instrumentQuestion in displayQuestions(display) | orderBy: '1 * number_in_instrument'">
                 <a class="btn btn-sm btn-info m-5"
                 href="{{baseUrl}}/projects/{{project_id}}/instruments/{{instrument_id}}/instrument_questions/{{instrumentQuestion.id}}">
                 <span class="c-black">{{instrumentQuestion.number_in_instrument}}.</span> {{instrumentQuestion.identifier}}
                 </a>
-              </span>
+              </span> -->
             </div>
             <div class="col-md-2">
-              <div class="btn btn-success" ng-click="showDisplay(display)">Edit</div>
+              <!-- <div class="btn btn-success" ng-click="showDisplay(display)">Edit</div> -->
               <div class="btn btn-danger" ng-click="delete(display)">Delete</div>
             </div>
           </div>
 
           <!-- Test -->
-          <div class="m-20" ng-show="currentDisplay == display">
+          <!-- <div class="m-20" ng-show="currentDisplay == display">
             <h5 class="text-center">Display Details</h5>
             <div class="row">
               <label class="col-md-2">Display Title</label>
@@ -60,7 +65,6 @@
                 <option value=""></option>
                 </select>
               </div>
-              <!-- TODO Add listeners to validate questions based on display mode -->
             </div>
             <div ng-show="showSaveDisplay" class="row m-5">
               <div class="btn btn-success pull-right" ng-click="saveDisplay(display)">Save Display</div>
@@ -100,13 +104,13 @@
               <div class="btn btn-primary pull-right" ng-click="addQuestionToDisplay(display)">Add Question</div>
             </div>
             <div class="m-10"></div>
-          </div>
+          </div> -->
           <!-- Test -->
 
         </div>
       </div>
 
-      <div ng-show="showNewQuestion">
+      <div ng-show="showNewDisplay">
         <div class="row">
           <label class="col-md-2">Display Title</label>
           <div class="col-md-10">
@@ -127,11 +131,11 @@
           </div>
         </div>
         <div class="row m-t-5" ng-show="!display.id">
-          <div class="btn btn-sm btn-primary pull-right" ng-click="saveDisplay(display)" ng-show="display.mode">
-            Next
+          <div class="btn btn-sm btn-success pull-right" ng-click="saveDisplay(display)" ng-show="display.mode">
+            Save
           </div>
         </div>
-        <div class="row m-t-5" ng-show="display.id">
+        <!-- <div class="row m-t-5" ng-show="display.id">
           <label class="col-md-2">Question Origin</label>
           <div class="col-md-10">
             <select
@@ -143,9 +147,9 @@
               <option value=""></option>
             </select>
           </div>
-        </div>
+        </div> -->
 
-        <div ng-show="display.question_origin == 'New Question'">
+        <!-- <div ng-show="display.question_origin == 'New Question'">
           <div class="row">
             <label class="col-md-3">Destination Question Set</label>
             <div class="col-md-9">
@@ -172,10 +176,10 @@
           <div class="row m-t-5" ng-show="questionSetId">
             <div class="btn btn-sm btn-success pull-right" ng-click="next(questionSetId)">Next</div>
           </div>
-        </div>
+        </div> -->
 
-        <div ng-show="display.question_origin == 'From Set'">
-          <div class="row">
+        <!-- <div ng-show="display.question_origin == 'From Set'"> -->
+          <!-- <div class="row">
             <label class="col-md-3">Source Question Set</label>
             <div class="col-md-9">
               <select
@@ -187,12 +191,12 @@
                 <option value=""></option>
               </select>
             </div>
-          </div>
-          <div class="row m-t-5" ng-show="existingQuestionSetId && !showQuestionSelectionFromQS">
+          </div> -->
+          <!-- <div class="row m-t-5" ng-show="existingQuestionSetId && !showQuestionSelectionFromQS">
             <div class="btn btn btn-success pull-right" ng-click="nextInstrumentQuestion(existingQuestionSetId)">Next</div>
-          </div>
-          <div ng-show="showQuestionSelectionFromQS">
-            <ng-form name="singleDisplayForm" ng-show="display.mode == 'SINGLE'" >
+          </div> -->
+          <!-- <div ng-show="showQuestionSelectionFromQS"> -->
+            <!-- <ng-form name="singleDisplayForm" ng-show="display.mode == 'SINGLE'" >
               <div class="row m-t-5">
                 <label class="col-md-3">Select Question From Set</label>
                 <div class="col-md-9">
@@ -208,8 +212,8 @@
                 ng-disabled="singleDisplayForm.$invalid"
                 ng-click="saveInstrumentQuestions()">Save</div>
               </div>
-            </ng-form>
-            <ng-form name="nonSingleDisplayForm" ng-hide="display.mode == 'SINGLE'" >
+            </ng-form> -->
+            <!-- <ng-form name="nonSingleDisplayForm" ng-hide="display.mode == 'SINGLE'" >
               <div class="row m-t-5">
                 <label class="col-md-3">Select Questions From Set</label>
                 <div class="col-md-9">
@@ -226,14 +230,14 @@
                   Save
                 </div>
               </div>
-            </ng-form>
-          </div>
-        </div>
+            </ng-form> -->
+          <!-- </div> -->
+        <!-- </div> -->
       </div>
     </div>
 
-    <div class="row m-10" ng-show="!showNewQuestion">
-      <div class="btn btn-sm btn-primary pull-right m-5" ng-click="newQuestion()"
+    <div class="row m-10" ng-show="!showNewDisplay">
+      <div class="btn btn-sm btn-primary pull-right m-5" ng-click="newDisplay()"
       title="A dispaly holds one or more questions that will appear together on
       the same screen on the mobile client.">New Display</div>
     </div>
