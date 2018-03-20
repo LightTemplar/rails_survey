@@ -4,7 +4,7 @@
 #
 #  id            :integer          not null, primary key
 #  mode          :string
-#  position      :string
+#  position      :integer
 #  instrument_id :integer
 #  created_at    :datetime
 #  updated_at    :datetime

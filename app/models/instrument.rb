@@ -389,7 +389,7 @@ class Instrument < ActiveRecord::Base
       preserved_displays = []
       preserved_questions = []
       reordered_displays.each do |dis|
-        display_string = dis.split(/: /)
+        display_string = dis.split(/: /, 2)
         display = displays.find(display_string[0].to_i)
         display.update_attribute(:position, display_position) if display
         display_position += 1
