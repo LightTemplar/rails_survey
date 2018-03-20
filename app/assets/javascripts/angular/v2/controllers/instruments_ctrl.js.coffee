@@ -3,7 +3,7 @@ App.controller 'ShowInstrumentCtrl', ['$scope', '$stateParams', 'Instrument', 'P
 $state, Display, InstrumentQuestion) ->
   $scope.project_id = $stateParams.project_id
   $scope.id = $stateParams.id
-  
+
   $scope.instrument = Instrument.get({
     'project_id': $scope.project_id,
     'id': $scope.id
@@ -60,7 +60,7 @@ $state, Display, InstrumentQuestion) ->
       $scope.instrument.order += "\n"
 
   $scope.saveOrder = () ->
-    $scope.instrument.$reorder({ order: $scope.instrument.order },
+    $scope.instrument.$reorder({},
       (data, headers) ->
         $state.go('instrumentQuestions', { project_id: $scope.project_id, instrument_id: $scope.id })
       (result, headers) ->

@@ -92,7 +92,7 @@ RailsSurvey::Application.routes.draw do
           resources :instrument_rules
           member do
             get :copy
-            get :reorder
+            post :reorder
           end
         end
       end

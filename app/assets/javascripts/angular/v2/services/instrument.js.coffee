@@ -3,6 +3,6 @@ App.factory 'Instrument', ['$resource', ($resource) ->
   { project_id: '@project_id', id: '@id', memberRoute: '@memberRoute' },
   { update: { method: 'PUT' },
   copy: {method: 'GET', params: {memberRoute: 'copy'}},
-  reorder: {method: 'GET', params: {memberRoute: 'reorder'}}
+  reorder: {method: 'POST', params: {memberRoute: 'reorder'}}
   }
 ]
