@@ -231,12 +231,7 @@ App.controller 'ShowDisplayCtrl', ['$scope', '$stateParams', 'Display', 'Instrum
     if previousQuestion
       previousQuestionCount = previousQuestion.number_in_instrument
     else
-      # previousDisplay = $scope.displays[$scope.display.position - 2]
-      # if previousDisplay
-      #   lastQuestion = _.last($scope.displayQuestions(previousDisplay))
-      #   previousQuestionCount = lastQuestion.number_in_instrument
-      # else
-        previousQuestionCount = 0
+        previousQuestionCount = $scope.display.last_question_number_in_previous_display
     previousQuestionCount
 
   $scope.selectAll = () ->
