@@ -1,10 +1,14 @@
+<div ng-controller="OptionSetsCtrl">
 <h4 class="text-center"><strong>Option Sets</strong></h4>
 <div class="row m-5">
-  <a class="btn btn-primary" href="{{baseUrl}}/option_translations">Translations</a>
+  <a class="btn btn-primary" ui-sref="optionTranslations">Translations</a>
+  <a class="btn btn-primary" ui-sref="options">Options</a>
+  <div ng-hide="showNewOptionSet" class="btn btn-primary pull-right"
+    ng-click="createOptionSet()">New Option Set</div>
 </div>
 <div class="card">
   <div class="card-body card-padding">
-    <div ng-controller="OptionSetsCtrl">
+    <div ng-hide="showNewOptionSet">
       <input type="search" ng-model="os" placeholder="Filter option sets ..."
       class="form-control tm-search text-center">
       <div ng-repeat="optionSet in optionSets | filter: os track by optionSet.id">
@@ -18,24 +22,23 @@
           </div>
         </div>
       </div>
-      <div ng-hide="showNewOptionSet" class="btn btn-primary m-5"
-        ng-click="createOptionSet()">New Option Set</div>
-      <ng-form name="newOptionSetEditorForm" ng-show="showNewOptionSet">
-        <div class="row">
-          <label class="col-md-2">Title</label>
-          <div class="col-md-8">
-            <input type="text" class="form-control" name="new-option-set"
-            ng-model="newOptionSet.title" required>
-          </div>
-          <div class="col-md-1">
-            <div class="btn btn-default" ng-click="cancelNewOptionSet()">Cancel</div>
-          </div>
-          <div class="col-md-1">
-            <div class="btn btn-success" ng-disabled="newOptionSetEditorForm.$invalid"
-            ng-click="saveOptionSet()">Save</div>
-          </div>
-        </div>
-      </ng-form>
     </div>
+    <ng-form name="newOptionSetEditorForm" ng-show="showNewOptionSet">
+      <div class="row">
+        <label class="col-md-2">Title</label>
+        <div class="col-md-8">
+          <input type="text" class="form-control" name="new-option-set"
+          ng-model="newOptionSet.title" required>
+        </div>
+        <div class="col-md-1">
+          <div class="btn btn-default" ng-click="cancelNewOptionSet()">Cancel</div>
+        </div>
+        <div class="col-md-1">
+          <div class="btn btn-success" ng-disabled="newOptionSetEditorForm.$invalid"
+          ng-click="saveOptionSet()">Save</div>
+        </div>
+      </div>
+    </ng-form>
   </div>
+</div>
 </div>

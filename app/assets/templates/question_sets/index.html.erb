@@ -1,10 +1,13 @@
+<div ng-controller="QuestionSetsCtrl">
 <h4 class="text-center"><strong>Question Sets</strong></h4>
 <div class="row m-5">
-  <a class="btn btn-primary" href="{{baseUrl}}/question_translations">Translations</a>
+  <a class="btn btn-primary" ui-sref="questionTranslations">Translations</a>
+  <div ng-hide="showNewQuestionSet" class="btn btn-primary pull-right"
+  ng-click="createQuestionSet()">New Question Set</div>
 </div>
 <div class="card">
   <div class="card-body card-padding">
-    <div ng-controller="QuestionSetsCtrl">
+    <div ng-hide="showNewQuestionSet">
       <input type="search" ng-model="qs.title" placeholder="Filter question sets ..."
       class="form-control tm-search text-center">
       <div ng-repeat="questionSet in questionSets | filter:qs">
@@ -17,8 +20,7 @@
           </div>
         </div>
       </div>
-      <div ng-hide="showNewQuestionSet" class="btn btn-primary m-5"
-      ng-click="createQuestionSet()">New Question Set</div>
+    </div>
       <ng-form class="row" name="newQuestionSetForm" ng-show="showNewQuestionSet">
           <label class="col-md-2">Title</label>
           <div class="col-md-8">
