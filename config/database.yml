@@ -8,7 +8,8 @@ development:
   # database: db/development.sqlite3
   adapter: postgresql
   encoding: unicode
-  database: sets_development
+  # database: sets_development
+  database: from_instruments2_development
   pool: 5
   # timeout: 5000
 
