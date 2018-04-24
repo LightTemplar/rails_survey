@@ -3,8 +3,10 @@
   <div class="card-body card-padding">
     <div ng-controller="LanguageTranslationsCtrl">
       <div class="row" ng-repeat="language in languages">
-        <!-- <a href="/question_translations/{{language[1]}}">{{language[0]}}</a> -->
-        <a href ng-click="languageSelected(language[1])">{{language[0]}}</a>
+        <a ui-sref="languageQuestionTranslations({language: language[1],
+          question_set_id: question_set_id})">
+          {{language[0]}}
+        </a>
       </div>
     </div>
   </div>

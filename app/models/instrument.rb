@@ -36,6 +36,7 @@ class Instrument < ActiveRecord::Base
   has_many :instrument_question_sets
   has_many :instrument_questions, dependent: :destroy
   has_many :questions, through: :instrument_questions
+  has_many :question_translations, through: :questions, source: :translations
   has_many :options, through: :questions
   has_many :displays, -> { order 'position' }, dependent: :destroy
   has_many :instrument_rules

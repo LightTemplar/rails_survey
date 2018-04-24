@@ -10,4 +10,5 @@
 
 class QuestionSet < ActiveRecord::Base
   has_many :questions, dependent: :destroy
+  has_many :translations, through: :questions
 end

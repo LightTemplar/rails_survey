@@ -42,12 +42,6 @@ App.controller 'QuestionSetsCtrl', ['$scope', '$state', 'QuestionSet',
 App.controller 'ShowQuestionSetCtrl', ['$scope', '$stateParams', '$location', 'QuestionSet',
 ($scope, $stateParams, $location, QuestionSet) ->
 
-  $scope.questionTranslations = (questionSet) ->
-    $location.path('/question_translations/').search({
-      question_set_id: questionSet.id
-    })
-
-
   $scope.updateQuestionSet = () ->
     if $scope.questionSet.id
       $scope.questionSet.$update({} ,

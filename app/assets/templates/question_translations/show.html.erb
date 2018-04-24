@@ -16,7 +16,9 @@
               <text-angular
                 ta-toolbar="toolBar"
                 name="question-translation-{{question.id}}"
-                ng-model="translationFor(question).text">
+                ng-model="translationFor(question).text"
+                ta-text-editor-class="form-control translation-height"
+                ta-html-editor-class="form-control translation-height">
               </text-angular>
             </td>
           </tr>

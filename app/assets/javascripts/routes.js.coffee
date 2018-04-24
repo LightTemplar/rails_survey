@@ -71,11 +71,11 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
       templateUrl: 'option_translations/show.html'
       controller: 'OptionTranslationsCtrl'
     .state 'questionTranslations',
-      url: '/question_translations'
+      url: '/question_translations/?question_set_id'
       templateUrl: 'question_translations/index.html'
       controller: 'LanguageTranslationsCtrl'
     .state 'languageQuestionTranslations',
-      url: '/question_translations/:language?instrument_id'
+      url: '/question_translations/:language?instrument_id&question_set_id'
       templateUrl: 'question_translations/show.html'
       controller: 'QuestionTranslationsCtrl'
     .state 'instructionTranslations',

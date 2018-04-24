@@ -55,3 +55,17 @@ div.follow-up-explanation {
   height: 50px;
   line-height: 48px;
 }
+
+.ta-editor.form-control.translation-height, .ta-scroll-window.form-control.translation-height {
+    min-height: 70px;
+    height: auto;
+    overflow: auto;
+    font-family: inherit;
+    font-size: 100%;
+}
+
+.form-control.translation-height > .ta-bind {
+    height: auto;
+    min-height: 70px;
+    padding: 6px 12px;
+}

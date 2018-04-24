@@ -1,7 +1,9 @@
 <div ng-controller="ShowQuestionSetCtrl">
   <h4 class="text-center"><strong>{{questionSet.title}}</strong></h4>
   <div class="row m-5">
-    <div class="btn btn-primary" ng-click="questionTranslations(questionSet)">Translations</div>
+    <div class="btn btn-primary" ui-sref="questionTranslations({question_set_id: questionSet.id})">
+      Translations
+    </div>
   </div>
   <div class="card">
     <div class="card-body card-padding">

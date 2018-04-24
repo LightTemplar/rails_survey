@@ -1,17 +1,10 @@
 App.controller 'LanguageTranslationsCtrl', ['$scope', '$stateParams', '$location', 'Setting',
 ($scope, $stateParams, $location, Setting) ->
+  $scope.question_set_id = $stateParams.question_set_id
   $scope.settings = Setting.get({}, ->
     $scope.settings.languages.splice(0,1)
     $scope.languages = $scope.settings.languages
   )
-
-  $scope.languageSelected = (language) ->
-    if $stateParams.question_set_id
-      $location.path('/question_translations/' + language).search({
-        question_set_id: $stateParams.question_set_id
-      })
-    else
-      $location.path('/question_translations/' + language)
 
 ]
 
@@ -60,31 +53,30 @@ Questions, QuestionTranslation, Question) ->
     qt
 
   $scope.save = () ->
-    angular.forEach $scope.questionTranslations, (qt, index) ->
-      if qt.id
-        qt.$update({},
-          (data, headers) ->
-            getQuestions()
-          (result, headers) ->
-            getQuestions()
-        )
-      else if qt.text != ""
-        qt.$save({},
-          (data, headers) ->
-            getQuestions()
-          (result, headers) ->
-            getQuestions()
-        )
+    qt = new QuestionTranslation()
+    qt.question_translations = $scope.questionTranslations
+    qt.$batch_update({},
+      (data, headers) ->
+        getQuestions()
+      (result, headers) ->
+        alert(result.data.errors)
+    )
 
   getQuestions = () ->
-    $scope.questionTranslations = QuestionTranslation.query({'language': $scope.language})
     if $stateParams.question_set_id
+      $scope.questionTranslations = QuestionTranslation.query({
+        'language': $scope.language,
+        'question_set_id': $stateParams.question_set_id
+      })
       $scope.questions = Question.query({'question_set_id': $stateParams.question_set_id})
     else if $stateParams.instrument_id
-      # Instrument questions
+      $scope.questionTranslations = QuestionTranslation.query({
+        'language': $scope.language,
+        'instrument_id': $stateParams.instrument_id
+      })
       $scope.questions = Questions.query({'instrument_id': $stateParams.instrument_id})
     else
-      # All questions
+      $scope.questionTranslations = QuestionTranslation.query({'language': $scope.language})
       $scope.questions = Questions.query({})
 
   $scope.language = $stateParams.language
