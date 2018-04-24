@@ -1,12 +1,15 @@
 <div ng-controller="ShowDisplayCtrl">
   <h4 class="text-center">{{instrument.title}}</h4>
   <h5 class="text-center">{{display.title}}</h5>
+
   <div class="card">
     <div class="card-header">
-      <div class="btn btn-primary" ng-click="showDisplayQuestions()">Questions</div>
-      <div class="btn btn-primary" ng-click="copyQuestions()">Copy</div>
+      <div class="btn btn-primary" ng-click="toggleViews(true, false, false)">Questions</div>
+      <div class="btn btn-primary" ng-click="toggleViews(false, true, false)">Copy Display</div>
+      <div class="btn btn-primary" ng-click="toggleViews(false, false, true)">Move Questions</div>
     </div>
   </div>
+
   <div class="card">
     <div class="card-body card-padding">
       <div ng-show="showQuestions">
@@ -139,23 +142,55 @@
             ng-options="instrument.id as instrument.title for instrument in instruments"
             required>
             <option value=""></option>
+            </select>
+          </div>
+        </div>
+        <div class="row m-t-5">
+          <label class="col-md-3">Question Display Type</label>
+          <div class="col-md-9">
+            <div ng-repeat="type in displayTypes">
+              <input type="radio" ng-model="display.display_type"
+              value="{{type}}" name="display-display-type" required/>
+              <label>{{ type }}</label>
+            </div>
+          </div>
+        </div>
+        <div class="row m-5">
+          <div class="btn btn-success pull-right" ng-click="saveCopy()">Save</div>
+        </div>
+      </div>
+
+    <div ng-show="showMove">
+      <h4 class="text-center">Move Questions To Another Display</h4>
+      <div class="row">
+        <label class="col-md-3">Destination Display</label>
+        <div class="col-md-9">
+          <select
+          class="form-control"
+          name="destination-display"
+          id="destination-display"
+          ng-model="display.destination_display_id"
+          ng-options="display.id as display.title for display in displays"
+          required>
+          <option value=""></option>
           </select>
         </div>
       </div>
       <div class="row m-t-5">
-        <label class="col-md-3">Question Display Type</label>
-        <div class="col-md-9">
-          <div ng-repeat="type in displayTypes">
-            <input type="radio" ng-model="display.display_type"
-            value="{{type}}" name="display-display-type" required/>
-            <label>{{ type }}</label>
-          </div>
+        <div class="col-md-4" ng-repeat="question in displayQuestions | orderBy: '1 * id'">
+          <label class="control-label">
+            <input type="checkbox" ng-model="question.selected"/>
+            {{question.identifier}}
+          </label>
         </div>
       </div>
       <div class="row m-5">
-        <div class="btn btn-success pull-right" ng-click="saveCopy()">Save</div>
+        <div class="btn btn-success pull-right" ng-click="saveMovedQuestions()">Save</div>
       </div>
+
     </div>
+
   </div>
-</div>
+  </div>
+
 </div>

@@ -45,6 +45,16 @@ module Api
         end
       end
 
+      def move
+        display = @instrument.displays.find(params[:id])
+        destination = display.move(params[:destination_display_id], params[:moved])
+        if destination
+          render json: destination, status: :ok
+        else
+          render json: { errors: 'question move unsuccessfull' }, status: :unprocessable_entity
+        end
+      end
+
       private
 
       def set_instrument_project

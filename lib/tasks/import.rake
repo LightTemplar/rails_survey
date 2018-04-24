@@ -4,7 +4,7 @@ task :import, [:filename] => :environment do |t, args|
     Rake::Task['db:default_user'].reenable
     Rake::Task['db:default_user'].invoke
   end
-  title = args[:filename].split('/').last.gsub(/_/, ' ').upcase
+  title = args[:filename].gsub(/.csv/, '').split('/').last.gsub(/_/, ' ').upcase
   instrument = Project.first.instruments.where(title: title).first
   unless instrument
     instrument = Instrument.create!(title: title, published: false,

@@ -14,7 +14,7 @@
 
 class Display < ActiveRecord::Base
   belongs_to :instrument
-  has_many :instrument_questions, dependent: :destroy
+  has_many :instrument_questions, -> { order 'number_in_instrument' }, dependent: :destroy
   acts_as_paranoid
   has_paper_trail
 
@@ -34,4 +34,22 @@ class Display < ActiveRecord::Base
       }
     end
   end
+
+  def move(destination_display_id, moved)
+    destination = instrument.displays.where(id: destination_display_id).first
+    if destination_display_id == -1
+      destination = instrument.displays.create!(title: 'New Display',
+        position: instrument.displays.size, mode: 'MULTIPLE')
+    end
+    if destination && moved
+      moved.each do |id|
+        iq = instrument_questions.find(id)
+        iq.display_id = destination.id
+        iq.save!
+      end
+    end
+    RenumberQuestionsWorker.perform_async(instrument.id)
+    destination
+  end
+
 end

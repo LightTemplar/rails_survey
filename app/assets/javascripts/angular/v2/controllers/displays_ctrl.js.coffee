@@ -46,15 +46,17 @@ App.controller 'DisplayCtrl', ['$scope', ($scope) ->
 
 ]
 
-App.controller 'ShowDisplayCtrl', ['$scope', '$stateParams', 'Display', 'Instrument',
-'Setting', '$state', 'InstrumentQuestion', 'QuestionSet', 'Question', ($scope, $stateParams, Display,
- Instrument, Setting, $state, InstrumentQuestion, QuestionSet, Question) ->
+App.controller 'ShowDisplayCtrl', ['$scope', '$stateParams', 'Display',
+'Instrument', 'Setting', '$state', 'InstrumentQuestion', 'QuestionSet', 'Question',
+($scope, $stateParams, Display, Instrument, Setting, $state, InstrumentQuestion,
+QuestionSet, Question) ->
   $scope.project_id = $stateParams.project_id
   $scope.instrument_id = $stateParams.instrument_id
   $scope.id = $stateParams.id
   $scope.showCopy = false
   $scope.showQuestions = true
   $scope.showAddQuestion = false
+  $scope.showMove = false
 
   $scope.display = Display.get({
     'project_id': $scope.project_id,
@@ -75,13 +77,20 @@ App.controller 'ShowDisplayCtrl', ['$scope', '$stateParams', 'Display', 'Instrum
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id
   })
+  $scope.displays = Display.query({
+    'project_id': $scope.project_id,
+    'instrument_id': $scope.instrument_id
+  }, -> modifyDisplays())
 
-  $scope.showDisplayQuestions = () ->
-    $scope.copyQuestions()
+  modifyDisplays = () ->
+    display = _.findWhere($scope.displays, {id: parseInt($scope.id)})
+    $scope.displays.splice($scope.displays.indexOf(display), 1)
+    $scope.displays.push(new Display(id: -1, title: "Create New Display"))
 
-  $scope.copyQuestions = () ->
-    $scope.showCopy = !$scope.showCopy
-    $scope.showQuestions = !$scope.showQuestions
+  $scope.toggleViews = (q, c, m) ->
+    $scope.showQuestions = q
+    $scope.showCopy = c
+    $scope.showMove = m
 
   $scope.saveCopy = () ->
     $scope.display.project_id = $scope.project_id
@@ -95,24 +104,19 @@ App.controller 'ShowDisplayCtrl', ['$scope', '$stateParams', 'Display', 'Instrum
         alert(result.data.errors)
     )
 
-  # $scope.sortableInstrumentQuestions = {
-  #   cursor: 'move',
-  #   handle: '.moveInstrumentQuestion',
-  #   axis: 'y',
-  #   stop: (e, ui) ->
-  #     previousDisplay = $scope.displays[$scope.display.position - 2]
-  #     if previousDisplay
-  #       previousInstrumentQuestions = _.where($scope.instrumentQuestions, {display_id: previousDisplay.id})
-  #       lastQuestion = _.max(previousInstrumentQuestions, (q) -> q.number_in_instrument)
-  #       previousQuestionNumber = lastQuestion.number_in_instrument
-  #     else
-  #       previousQuestionNumber = 0
-  #     angular.forEach $scope.displayQuestions, (instrumentQuestion, index) ->
-  #       instrumentQuestion.number_in_instrument = previousQuestionNumber + index + 1
-  #       instrumentQuestion.project_id = $scope.project_id
-  #       instrumentQuestion.instrument_id = $scope.instrument_id
-  #       instrumentQuestion.$update({})
-  # }
+  $scope.saveMovedQuestions = () ->
+    $scope.display.project_id = $scope.project_id
+    $scope.display.moved = []
+    angular.forEach $scope.displayQuestions, (qst, index) ->
+      if qst.selected
+        $scope.display.moved.push(qst.id)
+    $scope.display.$move({},
+      (data, headers) ->
+        $state.go('display', { project_id: $scope.project_id,
+        instrument_id: $scope.instrument_id, id: data.id })
+      (result, headers) ->
+        alert(result.data.errors)
+    )
 
   $scope.updateInstrumentQuestion = (iq) ->
     instrumentQuestion = new InstrumentQuestion()
@@ -139,11 +143,6 @@ App.controller 'ShowDisplayCtrl', ['$scope', '$stateParams', 'Display', 'Instrum
         (result, headers) ->
           alert(result.data.errors)
       )
-
-  # removeInstrumentQuestionFromArrays = (iq) ->
-  #   $scope.displayQuestions.splice($scope.displayQuestions.indexOf(iq), 1)
-  #   $scope.instrumentQuestions.splice($scope.instrumentQuestions.indexOf(iq), 1)
-  #   $scope.$parent.renumberDisplaysAndQuestions()
 
   $scope.validateMode = ->
     $scope.showSaveDisplay = true

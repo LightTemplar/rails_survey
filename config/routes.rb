@@ -86,6 +86,7 @@ RailsSurvey::Application.routes.draw do
           resources :displays do
             member do
               get :copy
+              post :move
             end
           end
           resources :instrument_translations

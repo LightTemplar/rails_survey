@@ -37,7 +37,7 @@ class Instrument < ActiveRecord::Base
   has_many :instrument_questions, dependent: :destroy
   has_many :questions, through: :instrument_questions
   has_many :options, through: :questions
-  has_many :displays, dependent: :destroy
+  has_many :displays, -> { order 'position' }, dependent: :destroy
   has_many :instrument_rules
   has_many :surveys
   has_many :responses, through: :surveys
@@ -89,6 +89,21 @@ class Instrument < ActiveRecord::Base
       end
     end
     instrument_copy
+  end
+
+  def renumber_questions
+    ActiveRecord::Base.transaction do
+      position = 1
+      displays.each do |display|
+        display.instrument_questions.each do |iq|
+          if iq.number_in_instrument != position
+            iq.number_in_instrument = position
+            iq.save!
+          end
+          position += 1
+        end
+      end
+    end
   end
 
   def delete_duplicate_surveys
