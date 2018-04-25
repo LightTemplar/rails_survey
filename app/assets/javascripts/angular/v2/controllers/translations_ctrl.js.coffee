@@ -2,6 +2,7 @@ App.controller 'LanguageTranslationsCtrl', ['$scope', '$stateParams', '$location
 ($scope, $stateParams, $location, Setting) ->
   $scope.question_set_id = $stateParams.question_set_id
   $scope.option_set_id = $stateParams.option_set_id
+  $scope.instruction_id = $stateParams.instruction_id
   $scope.settings = Setting.get({}, ->
     $scope.settings.languages.splice(0,1)
     $scope.languages = $scope.settings.languages
@@ -102,25 +103,42 @@ Questions, QuestionTranslation, Question) ->
 App.controller 'InstructionTranslationsCtrl', ['$scope', '$stateParams', 'Setting',
 'Instruction', 'InstructionTranslation', ($scope, $stateParams, Setting, Instruction,
 InstructionTranslation) ->
-  $scope.language = $stateParams.language
-  $scope.instructions = Instruction.query({})
-  $scope.instruction_translations = InstructionTranslation.query({'language': $scope.language})
 
-  $scope.translation_for = (instruction) ->
-    inst = _.findWhere($scope.instruction_translations, {instruction_id: instruction.id})
+  getInstructions = () ->
+    $scope.instructions = []
+    if $stateParams.instruction_id
+      instruction = Instruction.get({'id': $stateParams.instruction_id}, ->
+        $scope.instructions.push(instruction)
+      )
+      $scope.instructionTranslations = InstructionTranslation.query({
+        'language': $scope.language,
+        'instruction_id': $stateParams.instruction_id
+      })
+    else
+      $scope.instructions = Instruction.query({})
+      $scope.instructionTranslations = InstructionTranslation.query({'language': $scope.language})
+
+  $scope.translationFor = (instruction) ->
+    inst = _.findWhere($scope.instructionTranslations, {instruction_id: instruction.id})
     if inst == undefined
       inst = new InstructionTranslation()
       inst.language = $scope.language
       inst.instruction_id = instruction.id
       inst.text = ""
-      $scope.instruction_translations.push(inst)
+      $scope.instructionTranslations.push(inst)
     inst
 
   $scope.save = () ->
-    angular.forEach $scope.instruction_translations, (inst, index) ->
-      if inst.id
-        inst.$update({})
-      else if inst.text != ""
-        inst.$save({})
+    it = new InstructionTranslation()
+    it.instruction_translations = $scope.instructionTranslations
+    it.$batch_update({},
+      (data, headers) ->
+        getInstructions()
+      (result, headers) ->
+        alert(result.data.errors)
+    )
+
+  $scope.language = $stateParams.language
+  getInstructions()
 
 ]

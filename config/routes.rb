@@ -75,7 +75,11 @@ RailsSurvey::Application.routes.draw do
         end
       end
       resources :instructions
-      resources :instruction_translations, only: [:index, :create, :update]
+      resources :instruction_translations, only: [:index, :create, :update] do
+        collection do
+          post :batch_update
+        end
+      end
       resources :options
       resources :option_translations, only: [:index, :create, :update] do
         collection do

@@ -79,11 +79,11 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
       templateUrl: 'question_translations/show.html'
       controller: 'QuestionTranslationsCtrl'
     .state 'instructionTranslations',
-      url: '/instruction_translations'
+      url: '/instruction_translations/?instruction_id'
       templateUrl: 'instruction_translations/index.html'
       controller: 'LanguageTranslationsCtrl'
     .state 'languageInstructionTranslations',
-      url: '/instruction_translations/:language'
+      url: '/instruction_translations/:language?instruction_id'
       templateUrl: 'instruction_translations/show.html'
       controller: 'InstructionTranslationsCtrl'
     .state 'instrumentTranslations',
