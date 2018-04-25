@@ -1,6 +1,7 @@
 App.controller 'LanguageTranslationsCtrl', ['$scope', '$stateParams', '$location', 'Setting',
 ($scope, $stateParams, $location, Setting) ->
   $scope.question_set_id = $stateParams.question_set_id
+  $scope.option_set_id = $stateParams.option_set_id
   $scope.settings = Setting.get({}, ->
     $scope.settings.languages.splice(0,1)
     $scope.languages = $scope.settings.languages
@@ -9,27 +10,41 @@ App.controller 'LanguageTranslationsCtrl', ['$scope', '$stateParams', '$location
 ]
 
 App.controller 'OptionTranslationsCtrl', ['$scope', '$stateParams', 'Setting',
-'Options', 'OptionTranslation', ($scope, $stateParams, Setting, Options, OptionTranslation) ->
-  $scope.language = $stateParams.language
-  $scope.options = Options.query({})
-  $scope.option_translations = OptionTranslation.query({'language': $scope.language})
+'Options', 'OptionTranslation', 'Option', ($scope, $stateParams, Setting,
+Options, OptionTranslation, Option) ->
 
-  $scope.translation_for = (option) ->
-    ot = _.findWhere($scope.option_translations, {option_id: option.id})
+  getOptions = () ->
+    if $stateParams.option_set_id
+      $scope.options = Option.query({'option_set_id': $stateParams.option_set_id})
+      $scope.optionTranslations = OptionTranslation.query({
+        'language': $scope.language, 'option_set_id': $stateParams.option_set_id
+        })
+    else
+      $scope.options = Options.query({})
+      $scope.optionTranslations = OptionTranslation.query({'language': $scope.language})
+
+  $scope.translationFor = (option) ->
+    ot = _.findWhere($scope.optionTranslations, {option_id: option.id})
     if ot == undefined
       ot = new OptionTranslation()
       ot.language = $scope.language
       ot.option_id = option.id
       ot.text = ""
-      $scope.option_translations.push(ot)
+      $scope.optionTranslations.push(ot)
     ot
 
   $scope.save = () ->
-    angular.forEach $scope.option_translations, (ot, index) ->
-      if ot.id
-        ot.$update({})
-      else if ot.text != ""
-        ot.$save({})
+    ot = new OptionTranslation()
+    ot.option_translations = $scope.optionTranslations
+    ot.$batch_update({},
+      (data, headers) ->
+        getOptions()
+      (result, headers) ->
+        alert(result.data.errors)
+    )
+
+  $scope.language = $stateParams.language
+  getOptions()
 
 ]
 

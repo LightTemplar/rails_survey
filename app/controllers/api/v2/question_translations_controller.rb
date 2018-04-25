@@ -10,7 +10,7 @@ module Api
         elsif !params[:language].blank? && !params[:instrument_id].blank?
           instrument = Instrument.find params[:instrument_id]
           @question_translations = instrument.question_translations.where(language: params[:language])
-        elsif params[:language]
+        elsif !params[:language].blank?
           @question_translations = QuestionTranslation.where(language: params[:language])
         else
           @question_translations = QuestionTranslation.all

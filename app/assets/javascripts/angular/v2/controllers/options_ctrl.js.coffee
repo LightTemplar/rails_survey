@@ -1,8 +1,8 @@
-App.controller 'OptionsCtrl', ['$scope', 'Option', ($scope, Option) ->
-  $scope.options = Option.query({})
+App.controller 'OptionsCtrl', ['$scope', 'Options', ($scope, Options) ->
+  $scope.options = Options.query({})
 
   $scope.newOption = () ->
-    option = new Option()
+    option = new Options()
     $scope.options.unshift(option)
 
   $scope.updateOption = (option) ->

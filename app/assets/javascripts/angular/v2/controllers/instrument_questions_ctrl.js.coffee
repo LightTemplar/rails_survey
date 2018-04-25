@@ -223,41 +223,36 @@ Display, currentDisplay, Instrument) ->
 
 App.controller 'ShowInstrumentQuestionCtrl', ['$scope', '$stateParams',
 'InstrumentQuestion', 'Setting', 'Option', 'InstrumentQuestions', 'NextQuestion',
-'MultipleSkip', 'FollowUpQuestion', 'Question', 'OptionInOptionSet',
+'MultipleSkip', 'FollowUpQuestion', 'Question',
 ($scope, $stateParams, InstrumentQuestion, Setting, Option, InstrumentQuestions,
-NextQuestion, MultipleSkip, FollowUpQuestion, Question, OptionInOptionSet) ->
-
+NextQuestion, MultipleSkip, FollowUpQuestion, Question) ->
+  console.log('ShowInstrumentQuestionCtrl')
   $scope.options = []
   $scope.project_id = $stateParams.project_id
   $scope.instrument_id = $stateParams.instrument_id
   $scope.id = $stateParams.id
-  # $scope.instrumentQuestion = _.first(_.filter(InstrumentQuestions.questions,
-  #   (q) -> q.id == parseInt($stateParams.id)))
+
   $scope.instrumentQuestion = InstrumentQuestion.get({
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id,
     'id': $scope.id
-  })
+  }, ->
+    if $scope.instrumentQuestion.option_set_id
+      regularOptions = Option.query({'option_set_id': $scope.instrumentQuestion.option_set_id}, ->
+        angular.forEach regularOptions, (option, index) ->
+          $scope.options.push(option)
+      )
+    if $scope.instrumentQuestion.special_option_set_id
+      specialOptions = Option.query({'option_set_id': $scope.instrumentQuestion.special_option_set_id}, ->
+        angular.forEach specialOptions, (option, index) ->
+          $scope.options.push(option)
+      )
+  )
+
   $scope.instrumentQuestions = InstrumentQuestion.query({
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id
   })
-  allOptions = Option.query({}, ->
-    if $scope.instrumentQuestion.option_set_id
-      optionInOptionSets = OptionInOptionSet.query({'option_set_id': $scope.instrumentQuestion.option_set_id}, ->
-        angular.forEach optionInOptionSets, (oios, index) ->
-          option = _.findWhere(allOptions, {id: oios.option_id})
-          if option
-            $scope.options.push(option)
-      )
-    if $scope.instrumentQuestion.special_option_set_id
-      specialOptionInOptionSets = OptionInOptionSet.query({'option_set_id': $scope.instrumentQuestion.special_option_set_id}, ->
-        angular.forEach specialOptionInOptionSets, (oios, index) ->
-          so = _.findWhere(allOptions, {id: oios.option_id})
-          if so
-            $scope.options.push(so)
-      )
-  )
 
   $scope.settings = Setting.get({})
   $scope.nextQuestions = NextQuestion.query({

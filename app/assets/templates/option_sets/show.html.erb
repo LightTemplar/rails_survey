@@ -26,6 +26,9 @@
 
   <h4 class="text-center"><strong>Optins in {{optionSet.title}}</strong></h4>
   <div class="card">
+    <div class="row col-md-12 m-l-10 m-t-5">
+      <a class="btn btn-primary" ui-sref="optionTranslations({option_set_id: optionSet.id})">Translations</a>
+    </div>
     <div class="card-body card-padding">
       <div class="row">
         <label class="col-md-2">Position</label>
@@ -57,7 +60,7 @@
         </div>
       </div>
     </div>
-    <div class="row m-t-5">
+    <div class="row m-10">
       <div class="btn btn-primary pull-left" ng-click="addOption()">Add Option</div>
       <div class="btn btn-success pull-right" ng-click="saveOptions()">Save Options</div>
     </div>

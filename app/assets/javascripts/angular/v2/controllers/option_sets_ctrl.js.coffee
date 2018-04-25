@@ -48,7 +48,7 @@ OptionSet, Option, OptionInOptionSet) ->
 
   $scope.optionSet = OptionSet.get({'id': $stateParams.id})
   $scope.optionInOptionSets = OptionInOptionSet.query({'option_set_id': $stateParams.id})
-  $scope.options = Option.query({})
+  $scope.options = Option.query({'option_set_id': $stateParams.id})
   $scope.counter = 0
 
   $scope.updateOptionSet = () ->
@@ -100,5 +100,5 @@ OptionSet, Option, OptionInOptionSet) ->
         )
       else
         $scope.optionInOptionSets.splice($scope.optionInOptionSets.indexOf(optionInOptionSet), 1)
-        
+
 ]
