@@ -3,13 +3,13 @@
   <div class="card">
     <div class="card-body card-padding">
       <a ui-sref="instrumentQuestions({project_id: project_id, instrument_id: id})"
-      class="btn btn-primary">Question Displays</a>
+      class="btn btn-primary">Instrument Displays</a>
       <a ui-sref="instrumentTranslations({project_id: project_id, instrument_id: id})"
-      class="btn btn-primary">Translations</a>
+      class="btn btn-primary">Instrument Translations</a>
       <a ui-sref="instrumentRules({project_id: project_id, instrument_id: id})"
-      class="btn btn-primary">Rules</a>
-      <div class="btn btn-primary" ng-click="copyInstrument()">Copy</div>
-      <div class="btn btn-primary" ng-click="reOrderQuestions()">Reorder</div>
+      class="btn btn-primary">Instrument Rules</a>
+      <div class="btn btn-primary" ng-click="copyInstrument()">Copy Instrument</div>
+      <div class="btn btn-primary" ng-click="reOrderQuestions()">Reorder Instrument Questions</div>
     </div>
   </div>
   <div class="card" ng-show="showCopy">

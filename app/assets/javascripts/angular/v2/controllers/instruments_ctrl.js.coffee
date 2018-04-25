@@ -1,8 +1,8 @@
 App.controller 'ShowInstrumentCtrl', ['$scope', '$stateParams', 'Instrument', 'Project', 'Setting',
-'$state', 'Display', 'InstrumentQuestion', ($scope, $stateParams, Instrument, Project, Setting,
-$state, Display, InstrumentQuestion) ->
+'$state', 'Display', ($scope, $stateParams, Instrument, Project, Setting, $state, Display) ->
   $scope.project_id = $stateParams.project_id
   $scope.id = $stateParams.id
+  $scope.numRows = 1
 
   $scope.instrument = Instrument.get({
     'project_id': $scope.project_id,
@@ -15,11 +15,11 @@ $state, Display, InstrumentQuestion) ->
   $scope.displays = Display.query({
     'project_id': $scope.project_id,
     'instrument_id': $scope.id
-  })
-  $scope.instrumentQuestions = InstrumentQuestion.query({
-    'project_id': $scope.project_id,
-    'instrument_id': $scope.id
-  })
+  }, ->
+    angular.forEach $scope.displays, (display, ind) ->
+      $scope.numRows = $scope.numRows + 1 + display.instrument_questions.length
+  )
+
   $scope.showCopy = false
   $scope.showReOrder = false
   $scope.numRows = 1
@@ -42,9 +42,6 @@ $state, Display, InstrumentQuestion) ->
         alert(result.data.errors)
     )
 
-  $scope.displayQuestions = (display) ->
-    _.sortBy(_.where($scope.instrumentQuestions, {display_id: display.id}), 'number_in_instrument')
-
   $scope.reOrderQuestions = () ->
     $scope.showReOrder = !$scope.showReOrder
     $scope.showCopy = false
@@ -52,10 +49,9 @@ $state, Display, InstrumentQuestion) ->
     $scope.instrument.id = $scope.id
     $scope.instrument.project_id = $scope.project_id
     $scope.instrument.order = ""
-    $scope.numRows = $scope.displays.length + $scope.instrumentQuestions.length
     angular.forEach $scope.displays, (display, index) ->
       $scope.instrument.order += display.id + ': ' + display.title + "\n"
-      angular.forEach $scope.displayQuestions(display), (question, counter) ->
+      angular.forEach display.instrument_questions, (question, counter) ->
         $scope.instrument.order += "\t" + question.identifier + "\n"
       $scope.instrument.order += "\n"
 
