@@ -67,26 +67,28 @@ class Instrument < ActiveRecord::Base
     instrument_copy.project_id = project.id
     instrument_copy.title = title + "_#{Time.now.to_i}"
     instrument_copy.save!
-    if display == 'AS_IT_IS'
-      displays.each do |display|
-        display_copy = display.dup
-        display_copy.instrument_id = instrument_copy.id
-        display_copy.save!
-        display.instrument_questions.order(:number_in_instrument).each do |iq|
+    ActiveRecord::Base.transaction do
+      if display == 'AS_IT_IS'
+        displays.each do |display|
+          display_copy = display.dup
+          display_copy.instrument_id = instrument_copy.id
+          display_copy.save!
+          display.instrument_questions.order(:number_in_instrument).each do |iq|
+            iq.copy(display_copy.id, instrument_copy.id)
+          end
+        end
+      elsif display == 'ONE_QUESTION_PER_SCREEN'
+        index = 0
+        instrument_questions.order(:number_in_instrument).each do |iq|
+          index += 1
+          display_copy = Display.create!(mode: 'SINGLE', position: index, instrument_id: instrument_copy.id, title: index.to_s)
           iq.copy(display_copy.id, instrument_copy.id)
         end
-      end
-    elsif display == 'ONE_QUESTION_PER_SCREEN'
-      index = 0
-      instrument_questions.order(:number_in_instrument).each do |iq|
-        index += 1
-        display_copy = Display.create!(mode: 'SINGLE', position: index, instrument_id: instrument_copy.id, title: index.to_s)
-        iq.copy(display_copy.id, instrument_copy.id)
-      end
-    elsif display == 'ALL_QUESTIONS_ON_ONE_SCREEN'
-      display_copy = Display.create!(mode: 'MULTIPLE', position: 1, instrument_id: instrument_copy.id, title: 'Questions')
-      instrument_questions.order(:number_in_instrument).each do |iq|
-        iq.copy(display_copy.id, instrument_copy.id)
+      elsif display == 'ALL_QUESTIONS_ON_ONE_SCREEN'
+        display_copy = Display.create!(mode: 'MULTIPLE', position: 1, instrument_id: instrument_copy.id, title: 'Questions')
+        instrument_questions.order(:number_in_instrument).each do |iq|
+          iq.copy(display_copy.id, instrument_copy.id)
+        end
       end
     end
     instrument_copy

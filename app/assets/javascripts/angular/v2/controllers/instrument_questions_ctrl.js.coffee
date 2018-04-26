@@ -12,22 +12,23 @@ Display, currentDisplay, Instrument) ->
   $scope.questions = []
   $scope.question_origins = ['New Question', 'From Set']
   $scope.selectall = false
+  $scope.instrumentQuestions = []
 
   $scope.instrument = Instrument.get({
     'project_id': $scope.project_id,
     'id': $scope.instrument_id
   })
-  $scope.instrumentQuestions = InstrumentQuestion.query({
-    'project_id': $scope.project_id,
-    'instrument_id': $scope.instrument_id
-  }) #, -> InstrumentQuestions.questions = $scope.instrumentQuestions )
 
   $scope.questionSets = QuestionSet.query({})
   $scope.settings = Setting.get({})
   $scope.displays = Display.query({
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id
-  })
+  }, ->
+    angular.forEach $scope.displays, (display, index) ->
+      angular.forEach display.instrument_questions, (iq, ind) ->
+        $scope.instrumentQuestions.push(iq)
+  )
 
   $scope.sortableDisplays = {
     cursor: 'move',
@@ -44,7 +45,7 @@ Display, currentDisplay, Instrument) ->
       display.project_id = $scope.project_id
       display.instrument_id = $scope.instrument_id
       display.$update({})
-      currentDisplayQuestions = $scope.displayQuestions(display)
+      currentDisplayQuestions = display.instrument_questions
       angular.forEach currentDisplayQuestions, (iq, counter) ->
         if iq.number_in_instrument != questionCount
           iq.number_in_instrument = questionCount
@@ -55,17 +56,14 @@ Display, currentDisplay, Instrument) ->
 
   $scope.validateMode = (display) ->
     $scope.showSaveDisplay = true
-    if display.mode == 'SINGLE' && $scope.displayQuestions(display).length > 1
+    if display.mode == 'SINGLE' && display.instrument_questions.length > 1
       alert("The display mode is SINGLE but there is more than one
       question on this display. Please delete the extra question(s) and save
       the display.")
-    else if display.mode == 'TABLE' && $scope.displayQuestions(display).length > 1 &&
-    _.pluck($scope.displayQuestions(display), 'option_set_id').length > 1
+    else if display.mode == 'TABLE' && display.instrument_questions.length > 1 &&
+    _.pluck(display.instrument_questions, 'option_set_id').length > 1
       alert("The questions in this TABLE display do not have the same option set!
       Please delete the questions that don't belong to it.")
-
-  $scope.displayQuestions = (display) ->
-    _.sortBy(_.where($scope.instrumentQuestions, {display_id: display.id}), 'number_in_instrument')
 
   $scope.newDisplay = () ->
     $scope.showNewDisplay = true
@@ -173,13 +171,13 @@ Display, currentDisplay, Instrument) ->
     else
       selectedQuestions = _.where($scope.questionSetQuestions, {selected: true})
       responseCount = 0
-      previousQuestion = _.last($scope.displayQuestions($scope.display))
+      previousQuestion = _.last($scope.display.instrument_questions)
       if previousQuestion
         previousQuestionCount = previousQuestion.number_in_instrument
       else
         previousDisplay = $scope.displays[$scope.display.position - 2]
         if previousDisplay
-          lastQuestion = _.last($scope.displayQuestions(previousDisplay))
+          lastQuestion = _.last(previousDisplay.instrument_questions)
           previousQuestionCount = lastQuestion.number_in_instrument
         else
           previousQuestionCount = 0
@@ -226,7 +224,7 @@ App.controller 'ShowInstrumentQuestionCtrl', ['$scope', '$stateParams',
 'MultipleSkip', 'FollowUpQuestion', 'Question',
 ($scope, $stateParams, InstrumentQuestion, Setting, Option, InstrumentQuestions,
 NextQuestion, MultipleSkip, FollowUpQuestion, Question) ->
-  console.log('ShowInstrumentQuestionCtrl')
+
   $scope.options = []
   $scope.project_id = $stateParams.project_id
   $scope.instrument_id = $stateParams.instrument_id

@@ -1,5 +1,6 @@
-<h4 class="text-center"><strong>Instrument Rules</strong></h4>
 <div ng-controller="InstrumentRulesCtrl">
+  <div ng-include="'instruments/show.html'"></div>
+  <h4 class="text-center">Instrument Rules</h4>
   <div class="card">
     <div class="card-body card-padding">
       <div ng-repeat="rule in instrumentRules">

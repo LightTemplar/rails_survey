@@ -18,6 +18,14 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
       url: '/projects/:project_id/instruments/:id'
       templateUrl: 'instruments/show.html'
       controller: 'ShowInstrumentCtrl'
+    .state 'instrumentQuestionsReorder',
+      url: '/projects/:project_id/instruments/:id'
+      templateUrl: 'instruments/reorder.html'
+      controller: 'ReorderInstrumentQuestionsCtrl'
+    .state 'copyInstrument',
+      url: '/projects/:project_id/instruments/:id'
+      templateUrl: 'instruments/copy.html'
+      controller: 'CopyInstrumentCtrl'
     .state 'questionSets',
       url: '/question_sets'
       templateUrl: 'question_sets/index.html'

@@ -1,0 +1,12 @@
+<div ng-controller="ReorderInstrumentQuestionsCtrl">
+  <div ng-include="'instruments/show.html'"></div>
+  <h4 class="text-center">Reorder Instrument Questions</h4>
+  <div class="card">
+    <div class="card-body card-padding">
+      <textarea class="form-control" ng-model="instrument.order" rows="{{numRows}}"></textarea>
+      <div class="row m-5">
+        <div class="btn btn-success pull-right" ng-click="saveOrder()">Save Order</div>
+      </div>
+    </div>
+  </div>
+</div>
