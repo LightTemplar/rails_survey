@@ -18,6 +18,7 @@ ActiveAdmin.register DeviceUser do
       row :name
       row :username
       row :active
+      row :api_key
       row :created_at
       row :updated_at
       row 'Device User Projects' do

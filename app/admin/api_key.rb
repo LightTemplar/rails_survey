@@ -4,6 +4,7 @@ ActiveAdmin.register ApiKey do
   index do
     column :id
     column :access_token
+    column :device_user
     actions
   end
 
@@ -11,6 +12,7 @@ ActiveAdmin.register ApiKey do
     attributes_table do
       row :id
       row :access_token
+      row :device_user
     end
 
     active_admin_comments

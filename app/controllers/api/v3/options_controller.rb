@@ -5,7 +5,7 @@ module Api
 
       def index
         @project = Project.find(params[:project_id])
-        @options = @project.api_options.uniq # Return unique records
+        @options = to_sync(@project.api_options.uniq, 'options', params[:last_sync_time])
       end
     end
   end

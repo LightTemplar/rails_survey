@@ -17,7 +17,15 @@ class DeviceUser < ActiveRecord::Base
   has_many :devices, through: :device_device_users
   has_many :project_device_users
   has_many :projects, through: :project_device_users
+  has_one :api_key, dependent: :destroy
+  after_create :generate_api_key
   validates :username, presence: true, uniqueness: true, allow_blank: false
   validates :name, presence: true
   validates :password_digest, presence: true
+
+  private
+  def generate_api_key
+    ApiKey.create!(device_user_id: id) unless api_key
+  end
+
 end

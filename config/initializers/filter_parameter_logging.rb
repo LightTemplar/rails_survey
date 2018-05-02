@@ -2,5 +2,5 @@
 
 # Configure sensitive parameters which will be filtered from the log file.
 if Rails.env.production?
-  Rails.application.config.filter_parameters += [:password, :text, :access_token]
+  Rails.application.config.filter_parameters += [:password, :text, :access_token, :password_confirmation]
 end

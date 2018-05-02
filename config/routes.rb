@@ -26,7 +26,7 @@ RailsSurvey::Application.routes.draw do
         resources :randomized_factors, only: :index
         resources :randomized_options, only: :index
         resources :question_randomized_factors, only: :index
-        resources :device_users, only: :index
+        resources :device_users, only: [:index, :create]
         resources :images, only: %i[index show]
         resources :rules, only: :index
         resources :score_schemes, only: :index
