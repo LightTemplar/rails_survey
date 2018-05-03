@@ -39,7 +39,7 @@ class Display < ActiveRecord::Base
     destination = instrument.displays.where(id: destination_display_id).first
     if destination_display_id == -1
       destination = instrument.displays.create!(title: 'New Display',
-        position: instrument.displays.size, mode: 'MULTIPLE')
+        position: instrument.displays.size + 1, mode: 'MULTIPLE')
     end
     if destination && moved
       moved.each do |id|
