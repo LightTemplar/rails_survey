@@ -88,6 +88,9 @@ RailsSurvey::Application.routes.draw do
       end
       resources :rules
       resources :projects do
+        member do
+          post :import_instrument
+        end
         resources :instruments do
           resources :instrument_question_sets
           resources :instrument_questions do

@@ -29,7 +29,7 @@ task :import, [:filename] => :environment do |t, args|
       display = Display.where(title: row[0].strip, instrument_id: instrument.id).first
       unless display
         display = Display.create!(title: row[0].strip, mode: 'MULTIPLE',
-          position: instrument.displays.size, instrument_id: instrument.id
+          position: instrument.displays.size + 1, instrument_id: instrument.id
         )
       end
       question_set = QuestionSet.where(title: row[0].strip).try(:first)
@@ -56,7 +56,7 @@ task :import, [:filename] => :environment do |t, args|
         unless iq
           iq = InstrumentQuestion.create!(instrument_id: instrument.id,
             identifier: row[1].strip, question_id: question.id, display_id:
-            display.id, number_in_instrument: instrument.instrument_questions.size
+            display.id, number_in_instrument: instrument.instrument_questions.size + 1
           )
         end
         if question.question_type != 'INSTRUCTIONS'

@@ -57,3 +57,24 @@ App.controller 'ShowProjectCtrl', ['$scope', '$stateParams', 'Project',
         )
 
 ]
+
+App.controller 'ImportInstrumentCtrl', ['$scope', '$stateParams', 'Project', '$fileUploader',
+($scope, $stateParams, Project, $fileUploader) ->
+  $scope.project = Project.get({'id': $stateParams.id})
+
+  uploader = $scope.uploader = $fileUploader.create({
+    scope: $scope,
+    url: '/api/v2/projects/' + $stateParams.id + '/import_instrument',
+    headers: {'X-CSRF-Token': $('meta[name=csrf-token]').attr('content') } ,
+    isHTML5: true,
+    withCredentials: true,
+    alias: 'file',
+    formData: [ { name: uploader } ]
+  } )
+
+  uploader.filters.push (item) ->
+    type = (if uploader.isHTML5 then item.type else '/' + item.value.slice(item.value.lastIndexOf('.') + 1))
+    type = '|' + type.toLowerCase().slice(type.lastIndexOf('/') + 1) + '|'
+    '|csv|'.indexOf(type) isnt - 1
+
+]

@@ -14,6 +14,10 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
       url: '/projects/:id'
       templateUrl: 'projects/show.html'
       controller: 'ShowProjectCtrl'
+    .state 'importInstrument',
+      url: '/projects/:id'
+      templateUrl: 'projects/import_instrument.html'
+      controller: 'ImportInstrumentCtrl'
     .state 'instrument',
       url: '/projects/:project_id/instruments/:id'
       templateUrl: 'instruments/show.html'

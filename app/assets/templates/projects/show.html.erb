@@ -1,10 +1,11 @@
-<div class="card" ng-controller="ShowProjectCtrl">
-  <div class="row m-5 text-center">
-    {{project.description}}
-  </div>
+<div ng-controller="ShowProjectCtrl">
+  <h3 class="text-center">{{project.name}}</h3>
+  <div class="card">
   <div class="card-body card-padding">
-    <div class="row m-5" ng-show="showInstruments">
-      <div class="btn btn-primary pull-right" ng-click="newInstrument()">New Instrument</div>
+    <div class="row" ng-show="showInstruments">
+      <div class="btn btn-primary pull-right m-5" ng-click="newInstrument()">New Instrument</div>
+      <a ui-sref="importInstrument({id: project.id})"
+      class="btn btn-primary pull-right m-5">Import From Instruments2 CSV</a>
     </div>
     <div ng-show="showInstruments">
       <div class="row m-5">
@@ -76,5 +77,6 @@
         <div class="btn btn-success pull-right" ng-click="saveInstrument(instrument)">Save</div>
       </div>
     </div>
+  </div>
   </div>
 </div>
