@@ -1,0 +1,26 @@
+<div ng-controller="InstrumentSkipPatternsCtrl">
+  <div ng-include="'instruments/show.html'"></div>
+  <h4 class="text-center">Instrument Skip Patterns</h4>
+
+  <div class="card">
+    <div class="row m-10">
+      <div class="btn btn-primary pull-right" ng-click="importSkipPatterns()">
+        Import Skip Patterns</div>
+    </div>
+    <div class="card-body card-padding">
+      <div class="row">
+        <label class="col-md-3">Question Number</label>
+        <label class="col-md-3">Question Identifier</label>
+        <label class="col-md-3">Selected Option Identifier</label>
+        <label class="col-md-3">Question Identifier To Skip To</label>
+      </div>
+      <div class="row" ng-repeat="nextQuestion in nextQuestions">
+        <div class="col-md-3">{{nextQuestion.question_number}}</div>
+        <div class="col-md-3">{{nextQuestion.question_identifier}}</div>
+        <div class="col-md-3">{{nextQuestion.option_identifier}}</div>
+        <div class="col-md-3">{{nextQuestion.next_question_identifier}}</div>
+      </div>
+    </div>
+  </div>
+
+</div>

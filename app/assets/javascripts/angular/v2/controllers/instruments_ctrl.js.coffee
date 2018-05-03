@@ -73,3 +73,26 @@ App.controller 'CopyInstrumentCtrl', ['$scope', '$stateParams', 'Instrument', '$
     )
 
 ]
+
+App.controller 'InstrumentSkipPatternsCtrl', ['$scope', '$stateParams', 'Instrument',
+'InstrumentNextQuestion', '$state', ($scope, $stateParams, Instrument, InstrumentNextQuestion, $state) ->
+
+  $scope.instrument = Instrument.get({
+    'project_id': $stateParams.project_id,
+    'id': $stateParams.id
+  })
+
+  $scope.nextQuestions = InstrumentNextQuestion.query({
+    'project_id': $stateParams.project_id,
+    'instrument_id': $stateParams.id
+  })
+
+  $scope.importSkipPatterns = () ->
+    $scope.instrument.$importSkipPatterns({},
+      (data, headers) ->
+        $state.reload()
+      (result, headers) ->
+        alert(result.data.errors)
+    )
+
+]

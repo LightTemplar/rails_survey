@@ -54,6 +54,7 @@ class Instrument < ActiveRecord::Base
   has_many :score_schemes, dependent: :destroy
   has_many :randomized_factors, dependent: :destroy
   has_many :randomized_options, through: :randomized_factors
+  has_many :next_questions, -> { order 'instrument_questions.number_in_instrument' }, through: :instrument_questions
 
   has_paper_trail on: %i[update destroy]
   acts_as_paranoid
@@ -61,6 +62,31 @@ class Instrument < ActiveRecord::Base
   after_update :update_special_options
   validates :title, presence: true, allow_blank: false
   validates :project_id, presence: true, allow_blank: false
+
+  def set_skip_patterns
+    ActiveRecord::Base.transaction do
+      SkipPattern.all.each do |pattern|
+        nq = next_questions.where(
+          option_identifier: pattern.option_identifier,
+          question_identifier: pattern.question_identifier,
+          next_question_identifier: pattern.next_question_identifier
+        ).first
+        unless nq
+          iq = instrument_questions.where(identifier: pattern.question_identifier).first
+          niq = instrument_questions.where(identifier: pattern.next_question_identifier).first
+          oi_present = iq.options.pluck(:identifier).include?(pattern.option_identifier) if iq && niq
+          if oi_present
+            NextQuestion.create!(
+              option_identifier: pattern.option_identifier,
+              question_identifier: pattern.question_identifier,
+              next_question_identifier: pattern.next_question_identifier,
+              instrument_question_id: iq.id
+            )
+          end
+        end
+      end
+    end
+  end
 
   def copy(project, display)
     instrument_copy = self.dup

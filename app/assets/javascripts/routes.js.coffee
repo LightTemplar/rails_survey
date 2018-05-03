@@ -26,6 +26,10 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
       url: '/projects/:project_id/instruments/:id'
       templateUrl: 'instruments/copy.html'
       controller: 'CopyInstrumentCtrl'
+    .state 'instrumentSkipPatterns',
+      url: '/projects/:project_id/instruments/:id'
+      templateUrl: 'instruments/skip_patterns.html'
+      controller: 'InstrumentSkipPatternsCtrl'
     .state 'questionSets',
       url: '/question_sets'
       templateUrl: 'question_sets/index.html'

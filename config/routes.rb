@@ -106,7 +106,9 @@ RailsSurvey::Application.routes.draw do
           member do
             get :copy
             post :reorder
+            get :set_skip_patterns
           end
+          resources :next_questions, controller: 'instrument_next_questions'
         end
       end
       get 'settings/index'

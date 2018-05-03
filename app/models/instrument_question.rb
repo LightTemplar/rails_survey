@@ -27,6 +27,12 @@ class InstrumentQuestion < ActiveRecord::Base
   validates :identifier, uniqueness: { scope: :instrument_id,
     message: 'instrument already has this identifier' }
 
+  def options
+    option_set_ids = [question.option_set_id, question.special_option_set_id].compact
+    option_ids = OptionInOptionSet.where(option_set_id: option_set_ids).pluck(:option_id).uniq
+    Option.where(id: option_ids)
+  end
+
   def copy(display_id, instrument_id)
     iq_copy = self.dup
     iq_copy.display_id = display_id

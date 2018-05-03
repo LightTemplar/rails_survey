@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180430140355) do
+ActiveRecord::Schema.define(version: 20180502185028) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -569,6 +569,14 @@ ActiveRecord::Schema.define(version: 20180430140355) do
   end
 
   add_index "sections", ["deleted_at"], name: "index_sections_on_deleted_at", using: :btree
+
+  create_table "skip_patterns", force: :cascade do |t|
+    t.string   "option_identifier"
+    t.string   "question_identifier"
+    t.string   "next_question_identifier"
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
 
   create_table "skips", force: :cascade do |t|
     t.integer  "option_id"

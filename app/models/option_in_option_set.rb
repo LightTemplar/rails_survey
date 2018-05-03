@@ -13,7 +13,7 @@
 #
 
 class OptionInOptionSet < ActiveRecord::Base
-  default_scope { order('special ASC, number_in_question ASC') }
+  default_scope { order('option_in_option_sets.special ASC, option_in_option_sets.number_in_question ASC') }
   belongs_to :option
   belongs_to :option_set
   has_paper_trail

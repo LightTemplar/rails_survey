@@ -57,6 +57,16 @@ module Api
         end
       end
 
+      def set_skip_patterns
+        project = current_user.projects.find(params[:project_id])
+        instrument = project.instruments.find(params[:id])
+        if instrument.set_skip_patterns
+          render json: :ok, status: :created
+        else
+          render json: { errors: 'skip patterns import unsuccessfull' }, status: :unprocessable_entity
+        end
+      end
+
       private
 
       def instrument_params
