@@ -1,0 +1,48 @@
+@import "bootstrap";
+@import "jquery-ui";
+@import "animate.css/animate.min";
+@import "sweetalert/dist/sweetalert-override.min";
+@import "material-design-iconic-font/css/material-design-iconic-font.min";
+@import "socicon/socicon.min";
+@import "font-awesome-4.0.3/css/font-awesome.min";
+@import "app.min.1";
+@import "app.min.2";
+@import "loading-bar.min";
+@import "nv.d3";
+@import "xeditable";
+@import "fontello/css/fontello";
+@import "bootstrap3-wysihtml5.min";
+@import "textAngular";
+@import "jquery-linedtextarea";
+@import "graphs";
+@import "instruments";
+@import "grids";
+@import "materialize";
+@import "bootstrap_elements";
+@import "fancypants_override";
+@import "select.min";
+
+.top-buffer {
+  margin-top: 20px;
+}
+
+.bottom-buffer {
+  margin-bottom: 20px;
+}
+
+ul.squares {
+  list-style: square;
+}
+
+li.active-result {
+  color: #333;
+}
+
+table.fixed-wide {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.btn {
+  text-transform: none !important;
+}
