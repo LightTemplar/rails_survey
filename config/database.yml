@@ -6,6 +6,7 @@
 development:
   # adapter: sqlite3
   # database: db/development.sqlite3
+  host: localhost
   adapter: postgresql
   encoding: unicode
   # database: sets_development

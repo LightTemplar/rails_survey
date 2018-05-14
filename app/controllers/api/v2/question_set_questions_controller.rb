@@ -17,7 +17,7 @@ module Api
         if question.save
           render json: question, status: :created
         else
-          render json: { errors: question.errors.full_messages }, status: :unprocessable_entity
+          render json: {errors: question.errors.full_messages}, status: :unprocessable_entity
         end
       end
 
@@ -33,7 +33,12 @@ module Api
 
       def copy
         question = @question_set.questions.find(params[:id])
-        respond_with question.copy
+        new_copy = question.copy
+        if new_copy
+          respond_with new_copy
+        else
+          render json: :nothing, status: :unprocessable_entity
+        end
       end
 
       private
@@ -43,11 +48,11 @@ module Api
       end
 
       def question_params
-        params.require(:question_set_question).permit(:option_set_id, :question_set_id,
-          :text, :question_type, :question_identifier, :reg_ex_validation, :child_update_count,
-          :reg_ex_validation_message, :identifies_survey, :grid_id, :instruction_id,
-          :number_in_grid, :instrument_version_number, :critical, :special_option_set_id)
-        end
+        params.require(:question_set_question).permit(:option_set_id, :question_set_id, :text, :question_type,
+                                                      :question_identifier, :parent_identifier, :identifies_survey,
+                                                      :instruction_id, :critical, :special_option_set_id)
       end
+
     end
   end
+end

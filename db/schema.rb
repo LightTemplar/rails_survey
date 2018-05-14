@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180502185028) do
+ActiveRecord::Schema.define(version: 20180514183241) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -378,25 +378,16 @@ ActiveRecord::Schema.define(version: 20180502185028) do
     t.text     "text"
     t.string   "question_type"
     t.string   "question_identifier"
-    t.integer  "instrument_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "reg_ex_validation"
-    t.integer  "number_in_instrument"
-    t.string   "reg_ex_validation_message"
     t.datetime "deleted_at"
-    t.boolean  "identifies_survey",         default: false
-    t.text     "instructions",              default: ""
-    t.integer  "child_update_count",        default: 0
-    t.integer  "grid_id"
-    t.integer  "instrument_version_number", default: -1
-    t.integer  "section_id"
+    t.boolean  "identifies_survey",     default: false
     t.boolean  "critical"
-    t.integer  "number_in_grid"
     t.integer  "question_set_id"
     t.integer  "option_set_id"
     t.integer  "instruction_id"
     t.integer  "special_option_set_id"
+    t.string   "parent_identifier"
   end
 
   add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true, using: :btree

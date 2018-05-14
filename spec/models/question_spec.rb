@@ -2,29 +2,20 @@
 #
 # Table name: questions
 #
-#  id                        :integer          not null, primary key
-#  text                      :text
-#  question_type             :string
-#  question_identifier       :string
-#  instrument_id             :integer
-#  created_at                :datetime
-#  updated_at                :datetime
-#  reg_ex_validation         :string
-#  number_in_instrument      :integer
-#  reg_ex_validation_message :string
-#  deleted_at                :datetime
-#  identifies_survey         :boolean          default(FALSE)
-#  instructions              :text             default("")
-#  child_update_count        :integer          default(0)
-#  grid_id                   :integer
-#  instrument_version_number :integer          default(-1)
-#  section_id                :integer
-#  critical                  :boolean
-#  number_in_grid            :integer
-#  question_set_id           :integer
-#  option_set_id             :integer
-#  instruction_id            :integer
-#  special_option_set_id     :integer
+#  id                    :integer          not null, primary key
+#  text                  :text
+#  question_type         :string
+#  question_identifier   :string
+#  created_at            :datetime
+#  updated_at            :datetime
+#  deleted_at            :datetime
+#  identifies_survey     :boolean          default(FALSE)
+#  critical              :boolean
+#  question_set_id       :integer
+#  option_set_id         :integer
+#  instruction_id        :integer
+#  special_option_set_id :integer
+#  parent_identifier     :string
 #
 
 require "spec_helper"
