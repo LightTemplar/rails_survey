@@ -70,10 +70,14 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
       url: '/projects/:project_id/instruments/:instrument_id/instrument_question_sets'
       templateUrl: 'instrument_question_sets/index.html'
       controller: 'InstrumentQuestionSetsCtrl'
-    .state 'instrumentQuestions',
-      url: '/projects/:project_id/instruments/:instrument_id/instrument_questions'
-      templateUrl: 'instrument_questions/index.html'
-      controller: 'InstrumentQuestionsCtrl'
+    .state 'displays',
+      url: '/projects/:project_id/instruments/:instrument_id/displays'
+      templateUrl: 'displays/index.html'
+      controller: 'DisplaysCtrl'
+    .state 'newDisplay',
+      url: '/projects/:project_id/instruments/:instrument_id/displays/new'
+      templateUrl: 'displays/new.html'
+      controller: 'NewDisplayCtrl'
     .state 'instrumentQuestion',
       url: '/projects/:project_id/instruments/:instrument_id/instrument_questions/:id'
       templateUrl: 'instrument_questions/show.html'

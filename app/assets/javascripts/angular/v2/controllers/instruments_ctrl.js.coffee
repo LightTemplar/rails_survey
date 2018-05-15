@@ -9,21 +9,28 @@ App.controller 'ShowInstrumentCtrl', ['$scope', '$stateParams', 'Instrument',
 
 ]
 
-App.controller 'ReorderInstrumentQuestionsCtrl', ['$scope', '$stateParams',
-'Instrument', '$state', 'Display',
-($scope, $stateParams, Instrument, $state, Display) ->
+App.controller 'ReorderInstrumentQuestionsCtrl', ['$scope', '$stateParams', 'Instrument', '$state', 'Display',
+'InstrumentQuestion', ($scope, $stateParams, Instrument, $state, Display, InstrumentQuestion) ->
+
   $scope.project_id = $stateParams.project_id
   $scope.id = $stateParams.id
   $scope.numRows = 1
 
+  displayQuestions = (display) ->
+    _.where($scope.instrumentQuestions, {display_id: display.id})
+
   reOrderQuestions = () ->
     angular.forEach $scope.displays, (display, ind) ->
-      $scope.numRows = $scope.numRows + 1 + display.instrument_questions.length
+      $scope.numRows = $scope.numRows + 1 + display.question_count
     angular.forEach $scope.displays, (display, index) ->
       $scope.instrument.order += display.id + ': ' + display.title + "\n"
-      angular.forEach display.instrument_questions, (question, counter) ->
+      angular.forEach displayQuestions(display), (question, counter) ->
         $scope.instrument.order += "\t" + question.identifier + "\n"
       $scope.instrument.order += "\n"
+
+  $scope.instrumentQuestions = InstrumentQuestion.query({
+      'project_id': $scope.project_id,
+      'instrument_id': $scope.id})
 
   $scope.instrument = Instrument.get({
     'project_id': $scope.project_id,
@@ -42,7 +49,7 @@ App.controller 'ReorderInstrumentQuestionsCtrl', ['$scope', '$stateParams',
   $scope.saveOrder = () ->
     $scope.instrument.$reorder({},
       (data, headers) ->
-        $state.go('instrumentQuestions', { project_id: $scope.project_id, instrument_id: $scope.id })
+        $state.go('displays', { project_id: $scope.project_id, instrument_id: $scope.id })
       (result, headers) ->
         alert(result.data.errors)
     )

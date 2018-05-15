@@ -1,4 +1,4 @@
-lock '3.10.1'
+lock '3.10.2'
 
 set :application, 'rails_survey'
 set :repo_url, 'git@github.com:DukeMobileTech/rails_survey.git'
@@ -7,7 +7,7 @@ set :deploy_via, :copy
 set :pty, false
 set :format, :pretty
 set :keep_releases, 5
-set :linked_files, %w[config/database.yml config/secret_token.txt config/local_env.yml config/newrelic.yml]
+set :linked_files, %w[config/database.yml config/secrets.yml config/local_env.yml config/newrelic.yml]
 set :linked_dirs, %w[log tmp/pids tmp/cache tmp/sockets vendor/bundle]
 set :linked_dirs, fetch(:linked_dirs) + %w[files updates]
 set :bundle_binstubs, nil
@@ -22,7 +22,7 @@ set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }
 namespace :deploy do
   desc 'Restart Application'
   task :restart do
-    desc 'restart phusion passenger'
+    desc 'restart Phusion Passenger'
     on roles(:app), in: :sequence, wait: 5 do
       execute :touch, current_path.join('tmp/restart.txt')
     end
@@ -30,7 +30,7 @@ namespace :deploy do
 
   after :finishing, 'deploy:cleanup'
   after 'deploy:publishing', 'deploy:restart'
-  after 'deploy:published', 'sidekiq:monit:config'
+  # after 'deploy:published', 'sidekiq:monit:config'
 end
 
 namespace :clients do

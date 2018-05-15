@@ -3,6 +3,7 @@ module Api
     class QuestionSetQuestionsController < ApiApplicationController
       respond_to :json
       before_action :set_question_set
+      before_action :set_question, only: %i[update destroy copy]
 
       def index
         respond_with @question_set.questions
@@ -22,18 +23,15 @@ module Api
       end
 
       def update
-        question = @question_set.questions.find(params[:id])
-        respond_with question.update_attributes(question_params)
+        respond_with @question.update_attributes(question_params)
       end
 
       def destroy
-        question = @question_set.questions.find(params[:id])
-        respond_with question.destroy
+        respond_with @question.destroy
       end
 
       def copy
-        question = @question_set.questions.find(params[:id])
-        new_copy = question.copy
+        new_copy = @question.copy
         if new_copy
           respond_with new_copy
         else
@@ -45,6 +43,10 @@ module Api
 
       def set_question_set
         @question_set = QuestionSet.find(params[:question_set_id])
+      end
+
+      def set_question
+        @question = @question_set.questions.find(params[:id])
       end
 
       def question_params

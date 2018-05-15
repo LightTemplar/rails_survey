@@ -20,10 +20,6 @@ node :option_set_id do |iq|
   iq.question.option_set_id if iq.question
 end
 
-child :display do |iq|
-  attributes :id, :position
-end
-
 node :special_option_set_id do |iq|
   iq.question.special_option_set_id if iq.question
 end

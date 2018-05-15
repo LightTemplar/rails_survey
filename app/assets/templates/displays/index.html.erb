@@ -1,0 +1,40 @@
+<div ng-controller="DisplaysCtrl">
+  <div ng-include="'instruments/show.html'"></div>
+  <h4 class="text-center">Instrument Displays</h4>
+  <div class="card">
+    <div class="card-body card-padding">
+      <div class="row">
+        <label class="col-md-2">Position</label>
+        <label class="col-md-2">Type</label>
+        <label class="col-md-4">Title</label>
+        <label class="col-md-2">Question Count</label>
+        <label class="col-md-2">Actions</label>
+      </div>
+      <div class="m-t-5" ui-sortable="sortableDisplays" ng-model="displays">
+        <!-- Convert position used in filter to numeric -->
+        <div class="row" ng-repeat="display in displays | orderBy: '1 * position'">
+          <div class="col-md-2">
+            <div class="btn bgm-teal m-5 moveDisplay" title="Drag up/down to re-number the displays.">
+              <i class="md-swap-vert">{{display.position}}</i>
+            </div>
+          </div>
+          <div class="col-md-2">{{display.mode}}</div>
+          <div class="col-md-4">
+            <a ui-sref="display({project_id: project_id, instrument_id: instrument_id, id: display.id})">
+              {{display.title}}
+            </a>
+          </div>
+          <div class="col-md-2">{{display.question_count}}</div>
+          <div class="col-md-2">
+            <div class="btn btn-danger" ng-click="delete(display)">Delete</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row m-10">
+        <a class="btn btn-primary float-right" ui-sref="newDisplay({project_id: project_id, instrument_id:
+        instrument_id})" >New Display</a>
+      </div>
+    </div>
+  </div>
+</div>

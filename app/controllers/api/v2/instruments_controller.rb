@@ -10,7 +10,7 @@ module Api
 
       def show
         project = current_user.projects.find params[:project_id]
-        respond_with project.instruments.find(params[:id]) if project
+        @instrument = project.instruments.find(params[:id]) if project
       end
 
       def create

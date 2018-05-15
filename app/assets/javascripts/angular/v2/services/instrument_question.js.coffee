@@ -4,6 +4,3 @@ App.factory 'InstrumentQuestion', ['$resource', ($resource) ->
     {update: {method: 'PUT'}}
   )
 ]
-
-App.factory 'InstrumentQuestions', ->
-  questions = []

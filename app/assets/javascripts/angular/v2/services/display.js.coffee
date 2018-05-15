@@ -7,6 +7,3 @@ App.factory 'Display', ['$resource', ($resource) ->
     }
   )
 ]
-
-App.factory 'currentDisplay', ->
-  display = {}

@@ -1,48 +1,73 @@
-App.controller 'DisplayCtrl', ['$scope', ($scope) ->
-  $scope.displayQuestions = _.where($scope.instrumentQuestions, {display_id: $scope.display.id})
-  $scope.sortableInstrumentQuestions = {
-    cursor: 'move',
-    handle: '.moveInstrumentQuestion',
-    axis: 'y',
-    stop: (e, ui) ->
-      previousDisplay = $scope.displays[$scope.display.position - 2]
-      if previousDisplay
-        previousInstrumentQuestions = _.where($scope.instrumentQuestions, {display_id: previousDisplay.id})
-        lastQuestion = _.max(previousInstrumentQuestions, (q) -> q.number_in_instrument)
-        previousQuestionNumber = lastQuestion.number_in_instrument
-      else
-        previousQuestionNumber = 0
-      angular.forEach $scope.displayQuestions, (instrumentQuestion, index) ->
-        instrumentQuestion.number_in_instrument = previousQuestionNumber + index + 1
-        instrumentQuestion.project_id = $scope.project_id
-        instrumentQuestion.instrument_id = $scope.instrument_id
-        instrumentQuestion.$update({})
-  }
+App.controller 'DisplaysCtrl', ['$scope', '$stateParams', 'Display', 'Instrument', ($scope, $stateParams, Display,
+  Instrument) ->
 
-  $scope.updateInstrumentQuestion = (iq) ->
-    iq.project_id = $scope.project_id
-    iq.$update({},
+    $scope.project_id = $stateParams.project_id
+    $scope.instrument_id = $stateParams.instrument_id
+
+    $scope.instrument = Instrument.get({
+      'project_id': $scope.project_id,
+      'id': $scope.instrument_id
+    })
+
+    $scope.displays = Display.query({
+      'project_id': $scope.project_id,
+      'instrument_id': $scope.instrument_id
+    })
+
+    $scope.sortableDisplays = {
+      cursor: 'move',
+      handle: '.moveDisplay',
+      axis: 'y',
+      stop: (e, ui) ->
+        angular.forEach $scope.displays, (display, index) ->
+          display.position = index + 1
+          display.project_id = $scope.project_id
+          display.instrument_id = $scope.instrument_id
+          display.$update({})
+    }
+
+    $scope.delete = (display) ->
+      if confirm('Are you sure you want to delete ' + display.title + '?')
+        if display.id
+          display.project_id = $scope.project_id
+          display.instrument_id = $scope.instrument_id
+          display.$delete({},
+            (data, headers) ->
+              $scope.displays.splice($scope.displays.indexOf(display), 1)
+            (result, headers) ->
+          )
+
+]
+
+App.controller 'NewDisplayCtrl', ['$scope', '$stateParams', '$state', 'Instrument', 'Setting', 'Display', ($scope,
+  $stateParams, $state, Instrument, Setting, Display) ->
+  $scope.project_id = $stateParams.project_id
+  $scope.instrument_id = $stateParams.instrument_id
+
+  $scope.instrument = Instrument.get({
+    'project_id': $scope.project_id,
+    'id': $scope.instrument_id
+  }, ->
+    $scope.display = new Display()
+    $scope.display.title = 'Enter title here'
+    $scope.display.project_id = $scope.project_id
+    $scope.display.instrument_id = $scope.instrument_id
+    $scope.display.position = $scope.instrument.display_count + 1
+  )
+
+  $scope.settings = Setting.get({})
+
+  $scope.saveDisplay = () ->
+    $scope.display.$save({},
       (data, headers) ->
+        $state.go('display', {
+          project_id: $scope.project_id,
+          instrument_id: $scope.instrument_id,
+          id: data.id
+        })
       (result, headers) ->
         alert(result.data.errors)
     )
-
-  $scope.removeInstrumentQuestion = (iq) ->
-    if confirm('Are you sure you want to delete ' + iq.identifier + ' from the instrument?')
-      if iq.id
-        iq.project_id = $scope.project_id
-        iq.instrument_id = $scope.instrument_id
-        iq.$delete({} ,
-          (data, headers) ->
-            removeInstrumentQuestionFromArrays(iq)
-          (result, headers) ->
-            alert(result.data.errors)
-        )
-
-  removeInstrumentQuestionFromArrays = (iq) ->
-    $scope.displayQuestions.splice($scope.displayQuestions.indexOf(iq), 1)
-    $scope.instrumentQuestions.splice($scope.instrumentQuestions.indexOf(iq), 1)
-    $scope.$parent.renumberDisplaysAndQuestions()
 
 ]
 
@@ -62,9 +87,7 @@ QuestionSet, Question) ->
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id,
     'id': $scope.id
-  }, ->
-    $scope.displayQuestions = $scope.display.instrument_questions
-  )
+  })
   $scope.settings = Setting.get({}, ->
     $scope.displayTypes = $scope.settings.copy_display_types
     $scope.displayTypes.splice($scope.displayTypes.indexOf('ALL_QUESTIONS_ON_ONE_SCREEN'), 1)
@@ -76,7 +99,9 @@ QuestionSet, Question) ->
   $scope.instrumentQuestions = InstrumentQuestion.query({
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id
-  })
+  }, ->
+    $scope.displayQuestions = _.where($scope.instrumentQuestions, {display_id: $scope.display.id})
+  )
   $scope.displays = Display.query({
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id
