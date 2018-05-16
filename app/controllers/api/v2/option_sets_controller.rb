@@ -2,7 +2,7 @@ module Api
   module V2
     class OptionSetsController < ApiApplicationController
       respond_to :json
-      before_action :set_option_set, only: [:update, :show, :destroy, :copy]
+      before_action :set_option_set, only: %i[update show destroy copy]
 
       def index
         respond_with OptionSet.all
@@ -17,7 +17,7 @@ module Api
         if option_set.save
           render json: option_set, status: :created
         else
-          render json: { errors: option_set.errors.full_messages }, status: :unprocessable_entity
+          render json: {errors: option_set.errors.full_messages}, status: :unprocessable_entity
         end
       end
 
@@ -40,7 +40,7 @@ module Api
       end
 
       def option_set_params
-        params.require(:option_set).permit(:title, :special)
+        params.require(:option_set).permit(:title, :special, :instruction_id)
       end
 
     end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180514183241) do
+ActiveRecord::Schema.define(version: 20180516180145) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -301,8 +301,9 @@ ActiveRecord::Schema.define(version: 20180514183241) do
     t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "special",    default: false
+    t.boolean  "special",        default: false
     t.datetime "deleted_at"
+    t.integer  "instruction_id"
   end
 
   create_table "option_translations", force: :cascade do |t|

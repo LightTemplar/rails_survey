@@ -80,5 +80,13 @@ namespace :db do
     p = Project.create!(name: 'Test Project', description: 'Test Project')
     u.projects << p
     u.save!
+    du = DeviceUser.new
+    du.name = 'Test User'
+    du.username = 'test'
+    du.active = true
+    du.password = du.password_confirmation = 'Password1'
+    du.save!
+    du.projects << p
+    du.save!
   end
 end

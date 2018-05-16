@@ -10,6 +10,20 @@
           </div>
         </div>
         <div class="row m-t-5">
+          <label class="col-md-2">Instructions</label>
+          <div class="col-md-8">
+            <select
+              class="form-control"
+              ng-style="{'width' : 600}"
+              name="instruction"
+              id="instruction"
+              ng-model="optionSet.instruction_id"
+              ng-options="instruction.id as instruction.text for instruction in instructions">
+              <option value=""></option>
+            </select>
+          </div>
+        </div>
+        <div class="row m-t-5">
           <label class="col-md-2">Special Options</label>
           <div class="col-md-10">
             <input type="checkbox" name="option-set-special" ng-model="optionSet.special">
@@ -24,7 +38,7 @@
     </div>
   </div>
 
-  <h4 class="text-center"><strong>Optins in {{optionSet.title}}</strong></h4>
+  <h4 class="text-center"><strong>Options in {{optionSet.title}}</strong></h4>
   <div class="card">
     <div class="row col-md-12 m-l-10 m-t-5">
       <a class="btn btn-primary" ui-sref="optionTranslations({option_set_id: optionSet.id})">Translations</a>

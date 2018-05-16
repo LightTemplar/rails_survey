@@ -53,12 +53,13 @@ class Project < ActiveRecord::Base
   validates :name, presence: true, allow_blank: false
   validates :description, presence: true, allow_blank: true
 
+  def api_option_sets
+    option_set_ids = api_questions.pluck(:option_set_id) + api_questions.pluck(:special_option_set_id)
+    OptionSet.where(id: option_set_ids).uniq
+  end
+
   def api_options
-    question_ids = api_instrument_questions.pluck(:question_id).uniq
-    questions = Question.where(id: question_ids)
-    option_set_ids = questions.pluck(:option_set_id) + questions.pluck(:special_option_set_id)
-    option_ids = OptionInOptionSet.where(option_set_id: option_set_ids.uniq).pluck(:option_id).uniq
-    options = Option.where(id: option_ids)
+    Option.where(id: api_option_in_option_sets.pluck(:option_id).uniq)
   end
 
   def api_instrument_questions
@@ -67,10 +68,12 @@ class Project < ActiveRecord::Base
   end
 
   def api_option_in_option_sets
-    question_ids = api_instrument_questions.pluck(:question_id).uniq
-    questions = Question.where(id: question_ids)
-    option_set_ids = questions.pluck(:option_set_id) + questions.pluck(:special_option_set_id)
-    OptionInOptionSet.where(option_set_id: option_set_ids.uniq).uniq
+    option_set_ids = api_option_sets.pluck(:id)
+    OptionInOptionSet.where(option_set_id: option_set_ids)
+  end
+
+  def api_questions
+    Question.where(id: api_instrument_questions.pluck(:question_id).uniq)
   end
 
   def special_option_sets
@@ -89,7 +92,7 @@ class Project < ActiveRecord::Base
     count_per_day = {}
     array = []
     response_count_per_period(:group_responses_by_day).each do |day, count|
-      count_per_day[day.to_s[5..9]] = count.inject { |sum, x| sum + x }
+      count_per_day[day.to_s[5..9]] = count.inject {|sum, x| sum + x}
     end
     array << count_per_day
   end
@@ -98,7 +101,7 @@ class Project < ActiveRecord::Base
     count_per_hour = {}
     array = []
     response_count_per_period(:group_responses_by_hour).each do |hour, count|
-      count_per_hour[hour.to_s] = count.inject { |sum, x| sum + x }
+      count_per_hour[hour.to_s] = count.inject {|sum, x| sum + x}
     end
     array << sanitize(count_per_hour)
   end
@@ -166,9 +169,9 @@ class Project < ActiveRecord::Base
     if survey_aggregator == 'device_uuid'
       surveys.where(device_uuid: agg.device_uuid)
     elsif survey_aggregator == 'Center ID'
-      surveys.select { |s| s.center_id == agg.center_id }
+      surveys.select {|s| s.center_id == agg.center_id}
     elsif survey_aggregator == 'Participant ID'
-      surveys.select { |s| s.participant_id == agg.participant_id }
+      surveys.select {|s| s.participant_id == agg.participant_id}
     else
       surveys
     end
@@ -199,6 +202,6 @@ class Project < ActiveRecord::Base
   end
 
   def merge_period_counts(grouped_responses)
-    grouped_responses.map(&:to_a).flatten(1).each_with_object({}) { |(k, v), h| (h[k] ||= []) << v; }
+    grouped_responses.map(&:to_a).flatten(1).each_with_object({}) {|(k, v), h| (h[k] ||= []) << v;}
   end
 end

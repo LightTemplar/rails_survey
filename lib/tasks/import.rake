@@ -23,6 +23,7 @@ task :import, [:filename] => :environment do |_t, args|
   alphabet = ('a'..'z').to_a
   CSV.foreach(args[:filename], headers: true) do |row|
     instrument.reload
+
     unless row[0].blank?
       question_set = QuestionSet.where(title: row[0].strip).try(:first)
       question_set ||= QuestionSet.create!(title: row[0].strip)
@@ -70,7 +71,8 @@ task :import, [:filename] => :environment do |_t, args|
         end
       end
     end
-    unless row[3].blank?
+
+    if !row[3].blank? && row[4].blank?
       instruction = Instruction.where(title: row[3].strip).first
       instruction ||= Instruction.create!(title: row[3].strip, text: row[5].strip)
       unless question.instruction_id
@@ -78,7 +80,20 @@ task :import, [:filename] => :environment do |_t, args|
         question.save!
       end
     end
-    unless row[4].blank?
+
+    if !row[3].blank? && !row[4].blank?
+      instruction = Instruction.where(title: row[3].strip).first
+      instruction ||= Instruction.create!(title: row[3].strip, text: row[5].strip)
+      os = OptionSet.where(title: row[4].strip).try(:first)
+      if os && !os.instruction_id
+        os.instruction_id = instruction.id
+        os.save!
+      else
+        OptionSet.create!(title: row[4].strip, instruction_id: instruction.id)
+      end
+    end
+
+    if !row[4].blank? && row[3].blank?
       option_set = OptionSet.where(title: row[4].strip).try(:first)
       option_set ||= OptionSet.create!(title: row[4].strip)
       unless question.option_set_id
@@ -126,7 +141,6 @@ task :import, [:filename] => :environment do |_t, args|
         puts "Enter manually for question #{question_identifier}"
         next_question_identifier = nil
       end
-      # puts "next_question_identifier: #{next_question_identifier}"
       if skip_parts.nil?
         puts "Enter manually for question #{question_identifier}"
       end
@@ -145,7 +159,6 @@ task :import, [:filename] => :environment do |_t, args|
           else
             puts "Enter manually for question #{question_identifier}"
           end
-          # puts "option_identifier: #{option_identifier}"
           next unless question_identifier && option_identifier && next_question_identifier
           skip_pattern = SkipPattern.where(
             question_identifier: question_identifier,

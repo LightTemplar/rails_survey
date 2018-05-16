@@ -43,12 +43,13 @@ App.controller 'OptionSetsCtrl', ['$scope', '$location', 'OptionSet', '$state',
 ]
 
 App.controller 'ShowOptionSetCtrl', ['$scope', '$stateParams', '$state',
-'OptionSet', 'Option', 'OptionInOptionSet', ($scope, $stateParams, $state,
-OptionSet, Option, OptionInOptionSet) ->
+'OptionSet', 'Option', 'OptionInOptionSet', 'Instruction', ($scope, $stateParams, $state,
+OptionSet, Option, OptionInOptionSet, Instruction) ->
 
   $scope.optionSet = OptionSet.get({'id': $stateParams.id})
   $scope.optionInOptionSets = OptionInOptionSet.query({'option_set_id': $stateParams.id})
   $scope.options = Option.query({'option_set_id': $stateParams.id})
+  $scope.instructions = Instruction.query({})
   $scope.counter = 0
 
   $scope.updateOptionSet = () ->
