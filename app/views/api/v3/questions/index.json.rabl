@@ -61,16 +61,14 @@ node :identifies_survey do |iq|
 end
 
 node :reg_ex_validation do |iq|
-  iq.question.reg_ex_validation if iq.question
+  # iq.question.reg_ex_validation if iq.question
 end
 
 node :reg_ex_validation_message do |iq|
-  iq.question.reg_ex_validation_message if iq.question
+  # iq.question.reg_ex_validation_message if iq.question
 end
 
 child :translations do |t|
   attributes :id, :question_id, :text, :language, :instructions
 end
 
-# ??? needs to be explored
-# :grid_id, :number_in_grid,
