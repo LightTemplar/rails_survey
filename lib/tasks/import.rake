@@ -27,10 +27,35 @@ task :import, [:filename] => :environment do |_t, args|
     unless row[0].blank?
       question_set = QuestionSet.where(title: row[0].strip).try(:first)
       question_set ||= QuestionSet.create!(title: row[0].strip)
+
       if row[2].strip == 'HEADING'
         display = Display.where(title: row[5].strip, instrument_id: instrument.id).first
         display ||= Display.create!(title: row[5].strip, mode: 'MULTIPLE',
                                     position: instrument.displays.size + 1, instrument_id: instrument.id)
+        next
+      end
+
+      if row[2].strip == 'INSTRUCTIONS'
+        instruction_digest = Digest::SHA256.hexdigest(row[5].strip)
+        instruction = Instruction.where(title: instruction_digest).first
+        instruction ||= Instruction.create!(title: instruction_digest, text: row[5].strip)
+        display_instruction = DisplayInstruction.where(display_id: display.id, instruction_id: instruction.id).first
+        unless display_instruction
+          number = instrument.instrument_questions.try(:last).try(:number_in_instrument)
+          number ||= 0
+          DisplayInstruction.create!(display_id: display.id, instruction_id: instruction.id,
+                                     position: number + 1)
+        end
+        (6..9).each do |n|
+          next if row[n].blank?
+          it = InstructionTranslation.where(instruction_id: instruction.id,
+                                            language: Settings.languages.to_h[csv_headers[n]],
+                                            text: row[n].strip)
+          next if it
+          InstructionTranslation.create!(instruction_id: instruction.id,
+                                         language: Settings.languages.to_h[csv_headers[n]],
+                                         text: row[n].strip)
+        end
         next
       end
 

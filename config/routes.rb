@@ -39,6 +39,7 @@ RailsSurvey::Application.routes.draw do
         resources :next_questions, only: :index
         resources :multiple_skips, only: :index
         resources :follow_up_questions, only: :index
+        resources :display_instructions, only: :index
         resources :surveys, only: :create
         resources :responses, only: :create
         resources :response_images, only: :create
@@ -103,6 +104,7 @@ RailsSurvey::Application.routes.draw do
               get :copy
               post :move
             end
+            resources :display_instructions
           end
           resources :instrument_translations
           resources :instrument_rules

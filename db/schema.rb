@@ -92,6 +92,15 @@ ActiveRecord::Schema.define(version: 20180516180145) do
 
   add_index "devices", ["identifier"], name: "index_devices_on_identifier", unique: true, using: :btree
 
+  create_table "display_instructions", force: :cascade do |t|
+    t.integer  "display_id"
+    t.integer  "instruction_id"
+    t.integer  "position"
+    t.datetime "deleted_at"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
   create_table "displays", force: :cascade do |t|
     t.string   "mode"
     t.integer  "position"

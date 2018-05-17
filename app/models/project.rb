@@ -63,8 +63,7 @@ class Project < ActiveRecord::Base
   end
 
   def api_instrument_questions
-    instrument_ids = instruments.where(published: true).pluck(:id)
-    InstrumentQuestion.where(instrument_id: instrument_ids)
+    InstrumentQuestion.where(instrument_id: published_instruments.pluck(:id))
   end
 
   def api_option_in_option_sets
@@ -76,12 +75,24 @@ class Project < ActiveRecord::Base
     Question.where(id: api_instrument_questions.pluck(:question_id).uniq)
   end
 
+  def api_displays
+    Display.where(instrument_id: published_instruments.pluck(:id))
+  end
+
+  def api_display_instructions
+    DisplayInstruction.where(display_id: api_displays.pluck(:id))
+  end
+
   def special_option_sets
     questions.uniq.collect(&:special_option_set).uniq.compact
   end
 
   def non_responsive_devices
     devices.includes(:surveys).where('surveys.updated_at < ?', Settings.danger_zone_days.days.ago).order('surveys.updated_at ASC')
+  end
+
+  def published_instruments
+    instruments.where(published: true)
   end
 
   def instrument_response_exports

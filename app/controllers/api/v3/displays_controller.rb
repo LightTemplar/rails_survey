@@ -6,8 +6,7 @@ module Api
 
       def index
         project = Project.find params[:project_id]
-        instrument_ids = project.instruments.where(published: true).pluck(:id)
-        @displays = to_sync(project.displays.where(instrument_id: instrument_ids), 'displays', params[:last_sync_time])
+        @displays = to_sync(project.api_displays, 'displays', params[:last_sync_time])
       end
     end
   end

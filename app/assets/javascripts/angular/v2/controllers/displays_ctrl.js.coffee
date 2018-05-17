@@ -71,17 +71,18 @@ App.controller 'NewDisplayCtrl', ['$scope', '$stateParams', '$state', 'Instrumen
 
 ]
 
-App.controller 'ShowDisplayCtrl', ['$scope', '$stateParams', 'Display',
-'Instrument', 'Setting', '$state', 'InstrumentQuestion', 'QuestionSet', 'Question',
-($scope, $stateParams, Display, Instrument, Setting, $state, InstrumentQuestion,
-QuestionSet, Question) ->
+App.controller 'ShowDisplayCtrl', ['$scope', '$stateParams', 'Display', 'DisplayInstruction',
+'Instrument', 'Setting', '$state', 'InstrumentQuestion', 'QuestionSet', 'Question', 'Instruction',
+($scope, $stateParams, Display, DisplayInstruction, Instrument, Setting, $state, InstrumentQuestion,
+QuestionSet, Question, Instruction) ->
   $scope.project_id = $stateParams.project_id
   $scope.instrument_id = $stateParams.instrument_id
   $scope.id = $stateParams.id
-  $scope.showCopy = false
   $scope.showQuestions = true
+  $scope.showCopy = false
   $scope.showAddQuestion = false
   $scope.showMove = false
+  $scope.showInstructions = false
 
   $scope.display = Display.get({
     'project_id': $scope.project_id,
@@ -101,7 +102,15 @@ QuestionSet, Question) ->
     'instrument_id': $scope.instrument_id
   }, ->
     $scope.displayQuestions = _.where($scope.instrumentQuestions, {display_id: $scope.display.id})
+    $scope.minNum = $scope.displayQuestions[0].number_in_instrument
+    $scope.maxNum = $scope.displayQuestions[$scope.displayQuestions.length - 1].number_in_instrument + 1
   )
+  $scope.displayInstructions = DisplayInstruction.query({
+    'project_id': $scope.project_id,
+    'instrument_id': $scope.instrument_id,
+    'display_id': $scope.id
+  })
+  $scope.instructions = Instruction.query({})
   $scope.displays = Display.query({
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id
@@ -112,10 +121,11 @@ QuestionSet, Question) ->
     $scope.displays.splice($scope.displays.indexOf(display), 1)
     $scope.displays.push(new Display(id: -1, title: "Create New Display"))
 
-  $scope.toggleViews = (q, c, m) ->
+  $scope.toggleViews = (q, c, m, i) ->
     $scope.showQuestions = q
     $scope.showCopy = c
     $scope.showMove = m
+    $scope.showInstructions = i
 
   $scope.saveCopy = () ->
     $scope.display.project_id = $scope.project_id
@@ -264,5 +274,43 @@ QuestionSet, Question) ->
         question.selected = true
       else
         question.selected = false
+
+  $scope.saveDisplayInstruction = (displayInstruction) ->
+    displayInstruction.instrument_id = $scope.instrument_id
+    displayInstruction.project_id = $scope.project_id
+    if displayInstruction.id
+      displayInstruction.$update({},
+        (data, headers) ->
+          displayInstruction = data
+        (result, headers) ->
+          alert(result.data.errors)
+      )
+    else
+      displayInstruction.$save({},
+        (data, headers) ->
+          displayInstruction = data
+        (result, headers) ->
+          alert(result.data.errors)
+      )
+
+  $scope.deleteDisplayInstruction = (displayInstruction) ->
+    displayInstruction.instrument_id = $scope.instrument_id
+    displayInstruction.project_id = $scope.project_id
+    index = $scope.displayInstructions.indexOf(displayInstruction)
+    if displayInstruction.id
+      displayInstruction.$delete({},
+        (data, headers) ->
+          $scope.displayInstructions.splice(index, 1)
+        (result, headers) ->
+          alert(result.data.errors)
+      )
+    else
+      $scope.displayInstructions.splice(index, 1)
+
+  $scope.addDisplayInstruction = () ->
+    displayInstruction = new DisplayInstruction()
+    displayInstruction.display_id = $scope.display.id
+    displayInstruction.instruction_id = ''
+    $scope.displayInstructions.push(displayInstruction)
 
 ]
