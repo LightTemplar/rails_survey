@@ -7,22 +7,26 @@
   </div>
   <div class="card">
     <div class="card-body card-padding">
-      <ng-form class="card" name="questionSetEditorForm">
-        <div class="card-body card-padding">
-          <div class="row">
-            <label class="col-md-1">Title</label>
-            <div class="col-md-10">
-              <input type="text" class="form-control" name="question-set"
-              ng-model="questionSet.title" required>
-            </div>
-            <div class="col-md-1">
-              <div class="btn btn-success" ng-disabled="questionSetEditorForm.$invalid"
-              ng-click="updateQuestionSet()">Update</div>
+      <ng-form name="questionSetEditorForm">
+        <div class="row">
+          <label class="col-md-1">Title</label>
+          <div class="col-md-10">
+            <input type="text" class="form-control" name="question-set"
+                   ng-model="questionSet.title" required>
+          </div>
+          <div class="col-md-1">
+            <div class="btn btn-success" ng-disabled="questionSetEditorForm.$invalid"
+                 ng-click="updateQuestionSet()">Update
             </div>
           </div>
-          <div ng-include='"questions/index.html"'></div>
         </div>
       </ng-form>
+    </div>
+  </div>
+  <h4 class="text-center"><strong>Questions In Set</strong></h4>
+  <div class="card">
+    <div class="card-body card-padding">
+      <div ng-include='"questions/index.html"'></div>
     </div>
   </div>
 </div>

@@ -12,10 +12,10 @@
 #
 
 class OptionSet < ActiveRecord::Base
-  has_many :option_in_option_sets
+  has_many :option_in_option_sets, dependent: :destroy
   has_many :options, through: :option_in_option_sets
   has_many :translations, through: :options
-  has_many :questions
+  has_many :questions, dependent: :nullify
   belongs_to :instruction
   after_save :set_option_specialty, if: proc { |option_set| option_set.special_changed? }
   has_paper_trail

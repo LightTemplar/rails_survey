@@ -11,8 +11,9 @@
 #
 
 class Instruction < ActiveRecord::Base
-  has_many :questions
-  has_many :instruction_translations
+  has_many :questions, dependent: :nullify
+  has_many :instruction_translations, dependent: :destroy
+  has_many :display_instructions, dependent: :destroy
   acts_as_paranoid
   has_paper_trail
 end
