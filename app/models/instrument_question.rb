@@ -11,6 +11,7 @@
 #  updated_at           :datetime
 #  identifier           :string
 #  deleted_at           :datetime
+#  table_identifier     :string
 #
 
 class InstrumentQuestion < ActiveRecord::Base

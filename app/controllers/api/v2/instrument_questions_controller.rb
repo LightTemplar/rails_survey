@@ -45,7 +45,7 @@ module Api
       end
 
       def instrument_question_params
-        params.require(:instrument_question).permit(:instrument_id, :question_id,
+        params.require(:instrument_question).permit(:instrument_id, :question_id, :table_identifier,
                                                     :number_in_instrument, :display_type, :display_id, :identifier)
       end
     end

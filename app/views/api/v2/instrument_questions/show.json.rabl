@@ -2,7 +2,7 @@ object @instrument_question
 cache @instrument_question
 
 attributes :id, :instrument_id, :question_id, :number_in_instrument, :display_id,
-:identifier, :following_up_question_identifier
+:identifier, :following_up_question_identifier, :table_identifier
 
 node :type do |iq|
   iq.question.question_type if iq.question

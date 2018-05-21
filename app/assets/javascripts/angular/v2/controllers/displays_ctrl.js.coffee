@@ -83,6 +83,7 @@ QuestionSet, Question, Instruction) ->
   $scope.showAddQuestion = false
   $scope.showMove = false
   $scope.showInstructions = false
+  $scope.showTables = false
 
   $scope.display = Display.get({
     'project_id': $scope.project_id,
@@ -104,6 +105,7 @@ QuestionSet, Question, Instruction) ->
     $scope.displayQuestions = _.where($scope.instrumentQuestions, {display_id: $scope.display.id})
     $scope.minNum = $scope.displayQuestions[0].number_in_instrument
     $scope.maxNum = $scope.displayQuestions[$scope.displayQuestions.length - 1].number_in_instrument + 1
+    $scope.tableIdentifiers = _.compact(_.uniq(_.map($scope.displayQuestions, (iq) -> iq.table_identifier)))
   )
   $scope.displayInstructions = DisplayInstruction.query({
     'project_id': $scope.project_id,
@@ -121,11 +123,57 @@ QuestionSet, Question, Instruction) ->
     $scope.displays.splice($scope.displays.indexOf(display), 1)
     $scope.displays.push(new Display(id: -1, title: "Create New Display"))
 
-  $scope.toggleViews = (q, c, m, i) ->
+  $scope.toggleViews = (q, c, m, i, t) ->
     $scope.showQuestions = q
     $scope.showCopy = c
     $scope.showMove = m
     $scope.showInstructions = i
+    $scope.showTables = t
+
+  $scope.tableQuestions = (identifier) ->
+    _.where($scope.displayQuestions, {table_identifier: identifier})
+
+  $scope.addQuestionsToTable = (identifier) ->
+    $scope.editIdentifier = identifier
+
+  $scope.questionInTable = (question, identifier) ->
+    $scope.tableQuestions(identifier).indexOf(question) > -1
+
+  $scope.addAbleDisplayQuestions = (identifier) ->
+    if $scope.tableQuestions(identifier).length == 0
+      $scope.displayQuestions
+    else
+      _.where($scope.displayQuestions, {option_set_id: $scope.tableQuestions(identifier)[0].option_set_id})
+
+  $scope.saveToTable = (identifier) ->
+    angular.forEach $scope.displayQuestions, (dq, index) ->
+      if dq.selected
+        dq.table_identifier = identifier
+        dq.project_id = $scope.project_id
+        dq.$update({},
+          (data, headers) ->
+          (result, headers) ->
+            alert(result.data.errors)
+        )
+    $scope.editIdentifier = null
+
+  $scope.removeQuestionFromTable = (question) ->
+    question.table_identifier = null
+    question.project_id = $scope.project_id
+    if question.id
+      question.$update({},
+        (data, headers) ->
+          (result, headers) ->
+            alert(result.data.errors)
+      )
+
+  $scope.createTable = () ->
+    $scope.showNewTable = true
+    $scope.newTable = {name: ''}
+
+  $scope.saveNewTable = () ->
+    $scope.showNewTable = false
+    $scope.tableIdentifiers.push($scope.newTable.name)
 
   $scope.saveCopy = () ->
     $scope.display.project_id = $scope.project_id
