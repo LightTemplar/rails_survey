@@ -20,6 +20,7 @@ task :import, [:filename] => :environment do |_t, args|
   question = nil
   option_set = nil
   display = nil
+  folder = nil
   alphabet = ('a'..'z').to_a
   CSV.foreach(args[:filename], headers: true) do |row|
     instrument.reload
@@ -30,8 +31,10 @@ task :import, [:filename] => :environment do |_t, args|
 
       if row[2].strip == 'HEADING'
         display = Display.where(title: row[5].strip, instrument_id: instrument.id).first
-        display ||= Display.create!(title: row[5].strip, mode: 'MULTIPLE',
+        display ||= Display.create!(title: row[5].strip, mode: 'MULTIPLE', section_title: question_set.title,
                                     position: instrument.displays.size + 1, instrument_id: instrument.id)
+        folder = Folder.where(title: row[5].strip, question_set_id: question_set.id).first
+        folder ||= Folder.create!(title: row[5].strip, question_set_id: question_set.id)
         next
       end
 
@@ -61,8 +64,8 @@ task :import, [:filename] => :environment do |_t, args|
 
       unless row[2].strip == 'SKIP'
         question = Question.where(question_identifier: row[1].strip).try(:first)
-        question ||= Question.create!(question_identifier: row[1].strip,
-                                      question_type: row[2].strip, text: row[5].strip, question_set_id: question_set.id)
+        question ||= Question.create!(question_identifier: row[1].strip, question_type: row[2].strip,
+                                      text: row[5].strip, question_set_id: question_set.id, folder_id: folder.id)
         (6..9).each do |n|
           next if row[n].blank?
           QuestionTranslation.create!(question_id: question.id,
@@ -71,9 +74,15 @@ task :import, [:filename] => :environment do |_t, args|
         end
         iq = InstrumentQuestion.where(instrument_id: instrument.id,
                                       identifier: row[1].strip, question_id: question.id).first
-        iq ||= InstrumentQuestion.create!(instrument_id: instrument.id,
-                                          identifier: row[1].strip, question_id: question.id, display_id:
-                                              display.id, number_in_instrument: instrument.instrument_questions.size + 1)
+        if iq
+          InstrumentQuestion.create!(instrument_id: instrument.id, identifier: "#{row[1].strip}_#{Time.now.to_i}",
+                                     question_id: question.id, display_id: display.id,
+                                     number_in_instrument: instrument.instrument_questions.size + 1)
+        else
+          InstrumentQuestion.create!(instrument_id: instrument.id, identifier: row[1].strip,
+                                     question_id: question.id, display_id: display.id,
+                                     number_in_instrument: instrument.instrument_questions.size + 1)
+        end
         if question.question_type != 'INSTRUCTIONS'
           special_option_set = OptionSet.where(special: true).first
           special_option_set ||= OptionSet.create!(title: 'Special Option Set',
@@ -81,15 +90,10 @@ task :import, [:filename] => :environment do |_t, args|
           %w[DK RF MI NA].each_with_index do |sp, index|
             special_option = Option.where(identifier: sp).first
             special_option ||= Option.create!(identifier: sp, text: sp)
-            oios = OptionInOptionSet.where(option_id: special_option.id,
-                                           option_set_id: special_option_set.id).first
+            oios = OptionInOptionSet.where(option_id: special_option.id, option_set_id: special_option_set.id).first
             next if oios
-            OptionInOptionSet.create!(
-              option_id: special_option.id,
-              option_set_id: special_option_set.id,
-              special: true,
-              number_in_question: index
-            )
+            OptionInOptionSet.create!(option_id: special_option.id, option_set_id: special_option_set.id, special:
+                true, number_in_question: index)
           end
           question.special_option_set_id = special_option_set.id
           question.save!
@@ -128,7 +132,7 @@ task :import, [:filename] => :environment do |_t, args|
       option = Option.where(identifier: row[5].strip).try(:first)
       option ||= Option.create!(identifier: row[5].strip, text: row[5].strip)
       option_in_option_set = option_set.option_in_option_sets.where(
-        option_id: option.id, option_set_id: option_set.id).try(:first)
+          option_id: option.id, option_set_id: option_set.id).try(:first)
       unless option_in_option_set
         OptionInOptionSet.create!(option_id: option.id, option_set_id: option_set.id,
                                   number_in_question: option_set.options.size)
@@ -185,17 +189,15 @@ task :import, [:filename] => :environment do |_t, args|
             puts "Enter manually for question #{question_identifier}"
           end
           next unless question_identifier && option_identifier && next_question_identifier
-          skip_pattern = SkipPattern.where(
-            question_identifier: question_identifier,
-            option_identifier: option_identifier,
-            next_question_identifier: next_question_identifier).first
+          skip_pattern = SkipPattern.where(question_identifier: question_identifier,
+                                           option_identifier: option_identifier,
+                                           next_question_identifier: next_question_identifier).first
           next if skip_pattern
-          SkipPattern.create!(
-            question_identifier: question_identifier,
-            option_identifier: option_identifier,
-            next_question_identifier: next_question_identifier)
+          SkipPattern.create!(question_identifier: question_identifier, option_identifier: option_identifier,
+                              next_question_identifier: next_question_identifier)
         end
       end
     end
   end
+  instrument.set_skip_patterns
 end

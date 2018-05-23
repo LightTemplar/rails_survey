@@ -10,6 +10,7 @@
 #  updated_at    :datetime
 #  title         :string
 #  deleted_at    :datetime
+#  section_title :string
 #
 
 class Display < ActiveRecord::Base

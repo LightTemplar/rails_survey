@@ -61,6 +61,7 @@ RailsSurvey::Application.routes.draw do
             get :copy
           end
         end
+        resources :folders
       end
       resources :option_sets do
         resources :options, controller: 'option_set_options'

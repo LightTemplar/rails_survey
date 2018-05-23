@@ -16,6 +16,7 @@
 #  instruction_id        :integer
 #  special_option_set_id :integer
 #  parent_identifier     :string
+#  folder_id             :integer
 #
 
 require "spec_helper"

@@ -52,7 +52,7 @@ module Api
       def question_params
         params.require(:question_set_question).permit(:option_set_id, :question_set_id, :text, :question_type,
                                                       :question_identifier, :parent_identifier, :identifies_survey,
-                                                      :instruction_id, :critical, :special_option_set_id)
+                                                      :instruction_id, :critical, :special_option_set_id, :folder_id)
       end
 
     end

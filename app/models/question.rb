@@ -16,6 +16,7 @@
 #  instruction_id        :integer
 #  special_option_set_id :integer
 #  parent_identifier     :string
+#  folder_id             :integer
 #
 
 class Question < ActiveRecord::Base
@@ -26,9 +27,10 @@ class Question < ActiveRecord::Base
   # belongs_to :section
   belongs_to :option_set
   belongs_to :special_option_set, class_name: 'OptionSet'
-  has_many :options, through: :option_set
   belongs_to :question_set
   belongs_to :instruction
+  belongs_to :folder
+  has_many :options, through: :option_set
   has_many :responses
   has_many :translations, foreign_key: 'question_id', class_name: 'QuestionTranslation', dependent: :destroy
   has_many :images, dependent: :destroy

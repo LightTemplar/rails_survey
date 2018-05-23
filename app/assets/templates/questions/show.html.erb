@@ -23,6 +23,20 @@
       </div>
 
       <div class="row m-t-5">
+        <label class="col-md-2">Folder</label>
+        <div class="col-md-10">
+          <select
+            class="form-control"
+            name="folder"
+            id="folder"
+            ng-model="question.folder_id"
+            ng-options="folder.id as folder.title for folder in folders">
+            <option value=""></option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row m-t-5">
         <label class="col-md-2">Type</label>
         <div class="col-md-10">
           <select

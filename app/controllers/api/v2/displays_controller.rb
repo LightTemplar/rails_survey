@@ -63,7 +63,7 @@ module Api
       end
 
       def display_params
-        params.require(:display).permit(:instrument_id, :position, :mode, :title)
+        params.require(:display).permit(:instrument_id, :position, :mode, :title, :section_title)
       end
     end
   end

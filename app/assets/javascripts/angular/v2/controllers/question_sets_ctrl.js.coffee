@@ -39,8 +39,10 @@ App.controller 'QuestionSetsCtrl', ['$scope', '$state', 'QuestionSet',
 
 ]
 
-App.controller 'ShowQuestionSetCtrl', ['$scope', '$stateParams', '$location', 'QuestionSet',
-($scope, $stateParams, $location, QuestionSet) ->
+App.controller 'ShowQuestionSetCtrl', ['$scope', '$stateParams', '$location', 'QuestionSet', 'Folder',
+($scope, $stateParams, $location, QuestionSet, Folder) ->
+  $scope.showQuestions = true
+  $scope.showFolders = false
 
   $scope.updateQuestionSet = () ->
     if $scope.questionSet.id
@@ -49,9 +51,48 @@ App.controller 'ShowQuestionSetCtrl', ['$scope', '$stateParams', '$location', 'Q
         (result, headers) ->
       )
 
+  $scope.toggleViews = (q, f) ->
+    $scope.showQuestions = q
+    $scope.showFolders = f
+
+  $scope.addFolder = () ->
+    folder = new Folder()
+    folder.question_set_id = $stateParams.id
+    folder.name = ''
+    $scope.folders.push(folder)
+
+  $scope.updateFolder = (folder) ->
+    if folder.id
+      folder.$update({},
+        (data, headers) ->
+          folder = data
+        (result, headers) ->
+          alert(result.data.errors)
+      )
+    else
+      folder.$save({},
+        (data, headers) ->
+          folder = data
+        (result, headers) ->
+          alert(result.data.errors)
+      )
+
+  $scope.deleteFolder = (folder) ->
+    index = $scope.folders.indexOf(folder)
+    if folder.id
+      folder.$delete({},
+        (data, headers) ->
+          $scope.folders.splice(index, 1)
+        (result, headers) ->
+          alert(result.data.errors)
+      )
+    else
+      $scope.folders.splice(index, 1)
+
   if $scope.questionSets and $stateParams.id
     $scope.questionSet = _.first(_.filter($scope.questionSets, (qs) -> qs.id == $stateParams.id))
   else if $stateParams.id and not $scope.questionSets
     $scope.questionSet = QuestionSet.get({'id': $stateParams.id})
+  $scope.folders = Folder.query({ 'question_set_id': $stateParams.id })
 
 ]

@@ -109,9 +109,17 @@ ActiveRecord::Schema.define(version: 20180518132755) do
     t.datetime "updated_at"
     t.string   "title"
     t.datetime "deleted_at"
+    t.string   "section_title"
   end
 
   add_index "displays", ["deleted_at"], name: "index_displays_on_deleted_at", using: :btree
+
+  create_table "folders", force: :cascade do |t|
+    t.integer  "question_set_id"
+    t.string   "title"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
 
   create_table "follow_up_questions", force: :cascade do |t|
     t.string   "question_identifier"
@@ -399,6 +407,7 @@ ActiveRecord::Schema.define(version: 20180518132755) do
     t.integer  "instruction_id"
     t.integer  "special_option_set_id"
     t.string   "parent_identifier"
+    t.integer  "folder_id"
   end
 
   add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true, using: :btree

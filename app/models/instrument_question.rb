@@ -25,8 +25,7 @@ class InstrumentQuestion < ActiveRecord::Base
   acts_as_paranoid
   has_paper_trail
   validates :identifier, presence: true
-  validates :identifier, uniqueness: { scope: :instrument_id,
-    message: 'instrument already has this identifier' }
+  validates :identifier, uniqueness: { scope: :instrument_id, message: 'instrument already has this identifier' }
 
   def options
     option_set_ids = [question.option_set_id, question.special_option_set_id].compact

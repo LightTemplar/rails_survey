@@ -49,7 +49,8 @@ App.controller 'NewDisplayCtrl', ['$scope', '$stateParams', '$state', 'Instrumen
     'id': $scope.instrument_id
   }, ->
     $scope.display = new Display()
-    $scope.display.title = 'Enter title here'
+    $scope.display.title = 'Enter display title here'
+    $scope.display.section_title = 'Enter section title here'
     $scope.display.project_id = $scope.project_id
     $scope.display.instrument_id = $scope.instrument_id
     $scope.display.position = $scope.instrument.display_count + 1

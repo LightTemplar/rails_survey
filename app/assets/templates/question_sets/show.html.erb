@@ -1,10 +1,10 @@
 <div ng-controller="ShowQuestionSetCtrl">
   <h4 class="text-center"><strong>{{questionSet.title}}</strong></h4>
-  <div class="row m-5">
-    <div class="btn btn-primary" ui-sref="questionTranslations({question_set_id: questionSet.id})">
-      Translations
-    </div>
-  </div>
+  <!--  <div class="row m-5">-->
+  <!--    <div class="btn btn-primary" ui-sref="questionTranslations({question_set_id: questionSet.id})">-->
+  <!--      Translations-->
+  <!--    </div>-->
+  <!--  </div>-->
   <div class="card">
     <div class="card-body card-padding">
       <ng-form name="questionSetEditorForm">
@@ -23,10 +23,42 @@
       </ng-form>
     </div>
   </div>
-  <h4 class="text-center"><strong>Questions In Set</strong></h4>
+
   <div class="card">
     <div class="card-body card-padding">
-      <div ng-include='"questions/index.html"'></div>
+      <a class="btn btn-primary" ui-sref="questionTranslations({question_set_id: questionSet.id})">Translations</a>
+      <div class="btn btn-primary" ng-click="toggleViews(true, false)">Questions</div>
+      <div class="btn btn-primary" ng-click="toggleViews(false, true)">Folders</div>
     </div>
   </div>
+
+  <div ng-show="showFolders">
+    <h4 class="text-center"><strong>Folders In Set</strong></h4>
+    <div class="card">
+      <div class="card-body card-padding">
+        <div ng-repeat="folder in folders">
+          <div class="row m-5">
+            <div class="col-md-10">
+              <input type="text" ng-model="folder.title" class="form-control" required>
+            </div>
+            <div class="col-md-2">
+              <div class="btn btn-success" ng-click="updateFolder(folder)">Save</div>
+              <div class="btn btn-danger" ng-click="deleteFolder(folder)">Delete</div>
+            </div>
+          </div>
+        </div>
+        <div class="btn btn-primary" ng-click="addFolder()">New Folder</div>
+      </div>
+    </div>
+  </div>
+
+  <div ng-show="showQuestions">
+    <h4 class="text-center"><strong>Questions In Set</strong></h4>
+    <div class="card">
+      <div class="card-body card-padding">
+        <div ng-include='"questions/index.html"'></div>
+      </div>
+    </div>
+  </div>
+
 </div>

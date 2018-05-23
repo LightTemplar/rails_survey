@@ -39,9 +39,9 @@ App.controller 'QuestionsCtrl', ['$scope', '$state', '$stateParams', '$location'
 ]
 
 App.controller 'ShowQuestionCtrl', ['$scope', '$stateParams', '$location', '$state',
- 'Question', 'Setting', 'OptionSet', 'Instruction', 'InstrumentQuestion',
+ 'Question', 'Setting', 'OptionSet', 'Instruction', 'InstrumentQuestion', 'Folder',
  ($scope, $stateParams, $location, $state, Question, Setting, OptionSet,
- Instruction, InstrumentQuestion) ->
+ Instruction, InstrumentQuestion, Folder) ->
 
   $scope.toolBar = [
       ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p'],
@@ -126,5 +126,6 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$stateParams', '$location', '$sta
     $scope.specialOptionSets = _.where($scope.allOptionSets, {special: true})
   )
   $scope.instructions = Instruction.query({})
+  $scope.folders = Folder.query({ 'question_set_id': $stateParams.question_set_id })
 
 ]
