@@ -21,7 +21,7 @@
 #
 
 class Response < ActiveRecord::Base
-  belongs_to :question
+  belongs_to :question # TODO: change to instrument question
   belongs_to :survey, foreign_key: :survey_uuid, primary_key: :uuid, touch: true
   delegate :device, to: :survey
   delegate :instrument, to: :survey
@@ -32,7 +32,7 @@ class Response < ActiveRecord::Base
   belongs_to :device_user
   acts_as_paranoid
   has_paper_trail
-  validate :question_existence
+  # validate :question_existence TODO: change to instrument question
   validates :survey, presence: true
   after_destroy :calculate_response_rate
 
