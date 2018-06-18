@@ -1,18 +1,18 @@
-<h4 class="text-center"><strong>Translations for {{language}}</strong></h4>
+<h4 class="text-center">Translations for {{language}}</h4>
 <div class="card">
   <div class="card-body card-padding">
     <div ng-controller="OptionTranslationsCtrl">
       <table class="table table-hover">
         <thead>
-          <tr>
+          <tr class="row">
             <th class="col-md-6">Option Text</th>
             <th class="col-md-6">Translation</th>
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="option in options">
-            <td>{{option.text}}</td>
-            <td>
+          <tr class="row" ng-repeat="option in options">
+            <td class="col-md-6">{{option.text}}</td>
+            <td class="col-md-6">
               <textarea
               class="form-control"
               name="option-translation-{{option.id}}"
@@ -22,7 +22,7 @@
           </tr>
         </tbody>
       </table>
-      <div class="row m-t-5">
+      <div class="m-1">
         <div class="btn btn-success pull-right" ng-click="save()">Save</div>
       </div>
     </div>

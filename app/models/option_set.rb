@@ -25,16 +25,10 @@ class OptionSet < ActiveRecord::Base
     new_copy = dup
     new_copy.title = "#{title}_#{Time.now.to_i}"
     new_copy.save!
-    options.each do |op|
-      new_op = op.dup
-      new_op.identifier = "#{op.identifier}_#{Time.now.to_i}"
-      new_op.option_set_id = new_copy.id
-      new_op.save!
-      op.translations.each do |ot|
-        new_ot = ot.dup
-        new_ot.option_id = new_op.id
-        new_ot.save!
-      end
+    option_in_option_sets.each do |oios|
+      new_oios = oios.dup
+      new_oios.option_set_id = new_copy.id
+      new_oios.save!
     end
     new_copy
   end

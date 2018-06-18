@@ -1,6 +1,6 @@
 <div ng-controller="OptionsCtrl">
   <h4 class="text-center"><strong>Options</strong></h4>
-  <div class="row m-5">
+  <div class="m-1">
     <a class="btn btn-primary" ui-sref="optionSets">Option Sets</a>
     <div class="pull-right btn btn-primary" ng-click="newOption()">Add Option</div>
   </div>
@@ -8,13 +8,13 @@
     <div class="card-body card-padding">
       <input type="search" ng-model="option" placeholder="Filter options ..."
       class="form-control tm-search">
-      <div class="row">
+      <h5 class="row">
         <label class="col-md-4">Identifier</label>
         <label class="col-md-6">Text</label>
         <label class="col-md-2">Actions</label>
-      </div>
-      <div ng-repeat="option in options | filter: option | orderBy:'updated_at':true">
-        <div class="row">
+      </h5>
+      <div ng-repeat="option in options | filter: option">
+        <div class="row m-1">
           <label class="col-md-4">
             <input type="text" class="form-control" ng-model="option.identifier" required>
           </label>

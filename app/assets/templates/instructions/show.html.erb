@@ -1,8 +1,8 @@
-<h4 class="text-center"><strong>{{instruction.title}}</strong></h4>
+<h4 class="text-center">{{instruction.title}}</h4>
+<div class="m-1">
+  <a class="btn btn-primary" ui-sref="instructionTranslations({instruction_id: instruction.id})">Translations</a>
+</div>
 <div class="card">
-  <div class="row m-5">
-    <a class="btn btn-primary" ui-sref="instructionTranslations({instruction_id: instruction.id})">Translations</a>
-  </div>
   <div class="card-body card-padding">
     <ng-form class="card" name="instructionEditorForm" ng-controller="ShowInstructionCtrl">
       <div class="card-body card-padding">
@@ -23,7 +23,7 @@
             </text-angular>
           </div>
         </div>
-        <div class="row m-5">
+        <div class="m-1">
           <div class="btn btn-success pull-right" ng-disabled="instructionEditorForm.$invalid"
           ng-click="updateInstruction()">Save</div>
         </div>

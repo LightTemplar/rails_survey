@@ -4,7 +4,7 @@
   <div class="card">
     <div class="card-body card-padding">
       <div ng-repeat="rule in instrumentRules">
-        <div class="row m-5">
+        <div class="row m-1">
           <span class="col-md-4">
             <strong>{{rule.rule_type}}</strong>
           </span>
@@ -14,13 +14,13 @@
           </div>
         </div>
       </div>
-      <div ng-hide="showNewRule" class="m-10">
+      <div ng-hide="showNewRule" class="m-1">
         <button class="btn btn-primary" ng-click="addInstrumentRule()">Add Rule</button>
       </div>
 
       <div ng-show="showNewRule">
         <ng-form name="InstrumentRuleForm">
-          <div class="row m-5">
+          <div class="row m-1">
             <label class="col-md-3">Rule</label>
             <div class="col-md-9">
               <select
@@ -33,14 +33,11 @@
               </select>
             </div>
           </div>
-          <div class="row">
-            <div class="pull-right m-5">
-              <div class="btn btn-default" ng-click="cancelInstrumentRule()">Cancel</div>
-            </div>
-            <div class="pull-right m-5">
-              <div class="btn btn-success" ng-disabled="InstrumentRuleForm.$invalid" ng-click="saveInstrumentRule()">
-                Save
-              </div>
+          <div class="m-1">
+            <div class="btn btn-secondary pull-left" ng-click="cancelInstrumentRule()">Cancel</div>
+            <div class="btn btn-success pull-right" ng-disabled="InstrumentRuleForm.$invalid" ng-click="saveInstrumentRule
+              ()">
+              Save
             </div>
           </div>
         </ng-form>

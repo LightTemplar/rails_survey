@@ -1,82 +1,116 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>iSEE</title>
-    <%= stylesheet_link_tag 'application', media: 'all' %>
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <script type="text/javascript">
-      google.load('visualization', '1', {'packages': ['corechart']});
-    </script>
-    <script>
-      window._base_url = "<%= ENV['BASE_URL'] %>"
-    </script>
-    <%= javascript_include_tag 'application' %>
-    <%= csrf_meta_tags %>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <meta charset="utf-8">
-  </head>
+<head>
+  <title>iSEE</title>
+  <%#= stylesheet_link_tag 'application', media: 'all' %>
+<!--  <script type="text/javascript" src="https://www.google.com/jsapi"></script>-->
+<!--  <script type="text/javascript">-->
+<!--      google.load('visualization', '1', {'packages': ['corechart']});-->
+<!--  </script>-->
+<!--  <script>-->
+<!--      window._base_url = "<%#= ENV['BASE_URL'] %>"-->
+<!--  </script>-->
+  <%#= javascript_include_tag 'application' %>
+  <%#= csrf_meta_tags %>
+<!--  <meta name="viewport" content="width=device-width, initial-scale=1">-->
+<!--  <meta name="description" content="">-->
+<!--  <meta name="author" content="">-->
+<!--  <meta charset="utf-8">-->
+</head>
 
-  <body ng-app="Survey">
-    <header id="header">
-      <%= render 'layouts/header' %>
-    </header>
-
-    <% flash.each do |key, msg| %>
-    <% if key == :alert or key == :notice %>
-    <div class="alert alert-<%= key == :alert ? 'danger' : 'success' %> alert-dismissible text-center" role="alert">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-      <%= msg %>
-    </div>
-    <% end %>
-    <% end %>
-
-    <section id="main">
-      <aside id="sidebar">
-        <div class="sidebar-inner c-overflow">
-          <%#= render 'layouts/sidebar' %>
-          <% if current_user %>
-          <ul class="main-menu">
-            <% if current_user.admin_user? %>
-              <li>
-                <%= link_to admin_dashboard_path, target: :_blank do %>
-                <i class="md md-verified-user"></i>Admin Dashboard
-                <% end %>
-              </li>
-            <% end %>
-            <li class="sub-menu">
-              <a href=""><i class="md md-dashboard"></i>Components Bank</a>
-              <ul>
-                <li><a ui-sref="questionSets({})">Question Sets</a></li>
-                <li><a ui-sref="optionSets({})">Option Sets</a></li>
-                <li><a ui-sref="instructions({})">Instructions</a></li>
-                <li><a ui-sref="rules({})">Rules</a></li>
-                <li><a ui-sref="options({})">Options</a></li>
-              </ul>
+<body ng-app="Survey">
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark-blue">
+    <div class="container">
+    <a class="navbar-brand" href="/">iSEE</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <% if current_user %>
+        <ul class="navbar-nav mr-auto">
+          <% if current_user.admin_user? %>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin" target="_blank">Admin</a>
             </li>
-            <li class="sub-menu">
-              <a href=""><i class="md md-home"></i>Projects</a>
-              <ul>
-                <% current_user.projects.each do |project| %>
-                  <li><a href='<%= "{{baseUrl}}/projects/#{project.id}" %>'><%= project.name %></a></li>
-                <% end %>
-              </ul>
-            </li>
-          </ul>
           <% end %>
-        </div>
-      </aside>
 
-      <section id="content">
-        <div class="container">
-          <%= yield %>
-        </div>
-      </section>
-    </section>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+               aria-haspopup="true" aria-expanded="false">
+              Components
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" ui-sref="questionSets({})">Question Sets</a>
+              <a class="dropdown-item" ui-sref="optionSets({})">Option Sets</a>
+              <a class="dropdown-item" ui-sref="options({})">Options</a>
+              <a class="dropdown-item" ui-sref="instructions({})">Instructions</a>
+              <a class="dropdown-item" ui-sref="rules({})">Rules</a>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="projectDropdown" role="button" data-toggle="dropdown"
+               aria-haspopup="true" aria-expanded="false">
+              Projects
+            </a>
+            <div class="dropdown-menu" aria-labelledby="projectDropdown">
+              <% current_user.projects.each do |project| %>
+                <a class="dropdown-item" ui-sref="project({id: <%= project.id %>})"><%= project.name %></a>
+              <% end %>
+            </div>
+          </li>
+        </ul>
+        <ul class="navbar-nav m-auto order-last">
+          <span class="btn btn-info m-1"><%= current_user.email %></span>
+          <%= link_to('Log Out', destroy_user_session_path, method: :delete, class: 'btn btn-danger m-1') %>
+        </ul>
+      <% end %>
+    </div>
+    </div>
+  </nav>
 
-    <%= render 'layouts/footer' %>
-  </body>
+<main role="main" class="container">
+  <div class="jumbotron jumbotron-fluid">
+      <%= yield %>
+  </div>
+</main>
+
+<%# flash.each do |key, msg| %>
+<%# if key == :alert or key == :notice %>
+<!--    <div class="alert alert-<%##= key == :alert ? 'danger' : 'success' %> alert-dismissible text-center" role="alert">-->
+<!--      <button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
+<!--        <span aria-hidden="true">&times;</span>-->
+<!--      </button>-->
+<%#= msg %>
+<!--    </div>-->
+<%# end %>
+<%# end %>
+
+<footer class="footer">
+  <div class="container text-center">
+    <span class="text-muted">
+      This application is developed with the support of
+      <%= link_to 'CHPIR', 'http://chpir.org/' %>
+      and
+      <%= link_to 'ADAPTLAB', 'http://adaptlab.org/' %>.
+    </span>
+  </div>
+</footer>
+
+<%= stylesheet_link_tag 'application', media: 'all' %>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+    google.load('visualization', '1', {'packages': ['corechart']});
+</script>
+<script>
+    window._base_url = "<%= ENV['BASE_URL'] %>"
+</script>
+<%= javascript_include_tag 'application' %>
+<%= csrf_meta_tags %>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="author" content="">
+<meta charset="utf-8">
+
+</body>
 </html>

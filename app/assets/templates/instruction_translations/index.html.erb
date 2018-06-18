@@ -2,7 +2,7 @@
 <div class="card">
   <div class="card-body card-padding">
     <div ng-controller="LanguageTranslationsCtrl">
-      <div class="row" ng-repeat="language in languages">
+      <div ng-repeat="language in languages">
         <a ui-sref="languageInstructionTranslations({language: language[1],
         instruction_id: instruction_id})">
           {{language[0]}}

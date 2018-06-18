@@ -4,7 +4,7 @@ module Api
       respond_to :json
 
       def index
-        @options = Option.all
+        @options = Option.all.order(updated_at: :desc)
       end
 
       def create

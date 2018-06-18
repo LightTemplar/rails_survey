@@ -3,19 +3,19 @@
   <h4 class="text-center">Instrument Displays</h4>
   <div class="card">
     <div class="card-body card-padding">
-      <div class="row">
+      <h6 class="row">
         <label class="col-md-2">Position</label>
         <label class="col-md-2">Type</label>
         <label class="col-md-2">Display Title</label>
         <label class="col-md-2">Section Title</label>
         <label class="col-md-2">Question Count</label>
         <label class="col-md-2">Actions</label>
-      </div>
-      <div class="m-t-5" ui-sortable="sortableDisplays" ng-model="displays">
+      </h6>
+      <div ui-sortable="sortableDisplays" ng-model="displays">
         <!-- Convert position used in filter to numeric -->
-        <div class="row" ng-repeat="display in displays | orderBy: '1 * position'">
+        <div class="row m-1" ng-repeat="display in displays | orderBy: '1 * position'">
           <div class="col-md-2">
-            <div class="btn bgm-teal m-5 moveDisplay" title="Drag up/down to re-number the displays.">
+            <div class="btn btn-info moveDisplay" title="Drag up/down to re-number the displays.">
               <i class="md-swap-vert">{{display.position}}</i>
             </div>
           </div>
@@ -33,8 +33,8 @@
         </div>
       </div>
 
-      <div class="row m-10">
-        <a class="btn btn-primary float-right" ui-sref="newDisplay({project_id: project_id, instrument_id:
+      <div class="float-right">
+        <a class="btn btn-primary" ui-sref="newDisplay({project_id: project_id, instrument_id:
         instrument_id})" >New Display</a>
       </div>
     </div>

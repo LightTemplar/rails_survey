@@ -2,7 +2,8 @@
 <h5 class="text-center">{{instrumentQuestion.identifier}}</h5>
 <div class="card" ng-controller="ShowInstrumentQuestionCtrl">
   <div class="card-body card-padding">
-    <div ng-hide="instrumentQuestion.number_in_instrument == 1 || followUpQuestions(instrumentQuestion).length == 0">
+    <div class="m-1" ng-hide="instrumentQuestion.number_in_instrument == 1 || followUpQuestions(instrumentQuestion)
+    .length == 0">
       <div class="text-center"><strong>Follow-up Questions</strong></div>
       <li class="text-muted">
         A follow up question is a question that asks for more information about a previous answer.
@@ -11,7 +12,7 @@
       <li class="text-muted">
         Specify the question(s) to follow up below, and insert a [followup] in the location to insert the previous response(s).
       </li>
-      <div class="row">
+      <div class="row m-1">
         <div class="col-md-8">
           <div class="row">
             <label class="col-md-2">Position</label>
@@ -23,9 +24,9 @@
           <label>Question Text</label>
         </div>
       </div>
-      <div class="row">
+      <div class="row m-1">
         <div class="col-md-8">
-          <div class="row" ng-repeat="followup in followingUpQuestions">
+          <div class="row m-1" ng-repeat="followup in followingUpQuestions">
             <div class="col-md-2">
               <input class="form-control" type="text" ng-model="followup.position" required>
             </div>
@@ -44,16 +45,18 @@
           </div>
         </div>
         <div class="col-md-4">
-          <textarea class="form-control" type="text" ng-model="instrumentQuestion.text"/>
+          <textarea class="form-control" type="text" ng-model="instrumentQuestion.text"></textarea>
         </div>
       </div>
-      <div class="row m-5">
-        <div class="btn btn-primary pull-right m-5" ng-click="addFollowUp()">Add Follow Up</div>
-        <div class="btn btn-success pull-right m-5" ng-click="saveFollowUps()">Save</div>
+      <div class="m-1">
+        <div class="btn btn-primary pull-right m-1" ng-click="addFollowUp()">Add Follow Up</div>
+        <div class="btn btn-success pull-right m-1" ng-click="saveFollowUps()">Save</div>
       </div>
     </div>
-    <div ng-show="(instrumentQuestion.option_set_id && questionTypesWithSkipPatterns(instrumentQuestion.type)) || instrumentQuestion.special_option_set_id">
-      <div class="text-center"><strong>Skip Patterns</strong></div>
+
+    <div class="m-1" ng-show="(instrumentQuestion.option_set_id && questionTypesWithSkipPatterns(instrumentQuestion
+    .type)) || instrumentQuestion.special_option_set_id">
+      <h5 class="text-center">Skip Patterns</h5>
       <li class="text-muted">If the next question to be displayed should be
         a different one from the one that immediately follows this question,
         select that specific question to jump to for each of the options below.
@@ -61,20 +64,20 @@
       <li class="text-muted">Check the Complete Survey box if the selection of
         the option should lead to the end of the survey.
       </li>
-      <div class="row">
+      <div class="row m-1">
         <label class="col-md-4"><u>Chosen Option</u></label>
         <label class="col-md-4"><u>Question To Skip To</u></label>
         <label class="col-md-2"><u>Complete Survey</u></label>
         <label class="col-md-2"><u>Actions</u></label>
       </div>
-      <div class="row" ng-repeat="nextQuestion in nextQuestions">
+      <div class="row m-1" ng-repeat="nextQuestion in nextQuestions">
         <div class="col-md-4">
           <select
-          class="form-control"
-          name="skip-pattern-option"
-          ng-model="nextQuestion.option_identifier"
-          ng-options="o.identifier as o.text for o in options">
-          <option value=""></option>
+            class="form-control"
+            name="skip-pattern-option"
+            ng-model="nextQuestion.option_identifier"
+            ng-options="o.identifier as o.text for o in options">
+            <option value=""></option>
           </select>
         </div>
         <div class="col-md-4">
@@ -94,23 +97,24 @@
           <div class="btn btn-danger" ng-click="deleteSkip(nextQuestion)">Delete</div>
         </div>
       </div>
-      <div class="row m-5">
+      <div class="row m-1">
         <div class="btn btn-primary pull-right" ng-click="addNextQuestion()">Add Skip Pattern</div>
       </div>
     </div>
 
-    <div class="row" ng-show="instrumentQuestion.option_set_id && questionTypesWithMultipleSkips(instrumentQuestion.type)">
-      <div class="text-center"><strong>Multiple Skip Patterns</strong></div>
+    <div class="m-1" ng-show="instrumentQuestion.option_set_id && questionTypesWithMultipleSkips(instrumentQuestion
+    .type)">
+      <h5 class="text-center">Multiple Skip Patterns</h5>
       <li class="text-muted">
         If several non-consecutive questions following this question should be skipped based
         on the option selected, enter those questions below for each option that causes the skips.
       </li>
-      <div class="row">
+      <div class="row m-1">
         <label class="col-md-5"><u>Chosen Options</u></label>
         <label class="col-md-5"><u>Questions To Skip</u></label>
         <label class="col-md-2"><u>Actions</u></label>
       </div>
-      <div class="row" ng-repeat="multiSkip in multipleSkips">
+      <div class="row m-1" ng-repeat="multiSkip in multipleSkips">
         <div class="col-md-5">
           <select
             class="form-control"
@@ -136,10 +140,10 @@
           <div class="btn btn-danger" ng-click="deleteMultiSkip(multiSkip)">Delete</div>
         </div>
       </div>
-      <div class="row m-5">
+      <div class="m-1">
         <div class="btn btn-primary pull-right" ng-click="addMultiSkip()">Add Question To Skip</div>
       </div>
     </div>
 
-</div>
+  </div>
 </div>

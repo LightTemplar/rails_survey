@@ -31,7 +31,6 @@
 //= require select.min
 //= require sortable
 //= require socket.io.min
-//= require theme-functions
 //= require ui-bootstrap-tpls
 //= require angular-messages
 //= require checklist-model

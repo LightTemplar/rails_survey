@@ -1,14 +1,11 @@
-<h4 class="text-center"><strong>Rules</strong></h4>
-<div class="row m-5">
-  <!-- <a class="btn btn-primary" href="{{baseUrl}}/option_translations">Translations</a> -->
-</div>
+<h4 class="text-center">Rules</h4>
 <div class="card">
   <div class="card-body card-padding">
     <div ng-controller="RulesCtrl">
       <input type="search" ng-model="ru.rule_type" placeholder="Filter rules ..."
-      class="form-control tm-search text-center">
+             class="form-control tm-search text-center">
       <div ng-repeat="rule in rules | filter:ru">
-        <div class="row m-5">
+        <div class="row m-1">
           <span class="col-md-4">
             <strong>{{rule.rule_type}}</strong>
           </span>
@@ -18,11 +15,11 @@
           </div>
         </div>
       </div>
-      <div ng-hide="showNewRule" class="m-10">
+      <div ng-hide="showNewRule" class="m-1">
         <button class="btn btn-primary" ng-click="createRule()">New Rule</button>
       </div>
       <ng-form name="newRuleEditorForm" ng-show="showNewRule">
-        <div class="row m-5">
+        <div class="row m-1">
           <label class="col-md-3">Rule Type</label>
           <div class="col-md-9">
             <select
@@ -36,10 +33,10 @@
           </div>
         </div>
         <div ng-show="newRule.rule_type == 'INSTRUMENT_SURVEY_LIMIT_RULE'">
-          <div class="row m-5">
+          <div class="row m-1">
             <label class="text-center">{{ruleTypes.instrument_survey_limit_rule.description}}</label>
           </div>
-          <div class="row m-5">
+          <div class="row m-1">
             <label class="col-md-3">Maximum Number of Surveys</label>
             <div class="col-md-9">
               <input type="number" ng-model="newRule.maxSurveys">
@@ -47,16 +44,16 @@
           </div>
         </div>
         <div ng-show="newRule.rule_type == 'INSTRUMENT_TIMING_RULE'">
-          <div class="row m-5">
+          <div class="row m-1">
             <label class="text-center">{{ruleTypes.instrument_timing_rule.description}}</label>
           </div>
-          <div class="row m-5">
+          <div class="row m-1">
             <label class="col-md-3">Start Time</label>
             <div class="col-md-9">
               <input type="time" ng-model="newRule.startTime">
             </div>
           </div>
-          <div class="row m-5">
+          <div class="row m-1">
             <label class="col-md-3">End Time</label>
             <div class="col-md-9">
               <input type="time" ng-model="newRule.endTime">
@@ -64,16 +61,16 @@
           </div>
         </div>
         <div ng-show="newRule.rule_type == 'INSTRUMENT_SURVEY_LIMIT_PER_MINUTE_RULE'">
-          <div class="row m-5">
+          <div class="row m-1">
             <label class="text-center">{{ruleTypes.instrument_survey_limit_per_minute_rule.description}}</label>
           </div>
-          <div class="row m-5">
+          <div class="row m-1">
             <label class="col-md-3">Number of Surveys</label>
             <div class="col-md-9">
               <input type="number" ng-model="newRule.numSurveys">
             </div>
           </div>
-          <div class="row m-5">
+          <div class="row m-1">
             <label class="col-md-3">Interval in Minutes</label>
             <div class="col-md-9">
               <input type="number" ng-model="newRule.minuteInterval">
@@ -81,10 +78,10 @@
           </div>
         </div>
         <div ng-show="newRule.rule_type == 'PARTICIPANT_TYPE_RULE'">
-          <div class="row m-5">
+          <div class="row m-1">
             <label class="text-center">{{ruleTypes.participant_type_rule.description}}</label>
           </div>
-          <div class="row m-5">
+          <div class="row m-1">
             <label class="col-md-3">Participant Type</label>
             <div class="col-md-9">
               <select
@@ -96,30 +93,26 @@
           </div>
         </div>
         <div ng-show="newRule.rule_type == 'PARTICIPANT_AGE_RULE'">
-          <div class="row m-5">
+          <div class="row m-1">
             <label class="text-center">{{ruleTypes.participant_age_rule.description}}</label>
           </div>
-          <div class="row m-5">
+          <div class="row m-1">
             <label class="col-md-3">Start Age (inclusive)</label>
             <div class="col-md-9">
               <input type="number" min="0" ng-init="newRule.startAge=0" ng-model="newRule.startAge">
             </div>
           </div>
-          <div class="row m-5">
+          <div class="row m-1">
             <label class="col-md-3">End Age (exclusive)</label>
             <div class="col-md-9">
               <input type="number" max="149" ng-init="newRule.endAge=150" ng-model="newRule.endAge">
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="pull-right m-5">
-            <div class="btn btn-default" ng-click="cancelNewRule()">Cancel</div>
-          </div>
-          <div class="pull-right m-5">
-            <div class="btn btn-success" ng-disabled="newRuleEditorForm.$invalid" ng-click="saveRule()">
-              Save
-            </div>
+        <div class="m-1">
+          <div class="btn btn-secondary pull-left" ng-click="cancelNewRule()">Cancel</div>
+          <div class="btn btn-success pull-right" ng-disabled="newRuleEditorForm.$invalid" ng-click="saveRule()">
+            Save
           </div>
         </div>
       </ng-form>

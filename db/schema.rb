@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180518132755) do
+ActiveRecord::Schema.define(version: 20180711184108) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -199,13 +199,6 @@ ActiveRecord::Schema.define(version: 20180518132755) do
   end
 
   add_index "instructions", ["deleted_at"], name: "index_instructions_on_deleted_at", using: :btree
-
-  create_table "instrument_question_sets", force: :cascade do |t|
-    t.integer  "instrument_id"
-    t.integer  "question_set_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "instrument_questions", force: :cascade do |t|
     t.integer  "question_id"

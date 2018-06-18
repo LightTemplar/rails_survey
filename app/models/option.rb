@@ -19,7 +19,7 @@ class Option < ActiveRecord::Base
   # scope :regular, -> { where(special: false) }
   # belongs_to :question
   # belongs_to :option_set
-  has_many :option_in_option_sets
+  has_many :option_in_option_sets, dependent: :destroy
   has_many :option_sets, through: :option_in_option_sets
   # delegate :instrument, to: :question, allow_nil: true
   # delegate :project, to: :question
@@ -30,7 +30,7 @@ class Option < ActiveRecord::Base
   # before_destroy :update_instrument_version
   # after_save :record_instrument_version_number
   # after_save :check_parent_criticality
-  has_many :skip_patterns, dependent: :destroy
+  has_many :skip_patterns, foreign_key: 'option_identifier', dependent: :destroy
   has_paper_trail
   acts_as_paranoid
 

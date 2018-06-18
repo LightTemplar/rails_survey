@@ -94,7 +94,6 @@ RailsSurvey::Application.routes.draw do
           post :import_instrument
         end
         resources :instruments do
-          resources :instrument_question_sets
           resources :instrument_questions do
             resources :next_questions
             resources :multiple_skips

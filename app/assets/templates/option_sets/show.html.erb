@@ -3,13 +3,13 @@
   <div class="card">
     <div class="card-body card-padding">
       <ng-form name="optionSetEditorForm">
-        <div class="row">
+        <div class="row m-1">
           <label class="col-md-2">Title</label>
           <div class="col-md-10">
             <input type="text" class="form-control" name="option-set-title" ng-model="optionSet.title" required>
           </div>
         </div>
-        <div class="row m-t-5">
+        <div class="row m-1">
           <label class="col-md-2">Instructions</label>
           <div class="col-md-8">
             <select
@@ -23,13 +23,13 @@
             </select>
           </div>
         </div>
-        <div class="row m-t-5">
+        <div class="row m-1">
           <label class="col-md-2">Special Options</label>
           <div class="col-md-10">
             <input type="checkbox" name="option-set-special" ng-model="optionSet.special">
           </div>
         </div>
-        <div class="row m-5">
+        <div class="row m-1">
           <div class="btn btn-success pull-right" ng-disabled="optionSetEditorForm.$invalid" ng-click="updateOptionSet()">
             Save
           </div>
@@ -40,28 +40,29 @@
 
   <h4 class="text-center"><strong>Options in {{optionSet.title}}</strong></h4>
   <div class="card">
-    <div class="row col-md-12 m-l-10 m-t-5">
-      <a class="btn btn-primary" ui-sref="optionTranslations({option_set_id: optionSet.id})">Translations</a>
+    <div>
+      <a class="btn btn-primary m-1"
+         ui-sref="optionTranslations({option_set_id: optionSet.id})">Translations</a>
     </div>
     <div class="card-body card-padding">
-      <div class="row">
+      <h5 class="row">
         <label class="col-md-2">Position</label>
         <label class="col-md-8">Option</label>
         <label class="col-md-2">Actions</label>
-      </div>
+      </h5>
     <div ng-repeat="optionInOptionSet in optionInOptionSets">
-      <div class="row m-5">
+      <div class="row m-1">
         <div class="col-md-2">
           <input type="number" class="form-control" ng-model="optionInOptionSet.number_in_question" required />
         </div>
         <div class="col-md-8 select-box">
-          <ui-select ng-model="optionInOptionSet.option_id" class="form-control"
-          title="Choose an option" append-to-body="true">
+          <ui-select ng-model="optionInOptionSet.option_id" theme="bootstrap" class="form-control" title="Choose an
+          option" append-to-body="true">
             <ui-select-match placeholder="Select or search an option in the list...">
               {{$select.selected.identifier}}
             </ui-select-match>
-            <ui-select-choices repeat="option.id as option in options |
-            propertyFilter: {identifier: $select.search, text: $select.search}">
+            <ui-select-choices repeat="option.id as option in options | propertyFilter: {identifier: $select.search,
+            text: $select.search}">
               <div ng-bind-html="option.identifier | highlight: $select.search"></div>
               <small>
                 <span ng-bind-html="option.text | highlight: $select.search"></span>
@@ -74,7 +75,7 @@
         </div>
       </div>
     </div>
-    <div class="row m-10">
+    <div class="m-1">
       <div class="btn btn-primary pull-left" ng-click="addOption()">Add Option</div>
       <div class="btn btn-success pull-right" ng-click="saveOptions()">Save Options</div>
     </div>

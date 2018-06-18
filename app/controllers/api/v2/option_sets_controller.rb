@@ -5,7 +5,7 @@ module Api
       before_action :set_option_set, only: %i[update show destroy copy]
 
       def index
-        respond_with OptionSet.all
+        respond_with OptionSet.all.order(:created_at)
       end
 
       def show

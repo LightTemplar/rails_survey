@@ -1,14 +1,8 @@
 <div ng-controller="ShowQuestionSetCtrl">
   <h4 class="text-center"><strong>{{questionSet.title}}</strong></h4>
-  <!--  <div class="row m-5">-->
-  <!--    <div class="btn btn-primary" ui-sref="questionTranslations({question_set_id: questionSet.id})">-->
-  <!--      Translations-->
-  <!--    </div>-->
-  <!--  </div>-->
-  <div class="card">
-    <div class="card-body card-padding">
+  <div class="card m-1">
       <ng-form name="questionSetEditorForm">
-        <div class="row">
+        <div class="row m-1">
           <label class="col-md-1">Title</label>
           <div class="col-md-10">
             <input type="text" class="form-control" name="question-set"
@@ -21,10 +15,9 @@
           </div>
         </div>
       </ng-form>
-    </div>
   </div>
 
-  <div class="card">
+  <div class="card m-1">
     <div class="card-body card-padding">
       <a class="btn btn-primary" ui-sref="questionTranslations({question_set_id: questionSet.id})">Translations</a>
       <div class="btn btn-primary" ng-click="toggleViews(true, false)">Questions</div>
@@ -37,7 +30,7 @@
     <div class="card">
       <div class="card-body card-padding">
         <div ng-repeat="folder in folders">
-          <div class="row m-5">
+          <div class="row m-1">
             <div class="col-md-10">
               <input type="text" ng-model="folder.title" class="form-control" required>
             </div>
@@ -54,7 +47,7 @@
 
   <div ng-show="showQuestions">
     <h4 class="text-center"><strong>Questions In Set</strong></h4>
-    <div class="card">
+    <div class="card m-1">
       <div class="card-body card-padding">
         <div ng-include='"questions/index.html"'></div>
       </div>

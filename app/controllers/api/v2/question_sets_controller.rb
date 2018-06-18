@@ -4,7 +4,7 @@ module Api
       respond_to :json
 
       def index
-        respond_with QuestionSet.all
+        respond_with QuestionSet.all.order(:created_at)
       end
 
       def show

@@ -4,7 +4,7 @@ module Api
       respond_to :json
 
       def index
-        respond_with Instruction.all
+        respond_with Instruction.all.order(updated_at: :desc)
       end
 
       def show

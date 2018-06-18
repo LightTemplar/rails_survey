@@ -33,7 +33,6 @@ class Instrument < ActiveRecord::Base
   scope :published, -> { where(published: true) }
   belongs_to :project
 
-  has_many :instrument_question_sets
   has_many :instrument_questions, dependent: :destroy
   has_many :questions, through: :instrument_questions
   has_many :question_translations, through: :questions, source: :translations

@@ -6,6 +6,9 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
     requireBase: false
 
   $stateProvider
+    .state '/',
+      url: '/'
+      templateUrl: 'projects/home.html'
     .state 'projects',
       url: '/projects'
       templateUrl: 'projects/index.html'
@@ -66,10 +69,6 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
       url: '/instructions/:id'
       templateUrl: 'instructions/show.html'
       controller: 'ShowInstructionCtrl'
-    .state 'instrumentQuestionSets',
-      url: '/projects/:project_id/instruments/:instrument_id/instrument_question_sets'
-      templateUrl: 'instrument_question_sets/index.html'
-      controller: 'InstrumentQuestionSetsCtrl'
     .state 'displays',
       url: '/projects/:project_id/instruments/:instrument_id/displays'
       templateUrl: 'displays/index.html'

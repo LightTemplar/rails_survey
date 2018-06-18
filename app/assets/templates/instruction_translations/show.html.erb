@@ -4,15 +4,15 @@
     <div ng-controller="InstructionTranslationsCtrl">
       <table class="table table-hover">
         <thead>
-          <tr>
+          <tr class="row">
             <th class="col-md-6">Instruction Text</th>
             <th class="col-md-6">Translation</th>
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="instruction in instructions">
-            <td>{{instruction.text}}</td>
-            <td>
+          <tr class="row" ng-repeat="instruction in instructions">
+            <td class="col-md-6">{{instruction.text}}</td>
+            <td class="col-md-6">
               <textarea
               class="form-control"
               name="instruction-translation-{{instruction.id}}"
@@ -22,7 +22,7 @@
           </tr>
         </tbody>
       </table>
-      <div class="row m-t-5">
+      <div class="m-1">
         <div class="btn btn-success pull-right" ng-click="save()">Save</div>
       </div>
     </div>
