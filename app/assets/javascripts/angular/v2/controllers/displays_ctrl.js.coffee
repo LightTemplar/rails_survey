@@ -1,5 +1,5 @@
-App.controller 'DisplaysCtrl', ['$scope', '$stateParams', 'Display', 'Instrument', ($scope, $stateParams, Display,
-  Instrument) ->
+App.controller 'DisplaysCtrl', ['$scope', '$stateParams', 'Display', 'Instrument',
+  ($scope, $stateParams, Display, Instrument) ->
 
     $scope.project_id = $stateParams.project_id
     $scope.instrument_id = $stateParams.instrument_id
@@ -104,8 +104,12 @@ QuestionSet, Question, Instruction) ->
     'instrument_id': $scope.instrument_id
   }, ->
     $scope.displayQuestions = _.where($scope.instrumentQuestions, {display_id: $scope.display.id})
-    $scope.minNum = $scope.displayQuestions[0].number_in_instrument
-    $scope.maxNum = $scope.displayQuestions[$scope.displayQuestions.length - 1].number_in_instrument + 1
+    if $scope.displayQuestions.length == 0
+      $scope.minNum = 0
+      $scope.maxNum = 0
+    else
+      $scope.minNum = $scope.displayQuestions[0].number_in_instrument
+      $scope.maxNum = $scope.displayQuestions[$scope.displayQuestions.length - 1].number_in_instrument + 1
     $scope.tableIdentifiers = _.compact(_.uniq(_.map($scope.displayQuestions, (iq) -> iq.table_identifier)))
   )
   $scope.displayInstructions = DisplayInstruction.query({
