@@ -39,7 +39,8 @@ class Question < ActiveRecord::Base
   # has_many :skips, foreign_key: :question_identifier, primary_key: :question_identifier, dependent: :destroy
   has_many :question_randomized_factors, dependent: :destroy
   has_many :instrument_questions, dependent: :destroy
-  has_many :skip_patterns, foreign_key: :question_identifier, primary_key: :question_identifier, dependent: :destroy
+  has_many :instruments, -> { distinct }, through: :instrument_questions
+  has_many :skip_patterns, foreign_key: 'question_identifier', primary_key: 'question_identifier', dependent: :destroy
   # delegate :project, to: :instrument
   # before_save :update_instrument_version, if: proc { |question| question.changed? && !question.child_update_count_changed? }
   before_save :update_question_translation, if: proc { |question| question.text_changed? }
@@ -48,6 +49,7 @@ class Question < ActiveRecord::Base
   # after_update :update_dependent_records
   after_save :touch_instrument_questions
   # after_create :create_special_options, if: proc { |question| question.instrument}
+  after_commit :update_instruments_versions, on: %i[update destroy]
   has_paper_trail
   acts_as_paranoid
 
@@ -182,9 +184,9 @@ class Question < ActiveRecord::Base
     instrument_questions.update_all(updated_at: Time.now)
   end
 
-  # def update_instrument_version
-  #   instrument.update_instrument_version unless instrument.nil?
-  # end
+  def update_instruments_versions
+    instruments.each(&:touch)
+  end
 
   # def record_instrument_version
   #   update_column(:instrument_version_number, instrument_version)

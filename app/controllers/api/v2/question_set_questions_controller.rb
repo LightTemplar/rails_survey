@@ -10,7 +10,7 @@ module Api
       end
 
       def show
-        respond_with @question_set.questions.find(params[:id])
+        @question = @question_set.questions.find(params[:id])
       end
 
       def create

@@ -39,10 +39,10 @@ class Instrument < ActiveRecord::Base
   has_many :options, through: :questions
   has_many :displays, -> { order 'position' }, dependent: :destroy
   has_many :instrument_rules
+  has_many :translations, foreign_key: 'instrument_id', class_name: 'InstrumentTranslation', dependent: :destroy
   has_many :surveys
   has_many :responses, through: :surveys
   has_many :response_images, through: :responses
-  has_many :translations, foreign_key: 'instrument_id', class_name: 'InstrumentTranslation', dependent: :destroy
   has_one :response_export
   has_many :sections, dependent: :destroy
   has_many :rules, through: :instrument_rules
@@ -55,7 +55,7 @@ class Instrument < ActiveRecord::Base
   has_many :randomized_options, through: :randomized_factors
   has_many :next_questions, -> { order 'instrument_questions.number_in_instrument' }, through: :instrument_questions
 
-  has_paper_trail on: %i[update destroy]
+  has_paper_trail
   acts_as_paranoid
   before_save :update_question_count
   after_update :update_special_options
@@ -154,9 +154,11 @@ class Instrument < ActiveRecord::Base
   end
 
   def version_by_version_number(version_number)
-    Rails.cache.fetch("instruments-#{id}-#{version_number}", expires_in: 30.minutes) do
-      InstrumentVersion.build(instrument_id: id, version_number: version_number)
-    end
+    # Rails.cache.fetch("instruments-#{id}-#{version_number}", expires_in: 30.minutes) do
+      # InstrumentVersion.build(instrument_id: id, version_number: version_number)
+    # end
+    return nil if version_number > versions.size || version_number <= 0
+    versions[version_number - 1].reify
   end
 
   def completion_rate

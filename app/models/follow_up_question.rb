@@ -15,7 +15,7 @@
 class FollowUpQuestion < ActiveRecord::Base
   # belongs_to :option, foreign_key: :option_identifier
   # belongs_to :question, foreign_key: :question_identifier
-  belongs_to :instrument_question
+  belongs_to :instrument_question, touch: true
   acts_as_paranoid
   validates :following_up_question_identifier, presence: true
   validates :question_identifier, presence: true

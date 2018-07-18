@@ -12,7 +12,7 @@
 #
 
 class DisplayInstruction < ActiveRecord::Base
-  belongs_to :display
+  belongs_to :display, touch: true
   belongs_to :instruction
   acts_as_paranoid
 end

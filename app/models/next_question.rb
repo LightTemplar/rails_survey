@@ -15,6 +15,6 @@
 class NextQuestion < ActiveRecord::Base
   belongs_to :option, foreign_key: :option_identifier
   belongs_to :question, foreign_key: :question_identifier
-  belongs_to :instrument_question
+  belongs_to :instrument_question, touch: true
   acts_as_paranoid
 end

@@ -14,7 +14,7 @@
 #
 
 class Display < ActiveRecord::Base
-  belongs_to :instrument
+  belongs_to :instrument, touch: true
   has_many :instrument_questions, -> { order 'number_in_instrument' }, dependent: :destroy
   has_many :display_instructions, dependent: :destroy
   acts_as_paranoid

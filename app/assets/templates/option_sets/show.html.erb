@@ -81,4 +81,13 @@
     </div>
     </div>
   </div>
+
+  <h4 class="text-center">Questions containing this option set</h4>
+  <div class="card">
+    <div class="row ml-4 m-1" ng-repeat="question in optionSet.questions">
+      <a ui-sref="questionSetQuestion({question_set_id: question.question_set_id, id: question.id})">
+        {{question.question_identifier}}</a>
+    </div>
+  </div>
+
 </div>

@@ -11,7 +11,7 @@
 #
 
 class InstrumentRule < ActiveRecord::Base
-  belongs_to :instrument
+  belongs_to :instrument, touch: true
   belongs_to :rule
   acts_as_paranoid
   validates :instrument_id, presence: true
