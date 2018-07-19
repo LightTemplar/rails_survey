@@ -39,7 +39,7 @@ module Api
       end
 
       def option_set_params
-        params.require(:option_sets).permit(:title, :special, :instruction_id)
+        params.require(:option_set).permit(:title, :special, :instruction_id)
       end
 
     end

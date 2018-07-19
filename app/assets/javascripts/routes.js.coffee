@@ -1,5 +1,5 @@
-App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
-($stateProvider, $urlRouterProvider, $locationProvider) ->
+App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider',
+($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) ->
 
   $locationProvider.html5Mode
     enabled: true
@@ -126,11 +126,6 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
       templateUrl: 'options/index.html'
       controller: 'OptionsCtrl'
 
-  # $urlRouterProvider.otherwise($injector, $location) ->
-  #   console.log('otherwise')
-  #   if !$location.$location.$$url.includes('reloading')
-  #     $location.path($location.$location.$$path).search({reloading: true})
-  #     $injector.invoke ($window) ->
-  #       $window.location.reload()
+  $httpProvider.interceptors.push('HttpResponseInterceptor')
 
 ])
