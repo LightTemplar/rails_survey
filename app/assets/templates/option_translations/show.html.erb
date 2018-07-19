@@ -1,25 +1,38 @@
-<h4 class="text-center">Translations for {{language}}</h4>
+<h4 class="text-center">Translations</h4>
+<div class="row">
+  <label class="col-sm-4 text-right">Language</label>
+  <div class="col-sm-8 form-group text-left">
+    <select
+      class="form-control"
+      ng-model="language"
+      ng-options="language[1] as language[0] for language in languages"
+      ng-change="updateLanguage()"
+    >
+    </select>
+  </div>
+</div>
+
 <div class="card">
   <div class="card-body card-padding">
     <div ng-controller="OptionTranslationsCtrl">
       <table class="table table-hover">
         <thead>
-          <tr class="row">
-            <th class="col-md-6">Option Text</th>
-            <th class="col-md-6">Translation</th>
-          </tr>
+        <tr class="row">
+          <th class="col-md-6">Option Text</th>
+          <th class="col-md-6">Translation</th>
+        </tr>
         </thead>
         <tbody>
-          <tr class="row" ng-repeat="option in options">
-            <td class="col-md-6">{{option.text}}</td>
-            <td class="col-md-6">
+        <tr class="row" ng-repeat="option in options">
+          <td class="col-md-6">{{option.text}}</td>
+          <td class="col-md-6">
               <textarea
-              class="form-control"
-              name="option-translation-{{option.id}}"
-              ng-model="translationFor(option).text">
+                class="form-control"
+                name="option-translation-{{option.id}}"
+                ng-model="translationFor(option).text">
             </textarea>
-            </td>
-          </tr>
+          </td>
+        </tr>
         </tbody>
       </table>
       <div class="m-1">

@@ -23,7 +23,7 @@
           <tbody>
             <tr ng-repeat="translation in instrumentTranslations">
               <td>
-                <a ui-sref="languageQuestionTranslations({language: translation.language,
+                <a ui-sref="questionTranslations({language: translation.language,
                   instrument_id: instrument.id })"
                 class="btn btn-primary">{{ translation.language }}</a>
                 <%#= link_to Settings.languages.to_h.key(translation.language), project_instrument_instrument_translation_path(current_project, @instrument, translation) %>

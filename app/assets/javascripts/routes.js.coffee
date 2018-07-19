@@ -82,27 +82,15 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
       templateUrl: 'instrument_questions/show.html'
       controller: 'ShowInstrumentQuestionCtrl'
     .state 'optionTranslations',
-      url: '/option_translations/?option_set_id'
-      templateUrl: 'option_translations/index.html'
-      controller: 'LanguageTranslationsCtrl'
-    .state 'languageOptionTranslation',
-      url: '/option_translations/:language?option_set_id'
+      url: '/option_translations/?option_set_id&language'
       templateUrl: 'option_translations/show.html'
       controller: 'OptionTranslationsCtrl'
     .state 'questionTranslations',
-      url: '/question_translations/?question_set_id'
-      templateUrl: 'question_translations/index.html'
-      controller: 'LanguageTranslationsCtrl'
-    .state 'languageQuestionTranslations',
-      url: '/question_translations/:language?instrument_id&question_set_id'
+      url: '/question_translations/?language&instrument_id&question_set_id&question_id'
       templateUrl: 'question_translations/show.html'
       controller: 'QuestionTranslationsCtrl'
     .state 'instructionTranslations',
-      url: '/instruction_translations/?instruction_id'
-      templateUrl: 'instruction_translations/index.html'
-      controller: 'LanguageTranslationsCtrl'
-    .state 'languageInstructionTranslations',
-      url: '/instruction_translations/:language?instruction_id'
+      url: '/instruction_translations/?language&instruction_id'
       templateUrl: 'instruction_translations/show.html'
       controller: 'InstructionTranslationsCtrl'
     .state 'instrumentTranslations',
