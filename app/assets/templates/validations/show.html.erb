@@ -1,0 +1,40 @@
+<h4 class="text-center">{{validation.title}}</h4>
+<div class="m-1">
+  <a class="btn btn-primary" ui-sref="validationTranslations({validation_id: validation.id})">Translations</a>
+</div>
+<div class="card">
+  <div class="card-body card-padding">
+    <ng-form class="card" name="validationEditorForm" ng-controller="ShowValidationCtrl">
+      <div class="card-body card-padding">
+        <div class="row m-1">
+          <label class="col-md-2">Title</label>
+          <div class="col-md-10">
+            <input type="text" class="form-control" name="validation-title"
+            ng-model="validation.title" required>
+          </div>
+        </div>
+        <div class="row m-1">
+          <label class="col-md-2">RegEx Validation</label>
+          <div class="col-md-10">
+            <input type="text" class="form-control" name="validation-reg-ex-validation"
+                   ng-model="validation.reg_ex_validation" required>
+          </div>
+        </div>
+        <div class="row m-1">
+          <label class="col-md-2">RegEx Validation Message</label>
+          <div class="col-md-10">
+            <text-angular
+              ta-toolbar="toolBar"
+              name="validation-reg-ex-validation_message"
+              ng-model="validation.reg_ex_validation_message">
+            </text-angular>
+          </div>
+        </div>
+        <div class="m-1">
+          <div class="btn btn-success pull-right" ng-disabled="validationEditorForm.$invalid"
+          ng-click="updateValidation()">Save</div>
+        </div>
+      </div>
+    </ng-form>
+  </div>
+</div>

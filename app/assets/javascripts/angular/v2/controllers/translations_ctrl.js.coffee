@@ -166,3 +166,59 @@ App.controller 'InstructionTranslationsCtrl', ['$scope', '$stateParams', '$state
     )
 
 ]
+
+App.controller 'ValidationTranslationsCtrl', ['$scope', '$stateParams', '$state', 'Setting', 'Validation',
+  'ValidationTranslation', ($scope, $stateParams, $state, Setting, Validation, ValidationTranslation) ->
+    $scope.toolBar = [
+      ['justifyLeft', 'justifyCenter', 'justifyRight'],
+      ['bold', 'italics', 'underline', 'ul', 'ol', 'clear'],
+      ['html']
+    ]
+
+    $scope.validation_id = $stateParams.validation_id
+    $scope.language = $stateParams.language
+    $scope.settings = Setting.get({}, ->
+      $scope.settings.languages.splice(0, 1)
+      $scope.languages = $scope.settings.languages
+    )
+
+    $scope.validations = []
+    if $stateParams.validation_id && $stateParams.language
+      validation = Validation.get({'id': $stateParams.validation_id}, ->
+        $scope.validations.push(validation)
+      )
+      $scope.validationTranslations = ValidationTranslation.query({
+        'language': $stateParams.language,
+        'validation_id': $stateParams.validation_id
+      })
+    else if $stateParams.language
+      $scope.validations = Validation.query({})
+      $scope.validationTranslations = ValidationTranslation.query({'language': $stateParams.language})
+
+    $scope.updateLanguage = () ->
+      $state.go('validationTranslations', {
+        language: $scope.language,
+        validation_id: $stateParams.validation_id
+      })
+
+    $scope.translationFor = (validation) ->
+      inst = _.findWhere($scope.validationTranslations, {validation_id: validation.id})
+      if inst == undefined
+        inst = new ValidationTranslation()
+        inst.language = $scope.language
+        inst.validation_id = validation.id
+        inst.text = ""
+        $scope.validationTranslations.push(inst)
+      inst
+
+    $scope.save = () ->
+      it = new ValidationTranslation()
+      it.validation_translations = $scope.validationTranslations
+      it.$batch_update({},
+        (data, headers) ->
+          $state.reload()
+        (result, headers) ->
+          alert(result.data.errors)
+      )
+
+]

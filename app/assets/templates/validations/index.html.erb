@@ -1,0 +1,40 @@
+<div ng-controller="ValidationsCtrl">
+<h4 class="text-center">Validations</h4>
+<div class="m-1">
+  <a class="btn btn-primary" ui-sref="validationTranslations()">Translations</a>
+  <div ng-hide="showNewValidation" class="btn btn-primary pull-right"
+    ng-click="createValidation()">New Validation</div>
+</div>
+<div class="card">
+  <div class="card-body card-padding">
+    <div ng-hide="showNewValidation">
+      <input type="search" ng-model="i.$" placeholder="Filter validations ..."
+      class="form-control tm-search text-center">
+      <div ng-repeat="validation in validations | filter:i">
+        <div class="row m-1">
+          <div class="col-md-10">
+            <a ui-sref="validation({id: validation.id})"><strong>{{validation.title}}</strong></a>
+          </div>
+          <div class="col-md-2">
+            <div class="btn btn-danger" ng-click="deleteValidation(validation)">Delete</div>
+          </div>
+        </div>
+      </div>
+    </div>
+      <ng-form class="row" name="newValidationForm" ng-show="showNewValidation">
+          <label class="col-md-2">Title</label>
+          <div class="col-md-8">
+            <input type="text" class="form-control" name="new-validation"
+            ng-model="newValidation.title" required>
+          </div>
+          <div class="col-md-1">
+            <div class="btn btn-secondary" ng-click="cancelNewValidation()">Cancel</div>
+          </div>
+          <div class="col-md-1">
+            <div class="btn btn-success" ng-disabled="newValidationForm.$invalid"
+            ng-click="saveValidation()">Save</div>
+          </div>
+      </ng-form>
+    </div>
+  </div>
+</div>

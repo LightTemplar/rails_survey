@@ -69,6 +69,14 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
       url: '/instructions/:id'
       templateUrl: 'instructions/show.html'
       controller: 'ShowInstructionCtrl'
+    .state 'validations',
+      url: '/validations'
+      templateUrl: 'validations/index.html'
+      controller: 'ValidationsCtrl'
+    .state 'validation',
+      url: '/validations/:id'
+      templateUrl: 'validations/show.html'
+      controller: 'ShowValidationCtrl'
     .state 'displays',
       url: '/projects/:project_id/instruments/:instrument_id/displays'
       templateUrl: 'displays/index.html'
@@ -93,6 +101,10 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
       url: '/instruction_translations/?language&instruction_id'
       templateUrl: 'instruction_translations/show.html'
       controller: 'InstructionTranslationsCtrl'
+    .state 'validationTranslations',
+      url: '/validation_translations/?language&validation_id'
+      templateUrl: 'validation_translations/show.html'
+      controller: 'ValidationTranslationsCtrl'
     .state 'instrumentTranslations',
       url: '/projects/:project_id/instruments/:instrument_id/instrument_translations'
       templateUrl: 'instrument_translations/index.html'
