@@ -18,6 +18,7 @@
 #  parent_identifier     :string
 #  folder_id             :integer
 #  validation_id         :integer
+#  sum_of_parts          :decimal(15, 5)
 #
 
 require "spec_helper"

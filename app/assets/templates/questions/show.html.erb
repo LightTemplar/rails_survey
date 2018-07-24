@@ -74,6 +74,20 @@
         </div>
       </div>
 
+      <div class="row m-1">
+        <label class="col-md-2">Special Options</label>
+        <div class="col-md-10">
+          <select
+            class="form-control"
+            name="special-option-set"
+            id="special-option-set"
+            ng-model="question.special_option_set_id"
+            ng-options="set.id as set.title for set in specialOptionSets">
+            <option value=""></option>
+          </select>
+        </div>
+      </div>
+
       <div class="row m-1" ng-show="question.question_type && questionTypesWithOptions(question.question_type)">
         <label class="col-md-2">Option Set</label>
         <div class="col-md-10">
@@ -89,17 +103,15 @@
         </div>
       </div>
 
-      <div class="row m-1">
-        <label class="col-md-2">Special Options</label>
+      <div class="row m-1" ng-show="question.question_type && question.question_type=='SUM_OF_PARTS'">
+        <label class="col-md-2">Total Sum of Parts</label>
         <div class="col-md-10">
-          <select
-            class="form-control"
-            name="special-option-set"
-            id="special-option-set"
-            ng-model="question.special_option_set_id"
-            ng-options="set.id as set.title for set in specialOptionSets">
-            <option value=""></option>
-          </select>
+          <input type="number"
+                 step="0.01"
+                 ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
+                 class="form-control"
+                 name="question-sum-of-parts"
+                 ng-model="question.sum_of_parts">
         </div>
       </div>
 

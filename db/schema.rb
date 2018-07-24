@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180719211857) do
+ActiveRecord::Schema.define(version: 20180723213739) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -210,6 +210,7 @@ ActiveRecord::Schema.define(version: 20180719211857) do
     t.string   "identifier"
     t.datetime "deleted_at"
     t.string   "table_identifier"
+    t.string   "sum_of_parts_identifier"
   end
 
   add_index "instrument_questions", ["deleted_at"], name: "index_instrument_questions_on_deleted_at", using: :btree
@@ -393,7 +394,7 @@ ActiveRecord::Schema.define(version: 20180719211857) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
-    t.boolean  "identifies_survey",     default: false
+    t.boolean  "identifies_survey",                              default: false
     t.boolean  "critical"
     t.integer  "question_set_id"
     t.integer  "option_set_id"
@@ -402,6 +403,7 @@ ActiveRecord::Schema.define(version: 20180719211857) do
     t.string   "parent_identifier"
     t.integer  "folder_id"
     t.integer  "validation_id"
+    t.decimal  "sum_of_parts",          precision: 15, scale: 5
   end
 
   add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true, using: :btree

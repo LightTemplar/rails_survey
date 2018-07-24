@@ -60,6 +60,10 @@ node :reg_ex_validation_message do |iq|
   iq.question.validation.reg_ex_validation_message if iq.question && iq.question.validation
 end
 
+node :sum_of_parts do |iq|
+  iq.question.sum_of_parts.to_f if iq.question && iq.question.sum_of_parts
+end
+
 child :translations do |t|
   attributes :id, :question_id, :text, :language, :instructions
 end
