@@ -103,18 +103,6 @@
         </div>
       </div>
 
-      <div class="row m-1" ng-show="question.question_type && question.question_type=='SUM_OF_PARTS'">
-        <label class="col-md-2">Total Sum of Parts</label>
-        <div class="col-md-10">
-          <input type="number"
-                 step="0.01"
-                 ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
-                 class="form-control"
-                 name="question-sum-of-parts"
-                 ng-model="question.sum_of_parts">
-        </div>
-      </div>
-
       <div class="row m-1">
         <label class="col-md-2">Instruction</label>
         <div class="col-md-10">

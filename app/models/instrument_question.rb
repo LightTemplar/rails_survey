@@ -2,17 +2,16 @@
 #
 # Table name: instrument_questions
 #
-#  id                      :integer          not null, primary key
-#  question_id             :integer
-#  instrument_id           :integer
-#  number_in_instrument    :integer
-#  display_id              :integer
-#  created_at              :datetime
-#  updated_at              :datetime
-#  identifier              :string
-#  deleted_at              :datetime
-#  table_identifier        :string
-#  sum_of_parts_identifier :string
+#  id                   :integer          not null, primary key
+#  question_id          :integer
+#  instrument_id        :integer
+#  number_in_instrument :integer
+#  display_id           :integer
+#  created_at           :datetime
+#  updated_at           :datetime
+#  identifier           :string
+#  deleted_at           :datetime
+#  table_identifier     :string
 #
 
 class InstrumentQuestion < ActiveRecord::Base

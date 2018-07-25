@@ -18,12 +18,12 @@
         <thead>
         <tr class="row">
           <th class="col-md-4">Validation Text</th>
-          <th class="col-md-8">Translation</th>
+          <th class="col-md-8">Translated Text</th>
         </tr>
         </thead>
         <tbody>
         <tr class="row" ng-repeat="validation in validations">
-          <td class="col-md-4" ng-bind-html="validation.reg_ex_validation_message | ToTrustedHtml"></td>
+          <td class="col-md-4" ng-bind-html="validation.validation_message | ToTrustedHtml"></td>
           <td class="col-md-8">
             <text-angular
               ta-toolbar="toolBar"

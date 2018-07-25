@@ -96,3 +96,6 @@ roster_types: ['STAFF','CHILD']
 
 display_types: ['SINGLE', 'MULTIPLE', 'TABLE']
 copy_display_types: ['AS_IT_IS', 'ONE_QUESTION_PER_SCREEN', 'ALL_QUESTIONS_ON_ONE_SCREEN']
+
+validation_types: ['REGEX', 'VERHOEFF', 'SUM_OF_PARTS', 'RESPONSE']
+relational_operators: ['==', '!=', '>', '<', '>=', '<=']

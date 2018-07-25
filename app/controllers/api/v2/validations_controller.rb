@@ -4,11 +4,11 @@ module Api
       respond_to :json
 
       def index
-        respond_with Validation.all.order(updated_at: :desc)
+        @validations = Validation.all.order(updated_at: :desc)
       end
 
       def show
-        respond_with Validation.find(params[:id])
+        @validation = Validation.find(params[:id])
       end
 
       def create
@@ -33,7 +33,8 @@ module Api
       private
 
       def validation_params
-        params.require(:validation).permit(:title, :reg_ex_validation, :reg_ex_validation_message)
+        params.require(:validation).permit(:title, :validation_text, :validation_message, :validation_type,
+                                           :response_identifier, :relational_operator)
       end
     end
   end

@@ -35,14 +35,24 @@ App.controller 'ValidationsCtrl', ['$scope', '$location', 'Validation', ($scope,
 
 ]
 
-App.controller 'ShowValidationCtrl', ['$scope', '$stateParams', '$state', 'Validation',
- ($scope, $stateParams, $state, Validation) ->
+App.controller 'ShowValidationCtrl', ['$scope', '$stateParams', '$state', 'Validation', 'Setting', 'Questions',
+ ($scope, $stateParams, $state, Validation, Setting, Questions) ->
 
   $scope.toolBar = [
       ['justifyLeft', 'justifyCenter', 'justifyRight'],
       ['bold', 'italics', 'underline', 'ul', 'ol', 'clear'],
       ['html']
   ]
+
+  $scope.settings = Setting.get({}, ->
+     $scope.validationTypes = $scope.settings.validation_types
+     $scope.relationalOperators = $scope.settings.relational_operators
+  )
+
+  questions = Questions.query({}, -> $scope.questionIdentifiers = _.compact(_.map(questions, (q) ->
+    if q.question_type == 'INTEGER' || q.question_type == 'DECIMAL'
+      q.question_identifier
+  )))
 
   $scope.updateValidation = () ->
     if $scope.validation.id

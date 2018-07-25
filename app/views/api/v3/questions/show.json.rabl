@@ -1,7 +1,7 @@
 object @question
 cache @question
 
-attributes :id, :instrument_id, :display_id, :number_in_instrument, :deleted_at, :table_identifier
+attributes :id, :instrument_id, :display_id, :number_in_instrument, :deleted_at, :table_identifier, :validation_id
 
 node :text do |iq|
   iq.question.text if iq.question
@@ -50,18 +50,6 @@ end
 
 node :identifies_survey do |iq|
   iq.question.identifies_survey if iq.question
-end
-
-node :reg_ex_validation do |iq|
-  iq.question.validation.reg_ex_validation if iq.question && iq.question.validation
-end
-
-node :reg_ex_validation_message do |iq|
-  iq.question.validation.reg_ex_validation_message if iq.question && iq.question.validation
-end
-
-node :sum_of_parts do |iq|
-  iq.question.sum_of_parts.to_f if iq.question && iq.question.sum_of_parts
 end
 
 child :translations do |t|

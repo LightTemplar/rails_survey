@@ -40,6 +40,7 @@ RailsSurvey::Application.routes.draw do
         resources :multiple_skips, only: :index
         resources :follow_up_questions, only: :index
         resources :display_instructions, only: :index
+        resources :validations, only: :index
         resources :surveys, only: :create
         resources :responses, only: :create
         resources :response_images, only: :create

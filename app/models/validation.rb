@@ -2,13 +2,16 @@
 #
 # Table name: validations
 #
-#  id                        :integer          not null, primary key
-#  title                     :string
-#  reg_ex_validation         :string
-#  reg_ex_validation_message :string
-#  deleted_at                :datetime
-#  created_at                :datetime         not null
-#  updated_at                :datetime         not null
+#  id                  :integer          not null, primary key
+#  title               :string
+#  validation_text     :string
+#  validation_message  :string
+#  deleted_at          :datetime
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#  validation_type     :string
+#  response_identifier :string
+#  relational_operator :string
 #
 
 class Validation < ActiveRecord::Base
