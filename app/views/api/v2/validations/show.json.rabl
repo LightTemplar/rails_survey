@@ -10,3 +10,7 @@ node :validation_text do |v|
     v.validation_text
   end
 end
+
+child :questions do |v|
+  attributes :id, :question_identifier, :question_set_id
+end

@@ -1,7 +1,7 @@
 object @question
 cache @question
 
-attributes :id, :instrument_id, :display_id, :number_in_instrument, :deleted_at, :table_identifier, :validation_id
+attributes :id, :instrument_id, :display_id, :number_in_instrument, :deleted_at, :table_identifier
 
 node :text do |iq|
   iq.question.text if iq.question
@@ -50,6 +50,10 @@ end
 
 node :identifies_survey do |iq|
   iq.question.identifies_survey if iq.question
+end
+
+node :validation_id do |iq|
+  iq.question.validation_id if iq.question
 end
 
 child :translations do |t|
