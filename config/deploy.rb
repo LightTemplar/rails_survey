@@ -1,4 +1,4 @@
-lock '3.9.1'
+lock '3.10.2'
 
 set :application, 'rails_survey'
 set :repo_url, 'git@github.com:DukeMobileTech/rails_survey.git'
@@ -30,7 +30,7 @@ namespace :deploy do
 
   after :finishing, 'deploy:cleanup'
   after 'deploy:publishing', 'deploy:restart'
-  after 'deploy:published', 'sidekiq:monit:config'
+  # after 'deploy:published', 'sidekiq:monit:config'
 end
 
 namespace :clients do
