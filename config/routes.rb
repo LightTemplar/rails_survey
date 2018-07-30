@@ -117,8 +117,9 @@ RailsSurvey::Application.routes.draw do
           resources :instrument_rules
           member do
             get :copy
-            post :reorder
             get :set_skip_patterns
+            post :reorder
+            post :reorder_displays
           end
           resources :next_questions, controller: 'instrument_next_questions'
         end

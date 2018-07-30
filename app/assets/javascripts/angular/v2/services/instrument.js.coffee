@@ -4,6 +4,7 @@ App.factory 'Instrument', ['$resource', ($resource) ->
   { update: { method: 'PUT' },
   copy: {method: 'GET', params: {memberRoute: 'copy'}},
   reorder: {method: 'POST', params: {memberRoute: 'reorder'}},
-  importSkipPatterns: {method: 'GET', params: {memberRoute: 'set_skip_patterns'}}
+  importSkipPatterns: {method: 'GET', params: {memberRoute: 'set_skip_patterns'}},
+  reorderDisplays: {method: 'POST', params: {memberRoute: 'reorder_displays'}}
   }
 ]

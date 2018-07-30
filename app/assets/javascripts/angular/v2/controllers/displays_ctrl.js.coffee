@@ -1,5 +1,5 @@
-App.controller 'DisplaysCtrl', ['$scope', '$stateParams', 'Display', 'Instrument',
-  ($scope, $stateParams, Display, Instrument) ->
+App.controller 'DisplaysCtrl', ['$scope', '$stateParams', '$state', 'Display', 'Instrument',
+  ($scope, $stateParams, $state, Display, Instrument) ->
 
     $scope.project_id = $stateParams.project_id
     $scope.instrument_id = $stateParams.instrument_id
@@ -19,11 +19,16 @@ App.controller 'DisplaysCtrl', ['$scope', '$stateParams', 'Display', 'Instrument
       handle: '.moveDisplay',
       axis: 'y',
       stop: (e, ui) ->
+        order = []
         angular.forEach $scope.displays, (display, index) ->
-          display.position = index + 1
-          display.project_id = $scope.project_id
-          display.instrument_id = $scope.instrument_id
-          display.$update({})
+          order.push(display.id)
+        $scope.instrument.display_ids = order
+        $scope.instrument.$reorderDisplays({},
+          (data, headers) ->
+            $state.reload()
+          (result, headers) ->
+            alert(result.data.errors)
+        )
     }
 
     $scope.delete = (display) ->

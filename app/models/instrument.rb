@@ -62,6 +62,20 @@ class Instrument < ActiveRecord::Base
   validates :title, presence: true, allow_blank: false
   validates :project_id, presence: true, allow_blank: false
 
+  def reorder_displays(display_order)
+    ActiveRecord::Base.transaction do
+      display_order.each_with_index { |value, index|
+        display = displays.where(id: value).first
+        if display && display.position != index + 1
+          display.position = index + 1
+          display.save!
+        end
+      }
+      reload
+      renumber_questions
+    end
+  end
+
   def set_skip_patterns
     ActiveRecord::Base.transaction do
       SkipPattern.all.each do |pattern|

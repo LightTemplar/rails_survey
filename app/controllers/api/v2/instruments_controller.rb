@@ -43,7 +43,7 @@ module Api
         if destination && instrument_copy
           render json: instrument_copy, status: :created
         else
-          render json: { errors: 'instrument copy unsuccessfull' }, status: :unprocessable_entity
+          render json: { errors: 'instrument copy unsuccessful' }, status: :unprocessable_entity
         end
       end
 
@@ -53,7 +53,17 @@ module Api
         if instrument.reorder(params[:order])
           render json: :ok, status: :created
         else
-          render json: { errors: 'question reorder unsuccessfull' }, status: :unprocessable_entity
+          render json: { errors: 'question reorder unsuccessful' }, status: :unprocessable_entity
+        end
+      end
+
+      def reorder_displays
+        project = current_user.projects.find(params[:project_id])
+        instrument = project.instruments.find(params[:id])
+        if instrument.reorder_displays(params[:display_ids])
+          render json: :ok, status: :created
+        else
+          render json: { errors: 'question reorder unsuccessful' }, status: :unprocessable_entity
         end
       end
 
@@ -63,14 +73,14 @@ module Api
         if instrument.set_skip_patterns
           render json: :ok, status: :created
         else
-          render json: { errors: 'skip patterns import unsuccessfull' }, status: :unprocessable_entity
+          render json: { errors: 'skip patterns import unsuccessful' }, status: :unprocessable_entity
         end
       end
 
       private
 
       def instrument_params
-        params.require(:instrument).permit(:title, :language, :published, :project_id)
+        params.require(:instrument).permit(:title, :language, :published, :project_id, :display_ids)
       end
 
     end
