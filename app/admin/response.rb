@@ -22,6 +22,11 @@ ActiveAdmin.register Response do
     column :text
     column :special_response
     column :other_response
+    column :response_image do |response|
+      if response.response_image && response.response_image.picture
+        image_tag(response.response_image.picture.url(:medium))
+      end
+    end
     column :created_at do |response|
       time_ago_in_words(response.created_at) + ' ago'
     end
