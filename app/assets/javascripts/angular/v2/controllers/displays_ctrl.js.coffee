@@ -371,4 +371,22 @@ QuestionSet, Question, Instruction) ->
     displayInstruction.instruction_id = ''
     $scope.displayInstructions.push(displayInstruction)
 
+  startNumber = 1
+  $scope.sortableInstrumentQuestions = {
+    cursor: 'move',
+    handle: '.moveInstrumentQuestion',
+    axis: 'y',
+    start: () ->
+      startNumber = $scope.displayQuestions[0].number_in_instrument
+    stop: (e, ui) ->
+      angular.forEach $scope.displayQuestions, (question, index) ->
+        question.number_in_instrument = startNumber + index
+        question.project_id = $scope.project_id
+        question.$update({},
+          (data, headers) ->
+          (result, headers) ->
+            alert(result.data.errors)
+        )
+  }
+
 ]

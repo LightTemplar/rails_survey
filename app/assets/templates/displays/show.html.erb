@@ -53,32 +53,34 @@
           <label class="col-md-2">Identifier</label>
           <label class="col-md-3">Actions</label>
         </div>
-        <!-- <div class="m-t-5" ui-sortable="sortableInstrumentQuestions" ng-model="displayQuestions"> -->
-        <div class="row m-1" ng-repeat="question in displayQuestions | orderBy: '1 * number_in_instrument'">
-          <div class="col-md-1">
-            <!-- <div class="btn btn-sm moveInstrumentQuestion">
-              {{question.number_in_instrument}}
-            </div> -->
-            <a title="Link to question logic e.g skip patterns and followups"
-               ui-sref="instrumentQuestion({project_id: project_id, instrument_id: instrument_id, id: question.id})">
-              {{question.number_in_instrument}}
-            </a>
-          </div>
-          <div class="col-md-2">
-            <a title="Link to original question" ui-sref="questionSetQuestion({question_set_id: question.question_set_id, id: question.question_id})">
-              {{question.type | limitTo:25}}
-            </a>
-          </div>
-          <div class="col-md-4" ng-bind-html="question.text | ToTrustedHtml"></div>
-          <div class="col-md-2">
-            <input class="form-control input-sm" type="text" ng-model="question.identifier" required/>
-          </div>
-          <div class="col-md-3">
-            <div class="btn btn-sm btn-success" ng-click="updateInstrumentQuestion(question)">Update Id</div>
-            <div class="btn btn-danger" ng-click="removeInstrumentQuestion(question)">Remove</div>
+        <div class="m-t-5" ui-sortable="sortableInstrumentQuestions" ng-model="displayQuestions">
+          <div class="row m-1" ng-repeat="question in displayQuestions | orderBy: '1 * number_in_instrument'">
+            <div class="col-md-1">
+              <!-- <div class="btn btn-sm moveInstrumentQuestion">
+                {{question.number_in_instrument}}
+              </div> -->
+              <a class="btn btn-primary moveInstrumentQuestion"
+              title="Link to question logic e.g skip patterns and followups"
+              ui-sref="instrumentQuestion({project_id: project_id, instrument_id: instrument_id, id: question.id})">
+                {{question.number_in_instrument}}
+              </a>
+            </div>
+            <div class="col-md-2">
+              <a title="Link to original question" ui-sref="questionSetQuestion({question_set_id: question.question_set_id, id: question.question_id})">
+                {{question.type | limitTo:25}}
+              </a>
+            </div>
+            <div class="col-md-4" ng-bind-html="question.text | ToTrustedHtml"></div>
+            <div class="col-md-2">
+              <input class="form-control input-sm" type="text" ng-model="question.identifier" required/>
+            </div>
+            <div class="col-md-3">
+              <div class="btn btn-sm btn-success" ng-click="updateInstrumentQuestion(question)">Update Id</div>
+              <div class="btn btn-danger" ng-click="removeInstrumentQuestion(question)">Remove</div>
+            </div>
           </div>
         </div>
-        <!-- </div> -->
+
         <div class="m-1" ng-hide="display.mode == 'SINGLE' && displayQuestions.length == 1">
           <div class="btn btn-primary pull-right" ng-click="addQuestionToDisplay()">Add Question(s)</div>
         </div>
