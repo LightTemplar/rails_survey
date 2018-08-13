@@ -1,0 +1,49 @@
+<div ng-include="'instrument_questions/show.html'"></div>
+<div class="card" ng-controller="MultipleSkipsCtrl">
+  <div class="m-1">
+    <h4 class="text-center">Multiple Skip Patterns</h4>
+    <li class="text-muted">
+      If several non-consecutive questions following this question should be skipped based
+      on the option selected, enter those questions below for each option that causes the skips.
+    </li>
+  </div>
+  <div class="card-body card-padding">
+    <div class="m-1" ng-show="instrumentQuestion.option_set_id && questionTypesWithMultipleSkips(instrumentQuestion
+    .type)">
+    <div class="row m-1">
+      <label class="col-md-5"><u>Chosen Options</u></label>
+      <label class="col-md-5"><u>Questions To Skip</u></label>
+      <label class="col-md-2"><u>Actions</u></label>
+    </div>
+    <div class="row m-1" ng-repeat="multiSkip in multipleSkips">
+      <div class="col-md-5">
+        <select
+        class="form-control"
+        name="multiple-skip-pattern-option"
+        ng-model="multiSkip.option_identifier"
+        ng-options="o.identifier as o.identifier for o in options"
+        ng-required>
+        <option value="">None</option>
+      </select>
+    </div>
+    <div class="col-md-5">
+      <select
+      class="form-control"
+      name="multiple-skip-pattern-question"
+      ng-model="multiSkip.skip_question_identifier"
+      ng-options="q.identifier as q.identifier for q in questionsAfter(instrumentQuestion)"
+      ng-required>
+      <option value="">None</option>
+    </select>
+  </div>
+  <div class="col-md-2">
+    <div class="btn btn-success" ng-click="saveMultiSkip(multiSkip)">Save</div>
+    <div class="btn btn-danger" ng-click="deleteMultiSkip(multiSkip)">Delete</div>
+  </div>
+</div>
+<div class="m-1">
+  <div class="btn btn-primary pull-right" ng-click="addMultiSkip()">Add Question To Skip</div>
+</div>
+</div>
+</div>
+</div>

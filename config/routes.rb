@@ -38,6 +38,7 @@ RailsSurvey::Application.routes.draw do
         resources :displays, only: :index
         resources :next_questions, only: :index
         resources :multiple_skips, only: :index
+        resources :condition_skips, only: :index
         resources :follow_up_questions, only: :index
         resources :display_instructions, only: :index
         resources :validations, only: :index
@@ -105,6 +106,7 @@ RailsSurvey::Application.routes.draw do
             resources :next_questions
             resources :multiple_skips
             resources :follow_up_questions
+            resources :condition_skips
           end
           resources :displays do
             member do

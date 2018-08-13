@@ -1,0 +1,51 @@
+<div ng-include="'instrument_questions/show.html'"></div>
+<div class="card" ng-controller="FollowUpsCtrl">
+  <div class="m-1">
+    <h4 class="text-center">Follow-up Questions</h4>
+    <li class="text-muted m-1">
+      A follow up question is a question that asks for more information about a previous answer.
+      You may re-use the response to the previous question in the creation of the new question.
+    </li>
+    <li class="text-muted m-1">
+      Specify the question(s) to follow up below, and insert a [followup] in the location to insert the previous response(s).
+    </li>
+  </div>
+  <div class="card-body">
+    <div ng-hide="instrumentQuestion.number_in_instrument == 1 || followUpQuestions(instrumentQuestion)
+    .length == 0">
+      <div class="row m-1">
+        <label class="col-md-2">Position</label>
+        <label class="col-md-8">Follow-up Question</label>
+        <label class="col-md-2">Actions</label>
+      </div>
+      <div class="row m-1" ng-repeat="followup in followingUpQuestions">
+        <div class="col-md-2">
+          <input class="form-control" type="text" ng-model="followup.position" required>
+        </div>
+        <div class="col-md-8">
+          <select
+            class="form-control"
+            ng-model="followup.following_up_question_identifier"
+            ng-options="q.identifier as q.identifier for q in followUpQuestions(instrumentQuestion)">
+            <option value=""></option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <div class="btn btn-danger" ng-click="deleteFollowUp(followup)">Delete</div>
+        </div>
+      </div>
+      <div class="m-1">
+        <div class="btn btn-primary" ng-click="addFollowUp()">Add Follow Up</div>
+      </div>
+      <div ng-show="followingUpQuestions.length > 0">
+        <div class="m-1">
+          <h6 class="text-center">Question text with [followup] insert at the(ir) correct position(s)</h6>
+          <textarea class="form-control" type="text" ng-model="instrumentQuestion.text"></textarea>
+        </div>
+        <div class="m-1">
+          <div class="btn btn-success" ng-click="saveFollowUps()">Save</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -60,7 +60,6 @@ rule_types:
 
 # List delimiter for options
 list_delimiter: ','
-
 # Delimiter for items in option dictionary
 dictionary_delimiter: ';'
 
@@ -75,27 +74,24 @@ languages: [
              ['Telugu', 'te'],
              ['Chinese', 'zh']
           ]
+right_align_languages: ['ar']
 
 # Special Responses
 special_responses: ['DK', 'RF', 'MI', 'NA']
 any_default_non_empty_response: 'ANY RESPONSE'
 skipped_question_special_response: 'SKIP'
 
-right_align_languages: ['ar']
-
 exception_notifications:
-  email_prefix: '[RailsSurvey] '
+  email_prefix: '[iSEESurvey] '
   sender: 'noreply@chpir.org'
   recipients: ['leonard@chpir.org']
 
 danger_zone_days: 3
 
 metric_keys: ['device_uuid', 'Participant ID', 'Center ID']
-
 roster_types: ['STAFF','CHILD']
-
 display_types: ['SINGLE', 'MULTIPLE', 'TABLE']
 copy_display_types: ['AS_IT_IS', 'ONE_QUESTION_PER_SCREEN', 'ALL_QUESTIONS_ON_ONE_SCREEN']
-
 validation_types: ['REGEX', 'VERHOEFF', 'SUM_OF_PARTS', 'RESPONSE']
 relational_operators: ['==', '!=', '>', '<', '>=', '<=']
+skip_conditions: [ONLY, ONLY_AND, AND]

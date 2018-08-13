@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180724185004) do
+ActiveRecord::Schema.define(version: 20180813143743) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -47,6 +47,19 @@ ActiveRecord::Schema.define(version: 20180724185004) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "device_user_id"
+  end
+
+  create_table "condition_skips", force: :cascade do |t|
+    t.integer  "instrument_question_id"
+    t.string   "question_identifier"
+    t.string   "condition_question_identifier"
+    t.string   "condition_option_identifier"
+    t.string   "option_identifier"
+    t.string   "condition"
+    t.string   "next_question_identifier"
+    t.datetime "deleted_at"
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
   end
 
   create_table "device_device_users", force: :cascade do |t|

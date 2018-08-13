@@ -89,6 +89,22 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
       url: '/projects/:project_id/instruments/:instrument_id/instrument_questions/:id'
       templateUrl: 'instrument_questions/show.html'
       controller: 'ShowInstrumentQuestionCtrl'
+    .state 'conditionSkips',
+      url: '/projects/:project_id/instruments/:instrument_id/instrument_questions/:id'
+      templateUrl: 'instrument_questions/condition_skip.html'
+      controller: 'ConditionSkipsCtrl'
+    .state 'followUps',
+      url: '/projects/:project_id/instruments/:instrument_id/instrument_questions/:id'
+      templateUrl: 'instrument_questions/follow_up.html'
+      controller: 'FollowUpsCtrl'
+    .state 'singleSelectSkipPatterns',
+      url: '/projects/:project_id/instruments/:instrument_id/instrument_questions/:id'
+      templateUrl: 'instrument_questions/skip_patterns.html'
+      controller: 'SkipPatternsCtrl'
+    .state 'multipleSkips',
+      url: '/projects/:project_id/instruments/:instrument_id/instrument_questions/:id'
+      templateUrl: 'instrument_questions/multiple_skip.html'
+      controller: 'MultipleSkipsCtrl'
     .state 'optionTranslations',
       url: '/option_translations/?option_set_id&language'
       templateUrl: 'option_translations/show.html'

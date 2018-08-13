@@ -21,6 +21,7 @@ class InstrumentQuestion < ActiveRecord::Base
   has_many :next_questions
   has_many :multiple_skips
   has_many :follow_up_questions
+  has_many :condition_skips
   has_many :translations, through: :question
   acts_as_paranoid
   has_paper_trail
