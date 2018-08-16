@@ -2,7 +2,7 @@ collection @condition_skips
 cache ['v3-condition-skips', @condition_skips]
 
 attributes :id, :condition_question_identifier, :condition_option_identifier,
-:option_identifier, :condition, :next_question_identifier
+:option_identifier, :condition, :next_question_identifier, :deleted_at
 
 node :question_id do |ms|
  ms.instrument_question_id

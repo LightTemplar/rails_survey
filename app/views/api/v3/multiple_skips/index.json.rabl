@@ -1,7 +1,8 @@
 collection @multiple_skips
 cache ['v3-multiple-skips', @multiple_skips]
 
-attributes :id, :question_identifier, :option_identifier, :skip_question_identifier
+attributes :id, :question_identifier, :option_identifier,
+:skip_question_identifier, :deleted_at
 
 node :question_id do |ms|
  ms.instrument_question_id
