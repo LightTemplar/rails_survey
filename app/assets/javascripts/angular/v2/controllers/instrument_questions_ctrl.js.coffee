@@ -321,18 +321,7 @@ Setting, Option, ConditionSkip) ->
     'instrument_id': $scope.instrument_id,
     'id': $scope.id
   }, -> questionOptions($scope.instrumentQuestion, $scope.options))
-  #   if $scope.instrumentQuestion.option_set_id
-  #     regularOptions = Option.query({'option_set_id': $scope.instrumentQuestion.option_set_id}, ->
-  #       angular.forEach regularOptions, (option, index) ->
-  #         $scope.options.push(option)
-  #     )
-  #   if $scope.instrumentQuestion.special_option_set_id
-  #     specialOptions = Option.query({'option_set_id': $scope.instrumentQuestion.special_option_set_id}, ->
-  #       angular.forEach specialOptions, (option, index) ->
-  #         $scope.options.push(option)
-  #     )
-  # )
-
+  
   questionOptions = (instrumentQuestion, optionsArray) ->
     if instrumentQuestion.option_set_id
       regularOptions = Option.query({'option_set_id': instrumentQuestion.option_set_id}, ->
@@ -378,9 +367,6 @@ Setting, Option, ConditionSkip) ->
     if conditionQuestion
       questionOptions(conditionQuestion, $scope.conditionQuestionOptions)
 
-  $scope.isAndCondition = (conditionSkip) ->
-    conditionSkip.condition == 'AND' || conditionSkip.condition == 'ONLY_AND'
-
   $scope.addConditionSkip = () ->
     conditionSkip = new ConditionSkip()
     conditionSkip.instrument_question_id = $scope.instrumentQuestion.id
@@ -388,7 +374,6 @@ Setting, Option, ConditionSkip) ->
     conditionSkip.project_id = $scope.project_id
     conditionSkip.instrument_id = $scope.instrument_id
     $scope.conditionSkips.push(conditionSkip)
-
 
   $scope.saveConditionSkip = (skip) ->
     setRouteParameters(skip)
