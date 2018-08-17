@@ -321,17 +321,19 @@ Setting, Option, ConditionSkip) ->
     'instrument_id': $scope.instrument_id,
     'id': $scope.id
   }, -> questionOptions($scope.instrumentQuestion, $scope.options))
-  
+
   questionOptions = (instrumentQuestion, optionsArray) ->
     if instrumentQuestion.option_set_id
       regularOptions = Option.query({'option_set_id': instrumentQuestion.option_set_id}, ->
         angular.forEach regularOptions, (option, index) ->
-          optionsArray.push(option)
+          if (optionsArray.indexOf(option) == -1)
+            optionsArray.push(option)
       )
     if instrumentQuestion.special_option_set_id
       specialOptions = Option.query({'option_set_id': instrumentQuestion.special_option_set_id}, ->
         angular.forEach specialOptions, (option, index) ->
-          optionsArray.push(option)
+          if (optionsArray.indexOf(option) == -1)
+            optionsArray.push(option)
       )
 
   $scope.instrumentQuestions = InstrumentQuestion.query({

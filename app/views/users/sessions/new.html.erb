@@ -1,18 +1,17 @@
 <div class="container">
   <div class="row">
     <div class="col-sm"></div>
-    <div class="col-sm">
+    <div class="col-sm mb-2">
       <div class="text-center">
         <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
           <h1 class="h3 mb-3 font-weight-normal">Please Sign In</h1>
-          <!--    <label for="inputEmail" class="sr-only">Email address</label>-->
-          <div class="m-1">
-            <%= f.email_field :email, autofocus: true, class: 'form-control', placeholder: 'Your email', required:
-                true %>
+          <div class="m-2">
+            <%= f.email_field :email, autofocus: true, class: 'form-control',
+            placeholder: 'Your email', required: true %>
           </div>
-          <!--    <label for="inputPassword" class="sr-only">Password</label>-->
-          <div class="m-1">
-            <%= f.password_field :password, class: 'form-control', placeholder: 'Your password', required: true %>
+          <div class="m-2">
+            <%= f.password_field :password, class: 'form-control',
+            placeholder: 'Your password', required: true %>
           </div>
           <button class="btn btn-lg btn-primary" type="submit">Sign in</button>
         <% end %>
