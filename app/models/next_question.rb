@@ -10,12 +10,12 @@
 #  created_at               :datetime
 #  updated_at               :datetime
 #  deleted_at               :datetime
+#  value                    :string
 #
 
 class NextQuestion < ActiveRecord::Base
   belongs_to :option, foreign_key: :option_identifier
   belongs_to :question, foreign_key: :question_identifier
   belongs_to :instrument_question, touch: true
-  has_many :skip_conditions
   acts_as_paranoid
 end

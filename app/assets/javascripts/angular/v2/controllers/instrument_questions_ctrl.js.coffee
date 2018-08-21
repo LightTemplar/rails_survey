@@ -116,7 +116,7 @@ FollowUpQuestion, Setting, InstrumentQuestion, Option, Question) ->
         $scope.followingUpQuestions.splice($scope.followingUpQuestions.indexOf(followup), 1)
 ]
 
-App.controller 'SkipPatternsCtrl', ['$scope', '$stateParams', 'InstrumentQuestion', 'Setting',
+App.controller 'NextQuestionsCtrl', ['$scope', '$stateParams', 'InstrumentQuestion', 'Setting',
 'Option', 'NextQuestion', ($scope, $stateParams, InstrumentQuestion, Setting, Option, NextQuestion) ->
   $scope.options = []
   $scope.project_id = $stateParams.project_id

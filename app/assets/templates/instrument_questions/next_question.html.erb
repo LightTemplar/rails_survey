@@ -1,5 +1,5 @@
 <div ng-include="'instrument_questions/show.html'"></div>
-<div class="card" ng-controller="SkipPatternsCtrl">
+<div class="card" ng-controller="NextQuestionsCtrl">
   <h4 class="text-center">Skip Patterns</h4>
   <div class="m-1">
     <li class="text-muted">If the next question to be displayed should be
@@ -14,20 +14,26 @@
     <div ng-show="(instrumentQuestion.option_set_id && questionTypesWithSkipPatterns(instrumentQuestion
     .type)) || instrumentQuestion.special_option_set_id">
       <div class="row m-1">
-        <label class="col-md-4"><u>Chosen Option</u></label>
+        <label class="col-md-2"><u>Chosen Option</u></label>
+        <label class="col-md-2"><u>Entered Value</u></label>
         <label class="col-md-4"><u>Question To Skip To</u></label>
         <label class="col-md-2"><u>Complete Survey</u></label>
         <label class="col-md-2"><u>Actions</u></label>
       </div>
       <div class="row m-1" ng-repeat="nextQuestion in nextQuestions">
-        <div class="col-md-4">
+        <div class="col-md-2">
           <select
             class="form-control"
             name="skip-pattern-option"
+            ng-disabled="nextQuestion.value"
             ng-model="nextQuestion.option_identifier"
             ng-options="o.identifier as o.text for o in options">
             <option value=""></option>
           </select>
+        </div>
+        <div class="col-md-2">
+          <input type="text" class="form-control" ng-model="nextQuestion.value"
+          ng-disabled="nextQuestion.option_identifier">
         </div>
         <div class="col-md-4">
           <select
@@ -46,8 +52,8 @@
           <div class="btn btn-danger" ng-click="deleteSkip(nextQuestion)">Delete</div>
         </div>
       </div>
-      <div class="row m-1">
-        <div class="btn btn-primary pull-right" ng-click="addNextQuestion()">Add Skip Pattern</div>
+      <div class="m-1">
+        <div class="btn btn-primary float-right" ng-click="addNextQuestion()">Add Skip Pattern</div>
       </div>
     </div>
   </div>

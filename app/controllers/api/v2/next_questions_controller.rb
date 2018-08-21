@@ -42,7 +42,7 @@ module Api
       end
 
       def next_question_params
-        params.require(:next_question).permit(:question_identifier,
+        params.require(:next_question).permit(:question_identifier, :value,
           :option_identifier, :next_question_identifier, :instrument_question_id)
       end
     end
