@@ -49,7 +49,7 @@ MultipleSkip, FollowUpQuestion, ConditionSkip) ->
       if multiSkip.id
         multiSkip.$delete({},
           (data, headers) ->
-            $scope.multipleSkips.splice($scope.multipleSkips.indexOf(multiSkip, 1))
+            $scope.multipleSkips.splice($scope.multipleSkips.indexOf(multiSkip), 1)
           (result, headers) ->
             alert(result.data.errors)
         )
@@ -316,12 +316,11 @@ InstrumentQuestion, Setting, Option, MultipleSkip) ->
     'instrument_id': $scope.instrument_id,
     'instrument_question_id': $scope.id
   })
-
   $scope.settings = Setting.get({})
 
-  $scope.questionTypesWithMultipleSkips = (questionType) ->
-    if $scope.settings.question_with_multiple_skips
-      questionType in $scope.settings.question_with_multiple_skips
+  $scope.questionTypesWithSkipPatterns = (questionType) ->
+    if $scope.settings.question_with_skips
+      questionType in $scope.settings.question_with_skips
 
   $scope.questionsAfter = (question) ->
     questions = _.sortBy($scope.instrumentQuestions, 'number_in_instrument')
@@ -333,12 +332,12 @@ InstrumentQuestion, Setting, Option, MultipleSkip) ->
       if multiSkip.id
         multiSkip.$delete({},
           (data, headers) ->
-            $scope.multipleSkips.splice($scope.multipleSkips.indexOf(multiSkip, 1))
+            $scope.multipleSkips.splice($scope.multipleSkips.indexOf(multiSkip), 1)
           (result, headers) ->
             alert(result.data.errors)
         )
       else
-        $scope.multipleSkips.splice($scope.multipleSkips.indexOf(multiSkip, 1))
+        $scope.multipleSkips.splice($scope.multipleSkips.indexOf(multiSkip), 1)
 
   $scope.addMultiSkip = () ->
     skipQuestion = new MultipleSkip()

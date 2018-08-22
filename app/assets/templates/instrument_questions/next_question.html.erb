@@ -9,19 +9,22 @@
     <li class="text-muted">Check the Complete Survey box if the selection of
       the option should lead to the end of the survey.
     </li>
+    <li> <b>For questions with select multiple options, a skip results if
+      only one option is selected, i.e. the option with the skip pattern. If
+      multiple options are selected, the skips are ignored.</b>
+    </li>
   </div>
   <div class="card-body">
-    <div ng-show="(instrumentQuestion.option_set_id && questionTypesWithSkipPatterns(instrumentQuestion
-    .type)) || instrumentQuestion.special_option_set_id">
+    <div ng-show="(instrumentQuestion.option_set_id && questionTypesWithSkipPatterns(instrumentQuestion.type)) || instrumentQuestion.special_option_set_id">
       <div class="row m-1">
-        <label class="col-md-2"><u>Chosen Option</u></label>
+        <label class="col-md-3"><u>Chosen Option</u></label>
         <label class="col-md-2"><u>Entered Value</u></label>
-        <label class="col-md-4"><u>Question To Skip To</u></label>
+        <label class="col-md-3"><u>Question To Skip To</u></label>
         <label class="col-md-2"><u>Complete Survey</u></label>
         <label class="col-md-2"><u>Actions</u></label>
       </div>
       <div class="row m-1" ng-repeat="nextQuestion in nextQuestions">
-        <div class="col-md-2">
+        <div class="col-md-3">
           <select
             class="form-control"
             name="skip-pattern-option"
@@ -35,7 +38,7 @@
           <input type="text" class="form-control" ng-model="nextQuestion.value"
           ng-disabled="nextQuestion.option_identifier">
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <select
             class="form-control"
             name="skip-pattern-question"
