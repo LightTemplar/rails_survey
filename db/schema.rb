@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180821180732) do
+ActiveRecord::Schema.define(version: 20180821204126) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -296,6 +296,7 @@ ActiveRecord::Schema.define(version: 20180821180732) do
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.string   "value"
+    t.boolean  "complete_survey"
   end
 
   create_table "option_in_option_sets", force: :cascade do |t|
@@ -348,7 +349,6 @@ ActiveRecord::Schema.define(version: 20180821180732) do
     t.datetime "deleted_at"
     t.integer  "instrument_version_number", default: -1
     t.boolean  "critical"
-    t.boolean  "complete_survey"
     t.string   "identifier"
   end
 

@@ -1,13 +1,87 @@
-App.controller 'ShowInstrumentQuestionCtrl', ['$scope', '$stateParams', 'InstrumentQuestion',
-($scope, $stateParams, InstrumentQuestion) ->
+App.controller 'ShowInstrumentQuestionCtrl', ['$scope', '$stateParams',
+'InstrumentQuestion', 'NextQuestion', 'MultipleSkip', 'FollowUpQuestion',
+'ConditionSkip', ($scope, $stateParams, InstrumentQuestion, NextQuestion,
+MultipleSkip, FollowUpQuestion, ConditionSkip) ->
   $scope.project_id = $stateParams.project_id
   $scope.instrument_id = $stateParams.instrument_id
   $scope.id = $stateParams.id
+
   $scope.instrumentQuestion = InstrumentQuestion.get({
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id,
     'id': $scope.id
   })
+  $scope.nextQuestions = NextQuestion.query({
+    'project_id': $scope.project_id,
+    'instrument_id': $scope.instrument_id,
+    'instrument_question_id': $scope.id
+  })
+  $scope.multipleSkips = MultipleSkip.query({
+    'project_id': $scope.project_id,
+    'instrument_id': $scope.instrument_id,
+    'instrument_question_id': $scope.id
+  })
+  $scope.followUpQuestions = FollowUpQuestion.query({
+    'project_id': $scope.project_id,
+    'instrument_id': $scope.instrument_id,
+    'instrument_question_id': $scope.id
+  })
+  $scope.conditionSkips = ConditionSkip.query({
+    'project_id': $scope.project_id,
+    'instrument_id': $scope.instrument_id,
+    'instrument_question_id': $scope.id
+  })
+
+  $scope.deleteNextQuestion = (nextQuestion) ->
+    if confirm('Are you sure you want to delete this skip pattern?')
+      setRouteParameters(nextQuestion)
+      if nextQuestion.id
+        nextQuestion.$delete({},
+          (data, headers) ->
+            $scope.nextQuestions.splice($scope.nextQuestions.indexOf(nextQuestion), 1)
+          (result, headers) ->
+            alert(result.data.errors)
+        )
+
+  $scope.deleteMultiSkip = (multiSkip) ->
+    if confirm('Are you sure you want to delete this skip?')
+      setRouteParameters(multiSkip)
+      if multiSkip.id
+        multiSkip.$delete({},
+          (data, headers) ->
+            $scope.multipleSkips.splice($scope.multipleSkips.indexOf(multiSkip, 1))
+          (result, headers) ->
+            alert(result.data.errors)
+        )
+
+  $scope.deleteFollowUpQuestion = (followUp) ->
+    if confirm('Are you sure you want to delete this follow-up?')
+      setRouteParameters(followUp)
+      if followUp.id
+        followUp.$delete({},
+          (data, headers) ->
+            $scope.followUpQuestions.splice($scope.followUpQuestions.indexOf(followUp), 1)
+          (result, headers) ->
+            alert(result.data.errors)
+        )
+
+  $scope.deleteConditionSkip = (conditionSkip) ->
+    if confirm('Are you sure you want to delete this condition skip pattern?')
+      setRouteParameters(conditionSkip)
+      if conditionSkip.id
+        conditionSkip.$delete({},
+          (data, headers) ->
+            $scope.conditionSkips.splice($scope.conditionSkips.indexOf(conditionSkip), 1)
+          (result, headers) ->
+            alert(result.data.errors)
+        )
+
+  setRouteParameters = (obj) ->
+    obj.instrument_question_id = $scope.instrumentQuestion.id
+    obj.project_id = $scope.project_id
+    obj.instrument_id = $scope.instrument_id
+
+
 ]
 
 App.controller 'FollowUpsCtrl', ['$scope', '$stateParams', 'FollowUpQuestion',

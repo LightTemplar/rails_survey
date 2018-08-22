@@ -11,6 +11,7 @@
 #  updated_at               :datetime
 #  deleted_at               :datetime
 #  value                    :string
+#  complete_survey          :boolean
 #
 
 class NextQuestion < ActiveRecord::Base

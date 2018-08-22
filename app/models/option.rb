@@ -9,7 +9,6 @@
 #  deleted_at                :datetime
 #  instrument_version_number :integer          default(-1)
 #  critical                  :boolean
-#  complete_survey           :boolean
 #  identifier                :string
 #
 
