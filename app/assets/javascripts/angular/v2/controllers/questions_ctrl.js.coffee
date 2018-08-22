@@ -44,10 +44,10 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$stateParams', '$location', '$sta
  Instruction, InstrumentQuestion, Folder, Validation) ->
 
   $scope.toolBar = [
-      ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p'],
-      ['justifyLeft', 'justifyCenter', 'justifyRight'],
-      ['bold', 'italics', 'underline', 'strikeThrough', 'ul', 'ol'],
-      ['html']
+    ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p'],
+    ['justifyLeft', 'justifyCenter', 'justifyRight'],
+    ['bold', 'italics', 'underline', 'strikeThrough', 'ul', 'ol'],
+    ['html']
   ]
 
   $scope.questionTypes = () ->

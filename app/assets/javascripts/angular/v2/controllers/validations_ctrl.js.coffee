@@ -36,12 +36,12 @@ App.controller 'ValidationsCtrl', ['$scope', '$location', 'Validation', ($scope,
 ]
 
 App.controller 'ShowValidationCtrl', ['$scope', '$stateParams', '$state', 'Validation', 'Setting', 'Questions',
- ($scope, $stateParams, $state, Validation, Setting, Questions) ->
+($scope, $stateParams, $state, Validation, Setting, Questions) ->
 
   $scope.toolBar = [
-      ['justifyLeft', 'justifyCenter', 'justifyRight'],
-      ['bold', 'italics', 'underline', 'ul', 'ol', 'clear'],
-      ['html']
+    ['justifyLeft', 'justifyCenter', 'justifyRight'],
+    ['bold', 'italics', 'underline', 'ul', 'ol', 'clear'],
+    ['html']
   ]
 
   $scope.settings = Setting.get({}, ->

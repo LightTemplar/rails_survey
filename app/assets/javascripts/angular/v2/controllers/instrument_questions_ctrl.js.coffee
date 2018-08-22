@@ -81,7 +81,6 @@ MultipleSkip, FollowUpQuestion, ConditionSkip) ->
     obj.project_id = $scope.project_id
     obj.instrument_id = $scope.instrument_id
 
-
 ]
 
 App.controller 'FollowUpsCtrl', ['$scope', '$stateParams', 'FollowUpQuestion',
@@ -188,6 +187,7 @@ FollowUpQuestion, Setting, InstrumentQuestion, Option, Question) ->
         )
       else
         $scope.followingUpQuestions.splice($scope.followingUpQuestions.indexOf(followup), 1)
+
 ]
 
 App.controller 'NextQuestionsCtrl', ['$scope', '$stateParams', 'InstrumentQuestion', 'Setting',
@@ -282,9 +282,8 @@ App.controller 'NextQuestionsCtrl', ['$scope', '$stateParams', 'InstrumentQuesti
 ]
 
 App.controller 'MultipleSkipsCtrl', ['$scope', '$stateParams', 'InstrumentQuestion',
-'Setting', 'Option', 'MultipleSkip', ($scope, $stateParams,
-InstrumentQuestion, Setting, Option, MultipleSkip) ->
-
+'Setting', 'Option', 'MultipleSkip', ($scope, $stateParams, InstrumentQuestion,
+Setting, Option, MultipleSkip) ->
   $scope.options = []
   $scope.project_id = $stateParams.project_id
   $scope.instrument_id = $stateParams.instrument_id
@@ -393,7 +392,9 @@ Setting, Option, ConditionSkip) ->
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id,
     'id': $scope.id
-  }, -> questionOptions($scope.instrumentQuestion, $scope.options))
+  }, ->
+    questionOptions($scope.instrumentQuestion, $scope.options)
+  )
 
   questionOptions = (instrumentQuestion, optionsArray) ->
     if instrumentQuestion.option_set_id

@@ -39,9 +39,9 @@ App.controller 'ShowInstructionCtrl', ['$scope', '$stateParams', '$state', 'Inst
  ($scope, $stateParams, $state, Instruction) ->
 
   $scope.toolBar = [
-      ['justifyLeft', 'justifyCenter', 'justifyRight'],
-      ['bold', 'italics', 'underline', 'ul', 'ol', 'clear'],
-      ['html']
+    ['justifyLeft', 'justifyCenter', 'justifyRight'],
+    ['bold', 'italics', 'underline', 'ul', 'ol', 'clear'],
+    ['html']
   ]
 
   $scope.updateInstruction = () ->

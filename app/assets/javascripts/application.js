@@ -49,5 +49,5 @@
 //= require jquery-linedtextarea
 //= require underscore
 //= require_tree ../templates
-//= require_tree ./angular
+//= require_tree ./angular/v2
 //= require_directory .
