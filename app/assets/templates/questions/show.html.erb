@@ -76,7 +76,7 @@
 
       <div class="row m-1">
         <label class="col-md-2">Special Options</label>
-        <div class="col-md-10">
+        <div class="col-md-8">
           <select
             class="form-control"
             name="special-option-set"
@@ -86,11 +86,14 @@
             <option value=""></option>
           </select>
         </div>
+        <div class="col-md-2">
+          <a ng-show="question.special_option_set_id" ui-sref="optionSet({id: question.special_option_set_id})">View</a>
+        </div>
       </div>
 
       <div class="row m-1" ng-show="question.question_type && questionTypesWithOptions(question.question_type)">
         <label class="col-md-2">Option Set</label>
-        <div class="col-md-10">
+        <div class="col-md-8">
           <select
             class="form-control"
             name="option-set"
@@ -101,11 +104,14 @@
             <option value=""></option>
           </select>
         </div>
+        <div class="col-md-2">
+          <a ng-show="question.option_set_id" ui-sref="optionSet({id: question.option_set_id})">View</a>
+        </div>
       </div>
 
       <div class="row m-1">
         <label class="col-md-2">Instruction</label>
-        <div class="col-md-10">
+        <div class="col-md-8">
           <select
             class="form-control"
             name="instruction"
@@ -115,11 +121,14 @@
             <option value=""></option>
           </select>
         </div>
+        <div class="col-md-2">
+          <a ng-show="question.instruction_id" ui-sref="instruction({id: question.instruction_id})">View</a>
+        </div>
       </div>
 
       <div class="row m-1">
         <label class="col-md-2">Validation</label>
-        <div class="col-md-10">
+        <div class="col-md-8">
           <select
             class="form-control"
             name="validation"
@@ -128,6 +137,9 @@
             ng-options="validation.id as validation.title for validation in validations">
             <option value=""></option>
           </select>
+        </div>
+        <div class="col-md-2">
+          <a ng-show="question.validation_id" ui-sref="validation({id: question.validation_id})">View</a>
         </div>
       </div>
 

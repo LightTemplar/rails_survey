@@ -10,6 +10,7 @@
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #  special            :boolean          default(FALSE)
+#  is_exclusive       :boolean          default(FALSE)
 #
 
 class OptionInOptionSet < ActiveRecord::Base
