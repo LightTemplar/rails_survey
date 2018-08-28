@@ -45,7 +45,7 @@ gem 'whenever', '0.9.7', require: false
 gem 'wicked_pdf', '1.1.0'
 gem 'wkhtmltopdf-binary', '0.12.3.1'
 gem 'zip-zip', '0.3'
-gem 'activeadmin_json_editor', '~> 0.0.7'
+gem 'activeadmin_json_editor', '~> 0.0.9'
 
 group :production do
   gem 'pg', '0.19.0'
