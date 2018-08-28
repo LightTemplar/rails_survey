@@ -44,7 +44,7 @@ module Api
       end
 
       def display_instruction_params
-        params.require(:display_instruction).permit(:display_id, :position, :instruction_id)
+        params.require(:display_instruction).permit(:display_id, :instruction_id, :instrument_question_id)
       end
 
     end

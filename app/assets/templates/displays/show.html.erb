@@ -147,7 +147,7 @@
   </div>
 </div>
 
-<div ng-show="showCopy">
+<div ng-show="showCopy" class="card">
   <h4 class="text-center">Copy Display Questions</h4>
   <div class="row">
     <label class="col-md-3">Destination Instrument</label>
@@ -178,7 +178,7 @@
 </div>
 </div>
 
-<div ng-show="showMove">
+<div ng-show="showMove" class="card">
   <h4 class="text-center">Move Questions To Another Display</h4>
   <div class="row">
     <label class="col-md-3">Destination Display</label>
@@ -207,19 +207,25 @@
 </div>
 </div>
 
-<div ng-show="showInstructions">
+<div ng-show="showInstructions" class="card">
   <h4 class="text-center">Instructions in Display</h4>
   <h6 class="row m-1">
-    <label class="col-md-1">Position</label>
-    <label class="col-md-8">Instruction</label>
+    <label class="col-md-3">Question After Instruction</label>
+    <label class="col-md-6">Instruction</label>
     <label class="col-md-3">Actions</label>
   </h6>
   <div class="row m-1" ng-repeat="displayInstruction in displayInstructions">
-    <div class="col-md-1">
-      <input type="number" name="display-instruction-position" class="form-control" min="{{minNum}}"
-      max="{{maxNum}}" ng-model="displayInstruction.position"/>
+    <div class="col-md-3">
+      <select
+        class="form-control"
+        name="display-instruction-instrument-question-id"
+        ng-model=displayInstruction.instrument_question_id
+        ng-options="iq.id as iq.identifier for iq in displayQuestions"
+        required>
+        <option value=""></option>
+      </select>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-6">
       <select
       class="form-control"
       name="display-instruction-id"
@@ -236,11 +242,11 @@
   </div>
 </div>
 <div class="m-1">
-  <div class="btn btn-primary" ng-click="addDisplayInstruction()">New Display Instruction</div>
+  <div class="btn btn-primary float-right" ng-click="addDisplayInstruction()">New Display Instruction</div>
 </div>
 </div>
 
-<div ng-show="showTables">
+<div ng-show="showTables" class="card">
   <h4 class="text-center">Table Displays</h4>
   <li>Tables are used to group and display together questions that have the same option set.</li>
   <div ng-repeat="identifier in tableIdentifiers">

@@ -23,10 +23,13 @@ class InstrumentQuestion < ActiveRecord::Base
   has_many :follow_up_questions
   has_many :condition_skips
   has_many :translations, through: :question
+  has_many :display_instructions
   acts_as_paranoid
   has_paper_trail
   validates :identifier, presence: true
-  validates :identifier, uniqueness: { scope: :instrument_id, message: 'instrument already has this identifier' }
+  validates :identifier, uniqueness: { scope: :instrument_id,
+    message: 'instrument already has this identifier' }
+  after_update :update_display_instructions, if: :number_in_instrument_changed?
 
   def options
     option_set_ids = [question.option_set_id, question.special_option_set_id].compact
@@ -56,5 +59,10 @@ class InstrumentQuestion < ActiveRecord::Base
       fuq_copy.instrument_question_id = iq_copy.id
       fuq_copy.save!
     end
+  end
+
+  private
+  def update_display_instructions
+    display_instructions.update_all(position: number_in_instrument)
   end
 end
