@@ -151,6 +151,13 @@
         </div>
       </div>
 
+      <div class="row m-1" ng-show="questionTypesWithMultipleResponses(question.question_type)">
+        <label class="col-md-2">Rank Responses</label>
+        <div class="col-md-10">
+          <input class="form-control" type="checkbox" ng-model="question.rank_responses" >
+        </div>
+      </div>
+
       <div class="row m-1">
         <div class="col-md text-right">
           <div class="btn btn-secondary" ng-click="cancel()">Cancel</div>

@@ -56,6 +56,10 @@ node :validation_id do |iq|
   iq.question.validation_id if iq.question
 end
 
+node :rank_responses do |iq|
+  iq.question.rank_responses if iq.question
+end
+
 child :translations do |t|
   attributes :id, :question_id, :text, :language, :instructions
 end

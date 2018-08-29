@@ -18,6 +18,7 @@
 #  parent_identifier     :string
 #  folder_id             :integer
 #  validation_id         :integer
+#  rank_responses        :boolean          default(FALSE)
 #
 
 require "spec_helper"

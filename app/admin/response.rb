@@ -22,6 +22,7 @@ ActiveAdmin.register Response do
     column :text
     column :special_response
     column :other_response
+    column :rank_order
     column :response_image do |response|
       if response.response_image && response.response_image.picture
         image_tag(response.response_image.picture.url(:medium))

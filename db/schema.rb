@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180828183103) do
+ActiveRecord::Schema.define(version: 20180829154653) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -418,6 +418,7 @@ ActiveRecord::Schema.define(version: 20180828183103) do
     t.string   "parent_identifier"
     t.integer  "folder_id"
     t.integer  "validation_id"
+    t.boolean  "rank_responses",        default: false
   end
 
   add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true, using: :btree
@@ -492,6 +493,7 @@ ActiveRecord::Schema.define(version: 20180828183103) do
     t.integer  "question_version",    default: -1
     t.datetime "deleted_at"
     t.text     "randomized_data"
+    t.string   "rank_order"
   end
 
   add_index "responses", ["deleted_at"], name: "index_responses_on_deleted_at", using: :btree

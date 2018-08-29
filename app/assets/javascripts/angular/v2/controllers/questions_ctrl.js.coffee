@@ -57,6 +57,10 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$stateParams', '$location', '$sta
     if $scope.settings.question_with_options
       questionType in $scope.settings.question_with_options
 
+  $scope.questionTypesWithMultipleResponses = (questionType) ->
+    if $scope.settings.question_with_select_multiple
+      questionType in $scope.settings.question_with_select_multiple
+
   $scope.saveQuestion = () ->
     $scope.question.question_set_id = $stateParams.question_set_id
     if $scope.question.id

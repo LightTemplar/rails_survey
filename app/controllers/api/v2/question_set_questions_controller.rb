@@ -50,10 +50,9 @@ module Api
       end
 
       def question_params
-        params.require(:question_set_question).permit(:option_set_id, :question_set_id, :text, :question_type,
-                                                      :question_identifier, :parent_identifier, :identifies_survey,
-                                                      :instruction_id, :critical, :special_option_set_id, :folder_id,
-                                                      :validation_id, :sum_of_parts)
+        params.require(:question_set_question).permit(:option_set_id, :question_set_id,
+          :text, :question_type, :question_identifier, :parent_identifier, :identifies_survey,
+          :instruction_id, :critical, :special_option_set_id, :folder_id, :validation_id, :rank_responses)
       end
 
     end
