@@ -14,10 +14,10 @@ ActiveAdmin.register Response do
       survey = Survey.find_by_uuid(s_uuid.survey_uuid)
       link_to s_uuid.survey_uuid, admin_instrument_survey_path(survey.instrument_id, survey.id)
     end
-    column 'Question', sortable: :question_id do |q_id|
-      question = Question.find_by_id(q_id.question_id)
-      question ? (link_to q_id.question_id, admin_instrument_question_path(question.instrument_id, question.id)) : q_id.question_id
-    end
+    # column 'Question', sortable: :question_id do |q_id|
+    #   question = Question.find_by_id(q_id.question_id)
+    #   question ? (link_to q_id.question_id, admin_instrument_question_path(question.instrument_id, question.id)) : q_id.question_id
+    # end
     column :question_identifier
     column :text
     column :special_response
