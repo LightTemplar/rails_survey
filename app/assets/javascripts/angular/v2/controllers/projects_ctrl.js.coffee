@@ -1,60 +1,78 @@
-App.controller 'ProjectsCtrl', ['$scope', '$state', 'Project', ($scope, $state, Project) ->
+App.controller 'ProjectsCtrl', ['$scope', '$state', 'Project', 'Instrument',
+($scope, $state, Project, Instrument) ->
   $scope.baseUrl = ''
   if _base_url != '/'
     $scope.baseUrl = _base_url
 
-  $scope.projects = Project.query({})
-
-]
-
-App.controller 'ShowProjectCtrl', ['$scope', '$stateParams', 'Project',
-'Instrument', 'Setting', ($scope, $stateParams, Project, Instrument, Setting) ->
-
   $scope.showInstruments = true
-  $scope.project = Project.get({'id': $stateParams.id})
-  $scope.instruments = Instrument.query({'project_id': $stateParams.id})
-  $scope.settings = Setting.get({}, ->
-    $scope.languages = $scope.settings.languages
-  )
+  $scope.showEditInstrument = false
+  $scope.showNewInstrument = false
+  $scope.projects = Project.query({})
 
   $scope.newInstrument = () ->
     $scope.showInstruments = false
-    $scope.instrument = new Instrument()
-    $scope.instrument.project_id = $stateParams.id
+    $scope.showNewInstrument = true
 
   $scope.editInstrument = (instrument) ->
     $scope.showInstruments = false
+    $scope.showEditInstrument = true
     $scope.instrument = instrument
-
-  $scope.saveInstrument = (instrument) ->
-    if instrument.id
-      instrument.$update({},
-        (data, headers) ->
-          $scope.showInstruments = true
-          updated = _.findWhere($scope.instruments, {id: data.id})
-          updated = data
-        (result, headers) ->
-          alert(result.data.errors)
-      )
-    else
-      instrument.$save({},
-        (data, headers) ->
-          $scope.showInstruments = true
-          $scope.instruments.push(data)
-        (result, headers) ->
-          alert(result.data.errors)
-      )
 
   $scope.deleteInstrument = (instrument) ->
     if confirm('Are you sure you want to delete ' + instrument.title + '?')
       if instrument.id
-        instrument.$delete({} ,
+        instrumentCopy = new Instrument()
+        instrumentCopy.id = instrument.id
+        instrumentCopy.title = instrument.title
+        instrumentCopy.project_id = instrument.project_id
+        instrumentCopy.$delete({} ,
           (data, headers) ->
-            index = $scope.instruments.indexOf(instrument)
-            $scope.instruments.splice(index, 1)
+            $state.reload()
           (result, headers) ->
             alert(result.data.errors)
         )
+
+]
+
+App.controller 'NewInstrumentCtrl', ['$scope', '$state', 'Instrument', 'Setting',
+($scope, $state, Instrument, Setting) ->
+  $scope.instrument = new Instrument()
+
+  $scope.settings = Setting.get({}, ->
+    $scope.languages = $scope.settings.languages
+  )
+
+  $scope.saveInstrument = (instrument) ->
+    instrument.$save({},
+      (data, headers) ->
+        $state.reload()
+      (result, headers) ->
+        alert(result.data.errors)
+    )
+
+]
+
+App.controller 'EditInstrumentCtrl', ['$scope', '$state', 'Instrument', 'Setting',
+($scope, $state, Instrument, Setting) ->
+
+  $scope.settings = Setting.get({}, ->
+    $scope.languages = $scope.settings.languages
+  )
+
+  $scope.saveInstrument = (instrument) ->
+    if instrument.id
+      instrumentCopy = new Instrument()
+      instrumentCopy.id = instrument.id
+      instrumentCopy.title = instrument.title
+      instrumentCopy.project_id = instrument.project_id
+      instrumentCopy.published = instrument.published
+      instrumentCopy.language = instrument.language
+      instrumentCopy.$update({},
+        (data, headers) ->
+          $state.reload()
+        (result, headers) ->
+          alert(result.data.errors)
+      )
 
 ]
 

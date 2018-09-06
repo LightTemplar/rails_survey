@@ -8,15 +8,8 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
   $stateProvider
     .state '/',
       url: '/'
-      templateUrl: 'projects/home.html'
-    .state 'projects',
-      url: '/projects'
       templateUrl: 'projects/index.html'
       controller: 'ProjectsCtrl'
-    .state 'project',
-      url: '/projects/:id'
-      templateUrl: 'projects/show.html'
-      controller: 'ShowProjectCtrl'
     .state 'importInstrument',
       url: '/projects/:id'
       templateUrl: 'projects/import_instrument.html'

@@ -15,8 +15,7 @@ class ApplicationController < ActionController::Base
 
   def after_sign_in_path_for(_resource_or_scope)
     set_current_project_id(session[:previous_url])
-    # session[:previous_url] || root_path
-    '/projects'
+    '/'
   end
 
   def after_update_path_for(_resource)

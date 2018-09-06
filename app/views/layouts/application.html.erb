@@ -2,20 +2,6 @@
 <html>
 <head>
   <title>iSEE</title>
-  <%#= stylesheet_link_tag 'application', media: 'all' %>
-<!--  <script type="text/javascript" src="https://www.google.com/jsapi"></script>-->
-<!--  <script type="text/javascript">-->
-<!--      google.load('visualization', '1', {'packages': ['corechart']});-->
-<!--  </script>-->
-<!--  <script>-->
-<!--      window._base_url = "<%#= ENV['BASE_URL'] %>"-->
-<!--  </script>-->
-  <%#= javascript_include_tag 'application' %>
-  <%#= csrf_meta_tags %>
-<!--  <meta name="viewport" content="width=device-width, initial-scale=1">-->
-<!--  <meta name="description" content="">-->
-<!--  <meta name="author" content="">-->
-<!--  <meta charset="utf-8">-->
 </head>
 
 <body ng-app="Survey">
@@ -49,17 +35,6 @@
               <a class="dropdown-item" ui-sref="rules({})">Rules</a>
             </div>
           </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="projectDropdown" role="button" data-toggle="dropdown"
-               aria-haspopup="true" aria-expanded="false">
-              Projects
-            </a>
-            <div class="dropdown-menu" aria-labelledby="projectDropdown">
-              <% current_user.projects.each do |project| %>
-                <a class="dropdown-item" ui-sref="project({id: <%= project.id %>})"><%= project.name %></a>
-              <% end %>
-            </div>
-          </li>
         </ul>
         <ul class="navbar-nav m-auto order-last">
           <span class="btn btn-info m-1"><%= current_user.email %></span>
@@ -75,17 +50,6 @@
       <%= yield %>
   </div>
 </main>
-
-<%# flash.each do |key, msg| %>
-<%# if key == :alert or key == :notice %>
-<!--    <div class="alert alert-<%##= key == :alert ? 'danger' : 'success' %> alert-dismissible text-center" role="alert">-->
-<!--      <button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
-<!--        <span aria-hidden="true">&times;</span>-->
-<!--      </button>-->
-<%#= msg %>
-<!--    </div>-->
-<%# end %>
-<%# end %>
 
 <footer class="footer">
   <div class="container text-center">

@@ -9,11 +9,11 @@ module Api
       respond_to :json
 
       def index
-        respond_with current_user.projects
+        @projects = current_user.projects.includes(:instruments)
       end
 
       def show
-        respond_with current_user.projects.find(params[:id])
+        @project = current_user.projects.find(params[:id])
       end
 
       def import_instrument

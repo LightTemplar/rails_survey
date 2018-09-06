@@ -31,7 +31,7 @@ class Instrument < ActiveRecord::Base
   include RedisJobTracker
   serialize :special_options, Array
   scope :published, -> { where(published: true) }
-  belongs_to :project
+  belongs_to :project, touch: true
 
   has_many :instrument_questions, dependent: :destroy
   has_many :questions, through: :instrument_questions

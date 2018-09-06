@@ -1,18 +1,49 @@
 <div class="card text-capitalize" ng-controller="ProjectsCtrl">
-  <div class="card-body table-responsive">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Project Name</th>
-          <th>Project Description</th>
-        </tr>
-      </thead>
-      <tbody ng-repeat="project in projects">
-        <tr>
-          <td><a ui-sref="project({id: project.id})">{{project.name}}</a></td>
-          <td>{{project.description}}</td>
-        </tr>
-      </tbody>
-    </table>
+  <div ng-show="showInstruments">
+    <div class="m-1">
+      <div class="btn btn-primary" ng-click="newInstrument()">New Instrument</div>
+      <a ui-sref="importInstrument({id: project.id})"
+         class="btn btn-primary">Import From Instruments2 CSV</a>
+    </div>
+    <div class="m-1">
+      <input type="search" ng-model="i.title" placeholder="Filter instruments..."
+      class="form-control tm-search text-center" />
+    </div>
+    <h5 class="row m-1">
+      <div class="col-md-4">Title</div>
+      <div class="col-md-2">Project</div>
+      <div class="col-md-1">Published</div>
+      <div class="col-md-1">Version</div>
+      <div class="col-md-1">Questions</div>
+      <div class="col-md-3">Actions</div>
+    </h5>
+    <div ng-repeat="project in projects">
+      <div class="row m-1" ng-repeat="instrument in project.instruments | filter:i">
+        <div class="col-md-4">
+          <a ui-sref='instrument({project_id: project.id, id: instrument.id})'>
+            {{instrument.title}}</a>
+        </div>
+        <div class="col-md-2">{{project.name}}</div>
+        <div class="col-md-1">{{instrument.published}}</div>
+        <div class="col-md-1">{{instrument.current_version_number}}</div>
+        <div class="col-md-1">{{instrument.question_count}}</div>
+        <div class="col-md-3">
+          <button class="btn btn-primary" ng-click="editInstrument(instrument)">
+            Edit
+          </button>
+          <button class="btn btn-danger" ng-click="deleteInstrument(instrument)">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div ng-show="showNewInstrument" ng-controller="NewInstrumentCtrl">
+    <h4 class="text-center">Create Instrument</h4>
+    <div ng-include="'projects/instrument.html'"></div>
+  </div>
+  <div ng-show="showEditInstrument" ng-controller="EditInstrumentCtrl">
+    <h4 class="text-center">Edit Instrument</h4>
+    <div ng-include="'projects/instrument.html'"></div>
   </div>
 </div>
