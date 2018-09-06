@@ -117,6 +117,7 @@ RailsSurvey::Application.routes.draw do
           end
           resources :instrument_translations
           resources :instrument_rules
+          resources :sections
           member do
             get :copy
             get :set_skip_patterns

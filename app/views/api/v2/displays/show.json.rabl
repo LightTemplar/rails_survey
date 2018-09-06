@@ -1,7 +1,7 @@
 object @display
 cache @display
 
-attributes :id, :position, :mode, :instrument_id, :title, :section_title
+attributes :id, :position, :mode, :instrument_id, :title, :section_title, :section_id
 
 node :question_count do |d|
   d.instrument_questions.size

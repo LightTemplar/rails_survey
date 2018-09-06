@@ -1,4 +1,4 @@
-<div ng-controller="NewDisplayCtrl">
+<ng-form name="newDisplayForm" ng-controller="NewDisplayCtrl">
   <div ng-include="'instruments/show.html'"></div>
   <h4 class="text-center">Instrument Displays</h4>
 
@@ -6,32 +6,32 @@
     <div class="card-body card-padding">
       <div class="row m-1">
         <label class="col-md-2">Display Title</label>
-        <div class="col-md-10"><input class="form-control" type="text" ng-model="display.title"/></div>
+        <div class="col-md-10">
+          <input class="form-control" type="text" ng-model="display.title" required/>
+        </div>
       </div>
       <div class="row m-1">
         <label class="col-md-2">Section Title</label>
-        <div class="col-md-10"><input class="form-control" type="text" ng-model="display.section_title"/></div>
-      </div>
-      <div class="row m-1">
-        <label class="col-md-2">Mode</label>
         <div class="col-md-10">
           <select
-            class="form-control"
-            allow-single-deselect="true"
-            name="display-mode"
-            ng-model="display.mode"
-            ng-options="type for type in settings.display_types">
-            <option value=""></option>
+          class="form-control"
+          name="display-section-title"
+          ng-model="display.section_id"
+          ng-options="section.id as section.title for section in sections"
+          required>
           </select>
         </div>
       </div>
       <div class="row m-1">
         <label class="col-md-2">Position</label>
-        <div class="col-md-10"><input class="form-control" type="number" ng-model="display.position"/></div>
+        <div class="col-md-10">
+          <input class="form-control" type="number" ng-model="display.position" required/>
+        </div>
       </div>
       <div class="m-1">
-        <div class="btn btn-sm btn-success pull-right" ng-click="saveDisplay()">Save</div>
+        <div class="btn btn-success float-right"
+        ng-disabled="newDisplayForm.$invalid" ng-click="saveDisplay()">Save</div>
       </div>
     </div>
   </div>
-</div>
+</ng-form>

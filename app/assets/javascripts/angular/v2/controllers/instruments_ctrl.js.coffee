@@ -29,8 +29,9 @@ App.controller 'ReorderInstrumentQuestionsCtrl', ['$scope', '$stateParams', 'Ins
       $scope.instrument.order += "\n"
 
   $scope.instrumentQuestions = InstrumentQuestion.query({
-      'project_id': $scope.project_id,
-      'instrument_id': $scope.id})
+    'project_id': $scope.project_id,
+    'instrument_id': $scope.id
+  })
 
   $scope.instrument = Instrument.get({
     'project_id': $scope.project_id,
@@ -101,5 +102,47 @@ App.controller 'InstrumentSkipPatternsCtrl', ['$scope', '$stateParams', 'Instrum
       (result, headers) ->
         alert(result.data.errors)
     )
+
+]
+
+App.controller 'InstrumentSectionsCtrl', ['$scope', '$stateParams', 'Section',
+($scope, $stateParams, Section) ->
+
+  $scope.sections = Section.query({
+    'project_id': $stateParams.project_id,
+    'instrument_id': $stateParams.id
+  })
+
+  $scope.createSection = () ->
+    $scope.sections.push(new Section())
+
+  $scope.saveSection = (section) ->
+    section.project_id = $stateParams.project_id
+    section.instrument_id = $stateParams.id
+    if section.id
+      section.$update({},
+        (data, headers) ->
+        (result, headers) ->
+          alert(result.data.errors)
+      )
+    else
+      section.$save({},
+        (data, headers) ->
+        (result, headers) ->
+          alert(result.data.errors)
+      )
+
+  $scope.deleteSection = (section) ->
+    section.project_id = $stateParams.project_id
+    section.instrument_id = $stateParams.id
+    if section.id
+      section.$delete({},
+        (data, headers) ->
+          $scope.sections.splice($scope.sections.indexOf(section), 1)
+        (result, headers) ->
+          alert(result.data.errors)
+      )
+    else
+      $scope.sections.splice($scope.sections.indexOf(section), 1)
 
 ]

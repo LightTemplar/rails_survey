@@ -24,8 +24,12 @@
         <div class="row m-1">
           <label class="col-md-2">Section Title</label>
           <div class="col-md-10">
-            <input class="form-control" type="text"
-            ng-change="validateMode(display)" ng-model="display.section_title"/>
+            <select
+              class="form-control"
+              name="display-section-title"
+              ng-model="display.section_id"
+              ng-options="section.id as section.title for section in sections">
+            </select>
           </div>
         </div>
         <div class="row m-1">

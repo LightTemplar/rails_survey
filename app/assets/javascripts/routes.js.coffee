@@ -30,6 +30,10 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
       url: '/projects/:project_id/instruments/:id'
       templateUrl: 'instruments/skip_patterns.html'
       controller: 'InstrumentSkipPatternsCtrl'
+    .state 'sections',
+      url: '/projects/:project_id/instruments/:id'
+      templateUrl: 'instruments/sections.html'
+      controller: 'InstrumentSectionsCtrl'
     .state 'questionSets',
       url: '/question_sets'
       templateUrl: 'question_sets/index.html'

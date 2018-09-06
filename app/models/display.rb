@@ -11,6 +11,7 @@
 #  title         :string
 #  deleted_at    :datetime
 #  section_title :string
+#  section_id    :integer
 #
 
 class Display < ActiveRecord::Base
@@ -19,6 +20,20 @@ class Display < ActiveRecord::Base
   has_many :display_instructions, dependent: :destroy
   acts_as_paranoid
   has_paper_trail
+  validates :title, presence: true
+  validates :position, presence: true
+
+  def set_section
+    unless section_title.blank?
+      section = instrument.sections.where(title: section_title).try(:first)
+      unless section
+        section = Section.create!(title: section_title, instrument_id: instrument_id)
+      end
+      self.section_id = section.id
+      self.save
+      reload
+    end
+  end
 
   def copy(instrument, display_type)
     if display_type == 'AS_IT_IS'

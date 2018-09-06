@@ -44,8 +44,9 @@ App.controller 'DisplaysCtrl', ['$scope', '$stateParams', '$state', 'Display', '
 
 ]
 
-App.controller 'NewDisplayCtrl', ['$scope', '$stateParams', '$state', 'Instrument', 'Setting', 'Display', ($scope,
-  $stateParams, $state, Instrument, Setting, Display) ->
+App.controller 'NewDisplayCtrl', ['$scope', '$stateParams', '$state', 'Instrument',
+'Setting', 'Display', 'Section', ($scope, $stateParams, $state, Instrument,
+Setting, Display, Section) ->
   $scope.project_id = $stateParams.project_id
   $scope.instrument_id = $stateParams.instrument_id
 
@@ -54,14 +55,16 @@ App.controller 'NewDisplayCtrl', ['$scope', '$stateParams', '$state', 'Instrumen
     'id': $scope.instrument_id
   }, ->
     $scope.display = new Display()
-    $scope.display.title = 'Enter display title here'
-    $scope.display.section_title = 'Enter section title here'
     $scope.display.project_id = $scope.project_id
     $scope.display.instrument_id = $scope.instrument_id
     $scope.display.position = $scope.instrument.display_count + 1
   )
 
   $scope.settings = Setting.get({})
+  $scope.sections = Section.query({
+    'project_id': $scope.project_id
+    'instrument_id': $scope.instrument_id
+  })
 
   $scope.saveDisplay = () ->
     $scope.display.$save({},
@@ -79,8 +82,8 @@ App.controller 'NewDisplayCtrl', ['$scope', '$stateParams', '$state', 'Instrumen
 
 App.controller 'ShowDisplayCtrl', ['$scope', '$stateParams', 'Display', 'DisplayInstruction',
 'Instrument', 'Setting', '$state', 'InstrumentQuestion', 'QuestionSet', 'Question', 'Instruction',
-($scope, $stateParams, Display, DisplayInstruction, Instrument, Setting, $state, InstrumentQuestion,
-QuestionSet, Question, Instruction) ->
+'Section', ($scope, $stateParams, Display, DisplayInstruction, Instrument, Setting, $state,
+InstrumentQuestion, QuestionSet, Question, Instruction, Section) ->
   $scope.project_id = $stateParams.project_id
   $scope.instrument_id = $stateParams.instrument_id
   $scope.id = $stateParams.id
@@ -90,6 +93,11 @@ QuestionSet, Question, Instruction) ->
   $scope.showMove = false
   $scope.showInstructions = false
   $scope.showTables = false
+
+  $scope.sections = Section.query({
+    'project_id': $scope.project_id
+    'instrument_id': $scope.instrument_id
+  })
 
   $scope.display = Display.get({
     'project_id': $scope.project_id,
