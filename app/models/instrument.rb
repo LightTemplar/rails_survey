@@ -45,6 +45,7 @@ class Instrument < ActiveRecord::Base
   has_many :response_images, through: :responses
   has_one :response_export
   has_many :sections, dependent: :destroy
+  has_many :section_translations, through: :sections, source: :translations
   has_many :rules, through: :instrument_rules
   has_many :grids, dependent: :destroy
   has_many :grid_labels, through: :grids

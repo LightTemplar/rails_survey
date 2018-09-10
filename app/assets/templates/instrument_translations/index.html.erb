@@ -9,37 +9,28 @@
 
     <div class="card-body card-padding">
       <div ng-show="showInstrumentTranslations">
-        <table class="table table-responsive">
-          <thead>
-            <tr>
-              <th>Language</th>
-              <th>Title</th>
-              <th>Active</th>
-              <th>Created at</th>
-              <th>Updated at</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr ng-repeat="translation in instrumentTranslations">
-              <td>
-                <a ui-sref="questionTranslations({language: translation.language,
-                  instrument_id: instrument.id })"
-                class="btn btn-primary">{{ translation.language }}</a>
-                <%#= link_to Settings.languages.to_h.key(translation.language), project_instrument_instrument_translation_path(current_project, @instrument, translation) %>
-              </td>
-              <td>{{ translation.title }}</td>
-              <td>{{ translation.active }}</td>
-              <td>{{ translation.created_at | date:'short' }}</td>
-              <td>{{ translation.updated_at | date:'short' }}</td>
-              <td>
-                <div class="btn btn-danger" ng-click="deleteInstrumentTranslation(translation)">
-                  Delete
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <h4 class="row">
+          <div class="col-md">Language</div>
+          <div class="col-md">Title</div>
+          <div class="col-md">Active</div>
+          <div class="col-md">Last Update</div>
+          <div class="col-md">Actions</div>
+        </h4>
+        <div class="row" ng-repeat="translation in instrumentTranslations">
+          <div class="col-md">
+            <a ui-sref="questionTranslations({language: translation.language,
+              instrument_id: instrument.id })"
+            class="btn btn-primary">{{ translation.language }}</a>
+          </div>
+          <div class="col-md">{{ translation.title }}</div>
+          <div class="col-md">{{ translation.active }}</div>
+          <div class="col-md">{{ translation.updated_at | date:'short' }}</div>
+          <div class="col-md">
+            <div class="btn btn-danger" ng-click="deleteInstrumentTranslation(translation)">
+              Delete
+            </div>
+          </div>
+        </div>
       </div>
 
       <div ng-hide="showInstrumentTranslations">
@@ -47,6 +38,7 @@
           <label class="col-md-4 control-label">Instrument Translation Language</label>
           <div class="col-md-8">
             <select
+              class="form-control"
               ng-model="instrumentTranslation.language"
               ng-options="language[1] as language[0] for language in languages"
             >
@@ -71,8 +63,8 @@
             <input type="checkbox" ng-model="instrumentTranslation.active" />
           </div>
         </div>
-        <div class="row m-1">
-          <div class="btn btn-success pull-right" ng-click="saveInstrumentTranslation(instrumentTranslation)">Save</div>
+        <div class="m-1">
+          <div class="btn btn-success float-right" ng-click="saveInstrumentTranslation(instrumentTranslation)">Save</div>
         </div>
       </div>
     </div>

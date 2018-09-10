@@ -107,6 +107,8 @@ App.controller 'InstrumentSkipPatternsCtrl', ['$scope', '$stateParams', 'Instrum
 
 App.controller 'InstrumentSectionsCtrl', ['$scope', '$stateParams', 'Section',
 ($scope, $stateParams, Section) ->
+  $scope.project_id = $stateParams.project_id
+  $scope.instrument_id = $stateParams.id
 
   $scope.sections = Section.query({
     'project_id': $stateParams.project_id,

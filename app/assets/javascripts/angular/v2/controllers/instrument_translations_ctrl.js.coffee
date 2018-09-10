@@ -52,5 +52,47 @@ InstrumentTranslation, Instrument) ->
           (result, headers) ->
             alert(result.data.errors)
         )
- 
+
+]
+
+App.controller 'SectionTranslationsCtrl', ['$scope', '$stateParams', 'Setting', 'SectionTranslation',
+'Section', ($scope, $stateParams, Setting, SectionTranslation, Section) ->
+  $scope.sections = Section.query({
+    'project_id': $stateParams.project_id,
+    'instrument_id': $stateParams.instrument_id
+  })
+
+  $scope.settings = Setting.get({}, ->
+    $scope.languages = $scope.settings.languages
+  )
+
+  $scope.sectionTranslations = SectionTranslation.query({
+    'project_id': $stateParams.project_id,
+    'instrument_id': $stateParams.instrument_id
+  })
+
+  $scope.translationFor = (section) ->
+    sectionTranslation = _.findWhere($scope.sectionTranslations, {
+      section_id: section.id, language: $scope.language
+    })
+    if sectionTranslation == undefined
+      sectionTranslation = new SectionTranslation()
+      sectionTranslation.language = $scope.language
+      sectionTranslation.section_id = section.id
+      sectionTranslation.text = ""
+      if $scope.language != undefined
+        $scope.sectionTranslations.push(sectionTranslation)
+    sectionTranslation
+
+  $scope.saveTranslations = () ->
+    sectionTranslation = new SectionTranslation()
+    sectionTranslation.project_id = $stateParams.project_id
+    sectionTranslation.instrument_id = $stateParams.instrument_id
+    sectionTranslation.section_translations = $scope.sectionTranslations
+    sectionTranslation.$batch_update({},
+      (data, headers) ->
+      (result, headers) ->
+        alert(result.data.errors)
+    )
+
 ]

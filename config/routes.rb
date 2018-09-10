@@ -118,6 +118,11 @@ RailsSurvey::Application.routes.draw do
           resources :instrument_translations
           resources :instrument_rules
           resources :sections
+          resources :section_translations do
+            collection do
+              post :batch_update
+            end
+          end
           member do
             get :copy
             get :set_skip_patterns
