@@ -239,17 +239,6 @@ InstrumentQuestion, QuestionSet, Question, Instruction, Section) ->
           alert(result.data.errors)
       )
 
-  $scope.validateMode = ->
-    $scope.showSaveDisplay = true
-    if $scope.display.mode == 'SINGLE' && $scope.displayQuestions.length > 1
-      alert("The display mode is SINGLE but there is more than one
-      question on this display. Please delete the extra question(s) and save
-      the display.")
-    else if $scope.display.mode == 'TABLE' && $scope.displayQuestions.length > 0 &&
-    _.pluck($scope.displayQuestions, 'option_set_id').length > 1
-      alert("The questions in this TABLE display do not have the same option set!
-      Please delete the questions that don't belong to it.")
-
   $scope.saveDisplay = () ->
     $scope.display.project_id = $scope.project_id
     $scope.display.$update({},
@@ -258,7 +247,6 @@ InstrumentQuestion, QuestionSet, Question, Instruction, Section) ->
         (result, headers) ->
           alert(result.data.errors)
       )
-    $scope.showSaveDisplay = false
 
   $scope.addQuestionToDisplay = () ->
     $scope.showQuestions = !$scope.showQuestions

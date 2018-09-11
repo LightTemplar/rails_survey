@@ -18,18 +18,19 @@ class InstrumentQuestion < ActiveRecord::Base
   belongs_to :instrument, touch: true
   belongs_to :question
   belongs_to :display, touch: true
-  has_many :next_questions
-  has_many :multiple_skips
-  has_many :follow_up_questions
-  has_many :condition_skips
+  has_many :next_questions, dependent: :destroy
+  has_many :multiple_skips, dependent: :destroy
+  has_many :follow_up_questions, dependent: :destroy
+  has_many :condition_skips, dependent: :destroy
   has_many :translations, through: :question
-  has_many :display_instructions
+  has_many :display_instructions, dependent: :destroy
   acts_as_paranoid
   has_paper_trail
   validates :identifier, presence: true
   validates :identifier, uniqueness: { scope: :instrument_id,
     message: 'instrument already has this identifier' }
   after_update :update_display_instructions, if: :number_in_instrument_changed?
+  after_destroy :renumber_questions
 
   def options
     option_set_ids = [question.option_set_id, question.special_option_set_id].compact
@@ -64,5 +65,9 @@ class InstrumentQuestion < ActiveRecord::Base
   private
   def update_display_instructions
     display_instructions.update_all(position: number_in_instrument)
+  end
+
+  def renumber_questions
+    instrument.renumber_questions
   end
 end
