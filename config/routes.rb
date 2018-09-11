@@ -123,6 +123,11 @@ RailsSurvey::Application.routes.draw do
               post :batch_update
             end
           end
+          resources :display_translations do
+            collection do
+              post :batch_update
+            end
+          end
           member do
             get :copy
             get :set_skip_patterns

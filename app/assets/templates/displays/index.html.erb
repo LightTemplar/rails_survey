@@ -3,14 +3,16 @@
   <h4 class="text-center">Instrument Displays</h4>
   <div class="card">
     <div class="card-body card-padding">
-      <h6 class="row">
+      <a ui-sref="displayTranslations({project_id: project_id, instrument_id: instrument_id})"
+      class="btn btn-primary m-1">Display Translations</a>
+      <h5 class="row m-1">
         <label class="col-md-2">Position</label>
         <label class="col-md-2">Type</label>
         <label class="col-md-2">Display Title</label>
         <label class="col-md-2">Section Title</label>
         <label class="col-md-2">Question Count</label>
         <label class="col-md-2">Actions</label>
-      </h6>
+      </h5>
       <div ui-sortable="sortableDisplays" ng-model="displays">
         <!-- Convert position used in filter to numeric -->
         <div class="row m-1" ng-repeat="display in displays | orderBy: '1 * position'">

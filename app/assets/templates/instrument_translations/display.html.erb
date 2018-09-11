@@ -1,4 +1,4 @@
-<div class="card" ng-controller="SectionTranslationsCtrl">
+<div class="card" ng-controller="DisplayTranslationsCtrl">
   <div class="card-body card-padding">
     <h4 class="text-center">Translations</h4>
     <div class="row m-1">
@@ -13,16 +13,16 @@
     </div>
     <div ng-show="language">
       <h5 class="row m-1">
-        <div class="col-md">Section Title</div>
+        <div class="col-md">Display Title</div>
         <div class="col-md">Translation</div>
       </h5>
-      <div class="row m-1" ng-repeat="section in sections">
-        <div class="col-md">{{section.title}}</div>
+      <div class="row m-1" ng-repeat="display in displays">
+        <div class="col-md">{{display.title}}</div>
         <div class="col-md">
           <textarea
             class="form-control"
-            name="section-translation-{{section.id}}"
-            ng-model="translationFor(section).text">
+            name="display-translation-{{display.id}}"
+            ng-model="translationFor(display).text">
           </textarea>
         </div>
       </div>

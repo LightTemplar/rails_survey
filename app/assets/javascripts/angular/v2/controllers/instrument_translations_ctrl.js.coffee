@@ -96,3 +96,45 @@ App.controller 'SectionTranslationsCtrl', ['$scope', '$stateParams', 'Setting', 
     )
 
 ]
+
+App.controller 'DisplayTranslationsCtrl', ['$scope', '$stateParams', 'Setting', 'DisplayTranslation',
+'Display', ($scope, $stateParams, Setting, DisplayTranslation, Display) ->
+  $scope.displays = Display.query({
+    'project_id': $stateParams.project_id,
+    'instrument_id': $stateParams.instrument_id
+  })
+
+  $scope.settings = Setting.get({}, ->
+    $scope.languages = $scope.settings.languages
+  )
+
+  $scope.displayTranslations = DisplayTranslation.query({
+    'project_id': $stateParams.project_id,
+    'instrument_id': $stateParams.instrument_id
+  })
+
+  $scope.translationFor = (display) ->
+    displayTranslation = _.findWhere($scope.displayTranslations, {
+      display_id: display.id, language: $scope.language
+    })
+    if displayTranslation == undefined
+      displayTranslation = new DisplayTranslation()
+      displayTranslation.language = $scope.language
+      displayTranslation.display_id = display.id
+      displayTranslation.text = ""
+      if $scope.language != undefined
+        $scope.displayTranslations.push(displayTranslation)
+    displayTranslation
+
+  $scope.saveTranslations = () ->
+    displayTranslation = new DisplayTranslation()
+    displayTranslation.project_id = $stateParams.project_id
+    displayTranslation.instrument_id = $stateParams.instrument_id
+    displayTranslation.display_translations = $scope.displayTranslations
+    displayTranslation.$batch_update({},
+      (data, headers) ->
+      (result, headers) ->
+        alert(result.data.errors)
+    )
+
+]

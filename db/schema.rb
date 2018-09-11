@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180906175759) do
+ActiveRecord::Schema.define(version: 20180911155245) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -115,6 +115,14 @@ ActiveRecord::Schema.define(version: 20180906175759) do
     t.integer  "instrument_question_id"
   end
 
+  create_table "display_translations", force: :cascade do |t|
+    t.integer  "display_id"
+    t.text     "text"
+    t.string   "language"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "displays", force: :cascade do |t|
     t.string   "mode"
     t.integer  "position"
@@ -123,7 +131,6 @@ ActiveRecord::Schema.define(version: 20180906175759) do
     t.datetime "updated_at"
     t.string   "title"
     t.datetime "deleted_at"
-    t.string   "section_title"
     t.integer  "section_id"
   end
 

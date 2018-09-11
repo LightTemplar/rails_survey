@@ -126,6 +126,10 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
       url: '/projects/:project_id/instruments/:instrument_id/section_translations'
       templateUrl: 'instrument_translations/section.html'
       controller: 'SectionTranslationsCtrl'
+    .state 'displayTranslations',
+      url: '/projects/:project_id/instruments/:instrument_id/display_translations'
+      templateUrl: 'instrument_translations/display.html'
+      controller: 'DisplayTranslationsCtrl'
     .state 'rules',
       url: '/rules'
       templateUrl: 'rules/index.html'
