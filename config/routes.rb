@@ -20,6 +20,7 @@ RailsSurvey::Application.routes.draw do
       resources :projects, only: :index do
         resources :instruments, only: :index
         resources :sections, only: :index
+        resources :instructions, only: :index
         resources :questions, only: :index
         resources :options, only: :index
         resources :option_in_option_sets, only: :index
@@ -49,8 +50,6 @@ RailsSurvey::Application.routes.draw do
         resources :rosters, only: :create
         resources :scores, only: :create
         resources :raw_scores, only: :create
-        # resources :grids, only: %i[index show]
-        # resources :grid_labels, only: %i[index show]
         member do
           get :current_time
         end

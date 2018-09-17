@@ -16,8 +16,8 @@ node :question_identifier do |iq|
   iq.identifier
 end
 
-node :instructions do |iq|
-  iq.question.try(:instruction).try(:text) if iq.question
+node :instruction_id do |iq|
+  iq.question.try(:instruction_id) if iq.question
 end
 
 node :instrument_version do |iq|

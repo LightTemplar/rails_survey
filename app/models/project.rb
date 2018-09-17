@@ -88,6 +88,10 @@ class Project < ActiveRecord::Base
     Validation.where(id: api_questions.pluck(:validation_id).uniq)
   end
 
+  def api_instructions
+    Instruction.where(id: api_questions.pluck(:instruction_id) | api_display_instructions.pluck(:instruction_id))
+  end
+
   def special_option_sets
     questions.uniq.collect(&:special_option_set).uniq.compact
   end
