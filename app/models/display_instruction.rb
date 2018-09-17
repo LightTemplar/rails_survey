@@ -18,6 +18,7 @@ class DisplayInstruction < ActiveRecord::Base
   belongs_to :instrument_question
   acts_as_paranoid
   after_save :update_position
+  delegate :instrument, to: :display
 
   private
   def update_position
