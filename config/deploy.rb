@@ -1,5 +1,3 @@
-lock '3.10.2'
-
 set :application, 'rails_survey'
 set :repo_url, 'git@github.com:DukeMobileTech/rails_survey.git'
 set :use_sudo, false
