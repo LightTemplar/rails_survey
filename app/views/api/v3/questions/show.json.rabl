@@ -29,7 +29,11 @@ node :question_version do |iq|
 end
 
 node :option_count do |iq|
- iq.question.try(:option_set).try(:options).try(:size) if iq.question
+  if iq.question && iq.question.option_set_id
+    iq.question.option_set.options.size
+  else
+    0
+  end
 end
 
 node :critical do |iq|
