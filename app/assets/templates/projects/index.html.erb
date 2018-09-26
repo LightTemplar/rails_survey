@@ -3,7 +3,9 @@
     <div class="m-1">
       <div class="btn btn-primary" ng-click="newInstrument()">New Instrument</div>
       <a ui-sref="importInstrument({id: project.id})"
-         class="btn btn-primary">Import From Instruments2 CSV</a>
+      class="btn btn-primary">Import From Instruments2 CSV</a>
+      <a ui-sref="resourceImport({id: project.id})"
+      class="btn btn-primary">Resource Import</a>
     </div>
     <div class="m-1">
       <input type="search" ng-model="i.title" placeholder="Filter instruments..."
@@ -22,28 +24,28 @@
         <div class="col-md-2">
           <a ui-sref='instrument({project_id: project.id, id: instrument.id})'>
             {{instrument.title}}</a>
-        </div>
-        <div class="col-md-2">{{project.name}}</div>
-        <div class="col-md-2">{{instrument.published}}</div>
-        <div class="col-md-2">{{instrument.current_version_number}}</div>
-        <div class="col-md-2">{{instrument.question_count}}</div>
-        <div class="col-md-2">
-          <button class="btn btn-primary" ng-click="editInstrument(instrument)">
-            Edit
-          </button>
-          <button class="btn btn-danger" ng-click="deleteInstrument(instrument)">
-            Delete
-          </button>
+          </div>
+          <div class="col-md-2">{{project.name}}</div>
+          <div class="col-md-2">{{instrument.published}}</div>
+          <div class="col-md-2">{{instrument.current_version_number}}</div>
+          <div class="col-md-2">{{instrument.question_count}}</div>
+          <div class="col-md-2">
+            <button class="btn btn-primary" ng-click="editInstrument(instrument)">
+              Edit
+            </button>
+            <button class="btn btn-danger" ng-click="deleteInstrument(instrument)">
+              Delete
+            </button>
+          </div>
         </div>
       </div>
     </div>
+    <div ng-show="showNewInstrument" ng-controller="NewInstrumentCtrl">
+      <h4 class="text-center">Create Instrument</h4>
+      <div ng-include="'projects/instrument.html'"></div>
+    </div>
+    <div ng-show="showEditInstrument" ng-controller="EditInstrumentCtrl">
+      <h4 class="text-center">Edit Instrument</h4>
+      <div ng-include="'projects/instrument.html'"></div>
+    </div>
   </div>
-  <div ng-show="showNewInstrument" ng-controller="NewInstrumentCtrl">
-    <h4 class="text-center">Create Instrument</h4>
-    <div ng-include="'projects/instrument.html'"></div>
-  </div>
-  <div ng-show="showEditInstrument" ng-controller="EditInstrumentCtrl">
-    <h4 class="text-center">Edit Instrument</h4>
-    <div ng-include="'projects/instrument.html'"></div>
-  </div>
-</div>

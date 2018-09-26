@@ -28,6 +28,12 @@ module Api
           render json: { errors: 'instrument import unsuccessfull' }, status: :unprocessable_entity
         end
       end
+
+      def v1_v2_import
+        Rake::Task['v1_v2_import'].reenable
+        Rake::Task['v1_v2_import'].invoke(params[:file].tempfile.path)
+        render json: :ok, status: :created
+      end
     end
   end
 end

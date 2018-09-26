@@ -100,6 +100,9 @@ RailsSurvey::Application.routes.draw do
         member do
           post :import_instrument
         end
+        collection do
+          post :v1_v2_import
+        end
         resources :instruments do
           resources :instrument_questions do
             resources :next_questions
