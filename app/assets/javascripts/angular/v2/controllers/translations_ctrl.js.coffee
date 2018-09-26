@@ -118,7 +118,11 @@ Questions, QuestionTranslation, Question) ->
 
 App.controller 'InstructionTranslationsCtrl', ['$scope', '$stateParams', '$state', 'Setting', 'Instruction',
 'InstructionTranslation', ($scope, $stateParams, $state, Setting, Instruction, InstructionTranslation) ->
-
+  $scope.toolBar = [
+    ['justifyLeft', 'justifyCenter', 'justifyRight'],
+    ['bold', 'italics', 'underline', 'ul', 'ol', 'clear'],
+    ['html', 'wordcount', 'charcount']
+  ]
   $scope.instruction_id = $stateParams.instruction_id
   $scope.language = $stateParams.language
   $scope.settings = Setting.get({}, ->

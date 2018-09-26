@@ -17,19 +17,20 @@
       <table class="table table-hover">
         <thead>
         <tr class="row">
-          <th class="col-md-6">Instruction Text</th>
-          <th class="col-md-6">Translation</th>
+          <th class="col-md-4">Instruction Text</th>
+          <th class="col-md-8">Translation</th>
         </tr>
         </thead>
         <tbody>
         <tr class="row" ng-repeat="instruction in instructions">
-          <td class="col-md-6">{{instruction.text}}</td>
-          <td class="col-md-6">
-              <textarea
+          <td class="col-md-4" ng-bind-html="instruction.text | ToTrustedHtml"></td>
+          <td class="col-md-8">
+              <text-angular
+                ta-toolbar="toolBar"
                 class="form-control"
                 name="instruction-translation-{{instruction.id}}"
                 ng-model="translationFor(instruction).text">
-            </textarea>
+            </text-angular>
           </td>
         </tr>
         </tbody>
