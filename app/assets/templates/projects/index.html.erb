@@ -11,24 +11,24 @@
       <input type="search" ng-model="i.title" placeholder="Filter instruments..."
       class="form-control tm-search text-center" />
     </div>
-    <h5 class="row m-1">
-      <div class="col-md-2">Title</div>
+    <h6 class="row m-1">
+      <div class="col-md-4">Title</div>
       <div class="col-md-2">Project</div>
       <div class="col-md-2">Published</div>
-      <div class="col-md-2">Version</div>
-      <div class="col-md-2">Questions</div>
+      <div class="col-md-1">Version</div>
+      <div class="col-md-1">Quest</div>
       <div class="col-md-2">Actions</div>
-    </h5>
+    </h6>
     <div ng-repeat="project in projects">
       <div class="row m-1" ng-repeat="instrument in project.instruments | filter:i">
-        <div class="col-md-2">
+        <div class="col-md-4">
           <a ui-sref='instrument({project_id: project.id, id: instrument.id})'>
             {{instrument.title}}</a>
           </div>
           <div class="col-md-2">{{project.name}}</div>
           <div class="col-md-2">{{instrument.published}}</div>
-          <div class="col-md-2">{{instrument.current_version_number}}</div>
-          <div class="col-md-2">{{instrument.question_count}}</div>
+          <div class="col-md-1">{{instrument.current_version_number}}</div>
+          <div class="col-md-1">{{instrument.question_count}}</div>
           <div class="col-md-2">
             <button class="btn btn-primary" ng-click="editInstrument(instrument)">
               Edit

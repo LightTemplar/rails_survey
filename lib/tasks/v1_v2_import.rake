@@ -2,9 +2,11 @@ desc 'Import from CSV file'
 task :v1_v2_import, [:filename] => :environment do |_t, args|
   CSV.foreach(args[:filename], headers: true) do |row|
     if !row[0].blank?
-      question_set = QuestionSet.find_by_title(row[0].strip)
-      if question_set.nil?
-        question_set = QuestionSet.create!(title: row[0].strip)
+      if row[2].strip != 'INSTRUCTIONS'
+        question_set = QuestionSet.find_by_title(row[0].strip)
+        if question_set.nil?
+          question_set = QuestionSet.create!(title: row[0].strip)
+        end
       end
       if row[2].strip == 'INSTRUCTIONS'
         instruction = Instruction.find_by_text(row[5].strip)
@@ -17,6 +19,7 @@ task :v1_v2_import, [:filename] => :environment do |_t, args|
       else
         question = Question.find_by_question_identifier(row[1].strip)
         if question.nil?
+          question_set = QuestionSet.find_by_title(row[0].strip)
           question = Question.create!(
             question_identifier: row[1].strip,
             question_set_id: question_set.id,

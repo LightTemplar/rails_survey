@@ -94,16 +94,19 @@
   <div class="card-body">
     <div class="row m-1">
       <label class="col-md-3">Source Question Set</label>
-      <div class="col-md-9">
-        <select
-          class="form-control"
-          allow-single-deselect="true"
-          name="source-question-set"
-          ng-model="display.question_set_id"
+      <div class="col-md-9 select-box">
+        <ui-select ng-model="display.question_set_id"
           ng-change="getQuestionSetQuestions()"
-          ng-options="qset.id as qset.title for qset in questionSets">
-          <option value=""></option>
-        </select>
+          theme="bootstrap" class="form-control"
+          title="Choose a question set" append-to-body="true">
+          <ui-select-match placeholder="Select or search a question set in the list...">
+            {{$select.selected.title}}
+          </ui-select-match>
+          <ui-select-choices repeat="qset.id as qset in questionSets |
+          propertyFilter: { title: $select.search }">
+            <div ng-bind-html="qset.title | highlight: $select.search"></div>
+          </ui-select-choices>
+        </ui-select>
       </div>
     </div>
     <ng-form name="singleDisplayForm" ng-show="display.mode == 'SINGLE' && display.question_set_id">
