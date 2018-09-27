@@ -16,8 +16,6 @@
 //= require popper
 //= require bootstrap
 //= require waves/dist/waves.min
-//= require sweetalert/dist/sweetalert.min
-//= require autosize/dist/autosize.min
 //= require rangy-core
 //= require rangy-selectionsaverestore.min
 //= require bootstrap3-wysihtml5.all.min

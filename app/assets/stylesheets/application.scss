@@ -1,8 +1,6 @@
 @import "bootstrap";
 @import "jquery-ui";
 @import "animate.css/animate.min";
-@import "sweetalert/dist/sweetalert-override.min";
-@import "material-design-iconic-font/css/material-design-iconic-font.min";
 @import "socicon/socicon.min";
 @import "font-awesome-4.0.3/css/font-awesome.min";
 @import "loading-bar.min";
@@ -16,6 +14,7 @@
 @import "bootstrap_elements";
 @import "fancypants_override";
 @import "select.min";
+@import "open-iconic-bootstrap";
 
 .jumbotron {
   padding: 0 !important;
@@ -56,4 +55,3 @@ body > .container {
 .bg-dark-blue {
   background-color: #3A4361;
 }
-
