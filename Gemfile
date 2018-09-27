@@ -64,6 +64,7 @@ group :development do
   gem 'capistrano-rails', '~> 1.1', '>= 1.1.7'
   gem 'capistrano-rvm', '~> 0.1.2'
   gem 'capistrano-sidekiq', '~> 0.10.0'
+  gem 'capistrano-passenger', '~> 0.2.0'
   gem 'quiet_assets', '1.1.0'
   gem 'sshkit', '~> 1.7', '>= 1.7.1'
 end

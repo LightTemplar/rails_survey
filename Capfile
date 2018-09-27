@@ -9,6 +9,7 @@ require 'capistrano/rails/assets'
 require 'capistrano/sidekiq'
 # require 'capistrano/sidekiq/monit'
 require 'capistrano/rails/migrations'
+require 'capistrano/passenger'
 require 'whenever/capistrano'
 
 Dir.glob('lib/capistrano/tasks/*.cap').each { |r| import r }

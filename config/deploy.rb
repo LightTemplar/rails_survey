@@ -15,6 +15,8 @@ set :sidekiq_processes, 4
 set :sidekiq_config, 'config/sidekiq.yml'
 # Wheneverize
 set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }
+# Set Ruby version when using RVM
+set :rvm_ruby_version, '2.3.1'
 
 # When using Phusion Passenger App Server
 namespace :deploy do
