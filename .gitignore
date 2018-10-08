@@ -19,6 +19,9 @@ config/settings.local.yml
 config/settings/*.local.yml
 config/environments/*.local.yml
 config/local_env.yml
+config/newrelic.yml
+config/deploy/production.rb
+config/*.pem
 
 # Ignore Rubymine files
 scopes/scope_settings.xml
@@ -41,3 +44,6 @@ dump.rdb
 
 #Ignore public assets - generate by Capistrano on deploy
 public/assets/
+
+*.DS_Store
+exports.csv
