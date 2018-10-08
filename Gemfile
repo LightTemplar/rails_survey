@@ -9,8 +9,8 @@ gem 'jquery-rails'
 gem 'turbolinks'
 gem 'jbuilder', '~> 1.2'
 gem 'angularjs-rails', '~> 1.3.15'
-gem 'angular_rails_csrf'
-gem 'twitter-bootstrap-rails'
+# gem 'angular_rails_csrf'
+gem 'twitter-bootstrap-rails', '~> 3.2', '>= 3.2.2'
 gem 'rubyzip', '~> 1.1.2'
 gem 'zip-zip'
 gem 'annotate', '>=2.5.0'
@@ -32,10 +32,9 @@ gem 'sanitize', '~> 3.0.0'
 gem 'amoeba'
 gem 'devise_google_authenticator', '0.3.14'
 gem 'bcrypt', '~> 3.1.7'
-gem 'sshkit', '~> 1.5.1'
 gem 'prawn'
 gem 'newrelic_rpm'
-gem 'gollum_rails', '~> 2.0.0'
+# gem 'gollum_rails', '~> 2.0.0'
 gem 'roo', '~> 2.0.1'
 gem 'seed_dump'
 
@@ -48,11 +47,12 @@ group :development do
   gem 'byebug'
   gem 'better_errors'
   gem 'binding_of_caller'
-  gem 'capistrano', '~> 3.2.1'
-  gem 'capistrano-rails', '~> 1.1.1'
-  gem 'capistrano-bundler', '~> 1.1.2'
-  gem 'capistrano-rvm', '~> 0.1.1'
-  gem 'capistrano-sidekiq', '~> 0.3.5'
+  # gem 'sshkit', '~> 1.5.1'
+  # gem 'capistrano', '~> 3.2.1'
+  # gem 'capistrano-rails', '~> 1.1.1'
+  # gem 'capistrano-bundler', '~> 1.1.2'
+  # gem 'capistrano-rvm', '~> 0.1.1'
+  # gem 'capistrano-sidekiq', '~> 0.3.5'
   gem 'quiet_assets'
 end
 
@@ -66,5 +66,5 @@ group :test do
 end
 
 group :doc do
-  gem 'sdoc', require: false
+  # gem 'sdoc', require: false
 end

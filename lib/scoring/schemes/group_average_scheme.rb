@@ -61,8 +61,8 @@ class GroupAverageScheme < ScoringScheme
         list_responses = CSV.parse_line(res.response)
         indexes = index.split(',')
         if indexes.size == 1
-          response = list_responses[indexes[0].to_i]
-          if is_number(response)
+          response = list_responses[indexes[0].to_i] if list_responses
+          if response && is_number(response)
             if key_score_mapping.values.first.class == Hash
               center_code = Center.get_centers.find{|ctr| ctr.id == res.center_id}.code
               resp_score_hash = key_score_mapping[center_code].select{|range| range === response.to_f}
@@ -76,7 +76,7 @@ class GroupAverageScheme < ScoringScheme
             scores << 1 if response && none.include?(response.strip.downcase)
           end
         else
-          if !list_responses[indexes[0].to_i].blank? && !list_responses[indexes[1].to_i].blank?
+          if list_responses && !list_responses[indexes[0].to_i].blank? && !list_responses[indexes[1].to_i].blank?
             if is_number(list_responses[indexes[0].to_i]) && is_number(list_responses[indexes[1].to_i])
               resp = (list_responses[indexes[0].to_i].to_f / list_responses[indexes[1].to_i].to_f).round(2)
               response_score_mapping = key_score_mapping.select{|k| k === resp}

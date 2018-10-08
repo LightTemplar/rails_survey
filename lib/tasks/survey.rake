@@ -106,20 +106,22 @@ namespace :survey do
     center_ids = group_response_scores.collect { |grs| grs.center_id }.uniq
     center_ids.each do |id|
       center = Center.get_centers.find_all { |ct| ct.id == id }.first
-      group_score_schemes.each do |group_scheme|
-        center_grs = []
-        group_scheme.qids.each do |qid|
-          cgr = group_response_scores.find_all {|grs| grs.center_id == center.id && grs.qid == qid}
-          center_grs = center_grs + cgr
+      if center
+        group_score_schemes.each do |group_scheme|
+          center_grs = []
+          group_scheme.qids.each do |qid|
+            cgr = group_response_scores.find_all {|grs| grs.center_id == center.id && grs.qid == qid}
+            center_grs = center_grs + cgr
+          end
+          score_group = GroupScore.new(group_scheme.name, group_scheme.qids, center.id,
+            center_grs.try(:first).try(:instrument_id), center_grs.try(:first).try(:question_type))
+          score_group.raw_score = group_scheme.score(center_grs)
+          score_group.scheme_description = group_scheme.name
+          score_group.weight = group_scheme.assign_weight
+          score_group.domain = group_scheme.domain
+          score_group.sub_domain = group_scheme.sub_domain
+          scores.push(score_group)
         end
-        score_group = GroupScore.new(group_scheme.name, group_scheme.qids, center.id,
-          center_grs.try(:first).try(:instrument_id), center_grs.try(:first).try(:question_type))
-        score_group.raw_score = group_scheme.score(center_grs)
-        score_group.scheme_description = group_scheme.name
-        score_group.weight = group_scheme.assign_weight
-        score_group.domain = group_scheme.domain
-        score_group.sub_domain = group_scheme.sub_domain
-        scores.push(score_group)
       end
     end
     puts 'group scores added: ' + scores.size.to_s
@@ -197,7 +199,7 @@ namespace :survey do
 
     # Integrate manually scored ones
 
-    manual_score_book =  Roo::Spreadsheet.open(base_dir + 'NonObs/Manual_Scoring.xlsx', extension: :xlsx)
+    manual_score_book =  Roo::Spreadsheet.open(base_dir + 'NonObs/Manual_Scoring_V2.xlsx', extension: :xlsx)
     manual_score_sheet = manual_score_book.sheet('ManualScores')
     manual_score_sheet.drop(1).each do |row|
       if row[0] && row[2] && row[6] && row[13] != 'manual' && !row[13].blank?
