@@ -42,3 +42,4 @@ public/assets/
 
 # Ignore OS files
 *.DS_Store
+exports.csv
