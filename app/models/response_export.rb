@@ -60,7 +60,7 @@ class ResponseExport < ActiveRecord::Base
   # 2) Instrument responses have changed since the last export
   def re_export?
     return false if instrument.surveys.blank?
-    return true if csv_blank?
+    # return true if csv_blank?
     instrument.responses.maximum('updated_at') > updated_at
   end
 
