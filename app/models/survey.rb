@@ -163,14 +163,25 @@ class Survey < ActiveRecord::Base
   end
 
   def write_short_row
-    validator = validation_identifier
-    responses.each do |response|
-      csv = Rails.cache.fetch("w_s_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 30.minutes) do
-        [validator, id, response.question_identifier, sanitize(versioned_question(response.question_identifier).try(:text)), response.text, option_labels(response), response.special_response, response.other_response]
-      end
-      push_to_redis("short-row-#{id}-#{instrument.response_export.id}-#{response.id}",
-        "short-keys-#{instrument.id}-#{instrument.response_export.id}", csv)
+    headers = Rails.cache.fetch("w_s_r_h-#{instrument_id}-#{instrument_version_number}", expires_in: 30.minutes) do
+      array = instrument.short_headers
+      Hash[array.map.with_index.to_a]
     end
+    row = [id, instrument_id, instrument_title]
+    responses.each do |response|
+      identifier_index = headers[response.question_identifier]
+      row[identifier_index] = response.text if identifier_index
+      special_identifier_index = headers[response.question_identifier + '_special']
+      row[special_identifier_index] = response.special_response if special_identifier_index
+      other_identifier_index = headers[response.question_identifier + '_other']
+      row[other_identifier_index] = response.other_response if other_identifier_index
+      label_index = headers[response.question_identifier + '_label']
+      row[label_index] = option_labels(response) if label_index
+      question_text_index = headers[response.question_identifier + '_text']
+      row[question_text_index] = sanitize(versioned_question(response.question_identifier).try(:text)) if question_text_index
+    end
+    push_to_redis("short-row-#{id}-#{instrument.response_export.id}-survey-#{id}",
+        "short-keys-#{instrument_id}-#{instrument.response_export.id}", row)
     decrement_export_count("#{instrument.response_export.id}_short")
   end
 
