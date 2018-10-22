@@ -114,6 +114,10 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
       url: '/question_translations/?language&instrument_id&question_set_id&question_id'
       templateUrl: 'question_translations/show.html'
       controller: 'QuestionTranslationsCtrl'
+    .state 'questionBackTranslations',
+      url: '/question_back_translations/?language&instrument_id&question_set_id&question_translation_id'
+      templateUrl: 'question_back_translations/show.html'
+      controller: 'QuestionBackTranslationsCtrl'
     .state 'instructionTranslations',
       url: '/instruction_translations/?language&instruction_id'
       templateUrl: 'instruction_translations/show.html'
