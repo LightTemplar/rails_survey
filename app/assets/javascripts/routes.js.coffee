@@ -115,7 +115,7 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
       templateUrl: 'question_translations/show.html'
       controller: 'QuestionTranslationsCtrl'
     .state 'questionBackTranslations',
-      url: '/question_back_translations/?language&instrument_id&question_set_id&question_translation_id'
+      url: '/question_back_translations/?language&instrument_id&question_set_id&question_id'
       templateUrl: 'question_back_translations/show.html'
       controller: 'QuestionBackTranslationsCtrl'
     .state 'instructionTranslations',
@@ -130,6 +130,10 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
       url: '/projects/:project_id/instruments/:instrument_id/instrument_translations'
       templateUrl: 'instrument_translations/index.html'
       controller: 'InstrumentTranslationsCtrl'
+    .state 'instrumentTranslation',
+      url: '/projects/:project_id/instruments/:instrument_id/instrument_translations/:id'
+      templateUrl: 'instrument_translations/show.html'
+      controller: 'ShowInstrumentTranslationsCtrl'
     .state 'sectionTranslations',
       url: '/projects/:project_id/instruments/:instrument_id/section_translations'
       templateUrl: 'instrument_translations/section.html'

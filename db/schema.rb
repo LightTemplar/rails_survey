@@ -51,13 +51,14 @@ ActiveRecord::Schema.define(version: 20181022175352) do
 
   create_table "back_translations", force: :cascade do |t|
     t.text     "text"
+    t.string   "language"
     t.integer  "backtranslatable_id"
     t.string   "backtranslatable_type"
     t.datetime "created_at",            null: false
     t.datetime "updated_at",            null: false
   end
 
-  add_index "back_translations", ["backtranslatable_type", "backtranslatable_id"], name: "backtranslatable_index", using: :btree
+  add_index "back_translations", ["backtranslatable_id", "backtranslatable_type", "language"], name: "backtranslatable_index", unique: true, using: :btree
 
   create_table "condition_skips", force: :cascade do |t|
     t.integer  "instrument_question_id"

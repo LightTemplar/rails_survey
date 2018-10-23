@@ -60,17 +60,17 @@ QuestionTranslation, QuestionBackTranslation) ->
     $scope.languages = $scope.settings.languages
   )
 
-  if $stateParams.question_set_id && $stateParams.question_translation_id && $stateParams.language
+  if $stateParams.question_set_id && $stateParams.question_id && $stateParams.language
     $scope.questionTranslations = QuestionTranslation.query({
       'language': $stateParams.language,
       'question_set_id': $stateParams.question_set_id
       'question_id': $stateParams.question_id
     })
-    # $scope.questions = []
-    # question = Question.get({
-    #   'question_set_id': $stateParams.question_set_id,
-    #   'id': $stateParams.question_id
-    # }, -> $scope.questions.push(question))
+    $scope.questionBackTranslations = QuestionBackTranslation.query({
+      'language': $stateParams.language,
+      'question_set_id': $stateParams.question_set_id
+      'question_translation_id': $stateParams.question_translation_id
+    })
   else if $stateParams.question_set_id && $stateParams.language
     $scope.questionTranslations = QuestionTranslation.query({
       'language': $stateParams.language,
@@ -85,10 +85,12 @@ QuestionTranslation, QuestionBackTranslation) ->
       'language': $stateParams.language,
       'instrument_id': $stateParams.instrument_id
     })
-    # $scope.questions = Questions.query({'instrument_id': $stateParams.instrument_id})
+    $scope.questionBackTranslations = QuestionBackTranslation.query({
+      'language': $stateParams.language,
+      'instrument_id': $stateParams.instrument_id
+    })
   else if $stateParams.language
     $scope.questionTranslations = QuestionTranslation.query({'language': $stateParams.language})
-    # $scope.questions = Questions.query({})
     $scope.questionBackTranslations = QuestionBackTranslation.query({'language': $stateParams.language})
 
   $scope.updateLanguage = () ->
@@ -104,6 +106,7 @@ QuestionTranslation, QuestionBackTranslation) ->
       qbt = new QuestionBackTranslation()
       qbt.backtranslatable_id = questionTranslation.id
       qbt.backtranslatable_type = 'QuestionTranslation'
+      qbt.language = $scope.language
       qbt.text = ""
       $scope.questionBackTranslations.push(qbt)
     qbt

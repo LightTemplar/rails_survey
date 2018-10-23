@@ -1,6 +1,8 @@
 <ng-form name="questionEditorForm" ng-controller="ShowQuestionCtrl">
   <a class="btn btn-primary m-1" ui-sref="questionTranslations({question_set_id: question.question_set_id,
   question_id: question.id})">Translations</a>
+  <a class="btn btn-primary m-1" ui-sref="questionBackTranslations({question_set_id: question.question_set_id,
+  question_id: question.id})">Back Translations</a>
   <div class="card mb-1 mt-1">
     <h5 class="text-center">Instruments containing this question</h5>
     <div class="row ml-4 m-1" ng-repeat="instrument in question.instruments">

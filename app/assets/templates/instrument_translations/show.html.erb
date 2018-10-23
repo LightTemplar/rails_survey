@@ -1,0 +1,37 @@
+<div ng-controller="ShowInstrumentTranslationsCtrl">
+  <div ng-include="'instruments/show.html'"></div>
+
+  <div class="card">
+    <h4 class="text-center">{{instrumentTranslation.title}}</h4>
+    <div class="m-1">
+      <a ui-sref="questionTranslations({language: instrumentTranslation.language,
+        instrument_id: instrument.id})" class="btn btn-primary">Edit Question Translations</a>
+      <a class="btn btn-primary" ui-sref="questionBackTranslations({language: instrumentTranslation.language,
+        instrument_id: instrument.id})">Edit Question Back Translations</a>
+    </div>
+    <table class="table table-hover">
+      <thead>
+        <tr class="m-1 row">
+          <th class="col-md-4">Question Text</th>
+          <th class="col-md-4 text-center">Translation Text</th>
+          <th class="col-md-4 text-center">Back Translated Text</th>
+        </tr>
+      </thead>
+      <tbody>
+      <tr class="m-1 row" ng-repeat="instrumentQuestion in instrumentQuestions">
+        <td class="col-md-4">{{instrumentQuestion.text}}</td>
+        <td class="col-md-3">{{translationFor(instrumentQuestion).text}}</td>
+        <td class="col-md-1">
+          <a ui-sref="questionTranslations({question_set_id: instrumentQuestion.question_set_id,
+          question_id: instrumentQuestion.question_id, language: translationFor(instrumentQuestion).language})">Edit</a>
+        </td>
+        <td class="col-md-3" ng-bind-html="backTranslationFor(instrumentQuestion).text | ToTrustedHtml"/>
+        <td class="col-md-1">
+          <a ui-sref="questionBackTranslations({question_set_id: instrumentQuestion.question_set_id,
+          question_id: instrumentQuestion.question_id, language: translationFor(instrumentQuestion).language})">Edit</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

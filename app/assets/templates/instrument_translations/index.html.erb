@@ -18,9 +18,8 @@
         </h4>
         <div class="row" ng-repeat="translation in instrumentTranslations">
           <div class="col-md">
-            <a ui-sref="questionTranslations({language: translation.language,
-              instrument_id: instrument.id })"
-            class="btn btn-primary">{{ translation.language }}</a>
+            <a ui-sref="instrumentTranslation({ project_id: project_id, instrument_id: instrument.id,
+            id: translation.id })" class="btn btn-primary">{{ translation.language }}</a>
           </div>
           <div class="col-md">{{ translation.title }}</div>
           <div class="col-md">{{ translation.active }}</div>
