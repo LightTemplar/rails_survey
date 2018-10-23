@@ -28,10 +28,12 @@ task :import, [:filename] => :environment do |_t, args|
     unless row[0].blank?
       question_set = QuestionSet.where(title: row[0].strip).try(:first)
       question_set ||= QuestionSet.create!(title: row[0].strip)
+      section = Section.where(title: row[0].strip, instrument_id: instrument.id).try(:first)
+      section ||= Section.create!(title: row[0].strip, instrument_id: instrument.id)
 
       if row[2].strip == 'HEADING'
         display = Display.where(title: row[5].strip, instrument_id: instrument.id).first
-        display ||= Display.create!(title: row[5].strip, mode: 'MULTIPLE', section_title: question_set.title,
+        display ||= Display.create!(title: row[5].strip, mode: 'MULTIPLE', section_id: section.id,
                                     position: instrument.displays.size + 1, instrument_id: instrument.id)
         folder = Folder.where(title: row[5].strip, question_set_id: question_set.id).first
         folder ||= Folder.create!(title: row[5].strip, question_set_id: question_set.id)
@@ -63,6 +65,15 @@ task :import, [:filename] => :environment do |_t, args|
       end
 
       unless row[2].strip == 'SKIP'
+        if folder.nil?
+          folder = Folder.where(title: 'PLACE HOLDER!', question_set_id: question_set.id).first
+          folder ||= Folder.create!(title: 'PLACE HOLDER!', question_set_id: question_set.id)
+        end
+        if display.nil?
+          display = Display.where(title: 'PLACE HOLDER!', instrument_id: instrument.id).first
+          display ||= Display.create!(title: 'PLACE HOLDER!', mode: 'MULTIPLE', section_id: section.id,
+                                      position: instrument.displays.size + 1, instrument_id: instrument.id)
+        end
         question = Question.where(question_identifier: row[1].strip).try(:first)
         question ||= Question.create!(question_identifier: row[1].strip, question_type: row[2].strip,
                                       text: row[5].strip, question_set_id: question_set.id, folder_id: folder.id)
