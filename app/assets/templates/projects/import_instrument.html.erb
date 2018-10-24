@@ -3,10 +3,21 @@
   <h5 class="text-center">Upload Instrument CSV</h5>
   <div class="card">
     <div class="card-body card-padding">
-      <div ng-show="uploader.isHTML5">
+      <div class="row m-1">
+        <label class="col-md-3 control-label">Project</label>
+        <div class="col-md-9">
+          <select
+            class="form-control"
+            ng-model="project.id"
+            ng-change="setProject()"
+            ng-options="project.id as project.name for project in projects">
+          </select>
+        </div>
+      </div>
+      <div ng-show="uploader.isHTML5 && project.id">
         <input ng-file-select type="file" multiple/>
       </div>
-      <div class="row">
+      <div class="row" ng-show="uploader.isHTML5 && project.id">
         <table class="table">
           <thead>
             <tr>

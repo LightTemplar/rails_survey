@@ -33,6 +33,17 @@ class OptionSet < ActiveRecord::Base
     new_copy
   end
 
+  def self.without_option_in_option_sets
+    option_in_option_sets = reflect_on_association(:option_in_option_sets)
+    option_in_option_set_arel = option_in_option_sets.klass.arel_table
+    option_set_primary_key = arel_table[primary_key]
+    option_set_foreign_key = option_in_option_set_arel[option_in_option_sets.foreign_key]
+    option_in_option_sets_left_join = arel_table.join(option_in_option_set_arel, Arel::Nodes::OuterJoin)
+                                  .on(option_set_primary_key.eq option_set_foreign_key)
+                                  .join_sources
+    joins(option_in_option_sets_left_join).where(option_in_option_sets.table_name => { option_in_option_sets.klass.primary_key => nil} )
+  end
+
   private
 
   def set_option_specialty

@@ -22,6 +22,6 @@ class DisplayInstruction < ActiveRecord::Base
 
   private
   def update_position
-    update_columns(position: instrument_question.number_in_instrument)
+    update_columns(position: instrument_question.number_in_instrument) if instrument_question
   end
 end

@@ -76,25 +76,27 @@ App.controller 'EditInstrumentCtrl', ['$scope', '$state', 'Instrument', 'Setting
 
 ]
 
-App.controller 'ImportInstrumentCtrl', ['$scope', '$stateParams', 'Project', '$fileUploader',
-($scope, $stateParams, Project, $fileUploader) ->
-  $scope.project = Project.get({'id': $stateParams.id})
+App.controller 'ImportInstrumentCtrl', ['$scope', '$fileUploader', 'Project',
+($scope, $fileUploader, Project) ->
+  $scope.projects = Project.query({})
+  $scope.project = {}
+  uploader = null
 
-  uploader = $scope.uploader = $fileUploader.create({
-    scope: $scope,
-    url: '/api/v2/projects/' + $stateParams.id + '/import_instrument',
-    headers: {'X-CSRF-Token': $('meta[name=csrf-token]').attr('content') } ,
-    isHTML5: true,
-    withCredentials: true,
-    alias: 'file',
-    formData: [ { name: uploader } ]
-  } )
+  $scope.setProject = () ->
+    uploader = $scope.uploader = $fileUploader.create({
+      scope: $scope,
+      url: '/api/v2/projects/' + $scope.project.id + '/import_instrument',
+      headers: {'X-CSRF-Token': $('meta[name=csrf-token]').attr('content') } ,
+      isHTML5: true,
+      withCredentials: true,
+      alias: 'file',
+      formData: [ { name: uploader } ]
+    } )
 
-  uploader.filters.push (item) ->
-    type = (if uploader.isHTML5 then item.type else '/' + item.value.slice(item.value.lastIndexOf('.') + 1))
-    type = '|' + type.toLowerCase().slice(type.lastIndexOf('/') + 1) + '|'
-    '|csv|'.indexOf(type) isnt - 1
-
+    uploader.filters.push (item) ->
+      type = (if uploader.isHTML5 then item.type else '/' + item.value.slice(item.value.lastIndexOf('.') + 1))
+      type = '|' + type.toLowerCase().slice(type.lastIndexOf('/') + 1) + '|'
+      '|csv|'.indexOf(type) isnt - 1
 ]
 
 App.controller 'ResourceImportCtrl', ['$scope', '$stateParams', 'Project', '$fileUploader',

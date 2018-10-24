@@ -9,14 +9,14 @@
 
     <div class="card-body card-padding">
       <div ng-show="showInstrumentTranslations">
-        <h4 class="row">
+        <h4 class="row m-1">
           <div class="col-md">Language</div>
           <div class="col-md">Title</div>
           <div class="col-md">Active</div>
           <div class="col-md">Last Update</div>
           <div class="col-md">Actions</div>
         </h4>
-        <div class="row" ng-repeat="translation in instrumentTranslations">
+        <div class="row m-1" ng-repeat="translation in instrumentTranslations">
           <div class="col-md">
             <a ui-sref="instrumentTranslation({ project_id: project_id, instrument_id: instrument.id,
             id: translation.id })" class="btn btn-primary">{{ translation.language }}</a>

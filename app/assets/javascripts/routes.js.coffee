@@ -11,7 +11,7 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
       templateUrl: 'projects/index.html'
       controller: 'ProjectsCtrl'
     .state 'importInstrument',
-      url: '/projects/:id'
+      url: '/projects'
       templateUrl: 'projects/import_instrument.html'
       controller: 'ImportInstrumentCtrl'
     .state 'resourceImport',
