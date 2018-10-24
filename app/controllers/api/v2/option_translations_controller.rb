@@ -7,6 +7,9 @@ module Api
         if !params[:language].blank? && !params[:option_set_id].blank?
           option_set = OptionSet.find params[:option_set_id]
           respond_with option_set.translations.where(language: params[:language])
+        elsif !params[:language].blank? && !params[:instrument_id].blank?
+          instrument = Instrument.find(params[:instrument_id])
+          respond_with instrument.option_translations.where(language: params[:language])
         elsif !params[:language].blank?
           respond_with OptionTranslation.where(language: params[:language])
         else

@@ -13,6 +13,11 @@ Options, OptionTranslation, Option) ->
     $scope.optionTranslations = OptionTranslation.query({
       'language': $stateParams.language, 'option_set_id': $stateParams.option_set_id
     })
+  else if $stateParams.instrument_id && $stateParams.language
+    $scope.options = Options.query({'instrument_id': $stateParams.instrument_id})
+    $scope.optionTranslations = OptionTranslation.query({
+      'language': $stateParams.language, 'instrument_id': $stateParams.instrument_id
+    })
   else if $stateParams.language
     $scope.options = Options.query({})
     $scope.optionTranslations = OptionTranslation.query({'language': $stateParams.language})

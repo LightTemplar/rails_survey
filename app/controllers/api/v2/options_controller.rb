@@ -4,7 +4,12 @@ module Api
       respond_to :json
 
       def index
-        @options = Option.all.order(updated_at: :desc)
+        if !params[:instrument_id].blank?
+          instrument = Instrument.find(params[:instrument_id])
+          @options = instrument.options
+        else
+          @options = Option.all.order(updated_at: :desc)
+        end
       end
 
       def create

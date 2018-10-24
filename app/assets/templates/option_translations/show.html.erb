@@ -26,10 +26,10 @@
         <tr class="row" ng-repeat="option in options">
           <td class="col-md-6">{{option.text}}</td>
           <td class="col-md-6">
-              <textarea
-                class="form-control"
-                name="option-translation-{{option.id}}"
-                ng-model="translationFor(option).text">
+            <textarea
+              class="form-control"
+              name="option-translation-{{option.id}}"
+              ng-model="translationFor(option).text">
             </textarea>
           </td>
         </tr>

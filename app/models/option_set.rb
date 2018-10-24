@@ -12,7 +12,7 @@
 #
 
 class OptionSet < ActiveRecord::Base
-  has_many :option_in_option_sets, dependent: :destroy
+  has_many :option_in_option_sets, -> { order 'number_in_question' }, dependent: :destroy
   has_many :options, through: :option_in_option_sets
   has_many :translations, through: :options
   has_many :questions, dependent: :nullify

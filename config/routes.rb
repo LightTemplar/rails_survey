@@ -94,6 +94,11 @@ RailsSurvey::Application.routes.draw do
           post :batch_update
         end
       end
+      resources :option_back_translations, only: [:index, :create, :update] do
+        collection do
+          post :batch_update
+        end
+      end
       resources :rules
       resources :validations
       resources :validation_translations, only: [:index, :create, :update] do

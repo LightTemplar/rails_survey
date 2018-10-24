@@ -107,9 +107,13 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
       templateUrl: 'instrument_questions/multiple_skip.html'
       controller: 'MultipleSkipsCtrl'
     .state 'optionTranslations',
-      url: '/option_translations/?option_set_id&language'
+      url: '/option_translations/?option_set_id&option_id&instrument_id&language'
       templateUrl: 'option_translations/show.html'
       controller: 'OptionTranslationsCtrl'
+    .state 'optionBackTranslations',
+      url: '/option_back_translations/?option_set_id&language&instrument_id&option_id'
+      templateUrl: 'option_back_translations/show.html'
+      controller: 'OptionBackTranslationsCtrl'
     .state 'questionTranslations',
       url: '/question_translations/?language&instrument_id&question_set_id&question_id'
       templateUrl: 'question_translations/show.html'
