@@ -183,18 +183,4 @@ QuestionTranslation, QuestionBackTranslation) ->
       _.findWhere($scope.questionBackTranslations, { language: questionTranslation.language,
       backtranslatable_id: questionTranslation.id, backtranslatable_type: 'QuestionTranslation' })
 
-  # , ->
-  #   $scope.questionTranslations = QuestionTranslation.query({
-  #     'language': $scope.instrumentTranslation.language,
-  #     'instrument_id': $scope.instrument_id
-  #   })
-  # )
-  # $scope.instrumentQuestions = InstrumentQuestion.query({
-  #   'project_id': $scope.project_id,
-  #   'instrument_id': $scope.instrument_id
-  # })
-
-  # $scope.TranslationFor = (instrumentQuestion) ->
-  #   _.findWhere($scope.questionTranslations, {question_id: instrumentQuestion.question_id})
-
 ]

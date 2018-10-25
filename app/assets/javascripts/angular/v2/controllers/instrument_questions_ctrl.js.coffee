@@ -288,6 +288,7 @@ Setting, Option, MultipleSkip) ->
   $scope.project_id = $stateParams.project_id
   $scope.instrument_id = $stateParams.instrument_id
   $scope.id = $stateParams.id
+  $scope.showSkips = true
 
   $scope.instrumentQuestion = InstrumentQuestion.get({
     'project_id': $scope.project_id,
@@ -339,12 +340,20 @@ Setting, Option, MultipleSkip) ->
         $scope.multipleSkips.splice($scope.multipleSkips.indexOf(multiSkip), 1)
 
   $scope.addMultiSkip = () ->
-    skipQuestion = new MultipleSkip()
-    skipQuestion.question_identifier = $scope.instrumentQuestion.identifier
-    setRouteParameters(skipQuestion)
-    $scope.multipleSkips.push(skipQuestion)
+    $scope.showSkips = false
+    $scope.skipQuestion = new MultipleSkip()
+    $scope.skipQuestion.question_identifier = $scope.instrumentQuestion.identifier
+    $scope.skipQuestion.questionsToSkip = []
 
-  $scope.saveMultiSkip = (multiSkip) ->
+  $scope.saveMultiSkip = () ->
+    angular.forEach $scope.skipQuestion.questionsToSkip, (question, index) ->
+      multiSkip = new MultipleSkip()
+      multiSkip.option_identifier = $scope.skipQuestion.option_identifier
+      multiSkip.skip_question_identifier = question.identifier
+      saveSkip(multiSkip)
+    $scope.showSkips =true
+
+  saveSkip = (multiSkip) ->
     exists = _.where($scope.multipleSkips, {
       option_identifier: multiSkip.option_identifier,
       skip_question_identifier: multiSkip.skip_question_identifier,
@@ -354,20 +363,16 @@ Setting, Option, MultipleSkip) ->
       alert 'Skip question for option is already set!'
     else
       setRouteParameters(multiSkip)
-      if multiSkip.id
-        multiSkip.$update({},
-          (data, headers) ->
-            multiSkip = data
-          (result, headers) ->
-            alert(result.data.errors)
-        )
-      else
-        multiSkip.$save({},
-          (data, headers) ->
-            multiSkip = data
-          (result, headers) ->
-            alert(result.data.errors)
-        )
+      multiSkip.$save({},
+        (data, headers) ->
+          $scope.multipleSkips.push(data)
+        (result, headers) ->
+          alert(result.data.errors)
+      )
+
+  $scope.delete = () ->
+    $scope.showSkips = true
+    $scope.skipQuestion = undefined
 
   setRouteParameters = (nextQuestion) ->
     nextQuestion.instrument_question_id = $scope.instrumentQuestion.id

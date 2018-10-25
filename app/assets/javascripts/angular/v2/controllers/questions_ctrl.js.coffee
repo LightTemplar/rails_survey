@@ -50,6 +50,9 @@ App.controller 'ShowQuestionCtrl', ['$scope', '$stateParams', '$location', '$sta
     ['html']
   ]
 
+  $scope.getOptionSet = (id) ->
+    _.findWhere($scope.optionSets, {id: id})
+
   $scope.questionTypes = () ->
     $scope.settings.question_types
 

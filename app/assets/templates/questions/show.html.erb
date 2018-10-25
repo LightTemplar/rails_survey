@@ -95,16 +95,12 @@
 
       <div class="row m-1" ng-show="question.question_type && questionTypesWithOptions(question.question_type)">
         <label class="col-md-2">Option Set</label>
-        <div class="col-md-8">
-          <select
-            class="form-control"
-            name="option-set"
-            id="option-set"
-            ng-model="question.option_set_id"
-            ng-options="set.id as set.title for set in optionSets"
-            ng-required="questionTypesWithOptions(question.question_type)">
-            <option value=""></option>
-          </select>
+        <div class="col-md-4">{{getOptionSet(question.option_set_id).title.substring(0, 80)}}</div>
+        <div class="col-md-4">
+          <input type="text" ng-model="question.option_set_id"
+          placeholder="Search for option set"
+          uib-typeahead="set.id as set.title for set in optionSets | filter:$viewValue | limitTo:10"
+          class="form-control" ng-required="questionTypesWithOptions(question.question_type)">
         </div>
         <div class="col-md-2">
           <a ng-show="question.option_set_id" ui-sref="optionSet({id: question.option_set_id})">View</a>
