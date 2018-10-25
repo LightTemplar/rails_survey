@@ -145,8 +145,11 @@ RailsSurvey::Application.routes.draw do
             get :set_skip_patterns
             post :reorder
             post :reorder_displays
+            post :to_pdf
           end
           resources :next_questions, controller: 'instrument_next_questions'
+          resources :instrument_options, controller: 'instrument_options'
+          resources :instrument_option_in_option_sets, controller: 'instrument_option_in_option_sets'
         end
       end
       get 'settings/index'

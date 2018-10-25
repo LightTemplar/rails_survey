@@ -22,6 +22,10 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
       url: '/projects/:project_id/instruments/:id'
       templateUrl: 'instruments/show.html'
       controller: 'ShowInstrumentCtrl'
+    .state 'pdf',
+      url: '/projects/:project_id/instruments/:id'
+      templateUrl: 'instruments/pdf.html'
+      controller: 'PDFCtrl'
     .state 'instrumentQuestionsReorder',
       url: '/projects/:project_id/instruments/:id'
       templateUrl: 'instruments/reorder.html'

@@ -10,3 +10,7 @@ end
 node :question_count do |i|
   i.question_count
 end
+
+node :language_name do |i|
+  Settings.languages.to_h.key(i.language)
+end

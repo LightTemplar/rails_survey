@@ -33,6 +33,7 @@
 //= require angular-messages
 //= require checklist-model
 //= require angular-rails-templates
+//= require angular-file-saver.bundle.min
 //= require app
 //= require routes
 //= require loading-bar.min

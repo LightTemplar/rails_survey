@@ -34,10 +34,12 @@ class Instrument < ActiveRecord::Base
   belongs_to :project, touch: true
 
   has_many :instrument_questions, dependent: :destroy
-  has_many :questions, through: :instrument_questions
+  has_many :questions, -> { distinct }, through: :instrument_questions
   has_many :question_translations, through: :questions, source: :translations
-  has_many :options, through: :questions
+  has_many :option_sets, -> { distinct }, through: :questions
   has_many :option_translations, through: :options, source: :translations
+  has_many :option_in_option_sets, -> { distinct }, through: :option_sets
+  has_many :options, through: :option_in_option_sets
   has_many :displays, -> { order 'position' }, dependent: :destroy
   has_many :display_translations, through: :displays
   has_many :instrument_rules

@@ -1,0 +1,48 @@
+<div ng-controller="PDFCtrl">
+  <div ng-include="'instruments/show.html'"></div>
+	<div class="m-1">
+		<button class="btn btn-primary" ng-click="download()">Download PDF</button>
+	</div>
+  <div class="card">
+    <div class="card-body card-padding">
+      <div id="html-to-pdf" style="width: 595px;">
+        <h5 class="text-center">{{instrument.title}}</h5>
+        <div class="text-center mb-3">
+          <span><b>version:</b> {{instrument.current_version_number}}</span>
+          <span><b>language:</b> {{instrument.language_name}}</span>
+        </div>
+        <div ng-repeat="display in displays">
+          <h6 class="text-center"><u>{{display.title}}</u></h6>
+          <div class="m-1 mb-2" ng-repeat="question in displayQuestions(display) | orderBy: '1 * number_in_instrument'">
+            <div>
+              <b>{{question.number_in_instrument}} )</b> <span>{{question.identifier}}</span>
+            </div>
+            <div class="m-1">{{question.text}}</div>
+            <div ng-if="singleSelectQuestionType(question.type)" class="ml-2">
+              <div ng-repeat="option in questionOptions(question)">
+                <label><input type="radio" name="option.text"> {{option.text}}</label><br/>
+              </div>
+              <div ng-if="otherQuestionType(question.type)">
+                <label><input type="radio"> Other ____________________________________________________</label><br/>
+              </div>
+            </div>
+            <div ng-if="multipleSelectQuestionType(question.type)" class="ml-2">
+              <div ng-repeat="option in questionOptions(question)">
+                <label><input type="checkbox" name="option.text"> {{option.text}}</label><br/>
+              </div>
+              <div ng-if="otherQuestionType(question.type)">
+                <label><input type="checkbox"> Other ____________________________________________________</label><br/>
+              </div>
+            </div>
+            <div ng-if="freeFormQuestionType(question.type)" class="ml-2">
+              <textarea rows="5" cols="150"></textarea>
+            </div>
+            <div ng-if="dateQuestionType(question.type)">
+              Year _ _ _ _ Month _ _ Day _ _
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

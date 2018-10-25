@@ -20,7 +20,8 @@ class OptionInOptionSet < ActiveRecord::Base
   has_paper_trail
   acts_as_paranoid
   after_save :set_special
-
+  validates :option_set_id, uniqueness: { scope: [:option_id, :number_in_question] }
+  
   private
 
   def set_special
