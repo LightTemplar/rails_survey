@@ -16,6 +16,13 @@ InstrumentTranslation, Instrument) ->
       'id': $stateParams.instrument_id
   })
 
+  $scope.languageName = (code) ->
+    lang = ""
+    angular.forEach $scope.languages, (language, index) ->
+      if language[1] == code
+        lang = language[0]
+    lang
+
   $scope.newInstrumentTranslation = () ->
     $scope.showInstrumentTranslations = false
     $scope.instrumentTranslation = new InstrumentTranslation()

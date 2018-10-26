@@ -67,6 +67,19 @@ class Instrument < ActiveRecord::Base
   validates :title, presence: true, allow_blank: false
   validates :project_id, presence: true, allow_blank: false
 
+  def self.create_translations
+    Instrument.all.each do |instrument|
+      languages = instrument.question_translations.pluck(:language).uniq
+      languages.each do |translation_language|
+        instrument_translation = instrument.translations.where(language: translation_language).first
+        unless instrument_translation
+          instrument.translations.create!(language: translation_language, title: instrument.title,
+            alignment: instrument.alignment)
+        end
+      end
+    end
+  end
+
   def reorder_displays(display_order)
     ActiveRecord::Base.transaction do
       display_order.each_with_index { |value, index|

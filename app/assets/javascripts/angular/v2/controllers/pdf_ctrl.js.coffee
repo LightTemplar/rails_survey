@@ -42,6 +42,12 @@ InstrumentOptionInOptionSet, Setting) ->
   $scope.dateQuestionType = (questionType) ->
     questionType == 'DATE'
 
+  $scope.monthAndYearQuestionType = (questionType) ->
+    questionType == 'MONTH_AND_YEAR'
+
+  $scope.numberQuestionType = (questionType) ->
+    questionType in ['INTEGER', 'DECIMAL_NUMBER']
+
   $scope.questionOptions = (question) ->
     oios = _.where($scope.instrumentOptionInOptionSets, {option_set_id: question.option_set_id})
     optionIds = _.pluck(oios, 'option_id')

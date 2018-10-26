@@ -25,6 +25,10 @@ class InstrumentTranslation < ActiveRecord::Base
   has_many :grid_translations, dependent: :destroy
   has_many :grid_label_translations, dependent: :destroy
 
+  validates :title, presence: true, allow_blank: false
+  validates :language, presence: true, allow_blank: false
+  validates :instrument_id, presence: true, allow_blank: false
+
   # Used to migrate child translations that were not associated with an instrument_translation
   def assign_old_translations
     instrument.questions.each do |question|

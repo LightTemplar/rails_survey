@@ -206,4 +206,5 @@ task :import, [:filename] => :environment do |_t, args|
   end
   instrument.set_skip_patterns
   OptionSet.without_option_in_option_sets.delete_all
+  Instrument.create_translations
 end

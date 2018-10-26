@@ -19,7 +19,7 @@
         <div class="row m-1" ng-repeat="translation in instrumentTranslations">
           <div class="col-md">
             <a ui-sref="instrumentTranslation({ project_id: project_id, instrument_id: instrument.id,
-            id: translation.id })" class="btn btn-primary">{{ translation.language }}</a>
+            id: translation.id })" class="btn btn-primary">{{ languageName(translation.language) }}</a>
           </div>
           <div class="col-md">{{ translation.title }}</div>
           <div class="col-md">{{ translation.active }}</div>
