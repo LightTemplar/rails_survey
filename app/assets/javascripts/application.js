@@ -40,7 +40,6 @@
 //= require d3
 //= require nv.d3
 //= require es5-shim.min
-//= require angular-file-upload.min
 //= require xeditable
 //= require dirPagination
 //= require textAngular-sanitize.min

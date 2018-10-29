@@ -19,5 +19,6 @@ class NextQuestion < ActiveRecord::Base
   belongs_to :question, foreign_key: :question_identifier
   belongs_to :instrument_question, touch: true
   acts_as_paranoid
-  validates :question_identifier, uniqueness: { scope: [:option_identifier, :next_question_identifier] }
+  validates :instrument_question_id, uniqueness: { scope:
+    [:question_identifier, :option_identifier, :next_question_identifier] }
 end

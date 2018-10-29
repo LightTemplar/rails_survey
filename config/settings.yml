@@ -83,7 +83,7 @@ skipped_question_special_response: 'SKIP'
 exception_notifications:
   email_prefix: '[iSEESurvey] '
   sender: 'noreply@chpir.org'
-  recipients: ['leonard@chpir.org']
+  recipients: ['leonard.ngeno@duke.edu']
 
 danger_zone_days: 3
 

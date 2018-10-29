@@ -11,11 +11,11 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
       templateUrl: 'projects/index.html'
       controller: 'ProjectsCtrl'
     .state 'importInstrument',
-      url: '/projects'
+      url: '/import_from_instruments2'
       templateUrl: 'projects/import_instrument.html'
       controller: 'ImportInstrumentCtrl'
     .state 'resourceImport',
-      url: '/projects'
+      url: '/import_from_v1'
       templateUrl: 'projects/resource_import.html'
       controller: 'ResourceImportCtrl'
     .state 'instrument',

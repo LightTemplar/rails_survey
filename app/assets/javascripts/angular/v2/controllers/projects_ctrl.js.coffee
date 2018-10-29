@@ -76,44 +76,38 @@ App.controller 'EditInstrumentCtrl', ['$scope', '$state', 'Instrument', 'Setting
 
 ]
 
-App.controller 'ImportInstrumentCtrl', ['$scope', '$fileUploader', 'Project',
-($scope, $fileUploader, Project) ->
+App.controller 'ImportInstrumentCtrl', ['$scope', '$http', 'Project', '$state',
+($scope, $http, Project, $state) ->
   $scope.projects = Project.query({})
   $scope.project = {}
-  uploader = null
 
-  $scope.setProject = () ->
-    uploader = $scope.uploader = $fileUploader.create({
-      scope: $scope,
-      url: '/api/v2/projects/' + $scope.project.id + '/import_instrument',
-      headers: {'X-CSRF-Token': $('meta[name=csrf-token]').attr('content') } ,
-      isHTML5: true,
-      withCredentials: true,
-      alias: 'file',
-      formData: [ { name: uploader } ]
-    } )
+  $scope.upload = () ->
+    uploadUrl = '/api/v2/projects/' + $scope.project.id + '/import_instrument'
+    data = new FormData
+    for key of $scope.project
+      data.append key, $scope.project[key]
+    $http.post(uploadUrl, data,
+      transformRequest: angular.indentity
+      headers: 'Content-Type': undefined
+    ).success((data) ->
+      $state.go('/', {})
+    ).error (data) ->
+      alert('Upload Failed' + data)
 
-    uploader.filters.push (item) ->
-      type = (if uploader.isHTML5 then item.type else '/' + item.value.slice(item.value.lastIndexOf('.') + 1))
-      type = '|' + type.toLowerCase().slice(type.lastIndexOf('/') + 1) + '|'
-      '|csv|'.indexOf(type) isnt - 1
 ]
 
-App.controller 'ResourceImportCtrl', ['$scope', '$stateParams', 'Project', '$fileUploader',
-($scope, $stateParams, Project, $fileUploader) ->
-  uploader = $scope.uploader = $fileUploader.create({
-    scope: $scope,
-    url: '/api/v2/projects/v1_v2_import',
-    headers: {'X-CSRF-Token': $('meta[name=csrf-token]').attr('content') } ,
-    isHTML5: true,
-    withCredentials: true,
-    alias: 'file',
-    formData: [ { name: uploader } ]
-  } )
-
-  uploader.filters.push (item) ->
-    type = (if uploader.isHTML5 then item.type else '/' + item.value.slice(item.value.lastIndexOf('.') + 1))
-    type = '|' + type.toLowerCase().slice(type.lastIndexOf('/') + 1) + '|'
-    '|csv|'.indexOf(type) isnt - 1
+App.controller 'ResourceImportCtrl', ['$scope', '$state', '$http', ($scope, $state, $http) ->
+  $scope.resource = {}
+  $scope.upload = () ->
+    data = new FormData
+    for key of $scope.resource
+      data.append key, $scope.resource[key]
+    $http.post('/api/v2/projects/v1_v2_import', data,
+      transformRequest: angular.indentity
+      headers: 'Content-Type': undefined
+    ).success((data) ->
+      $state.go('/', {})
+    ).error (data) ->
+      alert('Upload Failed' + data)
 
 ]
