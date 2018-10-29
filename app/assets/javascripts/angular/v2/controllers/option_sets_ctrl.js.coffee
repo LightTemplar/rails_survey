@@ -52,6 +52,9 @@ OptionSet, OptionInOptionSet, Instruction, Options) ->
   $scope.instructions = Instruction.query({})
   $scope.counter = 0
 
+  $scope.getOption = (optionInOptionSet) ->
+    _.findWhere($scope.options, {id: optionInOptionSet.option_id})
+
   $scope.updateOptionSet = () ->
     if $scope.optionSet.id
       $scope.optionSet.$update({} ,

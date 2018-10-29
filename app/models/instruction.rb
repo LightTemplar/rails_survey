@@ -12,6 +12,7 @@
 
 class Instruction < ActiveRecord::Base
   has_many :questions, dependent: :nullify
+  has_many :option_sets, dependent: :nullify
   has_many :instrument_questions, through: :questions
   has_many :instruction_translations, dependent: :destroy
   has_many :display_instructions, dependent: :destroy

@@ -48,36 +48,34 @@
   </div>
   <div class="card-body card-padding">
     <h5 class="row">
-      <label class="col-md-2">Position</label>
-      <label class="col-md-6">Option</label>
-      <label class="col-md-2">Exclusive</label>
-      <label class="col-md-2">Delete</label>
+      <label class="col-md-1">Position</label>
+      <label class="col-md-4">Identifier</label>
+      <label class="col-md-5">Text</label>
+      <label class="col-md-1">Exclusive</label>
+      <label class="col-md-1">Delete</label>
     </h5>
     <div ng-repeat="optionInOptionSet in optionInOptionSets">
       <div class="row m-1">
-        <div class="col-md-2">
+        <div class="col-md-1">
           <input type="number" class="form-control" ng-model="optionInOptionSet.number_in_question" required />
         </div>
-        <div class="col-md-6 select-box">
-          <ui-select ng-model="optionInOptionSet.option_id" theme="bootstrap" class="form-control" title="Choose an
-          option" append-to-body="true">
+        <div class="col-md-4">
+          <ui-select ng-model="optionInOptionSet.option_id" theme="bootstrap" class="form-control">
           <ui-select-match placeholder="Select or search an option in the list...">
             {{$select.selected.identifier}}
           </ui-select-match>
           <ui-select-choices repeat="option.id as option in options | propertyFilter: {identifier: $select.search,
             text: $select.search}">
             <div ng-bind-html="option.identifier | highlight: $select.search"></div>
-            <small>
-              <span ng-bind-html="option.text | highlight: $select.search"></span>
-            </small>
           </ui-select-choices>
         </ui-select>
       </div>
-      <div class="col-md-2">
+      <div class="col-md-5">{{getOption(optionInOptionSet).text}}</div>
+      <div class="col-md-1">
         <input type="checkbox" name="option-in-option-set-is-exclusive"
         ng-model="optionInOptionSet.is_exclusive">
       </div>
-      <div class="col-md-2">
+      <div class="col-md-1">
         <div class="btn btn-danger" ng-click="deleteOption(optionInOptionSet)">Delete</div>
       </div>
     </div>
@@ -91,9 +89,10 @@
 
 <h4 class="text-center">Questions containing this option set</h4>
 <div class="card">
-  <div class="row ml-4 m-1" ng-repeat="question in optionSet.questions">
-    <a ui-sref="questionSetQuestion({question_set_id: question.question_set_id, id: question.id})">
+  <div class="row m-1" ng-repeat="question in optionSet.questions">
+    <a class="col-md-3" ui-sref="questionSetQuestion({question_set_id: question.question_set_id, id: question.id})">
       {{question.question_identifier}}</a>
+      <span class="col-md-9">{{question.text}}</span>
     </div>
   </div>
 

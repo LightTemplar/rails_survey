@@ -2,9 +2,9 @@
 <div class="m-1">
   <a class="btn btn-primary" ui-sref="instructionTranslations({instruction_id: instruction.id})">Translations</a>
 </div>
-<div class="card">
+<div class="card" ng-controller="ShowInstructionCtrl">
   <div class="card-body card-padding">
-    <ng-form class="card" name="instructionEditorForm" ng-controller="ShowInstructionCtrl">
+    <ng-form class="card" name="instructionEditorForm">
       <div class="card-body card-padding">
         <div class="row">
           <label class="col-md-2">Title</label>
@@ -29,5 +29,21 @@
         </div>
       </div>
     </ng-form>
+
+    <h4 class="text-center m-1">Questions containing this instruction</h4>
+    <div class="row m-1" ng-repeat="question in instruction.questions">
+      <a class="col-md-3" ui-sref="questionSetQuestion({question_set_id: question.question_set_id, id: question.id})">
+        {{question.question_identifier}}</a>
+        <span class="col-md-9">{{question.text}}</span>
+      </div>
+    </div>
+
+    <h4 class="text-center m-1">Option sets with this instruction</h4>
+    <div class="m-1" ng-repeat="optionSet in instruction.option_sets">
+      <a ui-sref="optionSet({id: optionSet.id})">
+        {{optionSet.title}}</a>
+      </div>
+    </div>
+
   </div>
 </div>

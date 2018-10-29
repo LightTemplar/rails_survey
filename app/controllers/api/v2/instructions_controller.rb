@@ -8,7 +8,7 @@ module Api
       end
 
       def show
-        respond_with Instruction.find(params[:id])
+        @instruction = Instruction.find(params[:id])
       end
 
       def create
