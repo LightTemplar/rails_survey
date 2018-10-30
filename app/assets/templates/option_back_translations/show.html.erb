@@ -17,19 +17,32 @@
       <table class="table table-hover">
         <thead>
         <tr class="row">
-          <th class="col-md-4">Translation Text</th>
-          <th class="col-md-8">Back Translation Text</th>
+          <th class="col-md-5">Translation Text</th>
+          <th class="col-md-5">Back Translation Text</th>
+          <th class="col-md-2">Approved</th>
         </tr>
         </thead>
         <tbody>
+          <tr class="row">
+            <td class="col-md-5"></td>
+            <td class="col-md-5"></td>
+            <td class="col-md-2">
+              <input type="checkbox" ng-model="selectall" ng-click="selectAll()"> select all
+            </td>
+          </tr>
           <tr class="row" ng-repeat="optionTranslation in optionTranslations">
-            <td class="col-md-4" ng-bind-html="optionTranslation.text | ToTrustedHtml"></td>
-            <td class="col-md-8">
+            <td class="col-md-5" ng-bind-html="optionTranslation.text | ToTrustedHtml"></td>
+            <td class="col-md-5">
               <textarea
                 class="form-control"
-                name="question-back-translation-{{optionTranslation.id}}-{{$index}}"
+                name="option-back-translation-{{optionTranslation.id}}-{{$index}}"
                 ng-model="backTranslationFor(optionTranslation).text">
               </textarea>
+            </td>
+            <td class="col-md-2">
+              <input type="checkbox"
+              name="option-back-translation-approval-{{optionTranslation.id}}-{{$index}}"
+               ng-model="backTranslationFor(optionTranslation).approved">
             </td>
           </tr>
         </tbody>

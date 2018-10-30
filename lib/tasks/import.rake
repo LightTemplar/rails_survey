@@ -71,11 +71,15 @@ task :import, [:filename] => :environment do |_t, args|
           text: row[5].strip, question_set_id: question_set.id, folder_id: folder.id)
         (6..9).each do |n|
           next if row[n].blank?
-          qt = QuestionTranslation.create!(question_id: question.id,
+          qt = QuestionTranslation.where(question_id: question.id,
+            language: Settings.languages.to_h[csv_headers[n]], text: row[n]).first
+          qt ||= QuestionTranslation.create!(question_id: question.id,
             language: Settings.languages.to_h[csv_headers[n]], text: row[n])
           if qt && !row[n + 4].blank?
-            BackTranslation.create!(text: row[n + 4], language: Settings.languages.to_h[csv_headers[n]],
-              backtranslatable_id: qt.id, backtranslatable_type: 'QuestionTranslation')
+            bt = BackTranslation.where(text: row[n + 4], language: Settings.languages.to_h[csv_headers[n]],
+              backtranslatable_id: qt.id, backtranslatable_type: 'QuestionTranslation').first
+            bt ||= BackTranslation.create!(text: row[n + 4], language: Settings.languages.to_h[csv_headers[n]],
+              backtranslatable_id: qt.id, backtranslatable_type: 'QuestionTranslation', approved: true)
           end
         end
         iq = InstrumentQuestion.where(instrument_id: instrument.id, identifier: row[1].strip,
@@ -148,8 +152,10 @@ task :import, [:filename] => :environment do |_t, args|
         ot = OptionTranslation.create!(option_id: option.id,
           language: Settings.languages.to_h[csv_headers[n]], text: row[n].strip)
         if ot && !row[n + 4].blank?
-          BackTranslation.create!(text: row[n + 4], language: Settings.languages.to_h[csv_headers[n]],
-            backtranslatable_id: ot.id, backtranslatable_type: 'OptionTranslation')
+          bt = BackTranslation.where(text: row[n + 4], language: Settings.languages.to_h[csv_headers[n]],
+            backtranslatable_id: ot.id, backtranslatable_type: 'OptionTranslation').first
+          bt ||= BackTranslation.create!(text: row[n + 4], language: Settings.languages.to_h[csv_headers[n]],
+            backtranslatable_id: ot.id, backtranslatable_type: 'OptionTranslation', approved: true)
         end
       end
     end

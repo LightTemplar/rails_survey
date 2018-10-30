@@ -66,18 +66,18 @@ RailsSurvey::Application.routes.draw do
       end
       resources :option_sets do
         resources :options, controller: 'option_set_options'
-        resources :option_in_option_sets
         member do
           get :copy
         end
       end
+      resources :option_in_option_sets
       resources :questions
-      resources :question_translations, only: [:index, :create, :update] do
+      resources :question_translations, only: [:index, :create, :update, :show] do
         collection do
           post :batch_update
         end
       end
-      resources :question_back_translations, only: [:index, :create, :update] do
+      resources :question_back_translations, only: [:index, :create, :update, :show] do
         collection do
           post :batch_update
         end
@@ -148,8 +148,6 @@ RailsSurvey::Application.routes.draw do
             post :to_pdf
           end
           resources :next_questions, controller: 'instrument_next_questions'
-          resources :instrument_options, controller: 'instrument_options'
-          resources :instrument_option_in_option_sets, controller: 'instrument_option_in_option_sets'
         end
       end
       get 'settings/index'

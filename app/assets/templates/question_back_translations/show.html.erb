@@ -17,14 +17,20 @@
       <table class="table table-hover">
         <thead>
         <tr class="row">
-          <th class="col-md-4">Translation Text</th>
-          <th class="col-md-8">Back Translation Text</th>
+          <th class="col-md-5">Translation Text</th>
+          <th class="col-md-6">Back Translation Text</th>
+          <th class="col-md-1">Approved</th>
         </tr>
         </thead>
         <tbody>
+          <tr class="row">
+            <td class="col-md-5"></td>
+            <td class="col-md-6"></td>
+            <td class="col-md-1"><input type="checkbox" ng-model="selectall" ng-click="selectAll()"> select all</td>
+          </tr>
           <tr class="row" ng-repeat="questionTranslation in questionTranslations">
-            <td class="col-md-4" ng-bind-html="questionTranslation.text | ToTrustedHtml"></td>
-            <td class="col-md-8">
+            <td class="col-md-5" ng-bind-html="questionTranslation.text | ToTrustedHtml"></td>
+            <td class="col-md-6">
               <text-angular
                 ta-toolbar="toolBar"
                 name="question-back-translation-{{questionTranslation.id}}-{{$index}}"
@@ -32,6 +38,11 @@
                 ta-text-editor-class="form-control translation-height"
                 ta-html-editor-class="form-control translation-height">
               </text-angular>
+            </td>
+            <td class="col-md-1">
+              <input type="checkbox"
+              name="question-back-translation-approval-{{questionTranslation.id}}-{{$index}}"
+               ng-model="backTranslationFor(questionTranslation).approved">
             </td>
           </tr>
         </tbody>

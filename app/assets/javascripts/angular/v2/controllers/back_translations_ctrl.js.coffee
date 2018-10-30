@@ -13,7 +13,17 @@ QuestionTranslation, QuestionBackTranslation) ->
     $scope.languages = $scope.settings.languages
   )
 
-  if $stateParams.question_set_id && $stateParams.question_id && $stateParams.language
+  if $stateParams.question_translation_id && $stateParams.language
+    questionTranslation = QuestionTranslation.get({
+      'id': $stateParams.question_translation_id
+    }, ->
+      $scope.questionTranslations = [questionTranslation]
+    )
+    $scope.questionBackTranslations = QuestionBackTranslation.query({
+      'language': $stateParams.language
+      'question_translation_id': $stateParams.question_translation_id
+    })
+  else if $stateParams.question_set_id && $stateParams.question_id && $stateParams.language
     $scope.questionTranslations = QuestionTranslation.query({
       'language': $stateParams.language,
       'question_set_id': $stateParams.question_set_id
@@ -22,7 +32,7 @@ QuestionTranslation, QuestionBackTranslation) ->
     $scope.questionBackTranslations = QuestionBackTranslation.query({
       'language': $stateParams.language,
       'question_set_id': $stateParams.question_set_id
-      'question_translation_id': $stateParams.question_translation_id
+      'question_id': $stateParams.question_id
     })
   else if $stateParams.question_set_id && $stateParams.language
     $scope.questionTranslations = QuestionTranslation.query({
@@ -73,6 +83,13 @@ QuestionTranslation, QuestionBackTranslation) ->
       (result, headers) ->
         alert(result.data.errors)
     )
+
+  $scope.selectAll = () ->
+    angular.forEach $scope.questionBackTranslations, (qbt, index) ->
+      if $scope.selectall
+        qbt.approved = true
+      else
+        qbt.approved = false
 
 ]
 
@@ -146,5 +163,12 @@ OptionTranslation, OptionBackTranslation) ->
       (result, headers) ->
         alert(result.data.errors)
     )
+
+  $scope.selectAll = () ->
+    angular.forEach $scope.optionBackTranslations, (obt, index) ->
+      if $scope.selectall
+        obt.approved = true
+      else
+        obt.approved = false
 
 ]

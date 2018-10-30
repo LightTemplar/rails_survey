@@ -9,23 +9,23 @@ module Api
           option = option_set.options.find(params[:option_id])
           option_translations = option.translations.where(language: params[:language])
           @option_back_translations = option_translation.back_translations.where(backtranslatable_id:
-            option_translations.pluck(:id), language: params[:language])
+            option_translations.pluck(:id), language: params[:language]).uniq
         elsif !params[:language].blank? && !params[:option_set_id].blank?
           option_set = OptionSet.find params[:option_set_id]
           translations = option_set.translations.where(language: params[:language])
           @option_back_translations = BackTranslation.where(backtranslatable_type: 'OptionTranslation',
-            backtranslatable_id: translations.pluck(:id), language: params[:language])
+            backtranslatable_id: translations.pluck(:id), language: params[:language]).uniq
         elsif !params[:language].blank? && !params[:instrument_id].blank?
           instrument = Instrument.find params[:instrument_id]
           translations = instrument.option_translations.where(language: params[:language])
           @option_back_translations = BackTranslation.where(backtranslatable_type: 'OptionTranslation',
-            backtranslatable_id: translations.pluck(:id), language: params[:language])
+            backtranslatable_id: translations.pluck(:id), language: params[:language]).uniq
         elsif !params[:language].blank? && params[:option_set_id].blank?
           translations = OptionTranslation.where(language: params[:language])
           @option_back_translations = BackTranslation.where(backtranslatable_type: 'OptionTranslation',
-            backtranslatable_id: translations.pluck(:id), language: params[:language])
+            backtranslatable_id: translations.pluck(:id), language: params[:language]).uniq
         else
-          @option_back_translations = BackTranslation.all
+          @option_back_translations = BackTranslation.all.uniq
         end
       end
 
@@ -53,9 +53,9 @@ module Api
           params[:option_back_translations].each do |translation_params|
             if translation_params[:id]
               qt = BackTranslation.find(translation_params[:id])
-              translations << qt if qt.update_attributes(translation_params.permit(:text, :backtranslatable_id, :backtranslatable_type, :language))
+              translations << qt if qt.update_attributes(translation_params.permit(:text, :backtranslatable_id, :backtranslatable_type, :language, :approved))
             elsif !translation_params[:text].blank?
-              qt = BackTranslation.new(translation_params.permit(:text, :backtranslatable_id, :backtranslatable_type, :language))
+              qt = BackTranslation.new(translation_params.permit(:text, :backtranslatable_id, :backtranslatable_type, :language, :approved))
               translations << qt if qt.save
             end
           end
@@ -66,7 +66,8 @@ module Api
       private
 
       def option_back_translations_params
-        params.require(:option_back_translation).permit(:text, :backtranslatable_id, :backtranslatable_type, :language)
+        params.require(:option_back_translation).permit(:text, :backtranslatable_id,
+          :backtranslatable_type, :language, :approved)
       end
     end
   end

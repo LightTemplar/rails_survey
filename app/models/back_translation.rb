@@ -9,6 +9,7 @@
 #  backtranslatable_type :string
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
+#  approved              :boolean
 #
 
 class BackTranslation < ActiveRecord::Base

@@ -74,9 +74,9 @@ namespace :db do
     u.save!
     %w(user admin manager analyst translator super_admin).each do |name|
       role = Role.find_by_name(name)
-      Role.create(name: name) if role.nil?
+      role = Role.create(name: name) if role.nil?
+      u.roles << role unless u.roles.include? role
     end
-    u.roles << Role.all
     p = Project.create!(name: 'Test Project', description: 'Test Project')
     u.projects << p
     u.save!

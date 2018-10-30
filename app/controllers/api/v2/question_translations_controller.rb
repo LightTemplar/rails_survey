@@ -8,17 +8,17 @@ module Api
           question_set = QuestionSet.find params[:question_set_id]
           question = question_set.questions.find(params[:question_id])
           @question_translations = question.translations.where(language: params[:language], question_id:
-              params[:question_id])
+              params[:question_id]).uniq
         elsif !params[:language].blank? && !params[:question_set_id].blank?
           question_set = QuestionSet.find params[:question_set_id]
-          @question_translations = question_set.translations.where(language: params[:language])
+          @question_translations = question_set.translations.where(language: params[:language]).uniq
         elsif !params[:language].blank? && !params[:instrument_id].blank?
           instrument = Instrument.find params[:instrument_id]
-          @question_translations = instrument.question_translations.where(language: params[:language])
+          @question_translations = instrument.question_translations.where(language: params[:language]).uniq
         elsif !params[:language].blank? && params[:question_set_id].blank?
-          @question_translations = QuestionTranslation.where(language: params[:language])
+          @question_translations = QuestionTranslation.where(language: params[:language]).uniq
         else
-          @question_translations = QuestionTranslation.all
+          @question_translations = QuestionTranslation.all.uniq
         end
       end
 

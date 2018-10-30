@@ -15,6 +15,7 @@
 class OptionTranslation < ActiveRecord::Base
   include GoogleTranslatable
   belongs_to :option, touch: true
+  has_many :back_translations, as: :backtranslatable
   belongs_to :instrument_translation, touch: true
   validates :text, presence: true, allow_blank: false
 

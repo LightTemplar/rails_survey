@@ -123,7 +123,7 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
       templateUrl: 'question_translations/show.html'
       controller: 'QuestionTranslationsCtrl'
     .state 'questionBackTranslations',
-      url: '/question_back_translations/?language&instrument_id&question_set_id&question_id'
+      url: '/question_back_translations/?language&instrument_id&question_set_id&question_id&question_translation_id'
       templateUrl: 'question_back_translations/show.html'
       controller: 'QuestionBackTranslationsCtrl'
     .state 'instructionTranslations',

@@ -6,7 +6,7 @@ module Api
       def index
         if !params[:instrument_id].blank?
           instrument = Instrument.find(params[:instrument_id])
-          @options = instrument.options
+          @options = instrument.options.uniq
         else
           @options = Option.all.order(updated_at: :desc)
         end
