@@ -1,8 +1,3 @@
-require 'rake'
-
-Rake::Task.clear
-RailsSurvey::Application.load_tasks
-
 module Api
   module V2
     class ProjectsController < ApiApplicationController
@@ -18,10 +13,11 @@ module Api
 
       def import_instrument
         project = Project.find params[:id]
-
-        Rake::Task['import'].reenable
-        Rake::Task['import'].invoke(params[:file].tempfile.path)
-
+        file = Tempfile.new('instrument_csv', 'tmp')
+        File.open(file.path, 'w:ASCII-8BIT') do |file|
+          file << params[:file].read
+        end
+        RakeTaskWorker.perform_async('import', file.path)
         if project
           render json: :ok, status: :created
         else
@@ -30,8 +26,11 @@ module Api
       end
 
       def v1_v2_import
-        Rake::Task['v1_v2_import'].reenable
-        Rake::Task['v1_v2_import'].invoke(params[:file].tempfile.path)
+        file = Tempfile.new('v1_v2_csv', 'tmp')
+        File.open(file.path, 'w:ASCII-8BIT') do |file|
+          file << params[:file].read
+        end
+        RakeTaskWorker.perform_async('v1_v2_import', file.path)
         render json: :ok, status: :created
       end
     end
