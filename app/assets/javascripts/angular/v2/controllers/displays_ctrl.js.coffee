@@ -153,9 +153,14 @@ InstrumentQuestion, QuestionSet, Question, Instruction, Section) ->
 
   $scope.addAbleDisplayQuestions = (identifier) ->
     if $scope.tableQuestions(identifier).length == 0
-      $scope.displayQuestions
+      _.filter($scope.displayQuestions, (qst) ->
+        qst.table_identifier == null
+      )
     else
-      _.where($scope.displayQuestions, {option_set_id: $scope.tableQuestions(identifier)[0].option_set_id})
+      _.filter($scope.displayQuestions, (qst) ->
+        qst.option_set_id == $scope.tableQuestions(identifier)[0].option_set_id &&
+        qst.table_identifier != $scope.tableQuestions(identifier)[0].table_identifier
+      )
 
   $scope.saveToTable = (identifier) ->
     angular.forEach $scope.displayQuestions, (dq, index) ->

@@ -1,0 +1,51 @@
+<div class="card">
+  <h4 class="text-center">Table Displays</h4>
+  <li class="m-1">Tables are used to group and display together questions that have the same option set.</li>
+  <div ng-repeat="identifier in tableIdentifiers">
+    <h5 class="m-1">Table Identifier: {{identifier}}</h5>
+    <h6 class="row m-1">
+      <label class="col-md-1">Position</label>
+      <label class="col-md-2">Identifier</label>
+      <label class="col-md-7">Text</label>
+      <label class="col-md-2">Actions</label>
+    </h6>
+    <div ng-repeat="question in tableQuestions(identifier)">
+      <div class="row m-1">
+        <div class="col-md-1">{{question.number_in_instrument}}</div>
+        <div class="col-md-2">{{question.identifier}}</div>
+        <div class="col-md-7">{{question.text}}</div>
+        <div class="col-md-2">
+          <div class="row">
+            <div class="btn btn-danger" ng-click="removeQuestionFromTable(question)">Remove</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="btn btn-primary m-2 pull-right" ng-click="addQuestionsToTable(identifier)">
+      Add Questions To Table {{identifier}}
+    </div>
+    <div class="m-1" ng-show="editIdentifier == identifier">
+      <div class="m-1" ng-repeat="q in addAbleDisplayQuestions(identifier)">
+        <input type="checkbox" ng-model="q.selected" ng-disabled="questionInTable(q, identifier)"/>
+        <span class="m-1">{{q.number_in_instrument}}</span>
+        <span class="m-1">{{q.identifier}}</span>
+        <span class="m-1">{{q.text}}</span>
+      </div>
+      <div class="m-1">
+        <div class="btn btn-success" ng-click="saveToTable(identifier)">Save</div>
+      </div>
+    </div>
+  </div>
+  <div class="m-1" ng-hide="showNewTable">
+    <div class="btn btn-primary pull-left" ng-click="createTable()">New Table</div>
+  </div>
+  <div class="row m-1" ng-show="showNewTable">
+    <label class="col-md-2">Table Name: </label>
+    <div class="col-md-8">
+      <input type="text" ng-model="newTable.name" class="form-control">
+    </div>
+    <div class="col-md-2">
+      <div class="btn btn-success" ng-click="saveNewTable()">Save Table</div>
+    </div>
+  </div>
+</div>
