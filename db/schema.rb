@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181029200756) do
+ActiveRecord::Schema.define(version: 20181031221106) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -287,6 +287,15 @@ ActiveRecord::Schema.define(version: 20181029200756) do
     t.string   "roster_type"
     t.boolean  "scorable",                default: false
     t.boolean  "auto_export_responses",   default: true
+  end
+
+  create_table "loop_questions", force: :cascade do |t|
+    t.integer  "instrument_question_id"
+    t.string   "parent"
+    t.string   "looped"
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+    t.datetime "deleted_at"
   end
 
   create_table "metrics", force: :cascade do |t|

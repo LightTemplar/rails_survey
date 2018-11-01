@@ -1,0 +1,41 @@
+<div ng-include="'instrument_questions/header.html'"></div>
+<div class="card" ng-controller="LoopsCtrl">
+  <div class="m-1">
+    <p>The questions listed below will be asked for each of the conditions given as a reply to this question
+      ({{instrumentQuestion.text}}).
+     </p>
+  </div>
+  <h6 class="row m-1">
+    <label class="col-md-2" for="looped-question-number">Question Number</label>
+    <label class="col-md-3" for="looped-question-identifier">Question Identifier</label>
+    <label class="col-md-6" for="looped-question-text">Question Text</label>
+    <label class="col-md-1" for="looped-question-delete">Delete</label>
+  </h6>
+
+  <div class="row m-1" ng-hide="newLoop" ng-repeat="loop in loopQuestions">
+    <div class="col-md-2">{{getQuestion(loop).number_in_instrument}}</div>
+    <div class="col-md-3">{{getQuestion(loop).identifier}}</div>
+    <div class="col-md-6">{{getQuestion(loop).text}}</div>
+    <div class="col-md-1">
+      <button class="btn btn-danger float-right" ng-click="delete(loop)">Delete</button>
+    </div>
+  </div>
+
+  <div class="m-1" ng-hide="newLoop">
+    <button class="btn btn-primary" ng-click="createLoop()">Add Looped Question</button>
+  </div>
+
+  <div class="m-1" ng-show="newLoop">
+    <div class="row m-1">
+      <label for="looped_question" class="col-md-3">Add Question To Loop</label>
+      <div class="col-md-9">
+        <input type="text" ng-model="loopQuestion.looped"
+        placeholder="Search for question to loop" class="form-control"
+        uib-typeahead="question.identifier for question in questionsAfter() | filter:$viewValue | limitTo:10">
+      </div>
+    </div>
+    <div class="row m-1">
+      <button class="btn btn-success float-right" ng-click="saveLoop()">Save</button>
+    </div>
+  </div>
+</div>

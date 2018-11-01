@@ -119,6 +119,7 @@ RailsSurvey::Application.routes.draw do
             resources :multiple_skips
             resources :follow_up_questions
             resources :condition_skips
+            resources :loop_questions
           end
           resources :displays do
             member do

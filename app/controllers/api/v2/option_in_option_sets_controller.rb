@@ -5,7 +5,8 @@ module Api
 
         def index
           if !params[:option_set_id].blank?
-            respond_with @option_set.option_in_option_sets
+            option_set = OptionSet.find(params[:option_set_id])
+            respond_with option_set.option_in_option_sets
           elsif !params[:instrument_id].blank?
             instrument = Instrument.find(params[:instrument_id])
             respond_with instrument.option_in_option_sets
@@ -15,8 +16,8 @@ module Api
 
         def create
           if !params[:option_set_id].blank?
-            @option_set = OptionSet.find(params[:option_set_id])
-            option_in_option_set = @option_set.option_in_option_sets.new(option_in_option_set_params)
+            option_set = OptionSet.find(params[:option_set_id])
+            option_in_option_set = option_set.option_in_option_sets.new(option_in_option_set_params)
             if option_in_option_set.save
               render json: option_in_option_set, status: :created
             else
@@ -27,16 +28,16 @@ module Api
 
         def update
           if !params[:option_set_id].blank?
-            @option_set = OptionSet.find(params[:option_set_id])
-            option_in_option_set = @option_set.option_in_option_sets.find(params[:id])
+            option_set = OptionSet.find(params[:option_set_id])
+            option_in_option_set = option_set.option_in_option_sets.find(params[:id])
             respond_with option_in_option_set.update_attributes(option_in_option_set_params)
           end
         end
 
         def destroy
           if !params[:option_set_id].blank?
-            @option_set = OptionSet.find(params[:option_set_id])
-            option_in_option_set = @option_set.option_in_option_sets.find(params[:id])
+            option_set = OptionSet.find(params[:option_set_id])
+            option_in_option_set = option_set.option_in_option_sets.find(params[:id])
             respond_with option_in_option_set.destroy
           end
         end

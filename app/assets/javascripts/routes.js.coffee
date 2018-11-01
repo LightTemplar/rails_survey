@@ -94,6 +94,10 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
       url: '/projects/:project_id/instruments/:instrument_id/instrument_questions/:id'
       templateUrl: 'instrument_questions/show.html'
       controller: 'ShowInstrumentQuestionCtrl'
+    .state 'loops',
+      url: '/projects/:project_id/instruments/:instrument_id/instrument_questions/:id'
+      templateUrl: 'instrument_questions/loop.html'
+      controller: 'LoopsCtrl'
     .state 'conditionSkips',
       url: '/projects/:project_id/instruments/:instrument_id/instrument_questions/:id'
       templateUrl: 'instrument_questions/condition_skip.html'

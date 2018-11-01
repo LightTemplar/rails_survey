@@ -32,6 +32,9 @@ MultipleSkip, FollowUpQuestion, ConditionSkip) ->
     'instrument_question_id': $scope.id
   })
 
+  $scope.hasLoops = (type) ->
+    type in ['INTEGER']
+
   $scope.deleteNextQuestion = (nextQuestion) ->
     if confirm('Are you sure you want to delete this skip pattern?')
       setRouteParameters(nextQuestion)
@@ -499,5 +502,65 @@ Setting, Option, ConditionSkip) ->
     skip.instrument_question_id = $scope.instrumentQuestion.id
     skip.project_id = $scope.project_id
     skip.instrument_id = $scope.instrument_id
+
+]
+
+App.controller 'LoopsCtrl', ['$scope', '$stateParams', 'InstrumentQuestion',
+'LoopQuestion', ($scope, $stateParams, InstrumentQuestion, LoopQuestion) ->
+  $scope.project_id = $stateParams.project_id
+  $scope.instrument_id = $stateParams.instrument_id
+  $scope.id = $stateParams.id
+
+  $scope.instrumentQuestion = InstrumentQuestion.get({
+    'project_id': $scope.project_id,
+    'instrument_id': $scope.instrument_id,
+    'id': $scope.id
+  })
+
+  $scope.loopQuestions = LoopQuestion.query({
+    'project_id': $scope.project_id,
+    'instrument_id': $scope.instrument_id,
+    'instrument_question_id': $scope.id
+  })
+
+  $scope.instrumentQuestions = InstrumentQuestion.query({
+    'project_id': $scope.project_id,
+    'instrument_id': $scope.instrument_id
+  })
+
+  $scope.questionsAfter = () ->
+    questions = _.sortBy($scope.instrumentQuestions, 'number_in_instrument')
+    questions.slice($scope.instrumentQuestion.number_in_instrument, questions.length)
+
+  $scope.getQuestion = (loopQ) ->
+    _.findWhere($scope.instrumentQuestions, {identifier: loopQ.looped})
+
+  $scope.delete = (loopQuestion) ->
+    if confirm('Are you sure you want to delete this looped question?')
+      loopQuestion.project_id = $scope.project_id
+      loopQuestion.instrument_id = $scope.instrument_id
+      loopQuestion.$delete({},
+        (data, headers) ->
+          $scope.loopQuestions.splice($scope.loopQuestions.indexOf(loopQuestion), 1)
+        (result, headers) ->
+          alert(result.data.errors)
+      )
+
+  $scope.createLoop = () ->
+    $scope.newLoop = true
+    $scope.loopQuestion = new LoopQuestion()
+    $scope.loopQuestion.project_id = $scope.project_id
+    $scope.loopQuestion.instrument_id = $scope.instrument_id
+    $scope.loopQuestion.instrument_question_id = $scope.id
+    $scope.parent = $scope.instrumentQuestion.identifier
+
+  $scope.saveLoop = () ->
+    $scope.loopQuestion.$save({},
+    (data, headers) ->
+      $scope.loopQuestions.push(data)
+      $scope.newLoop = false
+    (result, headers) ->
+      alert(result.data.errors)
+    )
 
 ]

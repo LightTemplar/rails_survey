@@ -64,6 +64,14 @@ node :rank_responses do |iq|
   iq.question.rank_responses if iq.question
 end
 
+node :loop_question_count do |iq|
+  iq.loop_questions.size
+end
+
 child :translations do |t|
   attributes :id, :question_id, :text, :language, :instructions
+end
+
+child :loop_questions do |t|
+  attributes :id, :parent, :looped, :deleted_at
 end
