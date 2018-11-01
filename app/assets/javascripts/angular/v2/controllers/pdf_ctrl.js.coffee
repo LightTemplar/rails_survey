@@ -1,7 +1,7 @@
 App.controller 'PDFCtrl', ['$scope', '$stateParams', 'Instrument', 'Display', 'FileSaver',
-'InstrumentQuestion', 'InstrumentOption', 'InstrumentOptionInOptionSet', 'Setting',
-($scope, $stateParams, Instrument, Display, FileSaver, InstrumentQuestion, InstrumentOption,
-InstrumentOptionInOptionSet, Setting) ->
+'InstrumentQuestion', 'Options', 'OptionInOptionSet', 'Setting',
+($scope, $stateParams, Instrument, Display, FileSaver, InstrumentQuestion, Options,
+OptionInOptionSet, Setting) ->
 
   $scope.instrument_id = if $stateParams.instrument_id then $stateParams.instrument_id else $stateParams.id
   $scope.project_id = $stateParams.project_id
@@ -17,12 +17,10 @@ InstrumentOptionInOptionSet, Setting) ->
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id
   })
-  $scope.instrumentOptions = InstrumentOption.query({
-    'project_id': $scope.project_id,
+  $scope.instrumentOptions = Options.query({
     'instrument_id': $scope.instrument_id
   })
-  $scope.instrumentOptionInOptionSets = InstrumentOptionInOptionSet.query({
-    'project_id': $scope.project_id,
+  $scope.instrumentOptionInOptionSets = OptionInOptionSet.query({
     'instrument_id': $scope.instrument_id
   })
   $scope.settings = Setting.get({})
