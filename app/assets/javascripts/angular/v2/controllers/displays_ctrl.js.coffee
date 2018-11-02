@@ -146,6 +146,8 @@ InstrumentQuestion, QuestionSet, Question, Instruction, Section) ->
     _.where($scope.displayQuestions, {table_identifier: identifier})
 
   $scope.addQuestionsToTable = (identifier) ->
+    angular.forEach $scope.displayQuestions, (dq, index) ->
+      dq.selected = null
     $scope.editIdentifier = identifier
 
   $scope.questionInTable = (question, identifier) ->
