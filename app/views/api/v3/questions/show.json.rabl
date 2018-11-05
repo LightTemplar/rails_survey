@@ -1,7 +1,7 @@
 object @question
 cache @question
 
-attributes :id, :instrument_id, :display_id, :number_in_instrument, :deleted_at, :table_identifier
+attributes :id, :instrument_id, :display_id, :number_in_instrument, :deleted_at, :table_identifier, :question_id
 
 node :text do |iq|
   iq.question.text if iq.question
@@ -12,7 +12,6 @@ node :question_type do |iq|
 end
 
 node :question_identifier do |iq|
-  # iq.question.question_identifier if iq.question
   iq.identifier
 end
 
