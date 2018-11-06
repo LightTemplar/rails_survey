@@ -41,19 +41,17 @@ task :import, [:filename] => :environment do |_t, args|
       end
 
       if row[2].strip == 'INSTRUCTIONS'
-        instruction = Instruction.where(title: row[3].strip).first
-        instruction ||= Instruction.create!(title: row[3].strip, text: row[5].strip)
+        instruction = Instruction.where(title: row[5].strip).first
+        instruction ||= Instruction.create!(title: row[5].strip, text: row[5].strip)
         display_instruction = DisplayInstruction.where(display_id: display.id, instruction_id: instruction.id).first
         display_instruction ||= DisplayInstruction.create!(display_id: display.id, instruction_id: instruction.id)
         (6..9).each do |n|
           next if row[n].blank?
           it = InstructionTranslation.where(instruction_id: instruction.id,
-            language: Settings.languages.to_h[csv_headers[n]], text: row[n].strip)
-          next if it
-          InstructionTranslation.create!(instruction_id: instruction.id,
+            language: Settings.languages.to_h[csv_headers[n]], text: row[n].strip).first
+          it ||= InstructionTranslation.create!(instruction_id: instruction.id,
             language: Settings.languages.to_h[csv_headers[n]], text: row[n].strip)
         end
-        next
       end
 
       unless row[2].strip == 'SKIP'

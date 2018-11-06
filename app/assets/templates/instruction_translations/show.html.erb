@@ -1,5 +1,5 @@
+<h4 class="text-center">Translations</h4>
 <div ng-controller="InstructionTranslationsCtrl">
-  <h4 class="text-center">Translations</h4>
   <div class="row">
     <label class="col-sm-4 text-right">Language</label>
     <div class="col-sm-8 form-group text-left">
@@ -12,6 +12,7 @@
       </select>
     </div>
   </div>
+
   <div class="card">
     <div class="card-body card-padding">
       <table class="table table-hover">
@@ -22,21 +23,22 @@
         </tr>
         </thead>
         <tbody>
-        <tr class="row" ng-repeat="instruction in instructions">
-          <td class="col-md-4" ng-bind-html="instruction.text | ToTrustedHtml"></td>
-          <td class="col-md-8">
+          <tr class="row" ng-repeat="instruction in instructions">
+            <td class="col-md-4" ng-bind-html="instruction.text | ToTrustedHtml"></td>
+            <td class="col-md-8">
               <text-angular
-                ta-toolbar="toolBar"
-                class="form-control"
-                name="instruction-translation-{{instruction.id}}"
-                ng-model="translationFor(instruction).text">
-            </text-angular>
-          </td>
-        </tr>
+              ta-toolbar="toolBar"
+              name="instruction-translation-{{instruction.id}}-{{$index}}"
+              ng-model="translationFor(instruction).text"
+              ta-text-editor-class="form-control translation-height"
+              ta-html-editor-class="form-control translation-height">
+              </text-angular>
+            </td>
+          </tr>
         </tbody>
       </table>
       <div class="m-1">
-        <div class="btn btn-success pull-right" ng-click="save()">Save</div>
+        <div class="btn btn-success float-right" ng-click="save()">Save</div>
       </div>
     </div>
   </div>
