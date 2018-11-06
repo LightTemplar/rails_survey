@@ -12,7 +12,7 @@
 #
 
 class LoopQuestion < ActiveRecord::Base
-  belongs_to :instrument_question
+  belongs_to :instrument_question, touch: true
   acts_as_paranoid
   validates :instrument_question_id, uniqueness: { scope: [:parent, :looped] }
 end

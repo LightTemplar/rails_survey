@@ -33,7 +33,8 @@ MultipleSkip, FollowUpQuestion, ConditionSkip) ->
   })
 
   $scope.hasLoops = (type) ->
-    type in ['INTEGER']
+    type in ['INTEGER', 'SELECT_MULTIPLE', 'SELECT_MULTIPLE_WRITE_OTHER',
+    'LIST_OF_TEXT_BOXES', 'LIST_OF_INTEGER_BOXES']
 
   $scope.deleteNextQuestion = (nextQuestion) ->
     if confirm('Are you sure you want to delete this skip pattern?')
@@ -552,7 +553,7 @@ App.controller 'LoopsCtrl', ['$scope', '$stateParams', 'InstrumentQuestion',
     $scope.loopQuestion.project_id = $scope.project_id
     $scope.loopQuestion.instrument_id = $scope.instrument_id
     $scope.loopQuestion.instrument_question_id = $scope.id
-    $scope.parent = $scope.instrumentQuestion.identifier
+    $scope.loopQuestion.parent = $scope.instrumentQuestion.identifier
 
   $scope.saveLoop = () ->
     $scope.loopQuestion.$save({},
