@@ -52,16 +52,17 @@ task :import, [:filename] => :environment do |_t, args|
           it ||= InstructionTranslation.create!(instruction_id: instruction.id,
             language: Settings.languages.to_h[csv_headers[n]], text: row[n].strip)
         end
+        next
       end
 
       unless row[2].strip == 'SKIP'
         if folder.nil?
-          folder = Folder.where(title: 'PLACE HOLDER!', question_set_id: question_set.id).first
-          folder ||= Folder.create!(title: 'PLACE HOLDER!', question_set_id: question_set.id)
+          folder = Folder.where(title: 'Introduction', question_set_id: question_set.id).first
+          folder ||= Folder.create!(title: 'Introduction', question_set_id: question_set.id)
         end
         if display.nil?
-          display = Display.where(title: 'PLACE HOLDER!', instrument_id: instrument.id).first
-          display ||= Display.create!(title: 'PLACE HOLDER!', mode: 'MULTIPLE', section_id: section.id,
+          display = Display.where(title: 'Introduction', instrument_id: instrument.id).first
+          display ||= Display.create!(title: 'Introduction', mode: 'MULTIPLE', section_id: section.id,
             position: instrument.displays.size + 1, instrument_id: instrument.id)
         end
         question = Question.where(question_identifier: row[1].strip).try(:first)
@@ -118,8 +119,8 @@ task :import, [:filename] => :environment do |_t, args|
     if !row[3].blank? && !row[4].blank?
       instruction = Instruction.where(title: row[3].strip).first
       instruction ||= Instruction.create!(title: row[3].strip, text: row[5].strip)
-      os = OptionSet.where(title: row[4].strip).try(:first)
-      if os && !os.instruction_id
+      os = OptionSet.where(title: row[4].strip).first
+      if os && os.instruction_id.nil?
         os.instruction_id = instruction.id
         os.save!
       else
@@ -128,7 +129,7 @@ task :import, [:filename] => :environment do |_t, args|
     end
 
     if !row[4].blank? && row[3].blank?
-      option_set = OptionSet.where(title: row[4].strip).try(:first)
+      option_set = OptionSet.where(title: row[4].strip).first
       option_set ||= OptionSet.create!(title: row[4].strip)
       unless question.option_set_id
         question.option_set_id = option_set.id
