@@ -352,6 +352,7 @@ Setting, Option, MultipleSkip) ->
   $scope.saveMultiSkip = () ->
     angular.forEach $scope.skipQuestion.questionsToSkip, (question, index) ->
       multiSkip = new MultipleSkip()
+      multiSkip.question_identifier = $scope.instrumentQuestion.identifier
       multiSkip.option_identifier = $scope.skipQuestion.option_identifier
       multiSkip.skip_question_identifier = question.identifier
       saveSkip(multiSkip)

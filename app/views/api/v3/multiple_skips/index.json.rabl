@@ -11,3 +11,11 @@ end
 node :instrument_id do |ms|
   ms.instrument_question.instrument_id
 end
+
+node :question_identifier do |ms|
+  if ms.question_identifier.nil?
+    ms.instrument_question.identifier
+  else
+    ms.question_identifier
+  end
+end
