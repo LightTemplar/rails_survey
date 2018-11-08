@@ -128,12 +128,7 @@ InstrumentQuestion, QuestionSet, Question, Instruction, Section) ->
   $scope.displays = Display.query({
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id
-  }, -> modifyDisplays())
-
-  modifyDisplays = () ->
-    display = _.findWhere($scope.displays, {id: parseInt($scope.id)})
-    $scope.displays.splice($scope.displays.indexOf(display), 1)
-    $scope.displays.push(new Display(id: -1, title: "Create New Display"))
+  })
 
   $scope.toggleViews = (q, c, m, i, t) ->
     $scope.showQuestions = q
@@ -141,6 +136,23 @@ InstrumentQuestion, QuestionSet, Question, Instruction, Section) ->
     $scope.showMove = m
     $scope.showInstructions = i
     $scope.showTables = t
+
+  $scope.previous = (display) ->
+    if display.position != 1
+      previousDisplay = _.findWhere($scope.displays, {position: display.position - 1})
+      $state.go('display',
+      { project_id: $scope.project_id, instrument_id: $scope.instrument_id,
+      id: previousDisplay.id
+      })
+
+  $scope.next = (display) ->
+    last = _.last($scope.displays)
+    if (display.position != _.last($scope.displays).position)
+      nextDisplay = _.findWhere($scope.displays, {position: display.position + 1})
+      $state.go('display',
+      {project_id: $scope.project_id, instrument_id: $scope.instrument_id,
+      id: nextDisplay.id
+      })
 
   $scope.tableQuestions = (identifier) ->
     _.where($scope.displayQuestions, {table_identifier: identifier})

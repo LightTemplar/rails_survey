@@ -37,6 +37,8 @@
       </div>
     </div>
     <div class="row m-1" ng-hide="isIntegerQuestion(instrumentQuestion.type)">
+      <p class="m-1"><b>If all the options in the multiple select can each trigger a loop, leave this part blank.
+      i.e. only use if some of the options do not trigger loops</b></p>
       <label for="option-indices" class="col-md-3">Add Options That Trigger Loops</label>
       <div class="col-md-9">
         <ui-select multiple ng-model="loopQuestion.indices"
