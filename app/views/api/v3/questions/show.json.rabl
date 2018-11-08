@@ -72,5 +72,5 @@ child :translations do |t|
 end
 
 child :loop_questions do |t|
-  attributes :id, :parent, :looped, :deleted_at
+  attributes :id, :parent, :looped, :deleted_at, :option_indices
 end

@@ -8,14 +8,16 @@
   <h6 class="row m-1">
     <label class="col-md-2" for="looped-question-number">Question Number</label>
     <label class="col-md-3" for="looped-question-identifier">Question Identifier</label>
-    <label class="col-md-6" for="looped-question-text">Question Text</label>
+    <label class="col-md-4" for="looped-question-text">Question Text</label>
+    <label class="col-md-2" for="looped-option-indices">Option Indices</label>
     <label class="col-md-1" for="looped-question-delete">Delete</label>
   </h6>
 
   <div class="row m-1" ng-hide="newLoop" ng-repeat="loop in loopQuestions">
     <div class="col-md-2">{{getQuestion(loop).number_in_instrument}}</div>
     <div class="col-md-3">{{getQuestion(loop).identifier}}</div>
-    <div class="col-md-6">{{getQuestion(loop).text}}</div>
+    <div class="col-md-4">{{getQuestion(loop).text}}</div>
+    <div class="col-md-2">{{loop.option_indices}}</div>
     <div class="col-md-1">
       <button class="btn btn-danger float-right" ng-click="delete(loop)">Delete</button>
     </div>
@@ -34,7 +36,22 @@
         uib-typeahead="question.identifier for question in questionsAfter() | filter:$viewValue | limitTo:10">
       </div>
     </div>
-    <div class="row m-1">
+    <div class="row m-1" ng-hide="isIntegerQuestion(instrumentQuestion.type)">
+      <label for="option-indices" class="col-md-3">Add Options That Trigger Loops</label>
+      <div class="col-md-9">
+        <ui-select multiple ng-model="loopQuestion.indices"
+        theme="bootstrap" close-on-select="false" title="Choose an option that loops">
+          <ui-select-match placeholder="Select option...">
+            {{$item.identifier}}
+          </ui-select-match>
+          <ui-select-choices repeat="option in options | propertyFilter:
+          {text: $select.search, identifier: $select.search}">
+            <span ng-bind-html="option.identifier | highlight: $select.search"></span>
+          </ui-select-choices>
+        </ui-select>
+      </div>
+    </div>
+    <div class="m-1">
       <button class="btn btn-success float-right" ng-click="saveLoop()">Save</button>
     </div>
   </div>

@@ -508,7 +508,7 @@ Setting, Option, ConditionSkip) ->
 ]
 
 App.controller 'LoopsCtrl', ['$scope', '$stateParams', 'InstrumentQuestion',
-'LoopQuestion', ($scope, $stateParams, InstrumentQuestion, LoopQuestion) ->
+'LoopQuestion', 'Option', ($scope, $stateParams, InstrumentQuestion, LoopQuestion, Option) ->
   $scope.project_id = $stateParams.project_id
   $scope.instrument_id = $stateParams.instrument_id
   $scope.id = $stateParams.id
@@ -517,7 +517,10 @@ App.controller 'LoopsCtrl', ['$scope', '$stateParams', 'InstrumentQuestion',
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id,
     'id': $scope.id
-  })
+  }, ->
+    if $scope.instrumentQuestion.option_set_id
+      $scope.options = Option.query({'option_set_id': $scope.instrumentQuestion.option_set_id})
+  )
 
   $scope.loopQuestions = LoopQuestion.query({
     'project_id': $scope.project_id,
@@ -529,6 +532,9 @@ App.controller 'LoopsCtrl', ['$scope', '$stateParams', 'InstrumentQuestion',
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id
   })
+
+  $scope.isIntegerQuestion = (type) ->
+    type == 'INTEGER'
 
   $scope.questionsAfter = () ->
     questions = _.sortBy($scope.instrumentQuestions, 'number_in_instrument')
@@ -557,6 +563,15 @@ App.controller 'LoopsCtrl', ['$scope', '$stateParams', 'InstrumentQuestion',
     $scope.loopQuestion.parent = $scope.instrumentQuestion.identifier
 
   $scope.saveLoop = () ->
+    if ($scope.loopQuestion.indices)
+      indices = ""
+      angular.forEach $scope.loopQuestion.indices, (option, index) ->
+        ind = $scope.options.indexOf(option)
+        if ind != -1
+          indices = indices + ind + ","
+      indices = indices.substring(0, indices.length - 1)
+      $scope.loopQuestion.option_indices = indices
+      $scope.loopQuestion.indices = null
     $scope.loopQuestion.$save({},
     (data, headers) ->
       $scope.loopQuestions.push(data)

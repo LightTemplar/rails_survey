@@ -37,7 +37,7 @@ module Api
       end
 
       def loop_question_params
-        params.require(:loop_question).permit(:instrument_question_id, :parent, :looped)
+        params.require(:loop_question).permit(:instrument_question_id, :parent, :looped, :option_indices)
       end
     end
   end
