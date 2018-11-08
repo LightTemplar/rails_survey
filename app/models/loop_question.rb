@@ -10,6 +10,7 @@
 #  updated_at             :datetime         not null
 #  deleted_at             :datetime
 #  option_indices         :string
+#  same_display           :boolean          default(FALSE)
 #
 
 class LoopQuestion < ActiveRecord::Base

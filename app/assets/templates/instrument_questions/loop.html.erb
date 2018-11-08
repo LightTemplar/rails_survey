@@ -9,7 +9,8 @@
     <label class="col-md-2" for="looped-question-number">Question Number</label>
     <label class="col-md-3" for="looped-question-identifier">Question Identifier</label>
     <label class="col-md-4" for="looped-question-text">Question Text</label>
-    <label class="col-md-2" for="looped-option-indices">Option Indices</label>
+    <label class="col-md-1" for="looped-option-indices">Option Indices</label>
+    <label class="col-md-1" for="looped-option-same-display">Same Display</label>
     <label class="col-md-1" for="looped-question-delete">Delete</label>
   </h6>
 
@@ -17,7 +18,8 @@
     <div class="col-md-2">{{getQuestion(loop).number_in_instrument}}</div>
     <div class="col-md-3">{{getQuestion(loop).identifier}}</div>
     <div class="col-md-4">{{getQuestion(loop).text}}</div>
-    <div class="col-md-2">{{loop.option_indices}}</div>
+    <div class="col-md-1">{{loop.option_indices}}</div>
+    <div class="col-md-1">{{loop.same_display}}</div>
     <div class="col-md-1">
       <button class="btn btn-danger float-right" ng-click="delete(loop)">Delete</button>
     </div>
@@ -34,6 +36,12 @@
         <input type="text" ng-model="loopQuestion.looped"
         placeholder="Search for question to loop" class="form-control"
         uib-typeahead="question.identifier for question in questionsAfter() | filter:$viewValue | limitTo:10">
+      </div>
+    </div>
+    <div class="row m-1">
+      <label for="same-display" class="col-md-3">Show looped question in the same display</label>
+      <div class="col-md-9">
+        <input type="checkbox" name="same-display" ng-model="loopQuestion.same_display">
       </div>
     </div>
     <div class="row m-1" ng-hide="isIntegerQuestion(instrumentQuestion.type)">
