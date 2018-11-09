@@ -40,14 +40,16 @@
     <div ng-show="multipleSkips.length > 0">
       <h5 class="text-center">Select One Skip Multiple</h5>
       <div class="row m-1">
-        <label class="col-md-5"><u>Option</u></label>
-        <label class="col-md-5"><u>Question To Skip</u></label>
-        <label class="col-md-2"><u>Delete</u></label>
+        <label class="col-md-3"><u>Option</u></label>
+        <label class="col-md-3"><u>Entered Value</u></label>
+        <label class="col-md-3"><u>Question To Skip</u></label>
+        <label class="col-md-3"><u>Delete</u></label>
       </div>
       <div class="row m-1" ng-repeat="multiSkip in multipleSkips">
-        <div class="col-md-5">{{multiSkip.option_identifier}}</div>
-        <div class="col-md-5">{{multiSkip.skip_question_identifier}}</div>
-        <div class="col-md-2">
+        <div class="col-md-3">{{multiSkip.option_identifier}}</div>
+        <div class="col-md-3">{{multiSkip.value}}</div>
+        <div class="col-md-3">{{multiSkip.skip_question_identifier}}</div>
+        <div class="col-md-3">
           <button class="btn btn-danger" ng-click="deleteMultiSkip(multiSkip)">Delete</button>
         </div>
       </div>

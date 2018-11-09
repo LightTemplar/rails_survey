@@ -354,6 +354,7 @@ Setting, Option, MultipleSkip) ->
       multiSkip = new MultipleSkip()
       multiSkip.question_identifier = $scope.instrumentQuestion.identifier
       multiSkip.option_identifier = $scope.skipQuestion.option_identifier
+      multiSkip.value = $scope.skipQuestion.value
       multiSkip.skip_question_identifier = question.identifier
       saveSkip(multiSkip)
     $scope.showSkips =true

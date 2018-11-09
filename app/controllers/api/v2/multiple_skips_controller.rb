@@ -42,7 +42,7 @@ module Api
       end
 
       def multiple_skip_params
-        params.require(:multiple_skip).permit(:question_identifier,
+        params.require(:multiple_skip).permit(:question_identifier, :value,
           :option_identifier, :skip_question_identifier, :instrument_question_id)
       end
     end
