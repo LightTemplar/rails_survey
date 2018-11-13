@@ -20,6 +20,7 @@
 #  has_critical_responses    :boolean
 #  roster_uuid               :string
 #  language                  :string
+#  skipped_questions         :text
 #
 
 class Survey < ActiveRecord::Base
@@ -78,6 +79,7 @@ class Survey < ActiveRecord::Base
     SurveyPercentWorker.perform_in(5.hours, id)
   end
 
+  # TODO: Re-implement
   def calculate_completion_rate
     valid_response_count = responses.where.not('text = ? AND other_response = ? AND special_response = ?', nil || '', nil || '', nil || '').pluck(:question_id).uniq.count
     valid_question_count = instrument.version_by_version_number(instrument_version_number).questions.reject { |question| question.question_type == 'INSTRUCTIONS' }.count

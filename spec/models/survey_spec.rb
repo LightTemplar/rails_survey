@@ -20,6 +20,7 @@
 #  has_critical_responses    :boolean
 #  roster_uuid               :string
 #  language                  :string
+#  skipped_questions         :text
 #
 
 require "spec_helper"

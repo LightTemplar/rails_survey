@@ -22,7 +22,7 @@
 #
 
 class Response < ActiveRecord::Base
-  belongs_to :question # TODO: change to instrument question
+  belongs_to :instrument_question, foreign_key: :question_id, primary_key: :id
   belongs_to :survey, foreign_key: :survey_uuid, primary_key: :uuid, touch: true
   delegate :device, to: :survey
   delegate :instrument, to: :survey
@@ -33,14 +33,11 @@ class Response < ActiveRecord::Base
   belongs_to :device_user
   acts_as_paranoid
   has_paper_trail
-  # validate :question_existence TODO: change to instrument question
   validates :survey, presence: true
   after_destroy :calculate_response_rate
 
-  def question_existence
-    unless Question.with_deleted.find_by_id(question_id)
-      errors.add(:question, 'has never existed')
-    end
+  def question
+    instrument_question.question
   end
 
   def calculate_response_rate
@@ -48,10 +45,10 @@ class Response < ActiveRecord::Base
   end
 
   def to_s
-    if question.nil? || question.options.empty?
+    if instrument_question.nil? || instrument_question.options.empty?
       text
     else
-      question.options[text.to_i].to_s
+      instrument_question.options[text.to_i].to_s
     end
   end
 

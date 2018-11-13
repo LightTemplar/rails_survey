@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181109020847) do
+ActiveRecord::Schema.define(version: 20181113173807) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -670,6 +670,7 @@ ActiveRecord::Schema.define(version: 20181109020847) do
     t.boolean  "has_critical_responses"
     t.string   "roster_uuid"
     t.string   "language"
+    t.text     "skipped_questions"
   end
 
   add_index "surveys", ["deleted_at"], name: "index_surveys_on_deleted_at", using: :btree
