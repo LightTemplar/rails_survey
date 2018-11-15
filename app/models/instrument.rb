@@ -335,7 +335,7 @@ class Instrument < ActiveRecord::Base
     end
   end
 
-  def export_surveys(new_export = false)
+  def export_surveys
     unless response_export
       ResponseExport.create(instrument_id: id, instrument_versions: survey_instrument_versions)
       reload

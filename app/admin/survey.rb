@@ -1,5 +1,5 @@
 ActiveAdmin.register Survey do
-  belongs_to :instrument
+  belongs_to :project
   sidebar 'Survey Associations', only: :show do
     ul do
       li link_to 'Responses', admin_survey_responses_path(params[:id])
@@ -8,7 +8,8 @@ ActiveAdmin.register Survey do
 
   sidebar :versionate, partial: 'layouts/version', only: :show
 
-  permit_params :instrument_id, :instrument_version_number, :uuid, :device_id, :instrument_title, :device_uuid, :latitude, :longitude, :metadata, :completion_rate
+  permit_params :instrument_id, :instrument_version_number, :uuid, :device_id,
+  :instrument_title, :device_uuid, :latitude, :longitude, :metadata, :completion_rate
 
   config.sort_order = 'id_desc'
   config.filters = true
@@ -18,26 +19,23 @@ ActiveAdmin.register Survey do
   filter :metadata
 
   collection_action :calculate_completion_rates, method: :get do
-    redirect_to admin_instrument_surveys_path(params[:instrument_id]), notice: 'Completion rates recalculation successfully started!'
+    redirect_to admin_project_surveys_path(params[:project_id])
   end
 
   action_item :calculate_completion_rates, only: :index do
-    if params[:roster_id]
-      roster = Roster.find params[:roster_id]
-      instrument_id = roster.instrument_id
-    else
-      instrument_id = params[:instrument_id]
-    end
-    link_to 'Recalculate Completion Rates', calculate_completion_rates_admin_instrument_surveys_path(instrument_id)
+    link_to 'Recalculate Completion Rates',
+    calculate_completion_rates_admin_project_surveys_path(params[:project_id])
   end
 
   controller do
     def calculate_completion_rates
-      instrument = Instrument.find(params[:instrument_id])
-      instrument.surveys.each do |survey|
-        SurveyPercentWorker.perform_async(survey.id)
+      project = Project.find(params[:project_id])
+      project.instruments.each do |instrument|
+        instrument.surveys.each do |survey|
+          SurveyPercentWorker.perform_async(survey.id)
+        end
       end
-      render :index
+      redirect_to admin_project_surveys_path(params[:project_id])
     end
 
     def show
@@ -51,12 +49,17 @@ ActiveAdmin.register Survey do
   index do
     selectable_column
     column :id do |survey|
-      link_to survey.id, admin_instrument_survey_path(survey.instrument_id, survey.id)
+      link_to survey.id, admin_project_survey_path(params[:project_id], survey.id)
     end
     column :uuid
+    column 'Identifier' do |survey|
+      survey.identifier
+    end
     column 'Instrument', sortable: :instrument_title do |survey|
       instrument = Instrument.find_by_id(survey.instrument_id)
-      instrument ? (link_to survey.instrument_title, admin_project_instrument_path(instrument.project_id, survey.instrument_id)) : survey.instrument_title
+      instrument ? (link_to survey.instrument_title,
+        admin_project_instrument_path(instrument.project_id,
+          survey.instrument_id)) : survey.instrument_title
     end
     column 'Instrument Versions', sortable: :instrument_version_number, &:instrument_version_number
     column :created_at do |survey|

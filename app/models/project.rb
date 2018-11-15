@@ -31,7 +31,7 @@ class Project < ActiveRecord::Base
   has_many :response_images, through: :responses
   has_many :user_projects, dependent: :destroy
   has_many :users, through: :user_projects
-  has_many :response_exports
+  has_many :response_exports, through: :instruments
   has_many :response_images_exports, through: :response_exports
   has_many :images, through: :questions
   has_many :randomized_factors, through: :instruments

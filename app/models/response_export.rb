@@ -16,7 +16,7 @@
 
 class ResponseExport < ActiveRecord::Base
   serialize :instrument_versions
-  belongs_to :project
+  # belongs_to :project
   belongs_to :instrument
   has_one :response_images_export, dependent: :destroy
 

@@ -66,14 +66,6 @@ class Question < ActiveRecord::Base
     options.size
   end
 
-  def non_special_options
-    options.reject(&:special)
-  end
-
-  def non_special_options?
-    !non_special_options.empty?
-  end
-
   def image_count
     images.size
   end
@@ -83,7 +75,7 @@ class Question < ActiveRecord::Base
   end
 
   def other_index
-    non_special_options.length
+    options.length
   end
 
   def update_question_translation(status = true)

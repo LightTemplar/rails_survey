@@ -77,7 +77,7 @@ class InstrumentsController < ApplicationController
   def export_responses
     @instrument = current_project.instruments.find params[:id]
     authorize @instrument
-    @instrument.export_surveys(true)
+    @instrument.export_surveys
     unless @instrument.response_images.empty?
       zipped_file = File.new(File.join('files', 'exports').to_s + "/#{Time.now.to_i}.zip", 'a+')
       zipped_file.close
