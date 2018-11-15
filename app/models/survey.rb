@@ -140,10 +140,10 @@ class Survey < ActiveRecord::Base
   end
 
   def question_by_identifier(question_identifier)
-    iq = instrument.instrument_questions.where(identifier: question_identifier).first
+    iq = instrument.instrument_questions.with_deleted.where(identifier: question_identifier).first
     if iq.nil?
       ids = question_identifier.split("_")
-      iq = instrument.instrument_questions.where(identifier: ids[1]).first
+      iq = instrument.instrument_questions.with_deleted.where(identifier: ids[1]).first
     end
     iq.question
   end
