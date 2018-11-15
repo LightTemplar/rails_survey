@@ -83,7 +83,10 @@ class Survey < ActiveRecord::Base
   end
 
   def calculate_percentage
-    SurveyPercentWorker.perform_in(5.hours, id)
+    job = Sidekiq::ScheduledSet.new.find do |entry|
+      entry.item['class'] == 'SurveyPercentWorker' && entry.item['args'].first == id
+    end
+    SurveyPercentWorker.perform_in(5.hours, id) unless job
   end
 
   # TODO: Re-implement

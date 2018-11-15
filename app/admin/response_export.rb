@@ -82,7 +82,9 @@ ActiveAdmin.register ResponseExport do
     def export_surveys
       project = Project.find(params[:project_id])
       project.instruments.each do |instrument|
-        instrument.export_surveys
+        if instrument.surveys.size > 0
+          instrument.export_surveys
+        end
       end
       redirect_to admin_project_response_exports_path(params[:project_id])
     end

@@ -42,7 +42,10 @@ class Response < ActiveRecord::Base
   end
 
   def calculate_response_rate
-    SurveyPercentWorker.perform_in(30.minutes, survey.id)
+    job = Sidekiq::ScheduledSet.new.find do |entry|
+      entry.item['class'] == 'SurveyPercentWorker' && entry.item['args'].first == survey.id
+    end
+    SurveyPercentWorker.perform_in(30.minutes, survey.id) unless job
   end
 
   def to_s
