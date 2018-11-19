@@ -33,7 +33,7 @@ class Instrument < ActiveRecord::Base
   scope :published, -> { where(published: true) }
   belongs_to :project, touch: true
 
-  has_many :instrument_questions, -> { order 'number_in_instrument' }, dependent: :destroy
+  has_many :instrument_questions, dependent: :destroy
   has_many :questions, -> { distinct }, through: :instrument_questions
   has_many :question_translations, through: :questions, source: :translations
   has_many :option_sets, -> { distinct }, through: :questions
@@ -387,7 +387,7 @@ class Instrument < ActiveRecord::Base
       _other _version _text _start_time _end_time]
     iqs = Rails.cache.fetch("instrument-questions-#{id}-#{instrument_questions.maximum('updated_at')}",
     expires_in: 30.minutes) do
-      instrument_questions
+      instrument_questions.order(:number_in_instrument)
     end
     iqs.each do |iq|
       variable_identifiers << iq.identifier unless variable_identifiers.include? iq.identifier
