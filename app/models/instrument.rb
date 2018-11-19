@@ -33,7 +33,7 @@ class Instrument < ActiveRecord::Base
   scope :published, -> { where(published: true) }
   belongs_to :project, touch: true
 
-  has_many :instrument_questions, dependent: :destroy
+  has_many :instrument_questions, -> { order 'number_in_instrument' }, dependent: :destroy
   has_many :questions, -> { distinct }, through: :instrument_questions
   has_many :question_translations, through: :questions, source: :translations
   has_many :option_sets, -> { distinct }, through: :questions
@@ -369,26 +369,35 @@ class Instrument < ActiveRecord::Base
   end
 
   def short_headers
-    %w[identifier survey_id question_identifier question_text response_text response_label special_response other_response]
+    %w[identifier survey_id question_identifier question_text response_text
+      response_label special_response other_response]
   end
 
   def long_headers
-    %w[qid short_qid instrument_id instrument_version_number question_version_number instrument_title survey_id survey_uuid device_id device_uuid device_label question_type question_text response response_labels special_response other_response response_time_started response_time_ended device_user_id device_user_username] + metadata_keys
+    %w[qid short_qid instrument_id instrument_version_number question_version_number
+      instrument_title survey_id survey_uuid device_id device_uuid device_label
+      question_type question_text response response_labels special_response
+      other_response response_time_started response_time_ended device_user_id
+      device_user_username] + metadata_keys
   end
 
   def wide_headers
     variable_identifiers = []
-    question_identifier_variables = %w[_short_qid _question_type _label _special _other _version _text _start_time _end_time]
-    instrument_questions = Rails.cache.fetch("instrument-questions-#{id}-#{questions.maximum('updated_at')}", expires_in: 30.minutes) do
-      questions
+    question_identifier_variables = %w[_short_qid _question_type _label _special
+      _other _version _text _start_time _end_time]
+    iqs = Rails.cache.fetch("instrument-questions-#{id}-#{instrument_questions.maximum('updated_at')}",
+    expires_in: 30.minutes) do
+      instrument_questions
     end
-    instrument_questions.each do |question|
-      variable_identifiers << question.question_identifier unless variable_identifiers.include? question.question_identifier
+    iqs.each do |iq|
+      variable_identifiers << iq.identifier unless variable_identifiers.include? iq.identifier
       question_identifier_variables.each do |variable|
-        variable_identifiers << question.question_identifier + variable unless variable_identifiers.include? question.question_identifier + variable
+        variable_identifiers << iq.identifier + variable unless variable_identifiers.include? iq.identifier + variable
       end
     end
-    %w[survey_id survey_uuid device_identifier device_label latitude longitude instrument_id instrument_version_number instrument_title survey_start_time survey_end_time device_user_id device_user_username] + metadata_keys + variable_identifiers
+    %w[survey_id survey_uuid device_identifier device_label latitude longitude
+      instrument_id instrument_version_number instrument_title survey_start_time
+      survey_end_time device_user_id device_user_username] + metadata_keys + variable_identifiers
   end
 
   def metadata_keys
