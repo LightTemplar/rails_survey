@@ -50,14 +50,6 @@ class Survey < ActiveRecord::Base
     response.text if response
   end
 
-  def delete_duplicate_responses
-    grouped_responses = responses.group_by {|response| response.uuid}
-    grouped_responses.values.each do |duplicates|
-      duplicates.shift
-      duplicates.map(&:delete)
-    end
-  end
-
   def schedule_export
     job = Sidekiq::ScheduledSet.new.find do |entry|
       entry.item['class'] == 'ExportWorker' && entry.item['args'].first == instrument_id
@@ -91,8 +83,8 @@ class Survey < ActiveRecord::Base
 
   # TODO: Re-implement
   def calculate_completion_rate
-    valid_response_count = responses.where.not('text = ? AND other_response = ? AND special_response = ?', nil || '', nil || '', nil || '').pluck(:question_id).uniq.count
-    valid_question_count = instrument.version_by_version_number(instrument_version_number).questions.reject { |question| question.question_type == 'INSTRUCTIONS' }.count
+    valid_response_count = responses.where.not('text = ? AND other_response = ? AND special_response = ?', nil || '', nil || '', nil || '').pluck(:uuid).uniq.count
+    valid_question_count = instrument_questions.count
     if valid_response_count && valid_question_count && valid_question_count != 0
       rate = (valid_response_count.to_f / valid_question_count.to_f).round(2)
     end

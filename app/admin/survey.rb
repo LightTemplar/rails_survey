@@ -27,6 +27,15 @@ ActiveAdmin.register Survey do
     calculate_completion_rates_admin_project_surveys_path(params[:project_id])
   end
 
+  collection_action :remove_duplicates, method: :get do
+    redirect_to admin_project_surveys_path(params[:project_id])
+  end
+
+  action_item :remove_duplicates, only: :index do
+    link_to 'Remove Duplicate Responses',
+    remove_duplicates_admin_project_surveys_path(params[:project_id])
+  end
+
   controller do
     def calculate_completion_rates
       project = Project.find(params[:project_id])
@@ -35,6 +44,11 @@ ActiveAdmin.register Survey do
           SurveyPercentWorker.perform_async(survey.id)
         end
       end
+      redirect_to admin_project_surveys_path(params[:project_id])
+    end
+
+    def remove_duplicates
+      RakeTaskWorker.perform_async('response_cleanup')
       redirect_to admin_project_surveys_path(params[:project_id])
     end
 

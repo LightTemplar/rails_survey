@@ -22,7 +22,6 @@
 #
 
 class Response < ActiveRecord::Base
-  default_scope { joins(:instrument_question).order('instrument_questions.number_in_instrument') }
   belongs_to :instrument_question, foreign_key: :question_identifier, primary_key: :identifier
   belongs_to :survey, foreign_key: :survey_uuid, primary_key: :uuid, touch: true
   delegate :device, to: :survey
