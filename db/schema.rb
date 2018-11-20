@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181115200909) do
+ActiveRecord::Schema.define(version: 20181120222324) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -534,7 +534,7 @@ ActiveRecord::Schema.define(version: 20181115200909) do
   add_index "responses", ["survey_uuid"], name: "index_responses_on_survey_uuid", using: :btree
   add_index "responses", ["time_ended"], name: "index_responses_on_time_ended", using: :btree
   add_index "responses", ["time_started"], name: "index_responses_on_time_started", using: :btree
-  add_index "responses", ["uuid"], name: "index_responses_on_uuid", using: :btree
+  add_index "responses", ["uuid"], name: "index_responses_on_uuid", unique: true, using: :btree
 
   create_table "roles", force: :cascade do |t|
     t.string   "name"
@@ -676,7 +676,7 @@ ActiveRecord::Schema.define(version: 20181115200909) do
   end
 
   add_index "surveys", ["deleted_at"], name: "index_surveys_on_deleted_at", using: :btree
-  add_index "surveys", ["uuid"], name: "index_surveys_on_uuid", using: :btree
+  add_index "surveys", ["uuid"], name: "index_surveys_on_uuid", unique: true, using: :btree
 
   create_table "user_projects", force: :cascade do |t|
     t.integer  "user_id"
