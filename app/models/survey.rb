@@ -134,8 +134,15 @@ class Survey < ActiveRecord::Base
   def question_by_identifier(question_identifier)
     iq = instrument.instrument_questions.with_deleted.where(identifier: question_identifier).first
     if iq.nil?
-      ids = question_identifier.split("_")
-      iq = instrument.instrument_questions.with_deleted.where(identifier: ids[1]).first
+      if question_identifier.count('_') > 2
+        first = question_identifier.index('_')
+        last = question_identifier.rindex('_')
+        id = question_identifier[first + 1 ... last]
+        iq = instrument.instrument_questions.with_deleted.where(identifier: id).first
+      else
+        ids = question_identifier.split('_')
+        iq = instrument.instrument_questions.with_deleted.where(identifier: ids[1]).first
+      end
     end
     iq.question
   end
