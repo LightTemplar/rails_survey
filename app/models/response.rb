@@ -35,6 +35,7 @@ class Response < ActiveRecord::Base
   acts_as_paranoid
   has_paper_trail
   validates :survey, presence: true
+  validates :uuid, presence: true, allow_blank: false, uniqueness: true
   after_destroy :calculate_response_rate
 
   def question
