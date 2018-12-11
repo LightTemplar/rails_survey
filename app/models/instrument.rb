@@ -381,6 +381,14 @@ class Instrument < ActiveRecord::Base
       device_user_username] + metadata_keys
   end
 
+  def create_loop_question(lq, variable_identifiers, question_identifier_variables, idx)
+    identifier = "#{lq.parent}_#{lq.looped}_#{idx}"
+    variable_identifiers << identifier unless variable_identifiers.include? identifier
+    question_identifier_variables.each do |variable|
+      variable_identifiers << identifier + variable unless variable_identifiers.include? identifier + variable
+    end
+  end
+
   def wide_headers
     variable_identifiers = []
     question_identifier_variables = %w[_short_qid _question_type _label _special
@@ -390,9 +398,29 @@ class Instrument < ActiveRecord::Base
       instrument_questions.order(:number_in_instrument)
     end
     iqs.each do |iq|
-      variable_identifiers << iq.identifier unless variable_identifiers.include? iq.identifier
-      question_identifier_variables.each do |variable|
-        variable_identifiers << iq.identifier + variable unless variable_identifiers.include? iq.identifier + variable
+      if iq.loop_questions.size > 0
+        iq.loop_questions.each do |lq|
+          if iq.question.question_type == 'INTEGER'
+            (1..12).each do |n|
+              create_loop_question(lq, variable_identifiers, question_identifier_variables, n)
+            end
+          else
+            if !lq.option_indices.blank?
+              lq.option_indices.split(',').each do |ind|
+                create_loop_question(lq, variable_identifiers, question_identifier_variables, ind)
+              end
+            else
+              iq.question.options.each_with_index { |option, idx|
+                create_loop_question(lq, variable_identifiers, question_identifier_variables, idx)
+              }
+            end
+          end
+        end
+      else
+        variable_identifiers << iq.identifier unless variable_identifiers.include? iq.identifier
+        question_identifier_variables.each do |variable|
+          variable_identifiers << iq.identifier + variable unless variable_identifiers.include? iq.identifier + variable
+        end
       end
     end
     %w[survey_id survey_uuid device_identifier device_label latitude longitude

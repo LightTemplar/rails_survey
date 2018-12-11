@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 ruby '2.5.1'
-gem 'activeadmin', '~> 1.0.0'
+gem 'activeadmin', '~> 1.1.0'
 gem 'activerecord-import', '~> 0.25.0'
 gem 'amoeba', '3.0.0'
 gem 'angularjs-rails', '~> 1.4.8'

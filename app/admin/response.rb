@@ -5,22 +5,21 @@ ActiveAdmin.register Response do
   :device_user_id, :question_version
   config.sort_order = 'id_desc'
   config.per_page = [10, 50, 100]
+  config.filters = true
+  filter :id
+  filter :uuid
+  filter :text
+  filter :question_identifier
   sidebar :versionate, partial: 'layouts/version', only: :show
 
   index do
     selectable_column
     column :id do |response|
-      # link_to response.id, admin_survey_response_path(params[:survey_id], response.id)
     end
     column :uuid
     column 'Survey', sortable: :survey_uuid do |s_uuid|
       survey = Survey.find_by_uuid(s_uuid.survey_uuid)
-      # link_to s_uuid.survey_uuid, admin_instrument_survey_path(survey.instrument_id, survey.id)
     end
-    # column 'Question', sortable: :question_id do |q_id|
-    #   question = Question.find_by_id(q_id.question_id)
-    #   question ? (link_to q_id.question_id, admin_instrument_question_path(question.instrument_id, question.id)) : q_id.question_id
-    # end
     column :question_identifier
     column :text
     column :special_response
@@ -51,7 +50,7 @@ ActiveAdmin.register Response do
       @response = Response.includes(versions: :item).find(params[:id])
       @versions = @response.versions
       @response = @response.versions[params[:version].to_i].reify if params[:version]
-      show! # it seems to need this
+      show!
      end
   end
 end

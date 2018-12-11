@@ -12,6 +12,7 @@ ActiveAdmin.register Survey do
   :instrument_title, :device_uuid, :latitude, :longitude, :metadata, :completion_rate
 
   config.sort_order = 'id_desc'
+  config.per_page = [50, 100]
   config.filters = true
   filter :id
   filter :uuid
