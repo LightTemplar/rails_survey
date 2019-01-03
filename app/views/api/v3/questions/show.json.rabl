@@ -35,10 +35,6 @@ node :option_count do |iq|
   end
 end
 
-node :critical do |iq|
-  iq.question.critical if iq.question
-end
-
 node :image_count do |iq|
  iq.question.images.size if iq.question
 end

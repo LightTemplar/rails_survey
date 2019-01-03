@@ -156,7 +156,6 @@ namespace :instrument do
       Option.skip_callback(:destroy, :before, :update_instrument_version)
       Option.skip_callback(:save, :after, :record_instrument_version_number)
       Option.skip_callback(:save, :after, :sanitize_next_question)
-      Option.skip_callback(:save, :after, :check_parent_criticality)
       question.options.each do |option|
         next if option.special
         o = option.dup
@@ -185,7 +184,6 @@ namespace :instrument do
       Option.set_callback(:destroy, :before, :update_instrument_version)
       Option.set_callback(:save, :after, :record_instrument_version_number)
       Option.set_callback(:save, :after, :sanitize_next_question)
-      Option.set_callback(:save, :after, :check_parent_criticality)
     end
     Question.set_callback(:save, :before, :update_instrument_version)
     Question.set_callback(:save, :before, :update_question_translation)

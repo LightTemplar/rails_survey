@@ -61,6 +61,7 @@ RailsSurvey::Application.routes.draw do
           member do
             get :copy
           end
+          resources :critical_responses
         end
         resources :folders
       end

@@ -8,7 +8,6 @@
 #  updated_at                :datetime
 #  deleted_at                :datetime
 #  instrument_version_number :integer          default(-1)
-#  critical                  :boolean
 #  identifier                :string
 #
 
