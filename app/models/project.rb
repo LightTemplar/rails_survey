@@ -19,7 +19,6 @@ class Project < ActiveRecord::Base
   has_many :multiple_skips, through: :instrument_questions
   has_many :condition_skips, through: :instrument_questions
   has_many :follow_up_questions, through: :instrument_questions
-  # has_many :question_translations, through: :questions, source: 'translations'
   has_many :options, through: :questions
   has_many :option_sets, through: :questions
   has_many :option_in_option_sets, through: :option_sets
@@ -40,7 +39,6 @@ class Project < ActiveRecord::Base
   has_many :sections, through: :instruments
   has_many :project_device_users
   has_many :device_users, through: :project_device_users
-  # has_many :skips, through: :options
   has_many :instrument_rules, through: :instruments
   has_many :grids, through: :instruments
   has_many :grid_labels, through: :grids
@@ -51,6 +49,7 @@ class Project < ActiveRecord::Base
   has_many :option_scores, through: :score_units
   has_many :score_unit_questions, through: :score_units
   has_many :scores, through: :score_schemes
+  has_many :critical_responses, through: :instruments
   validates :name, presence: true, allow_blank: false
   validates :description, presence: true, allow_blank: true
 
@@ -89,7 +88,7 @@ class Project < ActiveRecord::Base
   end
 
   def api_instructions
-    Instruction.where(id: api_questions.pluck(:instruction_id) | api_display_instructions.pluck(:instruction_id))
+    Instruction.where(id: api_questions.pluck(:instruction_id) | api_display_instructions.pluck(:instruction_id) | critical_responses.with_deleted.pluck(:instruction_id))
   end
 
   def special_option_sets

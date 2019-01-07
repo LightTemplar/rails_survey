@@ -274,8 +274,7 @@ ActiveRecord::Schema.define(version: 20190103171935) do
     t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.text     "critical_message"
-    t.boolean  "active",           default: false
+    t.boolean  "active",        default: false
   end
 
   create_table "instruments", force: :cascade do |t|
@@ -293,7 +292,6 @@ ActiveRecord::Schema.define(version: 20190103171935) do
     t.text     "special_options"
     t.boolean  "show_sections_page",      default: false
     t.boolean  "navigate_to_review_page", default: false
-    t.text     "critical_message"
     t.boolean  "roster",                  default: false
     t.string   "roster_type"
     t.boolean  "scorable",                default: false

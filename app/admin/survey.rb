@@ -81,6 +81,9 @@ ActiveAdmin.register Survey do
       time_ago_in_words(survey.created_at) + ' ago'
     end
     column :completion_rate
+    column :responses do |survey|
+      link_to "#{survey.responses.size} responses", admin_survey_responses_path(survey.id)
+    end
     actions
   end
 

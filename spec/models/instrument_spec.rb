@@ -17,7 +17,6 @@
 #  special_options         :text
 #  show_sections_page      :boolean          default(FALSE)
 #  navigate_to_review_page :boolean          default(FALSE)
-#  critical_message        :text
 #  roster                  :boolean          default(FALSE)
 #  roster_type             :string
 #  scorable                :boolean          default(FALSE)

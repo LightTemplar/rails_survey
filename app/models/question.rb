@@ -89,7 +89,7 @@ class Question < ActiveRecord::Base
   end
 
   def select_one_variant?
-    %w[SELECT_ONE SELECT_ONE_WRITE_OTHER].include? question_type
+    %w[SELECT_ONE SELECT_ONE_WRITE_OTHER DROP_DOWN].include? question_type
   end
 
   def select_multiple_variant?

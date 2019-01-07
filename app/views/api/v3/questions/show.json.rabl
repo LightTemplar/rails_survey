@@ -70,3 +70,7 @@ end
 child :loop_questions do |t|
   attributes :id, :parent, :looped, :deleted_at, :option_indices, :same_display
 end
+
+child :critical_responses do |cr|
+  attributes :id, :question_identifier, :option_identifier, :instruction_id, :deleted_at
+end

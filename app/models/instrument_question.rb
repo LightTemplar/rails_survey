@@ -25,6 +25,7 @@ class InstrumentQuestion < ActiveRecord::Base
   has_many :translations, through: :question
   has_many :display_instructions, dependent: :destroy
   has_many :loop_questions, dependent: :destroy
+  has_many :critical_responses, through: :question
   acts_as_paranoid
   has_paper_trail
   validates :identifier, presence: true

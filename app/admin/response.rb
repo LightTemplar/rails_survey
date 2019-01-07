@@ -4,7 +4,7 @@ ActiveAdmin.register Response do
   :survey_uuid, :time_started, :time_ended, :question_identifier, :uuid,
   :device_user_id, :question_version
   config.sort_order = 'id_desc'
-  config.per_page = [10, 50, 100]
+  config.per_page = [50, 100, 200]
   config.filters = true
   filter :id
   filter :uuid
@@ -14,8 +14,6 @@ ActiveAdmin.register Response do
 
   index do
     selectable_column
-    column :id do |response|
-    end
     column :uuid
     column 'Survey', sortable: :survey_uuid do |s_uuid|
       survey = Survey.find_by_uuid(s_uuid.survey_uuid)
@@ -29,6 +27,9 @@ ActiveAdmin.register Response do
       if response.response_image && response.response_image.picture
         image_tag(response.response_image.picture.url(:medium))
       end
+    end
+    column :critical do |response|
+      response.is_critical
     end
     column :created_at do |response|
       time_ago_in_words(response.created_at) + ' ago'

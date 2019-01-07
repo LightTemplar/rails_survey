@@ -9,6 +9,8 @@ class CreateCriticalResponses < ActiveRecord::Migration
     end
     remove_column :options, :critical, :boolean
     remove_column :questions, :critical, :boolean
+    remove_column :instruments, :critical_message, :text
+    remove_column :instrument_translations, :critical_message, :text
     remove_column :surveys, :has_critical_responses, :boolean
   end
 end

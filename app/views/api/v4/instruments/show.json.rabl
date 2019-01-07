@@ -8,6 +8,5 @@ node :question_count do |i|
 end
 
 child :translations do
-  attributes :id, :instrument_id, :title, :language, :alignment,
-  :critical_message, :active
+  attributes :id, :instrument_id, :title, :language, :alignment, :active
 end
