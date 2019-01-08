@@ -8,7 +8,6 @@
 #  updated_at                :datetime
 #  deleted_at                :datetime
 #  instrument_version_number :integer          default(-1)
-#  critical                  :boolean
 #  identifier                :string
 #
 
@@ -66,10 +65,6 @@ class Option < ActiveRecord::Base
   def record_instrument_version_number
     update_column(:instrument_version_number, instrument.current_version_number)
     question.update_column(:instrument_version_number, instrument.current_version_number)
-  end
-
-  def check_parent_criticality
-    update_columns(critical: nil) if critical && !question.critical
   end
 
 end

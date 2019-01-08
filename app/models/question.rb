@@ -10,7 +10,6 @@
 #  updated_at            :datetime
 #  deleted_at            :datetime
 #  identifies_survey     :boolean          default(FALSE)
-#  critical              :boolean
 #  question_set_id       :integer
 #  option_set_id         :integer
 #  instruction_id        :integer
@@ -30,6 +29,7 @@ class Question < ActiveRecord::Base
   belongs_to :folder
   belongs_to :validation
   has_many :options, through: :option_set
+  has_many :critical_responses, foreign_key: :question_identifier, primary_key: :question_identifier, dependent: :destroy
   has_many :responses
   has_many :translations, foreign_key: 'question_id', class_name: 'QuestionTranslation', dependent: :destroy
   has_many :images, dependent: :destroy
@@ -89,7 +89,7 @@ class Question < ActiveRecord::Base
   end
 
   def select_one_variant?
-    %w[SELECT_ONE SELECT_ONE_WRITE_OTHER].include? question_type
+    %w[SELECT_ONE SELECT_ONE_WRITE_OTHER DROP_DOWN].include? question_type
   end
 
   def select_multiple_variant?

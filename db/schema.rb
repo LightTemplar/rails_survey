@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181120222324) do
+ActiveRecord::Schema.define(version: 20190103171935) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -72,6 +72,15 @@ ActiveRecord::Schema.define(version: 20181120222324) do
     t.datetime "deleted_at"
     t.datetime "created_at",                    null: false
     t.datetime "updated_at",                    null: false
+  end
+
+  create_table "critical_responses", force: :cascade do |t|
+    t.string   "question_identifier"
+    t.string   "option_identifier"
+    t.integer  "instruction_id"
+    t.datetime "deleted_at"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
   end
 
   create_table "device_device_users", force: :cascade do |t|
@@ -265,8 +274,7 @@ ActiveRecord::Schema.define(version: 20181120222324) do
     t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.text     "critical_message"
-    t.boolean  "active",           default: false
+    t.boolean  "active",        default: false
   end
 
   create_table "instruments", force: :cascade do |t|
@@ -284,7 +292,6 @@ ActiveRecord::Schema.define(version: 20181120222324) do
     t.text     "special_options"
     t.boolean  "show_sections_page",      default: false
     t.boolean  "navigate_to_review_page", default: false
-    t.text     "critical_message"
     t.boolean  "roster",                  default: false
     t.string   "roster_type"
     t.boolean  "scorable",                default: false
@@ -384,7 +391,6 @@ ActiveRecord::Schema.define(version: 20181120222324) do
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.integer  "instrument_version_number", default: -1
-    t.boolean  "critical"
     t.string   "identifier"
   end
 
@@ -444,7 +450,6 @@ ActiveRecord::Schema.define(version: 20181120222324) do
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.boolean  "identifies_survey",     default: false
-    t.boolean  "critical"
     t.integer  "question_set_id"
     t.integer  "option_set_id"
     t.integer  "instruction_id"
@@ -669,7 +674,6 @@ ActiveRecord::Schema.define(version: 20181120222324) do
     t.string   "completion_rate"
     t.string   "device_label"
     t.datetime "deleted_at"
-    t.boolean  "has_critical_responses"
     t.string   "roster_uuid"
     t.string   "language"
     t.text     "skipped_questions"

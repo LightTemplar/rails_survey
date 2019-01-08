@@ -17,7 +17,6 @@
 #  completion_rate           :string
 #  device_label              :string
 #  deleted_at                :datetime
-#  has_critical_responses    :boolean
 #  roster_uuid               :string
 #  language                  :string
 #  skipped_questions         :text

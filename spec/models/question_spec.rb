@@ -10,7 +10,6 @@
 #  updated_at            :datetime
 #  deleted_at            :datetime
 #  identifies_survey     :boolean          default(FALSE)
-#  critical              :boolean
 #  question_set_id       :integer
 #  option_set_id         :integer
 #  instruction_id        :integer

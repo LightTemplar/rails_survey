@@ -1,7 +1,7 @@
 collection @options
 cache ['v3-options', @options]
 
-attributes :id, :identifier, :text, :deleted_at, :critical
+attributes :id, :identifier, :text, :deleted_at
 
 node :instrument_version_number do |o|
  -1

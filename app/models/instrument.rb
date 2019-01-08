@@ -17,7 +17,6 @@
 #  special_options         :text
 #  show_sections_page      :boolean          default(FALSE)
 #  navigate_to_review_page :boolean          default(FALSE)
-#  critical_message        :text
 #  roster                  :boolean          default(FALSE)
 #  roster_type             :string
 #  scorable                :boolean          default(FALSE)
@@ -59,6 +58,7 @@ class Instrument < ActiveRecord::Base
   has_many :randomized_factors, dependent: :destroy
   has_many :randomized_options, through: :randomized_factors
   has_many :next_questions, -> { order 'instrument_questions.number_in_instrument' }, through: :instrument_questions
+  has_many :critical_responses, through: :questions
 
   has_paper_trail
   acts_as_paranoid
@@ -311,7 +311,6 @@ class Instrument < ActiveRecord::Base
     csv << ['translation_language_iso_code', '', 'Enter language ISO 639-1 code in column 2']
     csv << ['language_alignment', '', 'Enter left in column 2 if words in the language are read left-to-right or right if they are read right-to-left']
     csv << ['instrument_title', sanitizer.sanitize(title), '', 'Enter instrument_title translation in column 3']
-    csv << ['instrument_critical_message', sanitizer.sanitize(critical_message), '', 'Enter critical message translation in column 3']
     csv << ['']
     csv << ['question_identifier',	'question_text',	'Enter question_text translations in this column',	'instructions',	'Enter instructions translations in this column',	'reg_ex_validation_message',	'Enter reg_ex_validation_message translations in this column']
     questions.each do |question|

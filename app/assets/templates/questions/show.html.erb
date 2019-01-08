@@ -156,6 +156,15 @@
         </div>
       </div>
 
+      <div ng-if="question.question_type && questionTypesWithOptions(question.question_type)">
+        <h4 class="text-center"><strong>Critical Responses</strong></h4>
+        <div class="card m-1">
+          <div class="card-body card-padding">
+            <div ng-include='"critical_responses/index.html"'></div>
+          </div>
+        </div>
+      </div>
+
       <div class="row m-1">
         <div class="col-md text-right">
           <div class="btn btn-secondary" ng-click="cancel()">Cancel</div>

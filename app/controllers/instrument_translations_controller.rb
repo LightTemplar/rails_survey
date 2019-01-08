@@ -30,7 +30,7 @@ class InstrumentTranslationsController < ApplicationController
       end
     end
   end
-  
+
   def import_translation
     TranslationImportWorker.perform_async(params[:file].tempfile.path) if params[:file].content_type == 'text/csv'
     redirect_to project_instrument_instrument_translations_path(current_project, params[:instrument_id])
@@ -165,6 +165,6 @@ class InstrumentTranslationsController < ApplicationController
   end
 
   def instrument_translation_params
-    params.require(:instrument_translation).permit(:title, :language, :alignment, :critical_message, :active)
+    params.require(:instrument_translation).permit(:title, :language, :alignment, :active)
   end
 end

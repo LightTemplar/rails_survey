@@ -63,4 +63,21 @@ class Response < ActiveRecord::Base
   def time_taken_in_seconds
     time_ended - time_started if time_ended && time_started
   end
+
+  def is_critical
+    if !question.select_one_variant? && !question.select_multiple_variant? && !question.list_of_boxes_variant?
+      false
+    elsif text.blank?
+      false
+    else
+      resps = text.split(Settings.list_delimiter)
+      options = question.options
+      response_identifiers = []
+      resps.each do |ind|
+        response_identifiers.push(options[ind.to_i].identifier)
+      end
+      identifiers = question.critical_responses.pluck(:option_identifier)
+      (response_identifiers & identifiers).size > 0 # Array intersection
+    end
+  end
 end

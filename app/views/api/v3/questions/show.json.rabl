@@ -35,10 +35,6 @@ node :option_count do |iq|
   end
 end
 
-node :critical do |iq|
-  iq.question.critical if iq.question
-end
-
 node :image_count do |iq|
  iq.question.images.size if iq.question
 end
@@ -73,4 +69,8 @@ end
 
 child :loop_questions do |t|
   attributes :id, :parent, :looped, :deleted_at, :option_indices, :same_display
+end
+
+child :critical_responses do |cr|
+  attributes :id, :question_identifier, :option_identifier, :instruction_id, :deleted_at
 end
