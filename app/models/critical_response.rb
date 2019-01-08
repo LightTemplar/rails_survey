@@ -12,7 +12,7 @@
 #
 
 class CriticalResponse < ActiveRecord::Base
-  belongs_to :question, foreign_key: :question_identifier, primary_key: :question_identifier
+  belongs_to :question, foreign_key: :question_identifier, primary_key: :question_identifier, touch: true
   belongs_to :option, foreign_key: :option_identifier, primary_key: :identifier
   belongs_to :instruction
   acts_as_paranoid
