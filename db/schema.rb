@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190103171935) do
+ActiveRecord::Schema.define(version: 20190111172044) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -106,6 +106,7 @@ ActiveRecord::Schema.define(version: 20190103171935) do
     t.string   "os_build_number"
     t.integer  "project_id"
     t.integer  "num_incomplete_surveys"
+    t.string   "device_label"
   end
 
   create_table "device_users", force: :cascade do |t|

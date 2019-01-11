@@ -47,4 +47,8 @@ class Device < ActiveRecord::Base
     end
   end
 
+  def pretty_label
+    label.downcase.gsub(/\W+/, '_') unless label.blank?
+  end
+
 end

@@ -18,6 +18,7 @@
 #  os_build_number        :string
 #  project_id             :integer
 #  num_incomplete_surveys :integer
+#  device_label           :string
 #
 
 class DeviceSyncEntry < ActiveRecord::Base
@@ -27,4 +28,5 @@ class DeviceSyncEntry < ActiveRecord::Base
   def instrument_versions
     JSON.parse(read_attribute(:instrument_versions)) unless read_attribute(:instrument_versions).nil?
   end
+
 end
