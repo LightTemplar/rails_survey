@@ -186,9 +186,6 @@ class Instrument < ActiveRecord::Base
   end
 
   def version_by_version_number(version_number)
-    # Rails.cache.fetch("instruments-#{id}-#{version_number}", expires_in: 30.minutes) do
-      # InstrumentVersion.build(instrument_id: id, version_number: version_number)
-    # end
     return nil if version_number > versions.size || version_number <= 0
     versions[version_number - 1].reify
   end
@@ -231,9 +228,6 @@ class Instrument < ActiveRecord::Base
       format << [question.number_in_instrument, question.question_identifier, question.question_type, sanitizer.sanitize(question.instructions), sanitizer.sanitize(question.text)] + translations_for_object(question)
       question.options.each do |option|
         format << ['', '', '', "Option for question #{question.question_identifier}", option.text] + translations_for_object(option)
-        # if option.next_question
-        #   format << ['', '', '', "For option #{option}, SKIP TO question", option.next_question]
-        # end
         next unless option.skips
         option.skips.each do |skip|
           format << ['', '', '', "For option #{option.text}, SKIP question", skip.question_identifier]
@@ -373,11 +367,11 @@ class Instrument < ActiveRecord::Base
   end
 
   def long_headers
-    %w[qid short_qid instrument_id instrument_version_number question_version_number
+    %w[question_identifier short_qid instrument_id instrument_version_number question_version_number
       instrument_title survey_id survey_uuid device_id device_uuid device_label
       question_type question_text response response_labels special_response
       other_response response_time_started response_time_ended device_user_id
-      device_user_username] + metadata_keys
+      device_user_username survey_start_time survey_end_time duration_in_seconds] + metadata_keys
   end
 
   def create_loop_question(lq, variable_identifiers, question_identifier_variables, idx)
@@ -422,9 +416,10 @@ class Instrument < ActiveRecord::Base
         end
       end
     end
+    variable_identifiers.map! {|identifier| "q_#{identifier}"}
     %w[survey_id survey_uuid device_identifier device_label latitude longitude
       instrument_id instrument_version_number instrument_title survey_start_time
-      survey_end_time device_user_id device_user_username] + metadata_keys + variable_identifiers
+      survey_end_time duration_in_seconds device_user_id device_user_username] + metadata_keys + variable_identifiers
   end
 
   def metadata_keys

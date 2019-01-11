@@ -191,11 +191,15 @@ class Survey < ActiveRecord::Base
   end
 
   def start_time
-    responses.where.not(time_started: nil).order('time_started ASC').try(:first).try(:time_started)
+    Rails.cache.fetch("start-time-#{id}-#{updated_at}", expires_in: 30.minutes) do
+      responses.where.not(time_started: nil).order('time_started ASC').try(:first).try(:time_started)
+    end
   end
 
   def end_time
-    responses.where.not(time_ended: nil).order('time_ended DESC').try(:first).try(:time_ended)
+    Rails.cache.fetch("end-time-#{id}-#{updated_at}", expires_in: 30.minutes) do
+      responses.where.not(time_ended: nil).order('time_ended DESC').try(:first).try(:time_ended)
+    end
   end
 
   def write_wide_row
@@ -204,7 +208,8 @@ class Survey < ActiveRecord::Base
         array = instrument.wide_headers
         Hash[array.map.with_index.to_a]
       end
-    row = [id, uuid, device.identifier, device_label ? device_label : device.label, latitude, longitude, instrument_id, instrument_version_number, instrument_title, start_time, end_time]
+    row = [id, uuid, device.identifier, device_label ? device_label : device.label, latitude, longitude,
+      instrument_id, instrument_version_number, instrument_title, start_time, end_time, end_time - start_time]
 
     if metadata
       metadata.each do |k, v|
@@ -213,25 +218,25 @@ class Survey < ActiveRecord::Base
     end
 
     responses.each do |response|
-      identifier_index = headers[response.question_identifier]
+      identifier_index = headers["q_#{response.question_identifier}"]
       row[identifier_index] = response.text if identifier_index
-      short_qid_index = headers[response.question_identifier + '_short_qid']
+      short_qid_index = headers["q_#{response.question_identifier}_short_qid"]
       row[short_qid_index] = response.question_id if short_qid_index
-      question_type_index = headers[response.question_identifier + '_question_type']
+      question_type_index = headers["q_#{response.question_identifier}_question_type"]
       row[question_type_index] = question_by_identifier(response.question_identifier).try(:question_type) if question_type_index
-      special_identifier_index = headers[response.question_identifier + '_special']
+      special_identifier_index = headers["q_#{response.question_identifier}_special"]
       row[special_identifier_index] = response.special_response if special_identifier_index
-      other_identifier_index = headers[response.question_identifier + '_other']
+      other_identifier_index = headers["q_#{response.question_identifier}_other"]
       row[other_identifier_index] = response.other_response if other_identifier_index
-      label_index = headers[response.question_identifier + '_label']
+      label_index = headers["q_#{response.question_identifier}_label"]
       row[label_index] = option_labels(response) if label_index
-      question_version_index = headers[response.question_identifier + '_version']
+      question_version_index = headers["q_#{response.question_identifier}_version"]
       row[question_version_index] = response.question_version if question_version_index
-      question_text_index = headers[response.question_identifier + '_text']
+      question_text_index = headers["q_#{response.question_identifier}_text"]
       row[question_text_index] = sanitize(question_by_identifier(response.question_identifier).try(:text)) if question_text_index
-      start_time_index = headers[response.question_identifier + '_start_time']
+      start_time_index = headers["q_#{response.question_identifier}_start_time"]
       row[start_time_index] = response.time_started if start_time_index
-      end_time_index = headers[response.question_identifier + '_end_time']
+      end_time_index = headers["q_#{response.question_identifier}_end_time"]
       row[end_time_index] = response.time_ended if end_time_index
     end
     device_user_id_index = headers['device_user_id']
@@ -254,8 +259,17 @@ class Survey < ActiveRecord::Base
       Hash[array.map.with_index.to_a]
     end
     responses.each do |response|
-      row = Rails.cache.fetch("w_l_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 30.minutes) do
-        [response.question_identifier, "q_#{response.question_id}", instrument_id, response.instrument_version_number, response.question_version, instrument_title, id, response.survey_uuid, device_id, device_uuid, device_label, question_by_identifier(response.question_identifier).try(:question_type), sanitize(question_by_identifier(response.question_identifier).try(:text)), response.text, option_labels(response), response.special_response, response.other_response, response.time_started, response.time_ended, response.device_user.try(:id), response.device_user.try(:username)]
+      row = Rails.cache.fetch("w_l_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}
+        -#{response.updated_at}", expires_in: 30.minutes) do
+          ["q_#{response.question_identifier}", "q_#{response.question_id}", instrument_id,
+            response.instrument_version_number, response.question_version, instrument_title, id,
+            response.survey_uuid, device_id, device_uuid, device_label,
+            question_by_identifier(response.question_identifier).try(:question_type),
+            sanitize(question_by_identifier(response.question_identifier).try(:text)),
+            response.text, option_labels(response), response.special_response,
+            response.other_response, response.time_started, response.time_ended,
+            response.device_user.try(:id), response.device_user.try(:username),
+            start_time, end_time, end_time - start_time]
       end
       if metadata
         metadata.each do |k, v|
