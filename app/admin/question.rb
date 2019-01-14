@@ -1,59 +1,60 @@
 ActiveAdmin.register Question do
-  belongs_to :instrument
-  permit_params :text, :question_type, :question_identifier, :instrument_id, :reg_ex_validation, :number_in_instrument, :reg_ex_validation_message, :identifies_survey, :instructions
-  config.per_page = 10
+  belongs_to :project
+  actions :all, except: [:new, :edit, :destroy]
+  config.per_page = [50, 100, 250, 500]
   config.sort_order = 'id_asc'
-  config.clear_action_items!
-
-  sidebar 'Question Associations', only: :show do
-    ul do
-      li link_to 'Options', admin_question_options_path(params[:id])
-      li link_to 'Translations', admin_question_question_translations_path(params[:id])
-    end
-  end
-
   index do
+    selectable_column
     column :id
     column :question_identifier
-    column :question_type
-    column (:text) { |qst| raw(qst.text) }
-    column :instrument_id
-    column :number_in_instrument
+    column :text
+    column "Response Count" do |question|
+      question.responses.size
+    end
     actions
   end
 
-  show do |_question|
+  show do
     attributes_table do
       row :id
-      row (:text) { |qst| raw(qst.text) }
+      row :text
       row :question_type
       row :question_identifier
-      row (:instructions) { |qst| raw(qst.instructions) }
-      row :instrument_id
-      row :number_in_instrument
-      row :reg_ex_validation
-      row :reg_ex_validation_message
       row :identifies_survey
-      row :child_update_count
+      row :question_set_id
+      row :option_set_id
+      row :instruction_id
+      row :special_option_set_id
+      row :parent_identifier
+      row :folder_id
+      row :validation_id
+      row :rank_responses
       row :created_at
       row :updated_at
       row :deleted_at
     end
-    active_admin_comments
+
+    h3 'Responses to question'
+    table_for question.responses do
+      column :id
+      column :uuid
+      column :question_id
+      column :question_identifier
+      column :survey_uuid
+      column :question_version
+      column :text
+      column :other_response
+      column :special_response
+      column :time_started
+      column :time_ended
+      column :created_at
+      column :updated_at
+    end
   end
 
-  form do |f|
-    f.inputs 'Question Details' do
-      f.input :instrument
-      f.input :text
-      f.input :question_type, collection: Settings.question_types
-      f.input :question_identifier
-      f.input :reg_ex_validation
-      f.input :reg_ex_validation_message
-      f.input :number_in_instrument
-      f.input :identifies_survey
-      f.input :instructions
-    end
-    f.actions
+  sidebar 'Summary Statistics', only: :show do
+    render partial: 'summary', :locals => {
+      :responses => question.responses.group(:text).count,
+      :total => question.responses.size }
   end
 end

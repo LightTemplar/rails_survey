@@ -6,6 +6,7 @@ ActiveAdmin.register Project do
     ul do
       li link_to 'Survey Responses', admin_project_surveys_path(params[:id])
       li link_to 'Survey Exports', admin_project_response_exports_path(params[:id])
+      li link_to 'Survey Variables', admin_project_questions_path(params[:id])
     end
   end
 
