@@ -38,7 +38,11 @@ class Response < ActiveRecord::Base
   after_destroy :calculate_response_rate
 
   def question
-    instrument_question.question
+    if instrument_question
+      instrument_question.question
+    else
+      survey.question_by_identifier(question_identifier)
+    end
   end
 
   def calculate_response_rate

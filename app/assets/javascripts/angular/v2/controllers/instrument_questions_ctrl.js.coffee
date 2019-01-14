@@ -1,7 +1,7 @@
 App.controller 'ShowInstrumentQuestionCtrl', ['$scope', '$stateParams',
 'InstrumentQuestion', 'NextQuestion', 'MultipleSkip', 'FollowUpQuestion',
-'ConditionSkip', ($scope, $stateParams, InstrumentQuestion, NextQuestion,
-MultipleSkip, FollowUpQuestion, ConditionSkip) ->
+'ConditionSkip', 'LoopQuestion', ($scope, $stateParams, InstrumentQuestion,
+NextQuestion, MultipleSkip, FollowUpQuestion, ConditionSkip, LoopQuestion) ->
   $scope.project_id = $stateParams.project_id
   $scope.instrument_id = $stateParams.instrument_id
   $scope.id = $stateParams.id
@@ -31,6 +31,14 @@ MultipleSkip, FollowUpQuestion, ConditionSkip) ->
     'instrument_id': $scope.instrument_id,
     'instrument_question_id': $scope.id
   })
+  $scope.loopQuestions = LoopQuestion.query({
+    'project_id': $scope.project_id,
+    'instrument_id': $scope.instrument_id,
+    'instrument_question_id': $scope.id
+  })
+
+  $scope.getQuestion = (loopQ) ->
+    _.findWhere($scope.instrumentQuestions, {identifier: loopQ.looped})
 
   $scope.hasLoops = (type) ->
     type in ['INTEGER', 'SELECT_MULTIPLE', 'SELECT_MULTIPLE_WRITE_OTHER',
