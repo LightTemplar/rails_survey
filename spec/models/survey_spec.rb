@@ -6,20 +6,20 @@
 #  instrument_id             :integer
 #  created_at                :datetime
 #  updated_at                :datetime
-#  uuid                      :string(255)
+#  uuid                      :string
 #  device_id                 :integer
 #  instrument_version_number :integer
-#  instrument_title          :string(255)
-#  device_uuid               :string(255)
-#  latitude                  :string(255)
-#  longitude                 :string(255)
+#  instrument_title          :string
+#  device_uuid               :string
+#  latitude                  :string
+#  longitude                 :string
 #  metadata                  :text
-#  completion_rate           :string(3)
-#  device_label              :string(255)
+#  completion_rate           :string
+#  device_label              :string
 #  deleted_at                :datetime
-#  has_critical_responses    :boolean
-#  roster_uuid               :string(255)
-#  language                  :string(255)
+#  roster_uuid               :string
+#  language                  :string
+#  skipped_questions         :text
 #
 
 require "spec_helper"

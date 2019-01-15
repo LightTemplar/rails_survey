@@ -1,0 +1,55 @@
+<h4 class="text-center">Translations</h4>
+<div ng-controller="QuestionBackTranslationsCtrl">
+  <div class="row">
+    <label class="col-sm-4 text-right">Language</label>
+    <div class="col-sm-8 form-group text-left">
+      <select
+        class="form-control"
+        ng-model="language"
+        ng-options="language[1] as language[0] for language in languages"
+        ng-change="updateLanguage()">
+      </select>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body card-padding">
+      <table class="table table-hover">
+        <thead>
+        <tr class="row">
+          <th class="col-md-5">Translation Text</th>
+          <th class="col-md-6">Back Translation Text</th>
+          <th class="col-md-1">Approved</th>
+        </tr>
+        </thead>
+        <tbody>
+          <tr class="row">
+            <td class="col-md-5"></td>
+            <td class="col-md-6"></td>
+            <td class="col-md-1"><input type="checkbox" ng-model="selectall" ng-click="selectAll()"> select all</td>
+          </tr>
+          <tr class="row" ng-repeat="questionTranslation in questionTranslations">
+            <td class="col-md-5" ng-bind-html="questionTranslation.text | ToTrustedHtml"></td>
+            <td class="col-md-6">
+              <text-angular
+                ta-toolbar="toolBar"
+                name="question-back-translation-{{questionTranslation.id}}-{{$index}}"
+                ng-model="backTranslationFor(questionTranslation).text"
+                ta-text-editor-class="form-control translation-height"
+                ta-html-editor-class="form-control translation-height">
+              </text-angular>
+            </td>
+            <td class="col-md-1">
+              <input type="checkbox"
+              name="question-back-translation-approval-{{questionTranslation.id}}-{{$index}}"
+               ng-model="backTranslationFor(questionTranslation).approved">
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="m-1">
+        <div class="btn btn-success pull-right" ng-click="save()">Save</div>
+      </div>
+    </div>
+  </div>
+</div>

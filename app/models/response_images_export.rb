@@ -4,7 +4,7 @@
 #
 #  id                 :integer          not null, primary key
 #  response_export_id :integer
-#  download_url       :string(255)
+#  download_url       :string
 #  done               :boolean          default(FALSE)
 #  created_at         :datetime
 #  updated_at         :datetime

@@ -6,20 +6,20 @@
 #  instrument_id             :integer
 #  created_at                :datetime
 #  updated_at                :datetime
-#  uuid                      :string(255)
+#  uuid                      :string
 #  device_id                 :integer
 #  instrument_version_number :integer
-#  instrument_title          :string(255)
-#  device_uuid               :string(255)
-#  latitude                  :string(255)
-#  longitude                 :string(255)
+#  instrument_title          :string
+#  device_uuid               :string
+#  latitude                  :string
+#  longitude                 :string
 #  metadata                  :text
-#  completion_rate           :string(3)
-#  device_label              :string(255)
+#  completion_rate           :string
+#  device_label              :string
 #  deleted_at                :datetime
-#  has_critical_responses    :boolean
-#  roster_uuid               :string(255)
-#  language                  :string(255)
+#  roster_uuid               :string
+#  language                  :string
+#  skipped_questions         :text
 #
 
 class Survey < ActiveRecord::Base
@@ -27,11 +27,12 @@ class Survey < ActiveRecord::Base
   belongs_to :instrument
   belongs_to :device
   belongs_to :roster, foreign_key: :roster_uuid, primary_key: :uuid
+  has_many :instrument_questions, through: :instrument
   has_many :responses, foreign_key: :survey_uuid, primary_key: :uuid, dependent: :destroy
   has_many :centralized_scores, class_name: 'Score', foreign_key: :survey_id, dependent: :destroy
   has_many :distributed_scores, class_name: 'Score', foreign_key: :survey_uuid, dependent: :destroy
   acts_as_paranoid
-  has_paper_trail
+  has_paper_trail on: [:update, :destroy]
   delegate :project, to: :instrument
   validates :device_id, presence: true, allow_blank: false
   validates :uuid, presence: true, allow_blank: false
@@ -42,12 +43,10 @@ class Survey < ActiveRecord::Base
   after_commit :schedule_export, if: proc { |survey| survey.instrument.auto_export_responses }
   scope :non_roster, -> { where(roster_uuid: nil) }
 
-  def delete_duplicate_responses
-    grouped_responses = responses.group_by {|response| response.uuid}
-    grouped_responses.values.each do |duplicates|
-      duplicates.shift
-      duplicates.map(&:delete)
-    end
+  def identifier
+    question = instrument.questions.where(identifies_survey: true).first
+    response = responses.where(question_identifier: question.question_identifier).first if question
+    response.text if response
   end
 
   def schedule_export
@@ -75,12 +74,16 @@ class Survey < ActiveRecord::Base
   end
 
   def calculate_percentage
-    SurveyPercentWorker.perform_in(5.hours, id)
+    job = Sidekiq::ScheduledSet.new.find do |entry|
+      entry.item['class'] == 'SurveyPercentWorker' && entry.item['args'].first == id
+    end
+    SurveyPercentWorker.perform_in(5.hours, id) unless job
   end
 
+  # TODO: Re-implement
   def calculate_completion_rate
-    valid_response_count = responses.where.not('text = ? AND other_response = ? AND special_response = ?', nil || '', nil || '', nil || '').pluck(:question_id).uniq.count
-    valid_question_count = instrument.version_by_version_number(instrument_version_number).questions.reject { |question| question.question_type == 'INSTRUCTIONS' }.count
+    valid_response_count = responses.where.not('text = ? AND other_response = ? AND special_response = ?', nil || '', nil || '', nil || '').pluck(:uuid).uniq.count
+    valid_question_count = instrument_questions.count
     if valid_response_count && valid_question_count && valid_question_count != 0
       rate = (valid_response_count.to_f / valid_question_count.to_f).round(2)
     end
@@ -127,16 +130,28 @@ class Survey < ActiveRecord::Base
     metadata['survey_label'] if metadata
   end
 
-  def versioned_question(question_identifier)
-    instrument_version.find_question_by(question_identifier: question_identifier)
+  def question_by_identifier(question_identifier)
+    iq = instrument.instrument_questions.with_deleted.where(identifier: question_identifier).first
+    if iq.nil?
+      if question_identifier.count('_') > 2
+        first = question_identifier.index('_')
+        last = question_identifier.rindex('_')
+        id = question_identifier[first + 1 ... last]
+        iq = instrument.instrument_questions.with_deleted.where(identifier: id).first
+      else
+        ids = question_identifier.split('_')
+        iq = instrument.instrument_questions.with_deleted.where(identifier: ids[1]).first
+      end
+    end
+    iq.question
   end
 
   def option_labels(response)
-    vq = versioned_question(response.question_identifier)
-    return '' if vq.nil? || !vq.optionable?
+    vq = question_by_identifier(response.question_identifier)
+    return '' if vq.nil? || !vq.options?
     labels = []
     if Settings.list_question_types.include?(vq.question_type)
-      labels << vq.non_special_options.map(&:text)
+      labels << vq.options.map(&:text)
     else
       response.text.split(Settings.list_delimiter).each do |option_index|
         labels << if vq.other? && option_index.to_i == vq.other_index
@@ -150,11 +165,7 @@ class Survey < ActiveRecord::Base
   end
 
   def label_text(versioned_question, option_index)
-    if versioned_question.grid
-      versioned_question.grid_labels[option_index.to_i].try(:label)
-    else
-      versioned_question.non_special_options[option_index.to_i].try(:text)
-    end
+    versioned_question.options[option_index.to_i].try(:text)
   end
 
   def sanitize(str)
@@ -169,16 +180,11 @@ class Survey < ActiveRecord::Base
     end
     row = [id, instrument_id, instrument_title]
     responses.each do |response|
-      identifier_index = headers[response.question_identifier]
-      row[identifier_index] = response.text if identifier_index
-      special_identifier_index = headers[response.question_identifier + '_special']
-      row[special_identifier_index] = response.special_response if special_identifier_index
-      other_identifier_index = headers[response.question_identifier + '_other']
-      row[other_identifier_index] = response.other_response if other_identifier_index
-      label_index = headers[response.question_identifier + '_label']
-      row[label_index] = option_labels(response) if label_index
-      question_text_index = headers[response.question_identifier + '_text']
-      row[question_text_index] = sanitize(versioned_question(response.question_identifier).try(:text)) if question_text_index
+      csv = Rails.cache.fetch("w_s_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 30.minutes) do
+        [validator, id, response.question_identifier, sanitize(question_by_identifier(response.question_identifier).try(:text)), response.text, option_labels(response), response.special_response, response.other_response]
+      end
+      push_to_redis("short-row-#{id}-#{instrument.response_export.id}-#{response.id}",
+        "short-keys-#{instrument.id}-#{instrument.response_export.id}", csv)
     end
     push_to_redis("short-row-#{id}-#{instrument.response_export.id}-survey-#{id}",
         "short-keys-#{instrument_id}-#{instrument.response_export.id}", row)
@@ -191,11 +197,15 @@ class Survey < ActiveRecord::Base
   end
 
   def start_time
-    responses.where.not(time_started: nil).order('time_started ASC').try(:first).try(:time_started)
+    Rails.cache.fetch("start-time-#{id}-#{updated_at}", expires_in: 30.minutes) do
+      responses.where.not(time_started: nil).order('time_started ASC').try(:first).try(:time_started)
+    end
   end
 
   def end_time
-    responses.where.not(time_ended: nil).order('time_ended DESC').try(:first).try(:time_ended)
+    Rails.cache.fetch("end-time-#{id}-#{updated_at}", expires_in: 30.minutes) do
+      responses.where.not(time_ended: nil).order('time_ended DESC').try(:first).try(:time_ended)
+    end
   end
 
   def write_wide_row
@@ -204,7 +214,8 @@ class Survey < ActiveRecord::Base
         array = instrument.wide_headers
         Hash[array.map.with_index.to_a]
       end
-    row = [id, uuid, device.identifier, device_label ? device_label : device.label, latitude, longitude, instrument_id, instrument_version_number, instrument_title, start_time, end_time]
+    row = [id, uuid, device.identifier, device_label ? device_label : device.label, latitude, longitude,
+      instrument_id, instrument_version_number, instrument_title, start_time, end_time, end_time - start_time]
 
     if metadata
       metadata.each do |k, v|
@@ -213,25 +224,25 @@ class Survey < ActiveRecord::Base
     end
 
     responses.each do |response|
-      identifier_index = headers[response.question_identifier]
+      identifier_index = headers["q_#{response.question_identifier}"]
       row[identifier_index] = response.text if identifier_index
-      short_qid_index = headers[response.question_identifier + '_short_qid']
+      short_qid_index = headers["q_#{response.question_identifier}_short_qid"]
       row[short_qid_index] = response.question_id if short_qid_index
-      question_type_index = headers[response.question_identifier + '_question_type']
-      row[question_type_index] = versioned_question(response.question_identifier).try(:question_type) if question_type_index
-      special_identifier_index = headers[response.question_identifier + '_special']
+      question_type_index = headers["q_#{response.question_identifier}_question_type"]
+      row[question_type_index] = question_by_identifier(response.question_identifier).try(:question_type) if question_type_index
+      special_identifier_index = headers["q_#{response.question_identifier}_special"]
       row[special_identifier_index] = response.special_response if special_identifier_index
-      other_identifier_index = headers[response.question_identifier + '_other']
+      other_identifier_index = headers["q_#{response.question_identifier}_other"]
       row[other_identifier_index] = response.other_response if other_identifier_index
-      label_index = headers[response.question_identifier + '_label']
+      label_index = headers["q_#{response.question_identifier}_label"]
       row[label_index] = option_labels(response) if label_index
-      question_version_index = headers[response.question_identifier + '_version']
+      question_version_index = headers["q_#{response.question_identifier}_version"]
       row[question_version_index] = response.question_version if question_version_index
-      question_text_index = headers[response.question_identifier + '_text']
-      row[question_text_index] = sanitize(versioned_question(response.question_identifier).try(:text)) if question_text_index
-      start_time_index = headers[response.question_identifier + '_start_time']
+      question_text_index = headers["q_#{response.question_identifier}_text"]
+      row[question_text_index] = sanitize(question_by_identifier(response.question_identifier).try(:text)) if question_text_index
+      start_time_index = headers["q_#{response.question_identifier}_start_time"]
       row[start_time_index] = response.time_started if start_time_index
-      end_time_index = headers[response.question_identifier + '_end_time']
+      end_time_index = headers["q_#{response.question_identifier}_end_time"]
       row[end_time_index] = response.time_ended if end_time_index
     end
     device_user_id_index = headers['device_user_id']
@@ -254,8 +265,17 @@ class Survey < ActiveRecord::Base
       Hash[array.map.with_index.to_a]
     end
     responses.each do |response|
-      row = Rails.cache.fetch("w_l_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 30.minutes) do
-        [response.question_identifier, "q_#{response.question_id}", instrument_id, response.instrument_version_number, response.question_version, instrument_title, id, response.survey_uuid, device_id, device_uuid, device_label, versioned_question(response.question_identifier).try(:question_type), sanitize(versioned_question(response.question_identifier).try(:text)), response.text, option_labels(response), response.special_response, response.other_response, response.time_started, response.time_ended, response.device_user.try(:id), response.device_user.try(:username)]
+      row = Rails.cache.fetch("w_l_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}
+        -#{response.updated_at}", expires_in: 30.minutes) do
+          ["q_#{response.question_identifier}", "q_#{response.question_id}", instrument_id,
+            response.instrument_version_number, response.question_version, instrument_title, id,
+            response.survey_uuid, device_id, device_uuid, device_label,
+            question_by_identifier(response.question_identifier).try(:question_type),
+            sanitize(question_by_identifier(response.question_identifier).try(:text)),
+            response.text, option_labels(response), response.special_response,
+            response.other_response, response.time_started, response.time_ended,
+            response.device_user.try(:id), response.device_user.try(:username),
+            start_time, end_time, end_time - start_time]
       end
       if metadata
         metadata.each do |k, v|

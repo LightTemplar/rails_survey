@@ -1,0 +1,264 @@
+<div ng-controller="ShowDisplayCtrl">
+  <h4 class="text-center">{{instrument.title}}</h4>
+  <h5 class="text-center">{{display.title}}</h5>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="btn btn-primary" ng-click="toggleViews(true, false, false, false, false)">Questions</div>
+      <div class="btn btn-primary" ng-click="toggleViews(false, true, false, false, false)">Copy Display</div>
+      <div class="btn btn-primary" ng-click="toggleViews(false, false, true, false, false)">Move Questions</div>
+      <div class="btn btn-primary" ng-click="toggleViews(false, false, false, true, false)">Instructions</div>
+      <div class="btn btn-primary" ng-click="toggleViews(false, false, false, false, true)">Tables</div>
+    </div>
+  </div>
+  <div ng-show="showQuestions">
+    <div class="card">
+      <div class="card-body card-padding">
+        <div class="row m-1">
+          <label class="col-md-2">Display Title</label>
+          <div class="col-md-10">
+            <input class="form-control" type="text" ng-model="display.title"/>
+          </div>
+        </div>
+        <div class="row m-1">
+          <label class="col-md-2">Section Title</label>
+          <div class="col-md-10">
+            <select
+              class="form-control"
+              name="display-section-title"
+              ng-model="display.section_id"
+              ng-options="section.id as section.title for section in sections">
+            </select>
+          </div>
+        </div>
+        <div class="row m-1">
+          <label class="col-md-2">Display Mode</label>
+          <div class="col-md-10">
+            <select
+              class="form-control"
+              name="display-mode"
+              ng-model="display.mode"
+              ng-options="type for type in settings.display_types">
+              <option value=""></option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-success oi oi-cloud-upload float-right m-1" ng-click="saveDisplay()"/>
+      </div>
+    </div>
+  <div class="card">
+    <div class="card-body card-padding">
+      <div class="m-1 mb-2">
+        <button class="btn btn-primary float-left" ng-click="previous(display)">Previous</button>
+        <button class="btn btn-primary float-right" ng-click="next(display)">Next</button>
+      </div>
+      <h5 class="text-center">Questions In Display</h5>
+      <h6 class="row m-1">
+        <label class="col-md-1">Number</label>
+        <label class="col-md-2">Logic</label>
+        <label class="col-md-2">Type</label>
+        <label class="col-md-3">Text</label>
+        <label class="col-md-2">Identifier</label>
+        <label class="col-md-2">Actions</label>
+      </h6>
+      <div class="m-t-5" ui-sortable="sortableInstrumentQuestions" ng-model="displayQuestions">
+        <div class="row m-1" ng-repeat="question in displayQuestions | orderBy: '1 * number_in_instrument'">
+          <div class="col-md-1">
+            <div class="btn btn-primary moveInstrumentQuestion">
+              <span class="oi oi-elevator mr-1"></span>
+              <span>{{question.number_in_instrument}}</span>
+            </div>
+          </div>
+          <a class="col-md-2" title="Link to question logic e.g skip patterns and followups"
+          ui-sref="instrumentQuestion({project_id: project_id, instrument_id: instrument_id, id: question.id})">
+          {{question.identifier}}</a>
+          <div class="col-md-2">
+            <a title="Link to original question" ui-sref="questionSetQuestion({question_set_id: question.question_set_id, id: question.question_id})">
+              {{question.type | limitTo:25}}
+            </a>
+          </div>
+          <div class="col-md-3" ng-bind-html="question.text | ToTrustedHtml"></div>
+          <div class="col-md-2">
+            <input class="form-control input-sm" type="text" ng-model="question.identifier" required/>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-success oi oi-cloud-upload m-1"
+            ng-click="updateInstrumentQuestion(question)"/>
+            <button class="btn btn-danger oi oi-trash m-1"
+            ng-click="removeInstrumentQuestion(question)"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="m-1" ng-hide="display.mode == 'SINGLE' && displayQuestions.length == 1">
+        <button class="btn btn-primary pull-right oi oi-plus" ng-click="addQuestionToDisplay()"/>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div ng-show="showAddQuestion" class="card">
+  <div class="card-body">
+    <div class="row m-1">
+      <label class="col-md-3">Source Question Set</label>
+      <div class="col-md-9 select-box">
+        <ui-select ng-model="display.question_set_id"
+          ng-change="getQuestionSetQuestions()"
+          theme="bootstrap" class="form-control"
+          title="Choose a question set" append-to-body="true">
+          <ui-select-match placeholder="Select or search a question set in the list...">
+            {{$select.selected.title}}
+          </ui-select-match>
+          <ui-select-choices repeat="qset.id as qset in questionSets |
+          propertyFilter: { title: $select.search }">
+            <div ng-bind-html="qset.title | highlight: $select.search"></div>
+          </ui-select-choices>
+        </ui-select>
+      </div>
+    </div>
+    <ng-form name="singleDisplayForm" ng-show="display.mode == 'SINGLE' && display.question_set_id">
+      <div class="row m-1">
+        <label class="col-md-3">Select Question From Set</label>
+        <div class="col-md-9">
+          <div ng-repeat="question in questionSetQuestions | orderBy: '1 * id'">
+            <input type="radio" ng-model="instrumentQuestion.question_id"
+            value="{{question.id}}" name="question.id" required/>
+            <span ng-bind-html="(question.question_identifier) + ' : ' + (question.text)"></span>
+          </div>
+        </div>
+      </div>
+      <div class="m-1">
+        <button class="btn btn-success oi oi-cloud-upload pull-right"
+        ng-disabled="singleDisplayForm.$invalid"
+        ng-click="saveInstrumentQuestions()"/>
+    </div>
+    </ng-form>
+    <ng-form name="multipleDisplayForm" ng-hide="display.mode == 'SINGLE'">
+      <div class="row m-1">
+        <label class="col-md-3">Select Questions From Set</label>
+        <div class="col-md-9">
+          <label ng-show="display.question_set_id && questionSetQuestions.length > 0">
+            <input type="checkbox" ng-model="selectall" ng-click="selectAll()"> Select all
+          </label>
+          <div ng-repeat="question in questionSetQuestions | orderBy: '1 * id'">
+            <input type="checkbox" ng-model="question.selected"/>
+            <span ng-bind-html="(question.question_identifier) + ' : ' + (question.text)"></span>
+          </div>
+        </div>
+      </div>
+      <div class="m-1">
+        <button class="btn btn-success oi oi-cloud-upload pull-right"
+        ng-disabled="multipleDisplayForm.$invalid"
+        ng-click="saveInstrumentQuestions()"/>
+      </div>
+    </ng-form>
+  </div>
+</div>
+
+<div ng-show="showCopy" class="card">
+  <h4 class="text-center">Copy Display Questions</h4>
+  <div class="row">
+    <label class="col-md-3">Destination Instrument</label>
+    <div class="col-md-9">
+      <select
+      class="form-control"
+      name="destination-instrument"
+      id="destination-instrument"
+      ng-model="display.destination_instrument_id"
+      ng-options="instrument.id as instrument.title for instrument in instruments"
+      required>
+      <option value=""></option>
+    </select>
+  </div>
+</div>
+<div class="row m-1">
+  <label class="col-md-3">Question Display Type</label>
+  <div class="col-md-9">
+    <div ng-repeat="type in displayTypes">
+      <input type="radio" ng-model="display.display_type"
+      value="{{type}}" name="display-display-type" required/>
+      <label>{{ type }}</label>
+    </div>
+  </div>
+</div>
+<div class="m-1">
+  <div class="btn btn-success pull-right" ng-click="saveCopy()">Save</div>
+</div>
+</div>
+
+<div ng-show="showMove" class="card">
+  <h4 class="text-center">Move Questions To Another Display</h4>
+  <div class="row">
+    <label class="col-md-3">Destination Display</label>
+    <div class="col-md-9">
+      <select
+      class="form-control"
+      name="destination-display"
+      id="destination-display"
+      ng-model="display.destination_display_id"
+      ng-options="display.id as display.title for display in displays"
+      required>
+      <option value=""></option>
+    </select>
+  </div>
+</div>
+<div class="row m-1">
+  <div class="col-md-4" ng-repeat="question in displayQuestions | orderBy: '1 * id'">
+    <label class="control-label">
+      <input type="checkbox" ng-model="question.selected"/>
+      {{question.identifier}}
+    </label>
+  </div>
+</div>
+<div class="m-1">
+  <div class="btn btn-success pull-right" ng-click="saveMovedQuestions()">Save</div>
+</div>
+</div>
+
+<div ng-show="showInstructions" class="card">
+  <h4 class="text-center">Instructions in Display</h4>
+  <h6 class="row m-1">
+    <label class="col-md-3">Question After Instruction</label>
+    <label class="col-md-6">Instruction</label>
+    <label class="col-md-3">Actions</label>
+  </h6>
+  <div class="row m-1" ng-repeat="displayInstruction in displayInstructions">
+    <div class="col-md-4">
+      <select
+        class="form-control"
+        name="display-instruction-instrument-question-id"
+        ng-model=displayInstruction.instrument_question_id
+        ng-options="iq.id as iq.identifier for iq in displayQuestions"
+        required>
+        <option value=""></option>
+      </select>
+    </div>
+    <div class="col-md-6 select-box">
+      <ui-select ng-model="displayInstruction.instruction_id"
+        theme="bootstrap" class="form-control"
+        title="Choose an instruction" append-to-body="true">
+        <ui-select-match placeholder="Select or search an instruction in the list...">
+          {{$select.selected.title}}
+        </ui-select-match>
+        <ui-select-choices repeat="instruction.id as instruction in instructions |
+        propertyFilter: { title: $select.search, text: $select.search }">
+          <div ng-bind-html="instruction.title | highlight: $select.search"></div>
+          <small><span ng-bind-html="instruction.text | highlight: $select.search"></span></small>
+        </ui-select-choices>
+      </ui-select>
+    </div>
+  <div class="col-md-2">
+    <div class="btn btn-success" ng-click="saveDisplayInstruction(displayInstruction)">Save</div>
+    <div class="btn btn-danger" ng-click="deleteDisplayInstruction(displayInstruction)">Delete</div>
+  </div>
+</div>
+<div class="m-1">
+  <div class="btn btn-primary float-right" ng-click="addDisplayInstruction()">New Display Instruction</div>
+</div>
+</div>
+
+<div ng-show="showTables">
+  <div ng-include="'displays/table.html'"></div>
+</div>
+
+</div>

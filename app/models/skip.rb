@@ -4,7 +4,7 @@
 #
 #  id                  :integer          not null, primary key
 #  option_id           :integer
-#  question_identifier :string(255)
+#  question_identifier :string
 #  created_at          :datetime
 #  updated_at          :datetime
 #  deleted_at          :datetime

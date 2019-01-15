@@ -1,0 +1,47 @@
+<div ng-controller="OptionSetsCtrl">
+  <h4 class="text-center"><strong>Option Sets</strong></h4>
+  <div class="m-1">
+    <a class="btn btn-primary" ui-sref="optionTranslations()">Translations</a>
+    <a class="btn btn-primary" ui-sref="optionBackTranslations()">Back Translations</a>
+    <a class="btn btn-primary" ui-sref="options">Options</a>
+    <div ng-hide="showNewOptionSet" class="btn btn-primary pull-right"
+         ng-click="createOptionSet()">New Option Set
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body card-padding">
+      <div ng-hide="showNewOptionSet">
+        <input type="search" ng-model="os.$" placeholder="Filter option sets ..."
+               class="form-control tm-search text-center">
+        <div ng-repeat="optionSet in optionSets | filter: os track by optionSet.id">
+          <div class="row m-1">
+            <a class="col-md-10" ui-sref="optionSet({id: optionSet.id})">
+              <strong>{{optionSet.title}}</strong>
+            </a>
+            <div class="col-md-2">
+              <div class="btn btn-primary" ng-click="copyOptionSet(optionSet)">Copy</div>
+              <div class="btn btn-danger" ng-click="deleteOptionSet(optionSet)">Delete</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-form name="newOptionSetEditorForm" ng-show="showNewOptionSet">
+        <div class="row">
+          <label class="col-md-2">Title</label>
+          <div class="col-md-8">
+            <input type="text" class="form-control" name="new-option-set"
+                   ng-model="newOptionSet.title" required>
+          </div>
+          <div class="col-md-1">
+            <div class="btn btn-secondary" ng-click="cancelNewOptionSet()">Cancel</div>
+          </div>
+          <div class="col-md-1">
+            <div class="btn btn-success" ng-disabled="newOptionSetEditorForm.$invalid"
+                 ng-click="saveOptionSet()">Save
+            </div>
+          </div>
+        </div>
+      </ng-form>
+    </div>
+  </div>
+</div>

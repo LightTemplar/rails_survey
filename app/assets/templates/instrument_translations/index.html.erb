@@ -1,0 +1,71 @@
+<div ng-controller="InstrumentTranslationsCtrl">
+  <div ng-include="'instruments/show.html'"></div>
+  <h4 class="text-center">Instrument Translations</h4>
+
+  <div class="card">
+    <div class="m-1" ng-show="showInstrumentTranslations">
+      <div class="btn btn-primary float-right" ng-click="newInstrumentTranslation()">New Translation</div>
+    </div>
+
+    <div class="card-body card-padding">
+      <div ng-show="showInstrumentTranslations">
+        <h4 class="row m-1">
+          <div class="col-md">Language</div>
+          <div class="col-md">Title</div>
+          <div class="col-md">Active</div>
+          <div class="col-md">Last Update</div>
+          <div class="col-md">Actions</div>
+        </h4>
+        <div class="row m-1" ng-repeat="translation in instrumentTranslations">
+          <div class="col-md">
+            <a ui-sref="instrumentTranslation({ project_id: project_id, instrument_id: instrument.id,
+            id: translation.id })" class="btn btn-primary">{{ languageName(translation.language) }}</a>
+          </div>
+          <div class="col-md">{{ translation.title }}</div>
+          <div class="col-md">{{ translation.active }}</div>
+          <div class="col-md">{{ translation.updated_at | date:'short' }}</div>
+          <div class="col-md">
+            <div class="btn btn-danger" ng-click="deleteInstrumentTranslation(translation)">
+              Delete
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div ng-hide="showInstrumentTranslations">
+        <div class="row m-1">
+          <label class="col-md-4 control-label">Instrument Translation Language</label>
+          <div class="col-md-8">
+            <select
+              class="form-control"
+              ng-model="instrumentTranslation.language"
+              ng-options="language[1] as language[0] for language in languages"
+            >
+            </select>
+          </div>
+        </div>
+        <div class="row m-1">
+          <label class="col-md-4 control-label">Instrument Title</label>
+          <div class="col-md-8">
+            <span>{{instrument.title}}</span>
+          </div>
+        </div>
+        <div class="row m-1">
+          <label class="col-md-4 control-label">Translated Instrument Title</label>
+          <div class="col-md-8">
+            <input class="form-control input-sm" type="text" ng-model="instrumentTranslation.title" required />
+          </div>
+        </div>
+        <div class="row m-1">
+          <label class="col-md-4 control-label">Active</label>
+          <div class="col-md-8">
+            <input type="checkbox" ng-model="instrumentTranslation.active" />
+          </div>
+        </div>
+        <div class="m-1">
+          <div class="btn btn-success float-right" ng-click="saveInstrumentTranslation(instrumentTranslation)">Save</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

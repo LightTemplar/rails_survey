@@ -1,0 +1,47 @@
+<div ng-controller="InstrumentRulesCtrl">
+  <div ng-include="'instruments/show.html'"></div>
+  <h4 class="text-center">Instrument Rules</h4>
+  <div class="card">
+    <div class="card-body card-padding">
+      <div ng-repeat="rule in instrumentRules">
+        <div class="row m-1">
+          <span class="col-md-4">
+            <strong>{{rule.rule_type}}</strong>
+          </span>
+          <span class="col-md-4">{{rule.rule_params}}</span>
+          <div class="col-md-2">
+            <div class="btn btn-danger" ng-click="deleteInstrumentRule(rule)">Delete</div>
+          </div>
+        </div>
+      </div>
+      <div ng-hide="showNewRule" class="m-1">
+        <button class="btn btn-primary" ng-click="addInstrumentRule()">Add Rule</button>
+      </div>
+
+      <div ng-show="showNewRule">
+        <ng-form name="InstrumentRuleForm">
+          <div class="row m-1">
+            <label class="col-md-3">Rule</label>
+            <div class="col-md-9">
+              <select
+                class="form-control"
+                id="rule-id"
+                ng-model="newRule.rule_id"
+                ng-options="rule.id as rule.rule_type for rule in rules"
+                required>
+                <option value=""><option>
+              </select>
+            </div>
+          </div>
+          <div class="m-1">
+            <div class="btn btn-secondary pull-left" ng-click="cancelInstrumentRule()">Cancel</div>
+            <div class="btn btn-success pull-right" ng-disabled="InstrumentRuleForm.$invalid" ng-click="saveInstrumentRule
+              ()">
+              Save
+            </div>
+          </div>
+        </ng-form>
+      </div>
+    </div>
+  </div>
+</div>

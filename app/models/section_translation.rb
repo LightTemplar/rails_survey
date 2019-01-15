@@ -4,8 +4,8 @@
 #
 #  id                        :integer          not null, primary key
 #  section_id                :integer
-#  language                  :string(255)
-#  text                      :string(255)
+#  language                  :string
+#  text                      :string
 #  created_at                :datetime
 #  updated_at                :datetime
 #  section_changed           :boolean          default(FALSE)
@@ -13,14 +13,8 @@
 #
 
 class SectionTranslation < ActiveRecord::Base
-  include GoogleTranslatable
   belongs_to :section, touch: true
-  belongs_to :instrument_translation, touch: true
   validates :text, presence: true, allow_blank: false
-
-  def translate_using_google
-    text_translation = translation_client.translate sanitize_text(section.title), to: language unless section.title.blank?
-    self.text = text_translation.text if text_translation
-    save
-  end
+  validates :section_id, presence: true, allow_blank: false
+  validates :language, presence: true, allow_blank: false
 end

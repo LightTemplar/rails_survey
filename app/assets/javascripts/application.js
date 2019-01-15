@@ -10,40 +10,42 @@
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require jquery
+//= require jquery3
 //= require jquery_ujs
 //= require jquery-ui
-//= require twitter/bootstrap
+//= require popper
+//= require bootstrap
 //= require waves/dist/waves.min
-//= require sweetalert/dist/sweetalert.min
-//= require autosize/dist/autosize.min
 //= require rangy-core
 //= require rangy-selectionsaverestore.min
 //= require bootstrap3-wysihtml5.all.min
 //= require angular
+//= require angular-ui-router.min
 //= require angular-resource
 //= require angular-animate
 //= require angular-cookies
 //= require angular-filter.min
 //= require angular-ui-utils.min
+//= require select.min
 //= require sortable
 //= require socket.io.min
-//= require theme-functions
 //= require ui-bootstrap-tpls
 //= require angular-messages
 //= require checklist-model
+//= require angular-rails-templates
+//= require angular-file-saver.bundle.min
 //= require app
+//= require routes
 //= require loading-bar.min
 //= require d3
 //= require nv.d3
 //= require es5-shim.min
-//= require angular-file-upload.min
 //= require xeditable
 //= require dirPagination
 //= require textAngular-sanitize.min
 //= require textAngular.min
 //= require jquery-linedtextarea
-//= require_tree ./angular
+//= require underscore
+//= require_tree ../templates
+//= require_tree ./angular/v2
 //= require_directory .
-
-//textAngular-sanitize replaces angular-sanitize

@@ -3,57 +3,41 @@
 # Table name: options
 #
 #  id                        :integer          not null, primary key
-#  question_id               :integer
 #  text                      :text
 #  created_at                :datetime
 #  updated_at                :datetime
-#  next_question             :string(255)
-#  number_in_question        :integer
 #  deleted_at                :datetime
 #  instrument_version_number :integer          default(-1)
-#  special                   :boolean          default(FALSE)
-#  critical                  :boolean
-#  complete_survey           :boolean
+#  identifier                :string
 #
 
 class Option < ActiveRecord::Base
   include Translatable
-  default_scope { order('special ASC, number_in_question ASC') }
-  scope :special_options, -> { where(special: true) }
-  scope :regular, -> { where(special: false) }
-  belongs_to :question
-  delegate :instrument, to: :question, allow_nil: true
-  delegate :project, to: :question
+  has_many :option_in_option_sets, dependent: :destroy
+  has_many :option_sets, through: :option_in_option_sets
   has_many :translations, foreign_key: 'option_id', class_name: 'OptionTranslation', dependent: :destroy
-  has_many :skips, dependent: :destroy
-  before_save :update_instrument_version, if: proc { |option| option.changed? }
-  before_save :update_option_translation, if: proc { |option| option.text_changed? }
-  before_destroy :update_instrument_version
-  after_save :record_instrument_version_number
-  after_save :sanitize_next_question
-  after_save :check_parent_criticality
+  has_many :skip_patterns, foreign_key: 'option_identifier', dependent: :destroy
   has_paper_trail
   acts_as_paranoid
 
   validates :text, presence: true, allow_blank: false
+  validates :identifier, presence: true, uniqueness: true
 
   amoeba do
     enable
     include_association :translations
-    nullify :next_question
   end
 
-  def sanitize_next_question
-    unless next_question.blank?
-      next_qst = instrument.questions.where(question_identifier: next_question)
-      update_columns(next_question: nil) if next_qst.blank?
-    end
+  def to_option_in_option_set
+    OptionInOptionSet.create!(option_id: id, option_set_id: option_set_id,
+      number_in_question: number_in_question) if id && option_set_id && number_in_question
   end
 
   def to_s
     text
   end
 
+# TODO: Doesn't work anymore
   def instrument_version
     if instrument && (read_attribute(:instrument_version_number) == -1)
       instrument.current_version_number
@@ -83,7 +67,4 @@ class Option < ActiveRecord::Base
     question.update_column(:instrument_version_number, instrument.current_version_number)
   end
 
-  def check_parent_criticality
-    update_columns(critical: nil) if critical && !question.critical
-  end
 end

@@ -16,7 +16,7 @@
 
 class ResponseExport < ActiveRecord::Base
   serialize :instrument_versions
-  belongs_to :project
+  # belongs_to :project
   belongs_to :instrument
   has_one :response_images_export, dependent: :destroy
 
@@ -38,9 +38,11 @@ class ResponseExport < ActiveRecord::Base
 
   def export_file(format)
     csv_data = $redis.get "#{instrument_id}-#{id}-#{format}"
-    data = JSON.parse(csv_data)
-    data = data.reject { |arr| arr.all?(&:blank?) }
-    data = data.sort { |ar1, ar2| ar1[0].to_i <=> ar2[0].to_i }
+    data = csv_data.nil? ? nil : JSON.parse(csv_data)
+    unless data.nil?
+      data = data.reject{|arr| arr.all?(&:blank?)}
+      data = data.sort {|ar1,ar2| ar1[0].to_i <=> ar2[0].to_i}
+    end
     file = Tempfile.new("#{instrument_id}-#{id}-#{format}")
     CSV.open(file, 'w') do |csv|
       csv << csv_headers(format)

@@ -1,21 +1,31 @@
 # MINIMUM ANDROID VERSION ALLOWED
 minimum_android_version_code: 5
 
-question_types: 
-        ['SELECT_ONE', 'SELECT_MULTIPLE', 'SELECT_ONE_WRITE_OTHER', 'SELECT_MULTIPLE_WRITE_OTHER', 'FREE_RESPONSE', 'SLIDER', 'DATE', 'RATING', 'TIME', 'LIST_OF_TEXT_BOXES', 'INTEGER', 'EMAIL_ADDRESS', 'DECIMAL_NUMBER', 'INSTRUCTIONS', 'MONTH_AND_YEAR', 'YEAR', 'PHONE_NUMBER', 'ADDRESS', 'REAR_PICTURE', 'FRONT_PICTURE', 'SELECT_ONE_IMAGE', 'SELECT_MULTIPLE_IMAGE', 'LIST_OF_INTEGER_BOXES', 'LABELED_SLIDER', 'GEO_LOCATION']
+question_types: ['FREE_RESPONSE', 'SELECT_ONE', 'SELECT_ONE_WRITE_OTHER', 'SELECT_MULTIPLE',
+'SELECT_MULTIPLE_WRITE_OTHER', 'DROP_DOWN', 'SLIDER', 'LABELED_SLIDER', 'INSTRUCTIONS', 'GEO_LOCATION',
+'DATE', 'TIME', 'MONTH_AND_YEAR', 'YEAR', 'RATING', 'LIST_OF_TEXT_BOXES', 'LIST_OF_INTEGER_BOXES',
+'INTEGER', 'DECIMAL_NUMBER', 'RANGE', 'PHONE_NUMBER', 'ADDRESS', 'EMAIL_ADDRESS', 'AUDIO_RECORDING',
+ 'REAR_PICTURE', 'FRONT_PICTURE', 'SELECT_ONE_IMAGE', 'SELECT_MULTIPLE_IMAGE', 'SIGNATURE']
 critical_type_questions: ['SELECT_ONE', 'SELECT_MULTIPLE']
-question_with_options: ['SELECT_ONE', 'SELECT_MULTIPLE', 'SELECT_ONE_WRITE_OTHER', 'SELECT_MULTIPLE_WRITE_OTHER', 'LIST_OF_TEXT_BOXES', 'LIST_OF_INTEGER_BOXES', 'LABELED_SLIDER']
+question_with_options: ['SELECT_ONE', 'SELECT_MULTIPLE', 'SELECT_ONE_WRITE_OTHER',
+'SELECT_MULTIPLE_WRITE_OTHER', 'LIST_OF_TEXT_BOXES', 'LIST_OF_INTEGER_BOXES',
+'LABELED_SLIDER', 'DROP_DOWN']
 question_with_images: ['SELECT_ONE_IMAGE', 'SELECT_MULTIPLE_IMAGE']
 question_with_other: ['SELECT_ONE_WRITE_OTHER', 'SELECT_MULTIPLE_WRITE_OTHER']
-question_with_select_multiple: ['SELECT_MULTIPLE', 'SELECT_MULTIPLE_WRITE_OTHER', 'SELECT_MULTIPLE_IMAGE']
-question_with_multiple_skips: ['SELECT_ONE']
-question_without_options: ['FREE_RESPONSE', 'SLIDER', 'DATE', 'RATING', 'TIME', 'INTEGER', 'EMAIL_ADDRESS', 'DECIMAL_NUMBER', 'INSTRUCTIONS', 'MONTH_AND_YEAR', 'YEAR', 'PHONE_NUMBER', 'ADDRESS', 'REAR_PICTURE', 'FRONT_PICTURE']
-scoreable_question_types: 
-        ['SELECT_ONE', 'SELECT_MULTIPLE', 'SELECT_ONE_WRITE_OTHER',
-        'SELECT_MULTIPLE_WRITE_OTHER', 'INTEGER', 'DECIMAL_NUMBER', 'SLIDER', 'LABELED_SLIDER', 'RATING', 'LIST_OF_TEXT_BOXES', 'FREE_RESPONSE']
+question_with_select_multiple: ['SELECT_MULTIPLE', 'SELECT_MULTIPLE_WRITE_OTHER',
+'SELECT_MULTIPLE_IMAGE']
+question_with_skips: ['SELECT_ONE', 'SELECT_ONE_WRITE_OTHER', 'DROP_DOWN', 'SELECT_MULTIPLE', 'SELECT_MULTIPLE_WRITE_OTHER']
+question_without_options: ['FREE_RESPONSE', 'SLIDER', 'DATE', 'RATING', 'TIME', 'INTEGER', 'EMAIL_ADDRESS',
+'DECIMAL_NUMBER', 'INSTRUCTIONS', 'MONTH_AND_YEAR', 'YEAR', 'PHONE_NUMBER', 'ADDRESS', 'REAR_PICTURE',
+'FRONT_PICTURE']
+scoreable_question_types: ['SELECT_ONE', 'SELECT_MULTIPLE', 'SELECT_ONE_WRITE_OTHER',
+'SELECT_MULTIPLE_WRITE_OTHER', 'INTEGER', 'DECIMAL_NUMBER', 'SLIDER', 'LABELED_SLIDER',
+'RATING', 'LIST_OF_TEXT_BOXES', 'FREE_RESPONSE', 'DROP_DOWN']
 list_question_types: ['LIST_OF_INTEGER_BOXES', 'LIST_OF_TEXT_BOXES']
+question_types_with_follow_ups: ['SELECT_ONE', 'SELECT_MULTIPLE', 'SELECT_ONE_WRITE_OTHER',
+'SELECT_MULTIPLE_WRITE_OTHER']
 
-rule_types: 
+rule_types:
   instrument_survey_limit_rule:
     constant_name: 'INSTRUMENT_SURVEY_LIMIT_RULE'
     pretty_name: 'Instrument Survey Limit Rule'
@@ -46,10 +56,9 @@ rule_types:
     pretty_name: 'Participant Age Rule'
     params: ['start_age', 'end_age']
     description: 'Limit an instrument so a survey can only be created if the age of the participant falls within the range'
- 
+
 # List delimiter for options
 list_delimiter: ','
-
 # Delimiter for items in option dictionary
 dictionary_delimiter: ';'
 
@@ -64,21 +73,24 @@ languages: [
              ['Telugu', 'te'],
              ['Chinese', 'zh']
           ]
+right_align_languages: ['ar']
 
 # Special Responses
-special_responses: ['SKIP', 'NA', 'RF', 'DK']
+special_responses: ['DK', 'RF', 'MI', 'NA']
 any_default_non_empty_response: 'ANY RESPONSE'
 skipped_question_special_response: 'SKIP'
 
-right_align_languages: ['ar']
-
 exception_notifications:
-  email_prefix: '[RailsSurvey] '
+  email_prefix: '[iSEESurvey] '
   sender: 'noreply@chpir.org'
-  recipients: ['leonard@chpir.org']
+  recipients: ['leonard.ngeno@duke.edu']
 
 danger_zone_days: 3
 
 metric_keys: ['device_uuid', 'Participant ID', 'Center ID']
-
 roster_types: ['STAFF','CHILD']
+display_types: ['SINGLE', 'MULTIPLE', 'TABLE']
+copy_display_types: ['AS_IT_IS', 'ONE_QUESTION_PER_SCREEN', 'ALL_QUESTIONS_ON_ONE_SCREEN']
+validation_types: ['REGEX', 'VERHOEFF', 'SUM_OF_PARTS', 'RESPONSE']
+relational_operators: ['==', '!=', '>', '<', '>=', '<=']
+skip_conditions: [ONLY, ONLY_AND, AND]

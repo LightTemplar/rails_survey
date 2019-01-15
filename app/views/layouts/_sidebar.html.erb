@@ -9,6 +9,14 @@
     <% end %>
   </li>
   <% end %>
+  <li class="sub-menu">
+    <a href=""><i class="md md-dashboard"></i>Components Bank</a>
+    <ul>
+      <li><a href="{{baseUrl}}/question_sets">Questions</a></li>
+      <li><a href="{{baseUrl}}/option_sets">Options</a></li>
+      <li><a href="{{baseUrl}}/instructions">Instructions</a></li>
+    </ul>
+  </li>
   <li>
     <%= link_to root_path do %>
     <i class="md md-home"></i>
@@ -125,6 +133,14 @@
     <%= link_to admin_dashboard_path do %>
     <i class="md md-verified-user"></i>Admin Dashboard
     <% end %>
+  </li>
+  <li class="sub-menu">
+    <a href=""><i class="md md-dashboard"></i>Components Bank</a>
+    <ul>
+      <li><a href="{{baseUrl}}/question_sets">Questions</a></li>
+      <li><a href="{{baseUrl}}/option_sets">Options</a></li>
+      <li><a href="{{baseUrl}}/instructions">Instructions</a></li>
+    </ul>
   </li>
 </ul>
 <% end %>

@@ -3,21 +3,22 @@
 # Table name: device_sync_entries
 #
 #  id                     :integer          not null, primary key
-#  latitude               :string(255)
-#  longitude              :string(255)
+#  latitude               :string
+#  longitude              :string
 #  num_complete_surveys   :integer
-#  current_language       :string(255)
-#  current_version_code   :string(255)
+#  current_language       :string
+#  current_version_code   :string
 #  instrument_versions    :text
 #  created_at             :datetime
 #  updated_at             :datetime
-#  device_uuid            :string(255)
-#  api_key                :string(255)
-#  timezone               :string(255)
-#  current_version_name   :string(255)
-#  os_build_number        :string(255)
+#  device_uuid            :string
+#  api_key                :string
+#  timezone               :string
+#  current_version_name   :string
+#  os_build_number        :string
 #  project_id             :integer
 #  num_incomplete_surveys :integer
+#  device_label           :string
 #
 
 class DeviceSyncEntry < ActiveRecord::Base
@@ -27,4 +28,5 @@ class DeviceSyncEntry < ActiveRecord::Base
   def instrument_versions
     JSON.parse(read_attribute(:instrument_versions)) unless read_attribute(:instrument_versions).nil?
   end
+
 end

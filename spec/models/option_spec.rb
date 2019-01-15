@@ -3,17 +3,12 @@
 # Table name: options
 #
 #  id                        :integer          not null, primary key
-#  question_id               :integer
 #  text                      :text
 #  created_at                :datetime
 #  updated_at                :datetime
-#  next_question             :string(255)
-#  number_in_question        :integer
 #  deleted_at                :datetime
 #  instrument_version_number :integer          default(-1)
-#  special                   :boolean          default(FALSE)
-#  critical                  :boolean
-#  complete_survey           :boolean
+#  identifier                :string
 #
 
 require "spec_helper"

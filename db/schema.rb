@@ -11,38 +11,76 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171109185008) do
+ActiveRecord::Schema.define(version: 20190111172044) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
   create_table "active_admin_comments", force: :cascade do |t|
-    t.string   "namespace",     limit: 255
+    t.string   "namespace"
     t.text     "body"
-    t.string   "resource_id",   limit: 255, null: false
-    t.string   "resource_type", limit: 255, null: false
+    t.string   "resource_id",   null: false
+    t.string   "resource_type", null: false
     t.integer  "author_id"
-    t.string   "author_type",   limit: 255
+    t.string   "author_type"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "active_admin_comments", ["author_type", "author_id"], name: "index_active_admin_comments_on_author_type_and_author_id"
-  add_index "active_admin_comments", ["namespace"], name: "index_active_admin_comments_on_namespace"
-  add_index "active_admin_comments", ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource_type_and_resource_id"
+  add_index "active_admin_comments", ["author_type", "author_id"], name: "index_active_admin_comments_on_author_type_and_author_id", using: :btree
+  add_index "active_admin_comments", ["namespace"], name: "index_active_admin_comments_on_namespace", using: :btree
+  add_index "active_admin_comments", ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource_type_and_resource_id", using: :btree
 
   create_table "android_updates", force: :cascade do |t|
     t.integer  "version"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "apk_update_file_name",    limit: 255
-    t.string   "apk_update_content_type", limit: 255
+    t.string   "apk_update_file_name"
+    t.string   "apk_update_content_type"
     t.integer  "apk_update_file_size"
     t.datetime "apk_update_updated_at"
-    t.string   "name",                    limit: 255
+    t.string   "name"
   end
 
   create_table "api_keys", force: :cascade do |t|
-    t.string   "access_token", limit: 255
+    t.string   "access_token"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "device_user_id"
+  end
+
+  create_table "back_translations", force: :cascade do |t|
+    t.text     "text"
+    t.string   "language"
+    t.integer  "backtranslatable_id"
+    t.string   "backtranslatable_type"
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+    t.boolean  "approved"
+  end
+
+  add_index "back_translations", ["backtranslatable_id", "backtranslatable_type", "language"], name: "backtranslatable_index", unique: true, using: :btree
+
+  create_table "condition_skips", force: :cascade do |t|
+    t.integer  "instrument_question_id"
+    t.string   "question_identifier"
+    t.string   "condition_question_identifier"
+    t.string   "condition_option_identifier"
+    t.string   "option_identifier"
+    t.string   "condition"
+    t.string   "next_question_identifier"
+    t.datetime "deleted_at"
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+  end
+
+  create_table "critical_responses", force: :cascade do |t|
+    t.string   "question_identifier"
+    t.string   "option_identifier"
+    t.integer  "instruction_id"
+    t.datetime "deleted_at"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
   end
 
   create_table "device_device_users", force: :cascade do |t|
@@ -53,40 +91,89 @@ ActiveRecord::Schema.define(version: 20171109185008) do
   end
 
   create_table "device_sync_entries", force: :cascade do |t|
-    t.string   "latitude",               limit: 255
-    t.string   "longitude",              limit: 255
+    t.string   "latitude"
+    t.string   "longitude"
     t.integer  "num_complete_surveys"
-    t.string   "current_language",       limit: 255
-    t.string   "current_version_code",   limit: 255
+    t.string   "current_language"
+    t.string   "current_version_code"
     t.text     "instrument_versions"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "device_uuid",            limit: 255
-    t.string   "api_key",                limit: 255
-    t.string   "timezone",               limit: 255
-    t.string   "current_version_name",   limit: 255
-    t.string   "os_build_number",        limit: 255
+    t.string   "device_uuid"
+    t.string   "api_key"
+    t.string   "timezone"
+    t.string   "current_version_name"
+    t.string   "os_build_number"
     t.integer  "project_id"
     t.integer  "num_incomplete_surveys"
+    t.string   "device_label"
   end
 
   create_table "device_users", force: :cascade do |t|
-    t.string   "username",        limit: 255,                 null: false
-    t.string   "name",            limit: 255
-    t.string   "password_digest", limit: 255
-    t.boolean  "active",                      default: false
+    t.string   "username",                        null: false
+    t.string   "name"
+    t.string   "password_digest"
+    t.boolean  "active",          default: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "devices", force: :cascade do |t|
-    t.string   "identifier", limit: 255
+    t.string   "identifier"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "label",      limit: 255
+    t.string   "label"
   end
 
-  add_index "devices", ["identifier"], name: "index_devices_on_identifier", unique: true
+  add_index "devices", ["identifier"], name: "index_devices_on_identifier", unique: true, using: :btree
+
+  create_table "display_instructions", force: :cascade do |t|
+    t.integer  "display_id"
+    t.integer  "instruction_id"
+    t.integer  "position"
+    t.datetime "deleted_at"
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+    t.integer  "instrument_question_id"
+  end
+
+  create_table "display_translations", force: :cascade do |t|
+    t.integer  "display_id"
+    t.text     "text"
+    t.string   "language"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "displays", force: :cascade do |t|
+    t.string   "mode"
+    t.integer  "position"
+    t.integer  "instrument_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "title"
+    t.datetime "deleted_at"
+    t.integer  "section_id"
+  end
+
+  add_index "displays", ["deleted_at"], name: "index_displays_on_deleted_at", using: :btree
+
+  create_table "folders", force: :cascade do |t|
+    t.integer  "question_set_id"
+    t.string   "title"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  create_table "follow_up_questions", force: :cascade do |t|
+    t.string   "question_identifier"
+    t.string   "following_up_question_identifier"
+    t.integer  "position"
+    t.integer  "instrument_question_id"
+    t.datetime "deleted_at"
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+  end
 
   create_table "grid_label_translations", force: :cascade do |t|
     t.integer  "grid_label_id"
@@ -108,7 +195,7 @@ ActiveRecord::Schema.define(version: 20171109185008) do
   create_table "grid_translations", force: :cascade do |t|
     t.integer  "grid_id"
     t.integer  "instrument_translation_id"
-    t.string   "name",                      limit: 255
+    t.string   "name"
     t.text     "instructions"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -116,8 +203,8 @@ ActiveRecord::Schema.define(version: 20171109185008) do
 
   create_table "grids", force: :cascade do |t|
     t.integer  "instrument_id"
-    t.string   "question_type", limit: 255
-    t.string   "name",          limit: 255
+    t.string   "question_type"
+    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "instructions"
@@ -127,58 +214,143 @@ ActiveRecord::Schema.define(version: 20171109185008) do
   create_table "images", force: :cascade do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "photo_file_name",    limit: 255
-    t.string   "photo_content_type", limit: 255
+    t.string   "photo_file_name"
+    t.string   "photo_content_type"
     t.integer  "photo_file_size"
     t.datetime "photo_updated_at"
     t.integer  "question_id"
-    t.string   "description",        limit: 255
+    t.string   "description"
     t.integer  "number"
     t.datetime "deleted_at"
   end
 
-  add_index "images", ["deleted_at"], name: "index_images_on_deleted_at"
+  add_index "images", ["deleted_at"], name: "index_images_on_deleted_at", using: :btree
+
+  create_table "instruction_translations", force: :cascade do |t|
+    t.integer  "instruction_id"
+    t.string   "language"
+    t.text     "text"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  create_table "instructions", force: :cascade do |t|
+    t.string   "title"
+    t.text     "text"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "deleted_at"
+  end
+
+  add_index "instructions", ["deleted_at"], name: "index_instructions_on_deleted_at", using: :btree
+
+  create_table "instrument_questions", force: :cascade do |t|
+    t.integer  "question_id"
+    t.integer  "instrument_id"
+    t.integer  "number_in_instrument"
+    t.integer  "display_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "identifier"
+    t.datetime "deleted_at"
+    t.string   "table_identifier"
+  end
+
+  add_index "instrument_questions", ["deleted_at"], name: "index_instrument_questions_on_deleted_at", using: :btree
+  add_index "instrument_questions", ["identifier"], name: "index_instrument_questions_on_identifier", using: :btree
+  add_index "instrument_questions", ["question_id"], name: "index_instrument_questions_on_question_id", using: :btree
+
+  create_table "instrument_rules", force: :cascade do |t|
+    t.integer  "instrument_id"
+    t.integer  "rule_id"
+    t.datetime "deleted_at"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
 
   create_table "instrument_translations", force: :cascade do |t|
     t.integer  "instrument_id"
-    t.string   "language",         limit: 255
-    t.string   "alignment",        limit: 255
-    t.string   "title",            limit: 255
+    t.string   "language"
+    t.string   "alignment"
+    t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.text     "critical_message"
-    t.boolean  "active",                       default: false
+    t.boolean  "active",        default: false
   end
 
   create_table "instruments", force: :cascade do |t|
-    t.string   "title",                   limit: 255
+    t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "language",                limit: 255
-    t.string   "alignment",               limit: 255
-    t.integer  "child_update_count",                  default: 0
+    t.string   "language"
+    t.string   "alignment"
+    t.integer  "child_update_count",      default: 0
     t.integer  "previous_question_count"
     t.integer  "project_id"
     t.boolean  "published"
     t.datetime "deleted_at"
-    t.boolean  "show_instructions",                   default: false
+    t.boolean  "show_instructions",       default: false
     t.text     "special_options"
-    t.boolean  "show_sections_page",                  default: false
-    t.boolean  "navigate_to_review_page",             default: false
-    t.text     "critical_message"
-    t.boolean  "roster",                              default: false
-    t.string   "roster_type",             limit: 255
-    t.boolean  "scorable",                            default: false
-    t.boolean  "auto_export_responses",               default: true
+    t.boolean  "show_sections_page",      default: false
+    t.boolean  "navigate_to_review_page", default: false
+    t.boolean  "roster",                  default: false
+    t.string   "roster_type"
+    t.boolean  "scorable",                default: false
+    t.boolean  "auto_export_responses",   default: true
+  end
+
+  create_table "loop_questions", force: :cascade do |t|
+    t.integer  "instrument_question_id"
+    t.string   "parent"
+    t.string   "looped"
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
+    t.datetime "deleted_at"
+    t.string   "option_indices"
+    t.boolean  "same_display",           default: false
   end
 
   create_table "metrics", force: :cascade do |t|
     t.integer  "instrument_id"
-    t.string   "name",          limit: 255
+    t.string   "name"
     t.integer  "expected"
-    t.string   "key_name",      limit: 255
+    t.string   "key_name"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "multiple_skips", force: :cascade do |t|
+    t.string   "question_identifier"
+    t.string   "option_identifier"
+    t.string   "skip_question_identifier"
+    t.integer  "instrument_question_id"
+    t.datetime "deleted_at"
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+    t.string   "value"
+  end
+
+  create_table "next_questions", force: :cascade do |t|
+    t.string   "question_identifier"
+    t.string   "option_identifier"
+    t.string   "next_question_identifier"
+    t.integer  "instrument_question_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "deleted_at"
+    t.string   "value"
+    t.boolean  "complete_survey"
+  end
+
+  create_table "option_in_option_sets", force: :cascade do |t|
+    t.integer  "option_id",                          null: false
+    t.integer  "option_set_id",                      null: false
+    t.integer  "number_in_question",                 null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+    t.boolean  "special",            default: false
+    t.boolean  "is_exclusive",       default: false
   end
 
   create_table "option_scores", force: :cascade do |t|
@@ -187,36 +359,40 @@ ActiveRecord::Schema.define(version: 20171109185008) do
     t.float    "value"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "label",         limit: 255
+    t.string   "label"
     t.boolean  "exists"
     t.boolean  "next_question"
     t.datetime "deleted_at"
   end
 
-  add_index "option_scores", ["deleted_at"], name: "index_option_scores_on_deleted_at"
+  add_index "option_scores", ["deleted_at"], name: "index_option_scores_on_deleted_at", using: :btree
+
+  create_table "option_sets", force: :cascade do |t|
+    t.string   "title"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.boolean  "special",        default: false
+    t.datetime "deleted_at"
+    t.integer  "instruction_id"
+  end
 
   create_table "option_translations", force: :cascade do |t|
     t.integer  "option_id"
     t.text     "text"
-    t.string   "language",                  limit: 255
+    t.string   "language"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "option_changed",                        default: false
+    t.boolean  "option_changed",            default: false
     t.integer  "instrument_translation_id"
   end
 
   create_table "options", force: :cascade do |t|
-    t.integer  "question_id"
     t.text     "text"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "next_question",             limit: 255
-    t.integer  "number_in_question"
     t.datetime "deleted_at"
-    t.integer  "instrument_version_number",             default: -1
-    t.boolean  "special",                               default: false
-    t.boolean  "critical"
-    t.boolean  "complete_survey"
+    t.integer  "instrument_version_number", default: -1
+    t.string   "identifier"
   end
 
   create_table "project_device_users", force: :cascade do |t|
@@ -234,11 +410,11 @@ ActiveRecord::Schema.define(version: 20171109185008) do
   end
 
   create_table "projects", force: :cascade do |t|
-    t.string   "name",              limit: 255
+    t.string   "name"
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "survey_aggregator", limit: 255
+    t.string   "survey_aggregator"
   end
 
   create_table "question_randomized_factors", force: :cascade do |t|
@@ -249,57 +425,49 @@ ActiveRecord::Schema.define(version: 20171109185008) do
     t.datetime "updated_at"
   end
 
+  create_table "question_sets", force: :cascade do |t|
+    t.string   "title"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "question_translations", force: :cascade do |t|
     t.integer  "question_id"
-    t.string   "language",                  limit: 255
+    t.string   "language"
     t.text     "text"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "reg_ex_validation_message", limit: 255
-    t.boolean  "question_changed",                      default: false
+    t.string   "reg_ex_validation_message"
+    t.boolean  "question_changed",          default: false
     t.text     "instructions"
     t.integer  "instrument_translation_id"
   end
 
   create_table "questions", force: :cascade do |t|
     t.text     "text"
-    t.string   "question_type",                    limit: 255
-    t.string   "question_identifier",              limit: 255
-    t.integer  "instrument_id"
+    t.string   "question_type"
+    t.string   "question_identifier"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "following_up_question_identifier", limit: 255
-    t.string   "reg_ex_validation",                limit: 255
-    t.integer  "number_in_instrument"
-    t.string   "reg_ex_validation_message",        limit: 255
     t.datetime "deleted_at"
-    t.integer  "follow_up_position",                           default: 0
-    t.boolean  "identifies_survey",                            default: false
-    t.text     "instructions",                                 default: ""
-    t.integer  "child_update_count",                           default: 0
-    t.integer  "grid_id"
-    t.integer  "instrument_version_number",                    default: -1
-    t.integer  "section_id"
-    t.boolean  "critical"
-    t.integer  "number_in_grid"
+    t.boolean  "identifies_survey",     default: false
+    t.integer  "question_set_id"
+    t.integer  "option_set_id"
+    t.integer  "instruction_id"
+    t.integer  "special_option_set_id"
+    t.string   "parent_identifier"
+    t.integer  "folder_id"
+    t.integer  "validation_id"
+    t.boolean  "rank_responses",        default: false
   end
 
-  add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true
+  add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true, using: :btree
 
   create_table "randomized_factors", force: :cascade do |t|
     t.integer  "instrument_id"
-    t.string   "title",         limit: 255
+    t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "randomized_option_translations", force: :cascade do |t|
-    t.integer  "instrument_translation_id"
-    t.integer  "randomized_option_id"
-    t.text     "text"
-    t.string   "language"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
   end
 
   create_table "randomized_options", force: :cascade do |t|
@@ -315,8 +483,8 @@ ActiveRecord::Schema.define(version: 20171109185008) do
     t.float    "value"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "uuid",          limit: 255
-    t.string   "score_uuid",    limit: 255
+    t.string   "uuid"
+    t.string   "score_uuid"
   end
 
   create_table "response_exports", force: :cascade do |t|
@@ -332,19 +500,19 @@ ActiveRecord::Schema.define(version: 20171109185008) do
   end
 
   create_table "response_images", force: :cascade do |t|
-    t.string   "response_uuid",        limit: 255
+    t.string   "response_uuid"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "picture_file_name",    limit: 255
-    t.string   "picture_content_type", limit: 255
+    t.string   "picture_file_name"
+    t.string   "picture_content_type"
     t.integer  "picture_file_size"
     t.datetime "picture_updated_at"
   end
 
   create_table "response_images_exports", force: :cascade do |t|
     t.integer  "response_export_id"
-    t.string   "download_url",       limit: 255
-    t.boolean  "done",                           default: false
+    t.string   "download_url"
+    t.boolean  "done",               default: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -355,73 +523,59 @@ ActiveRecord::Schema.define(version: 20171109185008) do
     t.text     "other_response"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "survey_uuid",         limit: 255
-    t.string   "special_response",    limit: 255
+    t.string   "survey_uuid"
+    t.string   "special_response"
     t.datetime "time_started"
     t.datetime "time_ended"
-    t.string   "question_identifier", limit: 255
-    t.string   "uuid",                limit: 255
+    t.string   "question_identifier"
+    t.string   "uuid"
     t.integer  "device_user_id"
-    t.integer  "question_version",                default: -1
+    t.integer  "question_version",    default: -1
     t.datetime "deleted_at"
     t.text     "randomized_data"
+    t.string   "rank_order"
   end
 
-  add_index "responses", ["deleted_at"], name: "index_responses_on_deleted_at"
-  add_index "responses", ["survey_uuid"], name: "index_responses_on_survey_uuid"
-  add_index "responses", ["time_ended"], name: "index_responses_on_time_ended"
-  add_index "responses", ["time_started"], name: "index_responses_on_time_started"
-  add_index "responses", ["uuid"], name: "index_responses_on_uuid"
+  add_index "responses", ["deleted_at"], name: "index_responses_on_deleted_at", using: :btree
+  add_index "responses", ["survey_uuid"], name: "index_responses_on_survey_uuid", using: :btree
+  add_index "responses", ["time_ended"], name: "index_responses_on_time_ended", using: :btree
+  add_index "responses", ["time_started"], name: "index_responses_on_time_started", using: :btree
+  add_index "responses", ["uuid"], name: "index_responses_on_uuid", unique: true, using: :btree
 
   create_table "roles", force: :cascade do |t|
-    t.string   "name",       limit: 255
+    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "rosters", force: :cascade do |t|
     t.integer  "project_id"
-    t.string   "uuid",                      limit: 255
+    t.string   "uuid"
     t.integer  "instrument_id"
-    t.string   "identifier",                limit: 255
-    t.string   "instrument_title",          limit: 255
+    t.string   "identifier"
+    t.string   "instrument_title"
     t.integer  "instrument_version_number"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "rules", force: :cascade do |t|
-    t.string   "rule_type",     limit: 255
-    t.integer  "instrument_id"
-    t.string   "rule_params",   limit: 255
+    t.string   "rule_type"
+    t.string   "rule_params"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.time     "deleted_at"
   end
 
   create_table "score_schemes", force: :cascade do |t|
-    t.integer  "instrument_id", limit: 255
-    t.string   "title",         limit: 255
+    t.integer  "instrument_id"
+    t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
   end
 
-  add_index "score_schemes", ["deleted_at"], name: "index_score_schemes_on_deleted_at"
-
-  create_table "score_sections", force: :cascade do |t|
-    t.string   "name",          limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "instrument_id"
-  end
-
-  create_table "score_sub_sections", force: :cascade do |t|
-    t.string   "name",             limit: 255
-    t.integer  "score_section_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+  add_index "score_schemes", ["deleted_at"], name: "index_score_schemes_on_deleted_at", using: :btree
 
   create_table "score_unit_questions", force: :cascade do |t|
     t.integer  "score_unit_id"
@@ -431,11 +585,11 @@ ActiveRecord::Schema.define(version: 20171109185008) do
     t.datetime "deleted_at"
   end
 
-  add_index "score_unit_questions", ["deleted_at"], name: "index_score_unit_questions_on_deleted_at"
+  add_index "score_unit_questions", ["deleted_at"], name: "index_score_unit_questions_on_deleted_at", using: :btree
 
   create_table "score_units", force: :cascade do |t|
     t.integer  "score_scheme_id"
-    t.string   "question_type",   limit: 255
+    t.string   "question_type"
     t.float    "min"
     t.float    "max"
     t.float    "weight"
@@ -445,7 +599,7 @@ ActiveRecord::Schema.define(version: 20171109185008) do
     t.datetime "deleted_at"
   end
 
-  add_index "score_units", ["deleted_at"], name: "index_score_units_on_deleted_at"
+  add_index "score_units", ["deleted_at"], name: "index_score_units_on_deleted_at", using: :btree
 
   create_table "scores", force: :cascade do |t|
     t.integer  "survey_id"
@@ -453,106 +607,81 @@ ActiveRecord::Schema.define(version: 20171109185008) do
     t.float    "score_sum"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "uuid",            limit: 255
-    t.string   "survey_uuid",     limit: 255
-    t.string   "device_uuid",     limit: 255
-    t.string   "device_label",    limit: 255
+    t.string   "uuid"
+    t.string   "survey_uuid"
+    t.string   "device_uuid"
+    t.string   "device_label"
   end
 
   create_table "section_translations", force: :cascade do |t|
     t.integer  "section_id"
-    t.string   "language",                  limit: 255
-    t.string   "text",                      limit: 255
+    t.string   "language"
+    t.string   "text"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "section_changed",                       default: false
+    t.boolean  "section_changed",           default: false
     t.integer  "instrument_translation_id"
   end
 
   create_table "sections", force: :cascade do |t|
-    t.string   "title",         limit: 255
+    t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "instrument_id"
     t.datetime "deleted_at"
   end
 
-  add_index "sections", ["deleted_at"], name: "index_sections_on_deleted_at"
+  add_index "sections", ["deleted_at"], name: "index_sections_on_deleted_at", using: :btree
+
+  create_table "skip_patterns", force: :cascade do |t|
+    t.string   "option_identifier"
+    t.string   "question_identifier"
+    t.string   "next_question_identifier"
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
 
   create_table "skips", force: :cascade do |t|
     t.integer  "option_id"
-    t.string   "question_identifier", limit: 255
+    t.string   "question_identifier"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
   end
 
-  add_index "skips", ["deleted_at"], name: "index_skips_on_deleted_at"
+  add_index "skips", ["deleted_at"], name: "index_skips_on_deleted_at", using: :btree
 
   create_table "stats", force: :cascade do |t|
     t.integer  "metric_id"
-    t.string   "key_value",  limit: 255
+    t.string   "key_value"
     t.integer  "count"
-    t.string   "percent",    limit: 255
+    t.string   "percent"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "survey_scores", force: :cascade do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "survey_id"
-    t.string   "survey_uuid",       limit: 255
-    t.string   "device_label",      limit: 255
-    t.string   "device_user",       limit: 255
-    t.string   "survey_start_time", limit: 255
-    t.string   "survey_end_time",   limit: 255
-    t.string   "center_id",         limit: 255
   end
 
   create_table "surveys", force: :cascade do |t|
     t.integer  "instrument_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "uuid",                      limit: 255
+    t.string   "uuid"
     t.integer  "device_id"
     t.integer  "instrument_version_number"
-    t.string   "instrument_title",          limit: 255
-    t.string   "device_uuid",               limit: 255
-    t.string   "latitude",                  limit: 255
-    t.string   "longitude",                 limit: 255
+    t.string   "instrument_title"
+    t.string   "device_uuid"
+    t.string   "latitude"
+    t.string   "longitude"
     t.text     "metadata"
-    t.string   "completion_rate",           limit: 3
-    t.string   "device_label",              limit: 255
+    t.string   "completion_rate"
+    t.string   "device_label"
     t.datetime "deleted_at"
-    t.boolean  "has_critical_responses"
-    t.string   "roster_uuid",               limit: 255
-    t.string   "language",                  limit: 255
+    t.string   "roster_uuid"
+    t.string   "language"
+    t.text     "skipped_questions"
   end
 
-  add_index "surveys", ["deleted_at"], name: "index_surveys_on_deleted_at"
-  add_index "surveys", ["uuid"], name: "index_surveys_on_uuid"
-
-  create_table "unit_scores", force: :cascade do |t|
-    t.integer  "survey_score_id"
-    t.integer  "unit_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "value"
-    t.integer  "variable_id"
-    t.string   "center_section_sub_section_name", limit: 255
-    t.string   "center_section_name",             limit: 255
-  end
-
-  create_table "units", force: :cascade do |t|
-    t.string   "name",                 limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "weight"
-    t.integer  "score_sub_section_id"
-    t.string   "domain",               limit: 255
-    t.string   "sub_domain",           limit: 255
-  end
+  add_index "surveys", ["deleted_at"], name: "index_surveys_on_deleted_at", using: :btree
+  add_index "surveys", ["uuid"], name: "index_surveys_on_uuid", unique: true, using: :btree
 
   create_table "user_projects", force: :cascade do |t|
     t.integer  "user_id"
@@ -569,64 +698,83 @@ ActiveRecord::Schema.define(version: 20171109185008) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string   "email",                  limit: 255, default: "",  null: false
-    t.string   "encrypted_password",     limit: 255, default: "",  null: false
-    t.string   "reset_password_token",   limit: 255
+    t.string   "email",                  default: "",  null: false
+    t.string   "encrypted_password",     default: "",  null: false
+    t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",                      default: 0,   null: false
+    t.integer  "sign_in_count",          default: 0,   null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
-    t.string   "current_sign_in_ip",     limit: 255
-    t.string   "last_sign_in_ip",        limit: 255
-    t.string   "authentication_token",   limit: 255
+    t.string   "current_sign_in_ip"
+    t.string   "last_sign_in_ip"
+    t.string   "authentication_token"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "failed_attempts",                    default: 0
-    t.string   "unlock_token",           limit: 255
+    t.integer  "failed_attempts",        default: 0
+    t.string   "unlock_token"
     t.datetime "locked_at"
-    t.datetime "last_active_at"
-    t.string   "gauth_secret",           limit: 255
-    t.string   "gauth_enabled",          limit: 255, default: "f"
-    t.string   "gauth_tmp",              limit: 255
+    t.string   "gauth_secret"
+    t.string   "gauth_enabled",          default: "f"
+    t.string   "gauth_tmp"
     t.datetime "gauth_tmp_datetime"
-    t.string   "invitation_token",       limit: 255
+    t.string   "invitation_token"
     t.datetime "invitation_created_at"
     t.datetime "invitation_sent_at"
     t.datetime "invitation_accepted_at"
     t.integer  "invitation_limit"
     t.integer  "invited_by_id"
-    t.string   "invited_by_type",        limit: 255
-    t.integer  "invitations_count",                  default: 0
+    t.string   "invited_by_type"
+    t.integer  "invitations_count",      default: 0
   end
 
-  add_index "users", ["authentication_token"], name: "index_users_on_authentication_token", unique: true
-  add_index "users", ["email"], name: "index_users_on_email", unique: true
-  add_index "users", ["invitation_token"], name: "index_users_on_invitation_token", unique: true
-  add_index "users", ["invitations_count"], name: "index_users_on_invitations_count"
-  add_index "users", ["invited_by_id"], name: "index_users_on_invited_by_id"
-  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  add_index "users", ["authentication_token"], name: "index_users_on_authentication_token", unique: true, using: :btree
+  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
+  add_index "users", ["invitation_token"], name: "index_users_on_invitation_token", unique: true, using: :btree
+  add_index "users", ["invitations_count"], name: "index_users_on_invitations_count", using: :btree
+  add_index "users", ["invited_by_id"], name: "index_users_on_invited_by_id", using: :btree
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
-  create_table "variables", force: :cascade do |t|
-    t.string   "name",           limit: 255
-    t.integer  "value"
-    t.string   "next_variable",  limit: 255
-    t.integer  "unit_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "result",         limit: 255
-    t.string   "next_unit_name", limit: 255
+  create_table "validation_translations", force: :cascade do |t|
+    t.integer  "validation_id"
+    t.string   "language"
+    t.string   "text"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
   end
+
+  create_table "validations", force: :cascade do |t|
+    t.string   "title"
+    t.string   "validation_text"
+    t.string   "validation_message"
+    t.datetime "deleted_at"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+    t.string   "validation_type"
+    t.string   "response_identifier"
+    t.string   "relational_operator"
+  end
+
+  create_table "version_associations", force: :cascade do |t|
+    t.integer "version_id"
+    t.string  "foreign_key_name", null: false
+    t.integer "foreign_key_id"
+  end
+
+  add_index "version_associations", ["foreign_key_name", "foreign_key_id"], name: "index_version_associations_on_foreign_key", using: :btree
+  add_index "version_associations", ["version_id"], name: "index_version_associations_on_version_id", using: :btree
 
   create_table "versions", force: :cascade do |t|
-    t.string   "item_type",  limit: 255, null: false
-    t.integer  "item_id",                null: false
-    t.string   "event",      limit: 255, null: false
-    t.string   "whodunnit",  limit: 255
+    t.string   "item_type",      null: false
+    t.integer  "item_id",        null: false
+    t.string   "event",          null: false
+    t.string   "whodunnit"
     t.text     "object"
     t.datetime "created_at"
+    t.integer  "transaction_id"
   end
 
-  add_index "versions", ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
+  add_index "versions", ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
+  add_index "versions", ["transaction_id"], name: "index_versions_on_transaction_id", using: :btree
 
 end

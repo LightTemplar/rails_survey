@@ -1,23 +1,23 @@
 ActiveAdmin.register Project do
+  actions :all, except: [:destroy]
   permit_params :name, :description, :survey_aggregator
   scope_to :current_user, unless: proc { current_user.super_admin? }
   sidebar 'Project Associations', only: :show do
     ul do
-      li link_to 'Instruments', admin_project_instruments_path(params[:id])
+      li link_to 'Survey Responses', admin_project_surveys_path(params[:id])
+      li link_to 'Survey Exports', admin_project_response_exports_path(params[:id])
+      li link_to 'Survey Variables', admin_project_questions_path(params[:id])
     end
   end
 
   index do
-    selectable_column
     column :id
-    column :name do |text|
-      truncate(text.name, length: 50)
+    column :name do |project|
+      link_to truncate(project.name, length: 50), admin_project_path(project.id)
     end
-    column :description do |text|
-      truncate(text.description, length: 100)
+    column :description do |project|
+      truncate(project.description, length: 100)
     end
-    column :created_at
-    column :updated_at
     actions
   end
 

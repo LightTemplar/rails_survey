@@ -1,50 +1,23 @@
-<style type="text/css">
-  #header {
-    display: none;
-  }
-
-</style>
-
-<body class="login-content">
-  <div class="lc-block toggled" style="margin-top: 5%" id="l-login">
-    <%= form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f| %>
-    <div class="input-group m-b-20">
-      <span class="input-group-addon">
-        <i class="md md-person"></i>
-      </span>
-
-      <div class="fg-line">
-        <%= f.email_field :email, :autofocus => true, class: 'form-control', placeholder: 'Your email' %>
+<div class="container">
+  <div class="row">
+    <div class="col-sm"></div>
+    <div class="col-sm mb-2">
+      <div class="text-center">
+        <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+          <h1 class="h3 mb-3 font-weight-normal">Please Sign In</h1>
+          <div class="m-2">
+            <%= f.email_field :email, autofocus: true, class: 'form-control',
+            placeholder: 'Your email', required: true %>
+          </div>
+          <div class="m-2">
+            <%= f.password_field :password, class: 'form-control',
+            placeholder: 'Your password', required: true %>
+          </div>
+          <button class="btn btn-lg btn-primary" type="submit">Sign in</button>
+        <% end %>
+        <%= link_to 'Forgot password?', new_user_password_path, target: :_blank %>
       </div>
     </div>
-
-    <div class="input-group m-b-20">
-      <span class="input-group-addon">
-        <i class="md md-lock-open"></i>
-      </span>
-
-      <div class="fg-line">
-        <%= f.password_field :password, class: 'form-control', placeholder: 'Your password' %>
-      </div>
-    </div>
-
-    <div class="clearfix"></div>
-
-    <div class="checkbox">
-      <label>
-        <input type="checkbox" value="">
-        <i class="input-helper"></i>
-        Keep me signed in
-      </label>
-    </div>
-
-    <%= button_tag(type: 'submit', class: 'btn btn-login btn-success btn-float') do %>
-    <i class="md md-arrow-forward"></i>
-    <% end %>
-    <% end %>
-    <div>
-      <%= link_to 'Forgot password?', new_user_password_path %>
-      <br/>
-    </div>
+    <div class="col-sm"></div>
   </div>
-</body>
+</div>

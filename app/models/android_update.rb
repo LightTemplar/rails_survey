@@ -6,11 +6,11 @@
 #  version                 :integer
 #  created_at              :datetime
 #  updated_at              :datetime
-#  apk_update_file_name    :string(255)
-#  apk_update_content_type :string(255)
+#  apk_update_file_name    :string
+#  apk_update_content_type :string
 #  apk_update_file_size    :integer
 #  apk_update_updated_at   :datetime
-#  name                    :string(255)
+#  name                    :string
 #
 
 class AndroidUpdate < ActiveRecord::Base

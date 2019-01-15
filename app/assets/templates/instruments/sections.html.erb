@@ -1,0 +1,27 @@
+<div ng-controller="InstrumentSectionsCtrl">
+  <div ng-include="'instruments/show.html'"></div>
+  <h4 class="text-center">Display Sections</h4>
+
+  <div class="card">
+    <div class="card-body card-padding">
+      <a ui-sref="sectionTranslations({project_id: project_id, instrument_id: instrument_id})"
+      class="btn btn-primary">Section Translations</a>
+      <h5 class="row m-1">
+        <div class="col-md-8">Title</div>
+        <div class="col-md-4">Actions</div>
+      </h5>
+      <div class="row m-1" ng-repeat="section in sections">
+        <div class="col-md-8">
+          <input type="text" class="form-control" ng-model="section.title" />
+        </div>
+        <div class="col-md-4">
+          <button class="btn btn-success oi oi-cloud-upload" ng-click="saveSection(section)"/>
+          <button class="btn btn-danger oi oi-trash" ng-click="deleteSection(section)"/>
+        </div>
+      </div>
+      <div class="m-1">
+        <button class="btn btn-primary oi oi-plus float-right" ng-click="createSection()"/>
+      </div>
+    </div>
+  </div>
+</div>

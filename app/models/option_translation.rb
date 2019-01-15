@@ -5,7 +5,7 @@
 #  id                        :integer          not null, primary key
 #  option_id                 :integer
 #  text                      :text
-#  language                  :string(255)
+#  language                  :string
 #  created_at                :datetime
 #  updated_at                :datetime
 #  option_changed            :boolean          default(FALSE)
@@ -15,6 +15,7 @@
 class OptionTranslation < ActiveRecord::Base
   include GoogleTranslatable
   belongs_to :option, touch: true
+  has_many :back_translations, as: :backtranslatable
   belongs_to :instrument_translation, touch: true
   validates :text, presence: true, allow_blank: false
 

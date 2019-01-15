@@ -1,0 +1,55 @@
+<h4 class="text-center">Translations</h4>
+<div ng-controller="OptionBackTranslationsCtrl">
+  <div class="row">
+    <label class="col-sm-4 text-right">Language</label>
+    <div class="col-sm-8 form-group text-left">
+      <select
+        class="form-control"
+        ng-model="language"
+        ng-options="language[1] as language[0] for language in languages"
+        ng-change="updateLanguage()">
+      </select>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body card-padding">
+      <table class="table table-hover">
+        <thead>
+        <tr class="row">
+          <th class="col-md-5">Translation Text</th>
+          <th class="col-md-5">Back Translation Text</th>
+          <th class="col-md-2">Approved</th>
+        </tr>
+        </thead>
+        <tbody>
+          <tr class="row">
+            <td class="col-md-5"></td>
+            <td class="col-md-5"></td>
+            <td class="col-md-2">
+              <input type="checkbox" ng-model="selectall" ng-click="selectAll()"> select all
+            </td>
+          </tr>
+          <tr class="row" ng-repeat="optionTranslation in optionTranslations">
+            <td class="col-md-5" ng-bind-html="optionTranslation.text | ToTrustedHtml"></td>
+            <td class="col-md-5">
+              <textarea
+                class="form-control"
+                name="option-back-translation-{{optionTranslation.id}}-{{$index}}"
+                ng-model="backTranslationFor(optionTranslation).text">
+              </textarea>
+            </td>
+            <td class="col-md-2">
+              <input type="checkbox"
+              name="option-back-translation-approval-{{optionTranslation.id}}-{{$index}}"
+               ng-model="backTranslationFor(optionTranslation).approved">
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="m-1">
+        <div class="btn btn-success pull-right" ng-click="save()">Save</div>
+      </div>
+    </div>
+  </div>
+</div>

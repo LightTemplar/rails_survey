@@ -5,12 +5,12 @@
 #  id                 :integer          not null, primary key
 #  created_at         :datetime
 #  updated_at         :datetime
-#  photo_file_name    :string(255)
-#  photo_content_type :string(255)
+#  photo_file_name    :string
+#  photo_content_type :string
 #  photo_file_size    :integer
 #  photo_updated_at   :datetime
 #  question_id        :integer
-#  description        :string(255)
+#  description        :string
 #  number             :integer
 #  deleted_at         :datetime
 #

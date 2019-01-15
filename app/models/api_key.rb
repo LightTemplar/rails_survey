@@ -2,15 +2,17 @@
 #
 # Table name: api_keys
 #
-#  id           :integer          not null, primary key
-#  access_token :string(255)
-#  created_at   :datetime
-#  updated_at   :datetime
+#  id             :integer          not null, primary key
+#  access_token   :string
+#  created_at     :datetime
+#  updated_at     :datetime
+#  device_user_id :integer
 #
 
 class ApiKey < ActiveRecord::Base
   before_create :generate_access_token
-
+  belongs_to :device_user
+  
   private
   def generate_access_token
     begin

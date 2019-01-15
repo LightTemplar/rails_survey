@@ -1,0 +1,30 @@
+<div ng-controller="CriticalResponseCtrl">
+  <h6 class="row m-1">
+    <label class="col-md-3">Question</label>
+    <label class="col-md-3">Option</label>
+    <label class="col-md-4">Instruction</label>
+    <label class="col-md-2">Actions</label>
+  </h6>
+  <div class="row m-1" ng-repeat="criticalResponse in criticalResponses">
+    <div class="col-md-3">{{criticalResponse.question_identifier}}</div>
+    <div class="col-md-3">
+      <select
+        class="form-control"
+        ng-model="criticalResponse.option_identifier"
+        ng-options="option.identifier as option.identifier for option in options">
+      </select>
+    </div>
+    <div class="col-md-4">
+      <select
+        class="form-control"
+        ng-model="criticalResponse.instruction_id"
+        ng-options="instruction.id as instruction.text for instruction in instructions">
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-success" ng-click="save(criticalResponse)">Save</button>
+      <button class="btn btn-danger" ng-click="delete(criticalResponse)">Delete</button>
+    </div>
+  </div>
+  <button class="btn btn-primary" ng-click="addCriticalResponse()">Add Critical Response</button>
+</div>

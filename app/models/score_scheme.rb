@@ -4,7 +4,7 @@
 #
 #  id            :integer          not null, primary key
 #  instrument_id :integer
-#  title         :string(255)
+#  title         :string
 #  created_at    :datetime
 #  updated_at    :datetime
 #  deleted_at    :datetime

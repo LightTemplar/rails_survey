@@ -3,10 +3,10 @@
 # Table name: devices
 #
 #  id         :integer          not null, primary key
-#  identifier :string(255)
+#  identifier :string
 #  created_at :datetime
 #  updated_at :datetime
-#  label      :string(255)
+#  label      :string
 #
 
 require "spec_helper"

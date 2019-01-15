@@ -1,0 +1,14 @@
+<div ng-controller="ResourceImportCtrl">
+  <div class="card">
+    <div class="card-body card-padding">
+      <h5 class="text-center">Upload CSV File</h5>
+      <form>
+        <div class="row m-1">
+          <label class="col-md-3 control-label" for="instrumentImportFile">CSV File</label>
+          <input class="col-md-9 form-control-file" type="file" id="instrumentImportFile" file-upload="resource.file">
+        </div>
+        <button type="submit" class="btn btn-primary float-right" ng-click="upload()">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>

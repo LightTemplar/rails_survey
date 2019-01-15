@@ -77,7 +77,13 @@ class InstrumentsController < ApplicationController
   def export_responses
     @instrument = current_project.instruments.find params[:id]
     authorize @instrument
-    @instrument.export_surveys(true)
+    @instrument.export_surveys
+    unless @instrument.response_images.empty?
+      zipped_file = File.new(File.join('files', 'exports').to_s + "/#{Time.now.to_i}.zip", 'a+')
+      zipped_file.close
+      pictures_export = ResponseImagesExport.create(response_export_id: @instrument.response_export.id, download_url: zipped_file.path)
+      InstrumentImagesExportWorker.perform_async(@instrument.id, zipped_file.path, pictures_export.id)
+    end
     redirect_to project_response_exports_path(current_project)
   end
 
@@ -136,6 +142,6 @@ class InstrumentsController < ApplicationController
   private
 
   def instrument_params
-    params.require(:instrument).permit(:title, :language, :alignment, :previous_question_count, :child_update_count, :published, :project_id, :show_instructions, :show_sections_page, :roster, :roster_type, :navigate_to_review_page, :critical_message, :scorable, :auto_export_responses, special_options: [])
+    params.require(:instrument).permit(:title, :language, :alignment, :previous_question_count, :child_update_count, :published, :project_id, :show_instructions, :show_sections_page, :roster, :roster_type, :navigate_to_review_page, :scorable, :auto_export_responses, special_options: [])
   end
 end

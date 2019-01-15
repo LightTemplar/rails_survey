@@ -3,11 +3,12 @@
 # Table name: devices
 #
 #  id         :integer          not null, primary key
-#  identifier :string(255)
+#  identifier :string
 #  created_at :datetime
 #  updated_at :datetime
-#  label      :string(255)
+#  label      :string
 #
+
 class Device < ActiveRecord::Base
   has_many :surveys
   has_many :project_devices
@@ -44,6 +45,10 @@ class Device < ActiveRecord::Base
     if last_sync_entry project
       last_sync_entry(project).num_complete_surveys == 0 && !danger_zone?(project) && last_sync_entry(project).current_version_code == (AndroidUpdate.latest_version.version.to_s if AndroidUpdate.latest_version)
     end
+  end
+
+  def pretty_label
+    label.downcase.gsub(/\W+/, '_') unless label.blank?
   end
 
 end

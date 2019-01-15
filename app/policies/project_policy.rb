@@ -12,11 +12,11 @@ class ProjectPolicy < ApplicationPolicy
   def index?
     true
   end
-  
+
   def new?
     create?
   end
-  
+
   def create?
     @user.super_admin?
   end
@@ -36,9 +36,12 @@ class ProjectPolicy < ApplicationPolicy
   def update?
     @user.admin_user?
   end
-  
+
   def export?
     @user.admin_user? || @user.analyst?
   end
 
+  def question_sets
+    true
+  end
 end

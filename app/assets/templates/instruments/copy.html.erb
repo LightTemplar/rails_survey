@@ -1,0 +1,35 @@
+<div ng-controller="CopyInstrumentCtrl">
+  <div ng-include="'instruments/show.html'"></div>
+  <h4 class="text-center">Copy Instrument</h4>
+  <div class="card">
+    <div class="card-body card-padding">
+      <div class="row m-1">
+        <label class="col-md-3">Destination Instrument</label>
+        <div class="col-md-9">
+          <select
+          class="form-control"
+          name="destination-project"
+          id="destination-project"
+          ng-model="instrument.destination_project_id"
+          ng-options="project.id as project.name for project in projects"
+          required>
+          <option value=""></option>
+          </select>
+        </div>
+      </div>
+      <div class="row m-1">
+        <label class="col-md-3">Question Display Type</label>
+        <div class="col-md-9">
+          <div ng-repeat="type in displayTypes">
+            <input type="radio" ng-model="instrument.display_type"
+            value="{{type}}" name="instrument-display-type" required/>
+            <label>{{ type }}</label>
+          </div>
+        </div>
+      </div>
+      <div class="m-1">
+        <div class="btn btn-success pull-right" ng-click="saveCopy()">Save</div>
+      </div>
+    </div>
+  </div>
+</div>

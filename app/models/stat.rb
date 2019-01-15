@@ -4,9 +4,9 @@
 #
 #  id         :integer          not null, primary key
 #  metric_id  :integer
-#  key_value  :string(255)
+#  key_value  :string
 #  count      :integer
-#  percent    :string(255)
+#  percent    :string
 #  created_at :datetime
 #  updated_at :datetime
 #

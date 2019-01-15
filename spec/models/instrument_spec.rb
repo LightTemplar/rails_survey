@@ -3,11 +3,11 @@
 # Table name: instruments
 #
 #  id                      :integer          not null, primary key
-#  title                   :string(255)
+#  title                   :string
 #  created_at              :datetime
 #  updated_at              :datetime
-#  language                :string(255)
-#  alignment               :string(255)
+#  language                :string
+#  alignment               :string
 #  child_update_count      :integer          default(0)
 #  previous_question_count :integer
 #  project_id              :integer
@@ -17,9 +17,8 @@
 #  special_options         :text
 #  show_sections_page      :boolean          default(FALSE)
 #  navigate_to_review_page :boolean          default(FALSE)
-#  critical_message        :text
 #  roster                  :boolean          default(FALSE)
-#  roster_type             :string(255)
+#  roster_type             :string
 #  scorable                :boolean          default(FALSE)
 #  auto_export_responses   :boolean          default(TRUE)
 #

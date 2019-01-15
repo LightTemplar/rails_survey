@@ -1,0 +1,95 @@
+<div class="card" ng-controller="ShowInstrumentQuestionCtrl">
+  <div class="card-header">
+    <div ng-include="'instrument_questions/header.html'"></div>
+  </div>
+  <div class="card-body">
+    <div ng-show="followUpQuestions.length > 0">
+      <h5 class="text-center">Follow Up Questions</h5>
+      <div class="row m-1">
+        <label class="col-md-2">Position</label>
+        <label class="col-md-8">Follow-up Question</label>
+        <label class="col-md-2">Delete</label>
+      </div>
+      <div class="row m-1" ng-repeat="followUp in followUpQuestions">
+        <div class="col-md-2">{{followUp.position}}</div>
+        <div class="col-md-8">{{followUp.following_up_question_identifier}}</div>
+        <div class="col-md-2">
+          <button class="btn btn-danger" ng-click="deleteFollowUpQuestion(followUp)">Delete</button>
+        </div>
+      </div>
+    </div>
+    <div ng-show="nextQuestions.length > 0">
+      <h5 class="text-center">Select One Skip Patterns</h5>
+      <div class="row m-1">
+        <label class="col-md-2"><u>Option</u></label>
+        <label class="col-md-2"><u>Value</u></label>
+        <label class="col-md-4"><u>Next Question</u></label>
+        <label class="col-md-2"><u>Complete Survey</u></label>
+        <label class="col-md-2"><u>Delete</u></label>
+      </div>
+      <div class="row m-1" ng-repeat="nextQuestion in nextQuestions">
+        <div class="col-md-2">{{nextQuestion.option_identifier}}</div>
+        <div class="col-md-2">{{nextQuestion.value}}</div>
+        <div class="col-md-4">{{nextQuestion.next_question_identifier}}</div>
+        <div class="col-md-2">{{nextQuestion.complete_survey}}</div>
+        <div class="col-md-2">
+          <button class="btn btn-danger" ng-click="deleteNextQuestion(nextQuestion)">Delete</button>
+        </div>
+      </div>
+    </div>
+    <div ng-show="multipleSkips.length > 0">
+      <h5 class="text-center">Select One Skip Multiple</h5>
+      <div class="row m-1">
+        <label class="col-md-3"><u>Option</u></label>
+        <label class="col-md-3"><u>Entered Value</u></label>
+        <label class="col-md-3"><u>Question To Skip</u></label>
+        <label class="col-md-3"><u>Delete</u></label>
+      </div>
+      <div class="row m-1" ng-repeat="multiSkip in multipleSkips">
+        <div class="col-md-3">{{multiSkip.option_identifier}}</div>
+        <div class="col-md-3">{{multiSkip.value}}</div>
+        <div class="col-md-3">{{multiSkip.skip_question_identifier}}</div>
+        <div class="col-md-3">
+          <button class="btn btn-danger" ng-click="deleteMultiSkip(multiSkip)">Delete</button>
+        </div>
+      </div>
+    </div>
+    <div ng-show="conditionSkips.length > 0">
+      <h5 class="text-center">Condition Skip Patterns</h5>
+      <div class="row m-1">
+        <label class="col-md-2"><u>Condition Question</u></label>
+        <label class="col-md-2"><u>Condition Option</u></label>
+        <label class="col-md-2"><u>Condition</u></label>
+        <label class="col-md-2"><u>Option</u></label>
+        <label class="col-md-2"><u>Skip To Question</u></label>
+        <label class="col-md-2"><u>Delete</u></label>
+      </div>
+      <div class="row m-1" ng-repeat="conditionSkip in conditionSkips">
+        <div class="col-md-2">{{conditionSkip.condition_question_identifier}}</div>
+        <div class="col-md-2">{{conditionSkip.condition_option_identifier}}</div>
+        <div class="col-md-2">{{conditionSkip.condition}}</div>
+        <div class="col-md-2">{{conditionSkip.option_identifier}}</div>
+        <div class="col-md-2">{{conditionSkip.next_question_identifier}}</div>
+        <div class="col-md-2">
+          <button class="btn btn-danger" ng-click="deleteConditionSkip(conditionSkip)">Delete</button>
+        </div>
+      </div>
+    </div>
+    <div ng-show="loopQuestions.length > 0">
+      <h6 class="row m-1">
+        <label class="col-md-4" for="looped-question-identifier">Question Identifier</label>
+        <label class="col-md-3" for="looped-option-indices">Option Indices</label>
+        <label class="col-md-3" for="looped-option-same-display">Same Display</label>
+        <label class="col-md-2" for="looped-question-delete">Delete</label>
+      </h6>
+      <div class="row m-1" ng-repeat="loop in loopQuestions">
+        <div class="col-md-4">{{loop.looped}}</div>
+        <div class="col-md-3">{{loop.option_indices}}</div>
+        <div class="col-md-3">{{loop.same_display}}</div>
+        <div class="col-md-2">
+          <button class="btn btn-danger float-right" ng-click="deleteLoopQuestion(loop)">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

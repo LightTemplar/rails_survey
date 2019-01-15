@@ -2,25 +2,22 @@
 
 <div class="card">
   <div class="card-header">
-    <%= link_to new_project_instrument_instrument_translation_path(current_project, @instrument), class: 'm-5 btn btn-primary pull-right' do %>
-    <i class="md-add">
-      New Translation
-    </i>
-    <% end %>
-    <%= link_to new_gt_project_instrument_instrument_translations_path(current_project, @instrument), class: 'm-5 btn btn-primary pull-right' do %>
-    <i class="md-add">
+    <%= link_to 'New Translation', new_project_instrument_instrument_translation_path(current_project, @instrument), class: 'btn btn-primary' %>
+
+    <%#= link_to new_gt_project_instrument_instrument_translations_path(current_project, @instrument), class: 'm-5 btn btn-primary pull-right' do %>
+    <!-- <i class="md-add">
       New Translation (Google Translate)
-    </i>
-    <% end %>
-    <%= link_to translation_template_export_project_instrument_path(current_project, @instrument, format: :csv), class: 'm-5 btn btn-primary pull-right' do %>
-    <i class="md-cloud-download">
+    </i> -->
+    <%# end %>
+    <%#= link_to translation_template_export_project_instrument_path(current_project, @instrument, format: :csv), class: 'm-5 btn btn-primary pull-right' do %>
+    <!-- <i class="md-cloud-download">
       Translation Template
-    </i>
-    <% end %>
-    <%= form_tag import_translation_project_instrument_instrument_translations_path(current_project, @instrument), multipart: true do %>
-    <%= file_field_tag :file, accept: 'text/csv', required: true, class: 'fileinput-new' %>
-    <%= submit_tag 'Upload Translations CSV', class: 'btn-primary btn-file' %>
-    <% end %>
+    </i> -->
+    <%# end %>
+    <%#= form_tag import_translation_project_instrument_instrument_translations_path(current_project, @instrument), multipart: true do %>
+    <%#= file_field_tag :file, accept: 'text/csv', required: true, class: 'fileinput-new' %>
+    <%#= submit_tag 'Upload Translations CSV', class: 'btn-primary btn-file' %>
+    <%# end %>
   </div>
 </div>
 

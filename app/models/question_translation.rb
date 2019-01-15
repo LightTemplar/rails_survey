@@ -4,11 +4,11 @@
 #
 #  id                        :integer          not null, primary key
 #  question_id               :integer
-#  language                  :string(255)
+#  language                  :string
 #  text                      :text
 #  created_at                :datetime
 #  updated_at                :datetime
-#  reg_ex_validation_message :string(255)
+#  reg_ex_validation_message :string
 #  question_changed          :boolean          default(FALSE)
 #  instructions              :text
 #  instrument_translation_id :integer
@@ -18,6 +18,7 @@ class QuestionTranslation < ActiveRecord::Base
   include GoogleTranslatable
   belongs_to :question, touch: true
   belongs_to :instrument_translation, touch: true
+  has_many :back_translations, as: :backtranslatable
   validates :text, presence: true, allow_blank: false
 
   def translate_using_google
@@ -29,4 +30,10 @@ class QuestionTranslation < ActiveRecord::Base
     self.instructions = instructions_translation.text if instructions_translation
     save
   end
+
+  # Returns translated instructions
+  def instructions
+    question.instruction.instruction_translations.where(language: language).try(:first).try(:text) if question.instruction
+  end
+
 end

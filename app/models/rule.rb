@@ -2,18 +2,20 @@
 #
 # Table name: rules
 #
-#  id            :integer          not null, primary key
-#  rule_type     :string(255)
-#  instrument_id :integer
-#  rule_params   :string(255)
-#  created_at    :datetime
-#  updated_at    :datetime
-#  deleted_at    :time
+#  id          :integer          not null, primary key
+#  rule_type   :string
+#  rule_params :string
+#  created_at  :datetime
+#  updated_at  :datetime
+#  deleted_at  :time
 #
 
 class Rule < ActiveRecord::Base
-  Rules = [:instrument_survey_limit_rule, :instrument_timing_rule, :instrument_survey_limit_per_minute_rule, :instrument_launch_rule, :participant_type_rule, :participant_age_rule].freeze
-  belongs_to :instrument
+  Rules = [:instrument_survey_limit_rule, :instrument_timing_rule,
+    :instrument_survey_limit_per_minute_rule, :instrument_launch_rule,
+    :participant_type_rule, :participant_age_rule].freeze
+  has_many :instrument_rules
+  has_many :instruments, through: :instrument_rules
   validates :rule_type, presence: true
   acts_as_paranoid
 
