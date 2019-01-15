@@ -522,6 +522,10 @@ App.controller 'LoopsCtrl', ['$scope', '$stateParams', 'InstrumentQuestion',
   $scope.instrument_id = $stateParams.instrument_id
   $scope.id = $stateParams.id
 
+  $scope.hasLoops = (type) ->
+    type in ['INTEGER', 'SELECT_MULTIPLE', 'SELECT_MULTIPLE_WRITE_OTHER',
+    'LIST_OF_TEXT_BOXES', 'LIST_OF_INTEGER_BOXES']
+
   $scope.instrumentQuestion = InstrumentQuestion.get({
     'project_id': $scope.project_id,
     'instrument_id': $scope.instrument_id,
@@ -587,6 +591,15 @@ App.controller 'LoopsCtrl', ['$scope', '$stateParams', 'InstrumentQuestion',
       $scope.newLoop = false
     (result, headers) ->
       alert(result.data.errors)
+    )
+
+  $scope.update = (loopQ) ->
+    loopQ.project_id = $scope.project_id
+    loopQ.instrument_id = $scope.instrument_id
+    loopQ.$update({},
+      (data, headers) ->
+      (result, headers) ->
+        alert(result.data.errors)
     )
 
 ]

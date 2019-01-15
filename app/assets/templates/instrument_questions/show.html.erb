@@ -78,16 +78,18 @@
     <div ng-show="loopQuestions.length > 0">
       <h6 class="row m-1">
         <label class="col-md-4" for="looped-question-identifier">Question Identifier</label>
-        <label class="col-md-3" for="looped-option-indices">Option Indices</label>
-        <label class="col-md-3" for="looped-option-same-display">Same Display</label>
+        <label class="col-md-2" for="looped-replacement-text">Text To Replace</label>
+        <label class="col-md-2" for="looped-option-indices">Option Indices</label>
+        <label class="col-md-2" for="looped-option-same-display">Same Display</label>
         <label class="col-md-2" for="looped-question-delete">Delete</label>
       </h6>
       <div class="row m-1" ng-repeat="loop in loopQuestions">
         <div class="col-md-4">{{loop.looped}}</div>
-        <div class="col-md-3">{{loop.option_indices}}</div>
-        <div class="col-md-3">{{loop.same_display}}</div>
+        <div class="col-md-2">{{loop.replacement_text}}</div>
+        <div class="col-md-2">{{loop.option_indices}}</div>
+        <div class="col-md-2">{{loop.same_display}}</div>
         <div class="col-md-2">
-          <button class="btn btn-danger float-right" ng-click="deleteLoopQuestion(loop)">Delete</button>
+          <button class="btn btn-danger" ng-click="deleteLoopQuestion(loop)">Delete</button>
         </div>
       </div>
     </div>

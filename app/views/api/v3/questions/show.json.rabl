@@ -68,7 +68,7 @@ child :translations do |t|
 end
 
 child :loop_questions do |t|
-  attributes :id, :parent, :looped, :deleted_at, :option_indices, :same_display
+  attributes :id, :parent, :looped, :deleted_at, :option_indices, :same_display, :replacement_text
 end
 
 child :critical_responses do |cr|

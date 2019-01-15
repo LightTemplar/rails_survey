@@ -1,68 +1,90 @@
 <div ng-include="'instrument_questions/header.html'"></div>
 <div class="card" ng-controller="LoopsCtrl">
-  <div class="m-1">
-    <p>The questions listed below will be asked for each of the conditions given as a reply to this question
-      ({{instrumentQuestion.text}}).
-     </p>
-  </div>
-  <h6 class="row m-1">
-    <label class="col-md-2" for="looped-question-number">Question Number</label>
-    <label class="col-md-3" for="looped-question-identifier">Question Identifier</label>
-    <label class="col-md-4" for="looped-question-text">Question Text</label>
-    <label class="col-md-1" for="looped-option-indices">Option Indices</label>
-    <label class="col-md-1" for="looped-option-same-display">Same Display</label>
-    <label class="col-md-1" for="looped-question-delete">Delete</label>
-  </h6>
+  <div ng-if="hasLoops(instrumentQuestion.type)">
+    <div ng-hide="newLoop">
+      <b class="m-2">
+        The questions listed below will be asked for each of the conditions given as a reply to this question
+        ({{instrumentQuestion.text}}).
+      </b>
+      <h5 class="row m-1">
+        <label class="col-md-1" for="looped-question-number">Question Number</label>
+        <label class="col-md-2" for="looped-question-text">Question Text</label>
+        <label class="col-md-2" for="looped-question-identifier">Question Identifier</label>
+        <label class="col-md-2" for="looped-replacement-text">Text To Replace</label>
+        <label class="col-md-2" for="looped-option-indices">Option Indices</label>
+        <label class="col-md-1" for="looped-option-same-display">Same Display</label>
+        <label class="col-md-2" for="looped-question-delete">Actions</label>
+      </h5>
 
-  <div class="row m-1" ng-hide="newLoop" ng-repeat="loop in loopQuestions">
-    <div class="col-md-2">{{getQuestion(loop).number_in_instrument}}</div>
-    <div class="col-md-3">{{getQuestion(loop).identifier}}</div>
-    <div class="col-md-4">{{getQuestion(loop).text}}</div>
-    <div class="col-md-1">{{loop.option_indices}}</div>
-    <div class="col-md-1">{{loop.same_display}}</div>
-    <div class="col-md-1">
-      <button class="btn btn-danger float-right" ng-click="delete(loop)">Delete</button>
-    </div>
-  </div>
-
-  <div class="m-1" ng-hide="newLoop">
-    <button class="btn btn-primary" ng-click="createLoop()">Add Looped Question</button>
-  </div>
-
-  <div class="m-1" ng-show="newLoop">
-    <div class="row m-1">
-      <label for="looped_question" class="col-md-3">Add Question To Loop</label>
-      <div class="col-md-9">
-        <input type="text" ng-model="loopQuestion.looped"
-        placeholder="Search for question to loop" class="form-control"
-        uib-typeahead="question.identifier for question in questionsAfter() | filter:$viewValue | limitTo:10">
+      <div class="row m-1" ng-repeat="loop in loopQuestions">
+        <div class="col-md-1">{{getQuestion(loop).number_in_instrument}}</div>
+        <div class="col-md-2">{{getQuestion(loop).text}}</div>
+        <div class="col-md-2">
+          <input type="text" ng-model="loop.looped"
+          placeholder="Search for question to loop" class="form-control"
+          uib-typeahead="question.identifier for question in questionsAfter() | filter:$viewValue | limitTo:10">
+        </div>
+        <input type="text" class="col-md-2 form-control" ng-model="loop.replacement_text">
+        <div class="col-md-2">
+          <input type="text" class="form-control" ng-model="loop.option_indices">
+        </div>
+        <div class="col-md-1">
+          <input type="checkbox" name="same-display" ng-model="loop.same_display">
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-success" ng-click="update(loop)">Save</button>
+          <button class="btn btn-danger" ng-click="delete(loop)">Delete</button>
+        </div>
+      </div>
+      <div class="m-1">
+        <button class="btn btn-primary" ng-click="createLoop()">Add Looped Question</button>
       </div>
     </div>
-    <div class="row m-1">
-      <label for="same-display" class="col-md-3">Show looped question in the same display</label>
-      <div class="col-md-9">
-        <input type="checkbox" name="same-display" ng-model="loopQuestion.same_display">
+
+    <div class="m-1" ng-show="newLoop">
+      <div class="row m-1">
+        <label for="looped_question" class="col-md-3">Question to be looped</label>
+        <div class="col-md-9">
+          <input type="text" ng-model="loopQuestion.looped"
+          placeholder="Search for question to loop" class="form-control"
+          uib-typeahead="question.identifier for question in questionsAfter() | filter:$viewValue | limitTo:10">
+        </div>
       </div>
-    </div>
-    <div class="row m-1" ng-hide="isIntegerQuestion(instrumentQuestion.type)">
-      <p class="m-1"><b>If all the options in the multiple select can each trigger a loop, leave this part blank.
-      i.e. only use if some of the options do not trigger loops</b></p>
-      <label for="option-indices" class="col-md-3">Add Options That Trigger Loops</label>
-      <div class="col-md-9">
-        <ui-select multiple ng-model="loopQuestion.indices"
-        theme="bootstrap" close-on-select="false" title="Choose an option that loops">
-          <ui-select-match placeholder="Select option...">
-            {{$item.identifier}}
-          </ui-select-match>
-          <ui-select-choices repeat="option in options | propertyFilter:
-          {text: $select.search, identifier: $select.search}">
-            <span ng-bind-html="option.identifier | highlight: $select.search"></span>
-          </ui-select-choices>
-        </ui-select>
+      <div class="row m-1">
+        <label for="same-display" class="col-md-3">Show looped question in the same display</label>
+        <div class="col-md-9">
+          <input type="checkbox" name="same-display" ng-model="loopQuestion.same_display">
+        </div>
       </div>
-    </div>
-    <div class="m-1">
-      <button class="btn btn-success float-right" ng-click="saveLoop()">Save</button>
+      <div class="row m-1" ng-hide="isIntegerQuestion(instrumentQuestion.type)">
+        <label for="option-indices" class="col-md-3">Add Options That Trigger Loops</label>
+        <div class="col-md-5">
+          <ui-select multiple ng-model="loopQuestion.indices"
+          theme="bootstrap" close-on-select="false" title="Choose an option that loops">
+            <ui-select-match placeholder="select option...">
+              {{$item.identifier}}
+            </ui-select-match>
+            <ui-select-choices repeat="option in options | propertyFilter:
+            {text: $select.search, identifier: $select.search}">
+              <span ng-bind-html="option.identifier | highlight: $select.search"></span>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+        <div class="col-md-4">
+          <b>If all the options in the multiple select can each trigger a loop, leave this part blank.
+            i.e. only use if some of the options do not trigger loops
+          </b>
+        </div>
+      </div>
+      <div class="row m-1">
+        <label for="replacement-text" class="col-md-3">Text to replace in looped question</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control" ng-model="loopQuestion.replacement_text">
+        </div>
+      </div>
+      <div class="m-1">
+        <button class="btn btn-success" ng-click="saveLoop()">Save</button>
+      </div>
     </div>
   </div>
 </div>

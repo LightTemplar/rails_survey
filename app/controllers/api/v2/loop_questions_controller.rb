@@ -5,7 +5,7 @@ module Api
       before_action :set_instrument_question
 
       def index
-        @loop_questions = @instrument_question.loop_questions
+        @loop_questions = @instrument_question.loop_questions.order(:id)
       end
 
       def create
@@ -16,6 +16,11 @@ module Api
           render json: { errors: loop_question.errors.full_messages },
           status: :unprocessable_entity
         end
+      end
+
+      def update
+        loop_question = @instrument_question.loop_questions.find(params[:id])
+        respond_with loop_question.update_attributes(loop_question_params)
       end
 
       def destroy
@@ -37,7 +42,8 @@ module Api
       end
 
       def loop_question_params
-        params.require(:loop_question).permit(:instrument_question_id, :parent, :looped, :option_indices, :same_display)
+        params.require(:loop_question).permit(:instrument_question_id, :parent, :looped, :option_indices,
+          :same_display, :replacement_text)
       end
     end
   end

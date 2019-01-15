@@ -11,6 +11,7 @@
 #  deleted_at             :datetime
 #  option_indices         :string
 #  same_display           :boolean          default(FALSE)
+#  replacement_text       :text
 #
 
 class LoopQuestion < ActiveRecord::Base
