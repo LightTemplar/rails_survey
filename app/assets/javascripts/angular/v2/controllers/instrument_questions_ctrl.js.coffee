@@ -576,21 +576,27 @@ App.controller 'LoopsCtrl', ['$scope', '$stateParams', 'InstrumentQuestion',
     $scope.loopQuestion.parent = $scope.instrumentQuestion.identifier
 
   $scope.saveLoop = () ->
-    if ($scope.loopQuestion.indices)
+    angular.forEach $scope.loopQuestion.looped, (questionToLoop, index) ->
+      loopQ = angular.copy($scope.loopQuestion)
+      loopQ.looped = questionToLoop.identifier
+      saveLoopQuestion(loopQ)
+
+  saveLoopQuestion = (loopQ) ->
+    if (loopQ.indices)
       indices = ""
-      angular.forEach $scope.loopQuestion.indices, (option, index) ->
+      angular.forEach loopQ.indices, (option, index) ->
         ind = $scope.options.indexOf(option)
         if ind != -1
           indices = indices + ind + ","
       indices = indices.substring(0, indices.length - 1)
-      $scope.loopQuestion.option_indices = indices
-      $scope.loopQuestion.indices = null
-    $scope.loopQuestion.$save({},
-    (data, headers) ->
-      $scope.loopQuestions.push(data)
-      $scope.newLoop = false
-    (result, headers) ->
-      alert(result.data.errors)
+      loopQ.option_indices = indices
+      loopQ.indices = null
+    loopQ.$save({},
+      (data, headers) ->
+        $scope.loopQuestions.push(data)
+        $scope.newLoop = false
+      (result, headers) ->
+        alert(result.data.errors)
     )
 
   $scope.update = (loopQ) ->
