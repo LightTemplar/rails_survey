@@ -67,7 +67,7 @@ child :translations do |t|
   attributes :id, :question_id, :text, :language, :instructions
 end
 
-child :loop_questions do |t|
+child :all_loop_questions => :loop_questions do |t|
   attributes :id, :parent, :looped, :deleted_at, :option_indices, :same_display, :replacement_text
 end
 

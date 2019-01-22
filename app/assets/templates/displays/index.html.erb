@@ -2,39 +2,43 @@
   <div ng-include="'instruments/show.html'"></div>
   <h4 class="text-center">Instrument Displays</h4>
   <div class="card">
-    <div class="card-body card-padding">
+    <div class="card-body">
       <a ui-sref="displayTranslations({project_id: project_id, instrument_id: instrument_id})"
       class="btn btn-primary m-1">Display Translations</a>
-      <h6 class="row m-1">
-        <label class="col-md-2">Position</label>
-        <label class="col-md-2">Type</label>
-        <label class="col-md-2">Display Title</label>
-        <label class="col-md-2">Section Title</label>
-        <label class="col-md-2">Questions</label>
-        <label class="col-md-2">Action</label>
-      </h6>
-      <div ui-sortable="sortableDisplays" ng-model="displays">
-        <!-- Convert position used in filter to numeric -->
-        <div class="row m-1" ng-repeat="display in displays | orderBy: '1 * position'">
-          <div class="col-md-2">
-            <div class="btn btn-info moveDisplay" title="Drag up/down to re-number the displays.">
-              <span class="oi oi-elevator mr-1"></span><span>{{display.position}}</span>
-            </div>
-          </div>
-          <div class="col-md-2">{{display.mode}}</div>
-          <div class="col-md-2">
-            <a ui-sref="display({project_id: project_id, instrument_id: instrument_id, id: display.id})">
-              {{display.title}}
-            </a>
-          </div>
-          <div class="col-md-2">{{display.section_title}}</div>
-          <div class="col-md-2">{{display.question_count}}</div>
-          <div class="col-md-2">
-            <button class="btn btn-danger oi oi-trash" ng-click="delete(display)"/>
-          </div>
-        </div>
-      </div>
-
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Position</th>
+            <th>Type</th>
+            <th>Display Title</th>
+            <th>Section Title</th>
+            <th>Questions</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody ui-sortable="sortableDisplays" ng-model="displays">
+          <tr ng-repeat="display in displays | orderBy: '1 * position'">
+            <!-- Convert position used in filter to numeric -->
+            <td>
+              <div class="btn btn-info moveDisplay" title="Drag up/down to re-number the displays.">
+                <span class="oi oi-elevator mr-1"></span>
+              </div>
+              <span>{{display.position}}) {{display.range}}</span>
+            </td>
+            <td>{{display.mode}}</td>
+            <td>
+              <a ui-sref="display({project_id: project_id, instrument_id: instrument_id, id: display.id})">
+                {{display.title}}
+              </a>
+            </td>
+            <td>{{display.section_title}}</td>
+            <td>{{display.question_count}}</td>
+            <td>
+              <button class="btn btn-danger oi oi-trash" ng-click="delete(display)"/>
+            </td>
+          </tr>
+        </tbody>
+      </table>
       <div class="m-1">
         <a class="btn btn-primary oi oi-plus float-right"
         ui-sref="newDisplay({project_id: project_id, instrument_id: instrument_id})"/>

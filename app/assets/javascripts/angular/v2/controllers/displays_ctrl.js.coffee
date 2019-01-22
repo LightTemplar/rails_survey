@@ -1,46 +1,46 @@
 App.controller 'DisplaysCtrl', ['$scope', '$stateParams', '$state', 'Display', 'Instrument',
-  ($scope, $stateParams, $state, Display, Instrument) ->
+($scope, $stateParams, $state, Display, Instrument) ->
 
-    $scope.project_id = $stateParams.project_id
-    $scope.instrument_id = $stateParams.instrument_id
+  $scope.project_id = $stateParams.project_id
+  $scope.instrument_id = $stateParams.instrument_id
 
-    $scope.instrument = Instrument.get({
-      'project_id': $scope.project_id,
-      'id': $scope.instrument_id
-    })
+  $scope.instrument = Instrument.get({
+    'project_id': $scope.project_id,
+    'id': $scope.instrument_id
+  })
 
-    $scope.displays = Display.query({
-      'project_id': $scope.project_id,
-      'instrument_id': $scope.instrument_id
-    })
+  $scope.displays = Display.query({
+    'project_id': $scope.project_id,
+    'instrument_id': $scope.instrument_id
+  })
 
-    $scope.sortableDisplays = {
-      cursor: 'move',
-      handle: '.moveDisplay',
-      axis: 'y',
-      stop: (e, ui) ->
-        order = []
-        angular.forEach $scope.displays, (display, index) ->
-          order.push(display.id)
-        $scope.instrument.display_ids = order
-        $scope.instrument.$reorderDisplays({},
+  $scope.sortableDisplays = {
+    cursor: 'move',
+    handle: '.moveDisplay',
+    axis: 'y',
+    stop: (e, ui) ->
+      order = []
+      angular.forEach $scope.displays, (display, index) ->
+        order.push(display.id)
+      $scope.instrument.display_ids = order
+      $scope.instrument.$reorderDisplays({},
+        (data, headers) ->
+          $state.reload()
+        (result, headers) ->
+          alert(result.data.errors)
+      )
+  }
+
+  $scope.delete = (display) ->
+    if confirm('Are you sure you want to delete ' + display.title + '?')
+      if display.id
+        display.project_id = $scope.project_id
+        display.instrument_id = $scope.instrument_id
+        display.$delete({},
           (data, headers) ->
-            $state.reload()
+            $scope.displays.splice($scope.displays.indexOf(display), 1)
           (result, headers) ->
-            alert(result.data.errors)
         )
-    }
-
-    $scope.delete = (display) ->
-      if confirm('Are you sure you want to delete ' + display.title + '?')
-        if display.id
-          display.project_id = $scope.project_id
-          display.instrument_id = $scope.instrument_id
-          display.$delete({},
-            (data, headers) ->
-              $scope.displays.splice($scope.displays.indexOf(display), 1)
-            (result, headers) ->
-          )
 
 ]
 
