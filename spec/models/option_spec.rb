@@ -37,11 +37,11 @@ describe Option do
     end
 
     it "should have a translation" do
-      @translation.option.has_translation_for?(@translation.language).should be_truthy
+      @translation.option.translation_for(@translation.language).should be_truthy
     end
 
     it "should have a translation" do
-      @translation.option.has_translation_for?('nope').should be_falsey
+      @translation.option.translation_for('nope').should be_falsey
     end
 
     it "should return the correct translation" do

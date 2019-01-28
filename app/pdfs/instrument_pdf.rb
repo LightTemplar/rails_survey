@@ -3,11 +3,13 @@ class InstrumentPdf
   include PdfUtils
   NUMBER_OF_COLUMNS = 2
   AFTER_TITLE_MARGIN = 15
-  AFTER_HORIZONTAL_RULE_MARGIN = 15
+  AFTER_QUESTION_MARGIN = 20
+  FONT_SIZE = 12
 
   def initialize(instrument)
     super()
     @instrument = instrument
+    font_size FONT_SIZE
     header
     content
     number_odd_pages
@@ -21,27 +23,38 @@ class InstrumentPdf
   private
 
   def header
-    text "#{@instrument.title} v#{@instrument.current_version_number}", size: 20, style: :bold
+    text "#{@instrument.title}", size: FONT_SIZE + 6, style: :bold, align: :center
+    text @instrument.language_name, align: :center
+    text "version #: #{@instrument.current_version_number}", align: :center
     move_down AFTER_TITLE_MARGIN
   end
 
   def content
     column_box([0, cursor], columns: NUMBER_OF_COLUMNS, width: bounds.width) do
-      @instrument.questions.each do |question|
-        format_question(question)
-        text 'Special Response (circle one):  RF  DK  SK  NA'
-        pad(5) { stroke_horizontal_rule }
-        move_down AFTER_HORIZONTAL_RULE_MARGIN
+      @instrument.displays.each do |display|
+        text "<u>#{display.title}</u>", align: :center, size: FONT_SIZE + 3, style: :bold, inline_format: true
+        move_down AFTER_TITLE_MARGIN
+        display.instrument_questions.each do |question|
+          format_question(question)
+          move_down AFTER_QUESTION_MARGIN
+        end
       end
     end
   end
 
   def format_question(question)
-    format_instructions(question.grid.instructions) if question.grid && question.number_in_grid == 1
+    question.display_instructions.each do |display_instruction|
+      instructions = display_instruction.instruction.try(:text)
+      format_instructions(instructions) if instructions
+    end
     format_question_number(question)
-    format_instructions(question.instructions)
+    instruction = question.question.instruction.try(:text)
+    format_instructions(instruction) if instruction
     format_question_text(question.text)
+    format_choice_instructions(question.question.try(:option_set).try(:instruction).try(:text))
     format_question_choices(question)
     pad_after_question(question)
+    format_special_responses(question)
+    format_skip_patterns(question)
   end
 end

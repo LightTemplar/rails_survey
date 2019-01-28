@@ -148,11 +148,11 @@ describe Instrument do
     end
 
     it "should have a translation" do
-      @translation.instrument.has_translation_for?(@translation.language).should be_truthy
+      @translation.instrument.translation_for(@translation.language).should be_truthy
     end
 
     it "should have a translation" do
-      @translation.instrument.has_translation_for?('nope').should be_falsey
+      @translation.instrument.translation_for('nope').should be_falsey
     end
 
     it "should return the correct translation" do

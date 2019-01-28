@@ -67,6 +67,10 @@ class Instrument < ActiveRecord::Base
   validates :title, presence: true, allow_blank: false
   validates :project_id, presence: true, allow_blank: false
 
+  def language_name(name = language)
+    Settings.languages.to_h.key(name)
+  end
+
   def self.create_translations
     Instrument.all.each do |instrument|
       languages = instrument.question_translations.pluck(:language).uniq

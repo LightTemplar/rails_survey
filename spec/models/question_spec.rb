@@ -36,11 +36,11 @@ describe Question do
     end
 
     it "should have a translation" do
-      @translation.question.has_translation_for?(@translation.language).should be_truthy
+      @translation.question.translation_for(@translation.language).should be_truthy
     end
 
     it "should have a translation" do
-      @translation.question.has_translation_for?('nope').should be_falsey
+      @translation.question.translation_for('nope').should be_falsey
     end
 
     it "should return the correct translation" do

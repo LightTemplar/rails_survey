@@ -41,6 +41,48 @@ class InstrumentQuestion < ActiveRecord::Base
     Option.where(id: option_ids)
   end
 
+  def question_type
+    question.question_type
+  end
+
+  def text
+    question.text
+  end
+
+  def slider_variant?
+    question.slider_variant?
+  end
+
+  def select_one_variant?
+    question.select_one_variant?
+  end
+
+  def select_multiple_variant?
+    question.select_multiple_variant?
+  end
+
+  def list_of_boxes_variant?
+    question.list_of_boxes_variant?
+  end
+
+  def non_special_options?
+    !non_special_options.empty?
+  end
+
+  def other?
+    question.other?
+  end
+
+  def non_special_options
+    option_ids = OptionInOptionSet.where(option_set_id: question.option_set_id).pluck(:option_id).uniq
+    Option.where(id: option_ids)
+  end
+
+  def special_options
+    option_ids = OptionInOptionSet.where(option_set_id: question.special_option_set_id).pluck(:option_id).uniq
+    Option.where(id: option_ids)
+  end
+
   def copy(display_id, instrument_id)
     iq_copy = self.dup
     iq_copy.display_id = display_id

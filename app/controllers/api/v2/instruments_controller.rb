@@ -80,12 +80,12 @@ module Api
       def to_pdf
         project = current_user.projects.find params[:project_id]
         instrument = project.instruments.find(params[:id]) if project
-        pdf = WickedPdf.new.pdf_from_string(params[:data])
-        file = Tempfile.new('pdf', 'tmp')
-        File.open(file.path, 'w:ASCII-8BIT') do |file|
-          file << pdf
+        if params[:language] == 'en'
+          pdf = InstrumentPdf.new(instrument)
+        else
+          pdf = TranslationPdf.new(instrument, params[:language])
         end
-        send_file file.path, type: 'application/pdf'
+        send_data pdf.render, filename: pdf.display_name, type: 'application/pdf'
       end
 
       private
