@@ -1,15 +1,11 @@
 class InstrumentPdf
   include Prawn::View
   include PdfUtils
-  NUMBER_OF_COLUMNS = 2
-  AFTER_TITLE_MARGIN = 15
-  AFTER_QUESTION_MARGIN = 20
-  FONT_SIZE = 12
 
   def initialize(instrument)
     super()
     @instrument = instrument
-    font_size FONT_SIZE
+    register_fonts
     header
     content
     number_odd_pages

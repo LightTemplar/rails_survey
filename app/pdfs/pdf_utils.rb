@@ -10,9 +10,35 @@ module PdfUtils
   SQUARE_SIZE = 10
   AFTER_OTHER_LINE_MARGIN = 15
   LEFT_INDENTATION = 10
+  AFTER_TITLE_MARGIN = 15
+  AFTER_HORIZONTAL_RULE_MARGIN = 10
+  AFTER_QUESTION_MARGIN = 20
+  NUMBER_OF_COLUMNS = 2
+  FONT_SIZE = 12
   PAGE = '<page>'.freeze
   LETTERS = ('a'..'z').to_a
-  FONT_SIZE = 12
+
+  def register_fonts
+    font_families.update(
+      "Noto Sans" => {
+        normal: "#{Rails.root}/app/pdfs/fonts/NotoSans-Regular.ttf",
+        bold: "#{Rails.root}/app/pdfs/fonts/NotoSans-Bold.ttf",
+        italic: "#{Rails.root}/app/pdfs/fonts/NotoSans-Italic.ttf"
+      },
+      "Noto Sans Khmer" => {
+        normal: "#{Rails.root}/app/pdfs/fonts/NotoSansKhmer-Regular.ttf",
+        bold: "#{Rails.root}/app/pdfs/fonts/NotoSansKhmer-Bold.ttf",
+        italic: "#{Rails.root}/app/pdfs/fonts/NotoSansKhmer-Thin.ttf"
+      },
+      "Noto Sans Ethiopic" => {
+        normal: "#{Rails.root}/app/pdfs/fonts/NotoSansEthiopic-Regular.ttf",
+        bold: "#{Rails.root}/app/pdfs/fonts/NotoSansEthiopic-Bold.ttf",
+        italic: "#{Rails.root}/app/pdfs/fonts/NotoSansEthiopic-Thin.ttf"
+      }
+    )
+    font 'Noto Sans'
+    font_size FONT_SIZE
+  end
 
   def format_special_responses(question)
     if question.special_options
@@ -94,7 +120,7 @@ module PdfUtils
         else
           skip_string = "=> If <b>#{next_question.option_identifier}</b> go to <b>##{skip_to_question.number_in_instrument}</b> (#{next_question.next_question_identifier})"
         end
-        text skip_string.force_encoding("windows-1252").encode("UTF-8"), inline_format: true, size: FONT_SIZE - 2
+        text skip_string, inline_format: true, size: FONT_SIZE - 2
       end
     end
     unless multiple_skips.blank?
@@ -111,7 +137,7 @@ module PdfUtils
         else
           skip_string = "* If <b>#{option_identifier}</b> skip #{skipped.strip.chop}"
         end
-        text skip_string.force_encoding("windows-1252").encode("UTF-8"), inline_format: true, size: FONT_SIZE - 2
+        text skip_string, inline_format: true, size: FONT_SIZE - 2
       end
     end
     unless loop_questions.blank?
@@ -121,7 +147,7 @@ module PdfUtils
         skipped << "<b>##{q.number_in_instrument}</b> (#{q.identifier}), "
       end
       skip_string = "-> Ask questions #{skipped.strip.chop} for each of the responses"
-      text skip_string.force_encoding("windows-1252").encode("UTF-8"), inline_format: true, size: FONT_SIZE - 2
+      text skip_string, inline_format: true, size: FONT_SIZE - 2
     end
     unless critical_responses.blank?
       critical_responses.each do |critical_response|
@@ -133,7 +159,7 @@ module PdfUtils
         else
           caution = "<b>!! If #{critical_response.option_identifier}: #{sanitize_text(instruction.text)}</b>"
         end
-        text caution.force_encoding("windows-1252").encode("UTF-8"), inline_format: true, :color => "FF0000", size: FONT_SIZE - 2
+        text caution, inline_format: true, :color => "FF0000", size: FONT_SIZE - 2
       end
     end
   end

@@ -1,33 +1,13 @@
 class TranslationPdf
   include Prawn::View
   include PdfUtils
-  AFTER_TITLE_MARGIN = 15
-  AFTER_HORIZONTAL_RULE_MARGIN = 10
-  AFTER_QUESTION_MARGIN = 20
-  NUMBER_OF_COLUMNS = 2
-  FONT_SIZE = 12
-
+  
   def initialize(instrument, language)
     super()
     @instrument = instrument
     @language = language
     register_fonts
     pdf_content
-  end
-
-  def register_fonts
-    font_families.update(
-      "Noto Sans Khmer" => {
-        normal: "#{Rails.root}/app/pdfs/fonts/NotoSansKhmer-Regular.ttf",
-        bold: "#{Rails.root}/app/pdfs/fonts/NotoSansKhmer-Bold.ttf",
-        italic: "#{Rails.root}/app/pdfs/fonts/NotoSansKhmer-Thin.ttf"
-      },
-      "Noto Sans Ethiopic" => {
-        normal: "#{Rails.root}/app/pdfs/fonts/NotoSansEthiopic-Regular.ttf",
-        bold: "#{Rails.root}/app/pdfs/fonts/NotoSansEthiopic-Bold.ttf",
-        italic: "#{Rails.root}/app/pdfs/fonts/NotoSansEthiopic-Thin.ttf"
-      }
-    )
   end
 
   def display_name
@@ -37,7 +17,6 @@ class TranslationPdf
   private
 
   def pdf_content
-    font_size FONT_SIZE
     header
     content
     number_odd_pages
