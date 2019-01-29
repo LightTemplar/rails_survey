@@ -19,7 +19,6 @@ class QuestionTranslation < ActiveRecord::Base
   belongs_to :question, touch: true
   belongs_to :instrument_translation, touch: true
   has_many :back_translations, as: :backtranslatable
-  validates :text, presence: true, allow_blank: false
 
   def translate_using_google
     text_translation = translation_client.translate sanitize_text(question.text), to: language unless question.text.blank?

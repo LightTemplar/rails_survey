@@ -36,9 +36,7 @@ class InstrumentQuestion < ActiveRecord::Base
   after_destroy :renumber_questions
 
   def options
-    option_set_ids = [question.option_set_id, question.special_option_set_id].compact
-    option_ids = OptionInOptionSet.where(option_set_id: option_set_ids).pluck(:option_id).uniq
-    Option.where(id: option_ids)
+    non_special_options + special_options
   end
 
   def question_type
@@ -74,13 +72,11 @@ class InstrumentQuestion < ActiveRecord::Base
   end
 
   def non_special_options
-    option_ids = OptionInOptionSet.where(option_set_id: question.option_set_id).pluck(:option_id).uniq
-    Option.where(id: option_ids)
+    question.option_set_id ? question.option_set.options : []
   end
 
   def special_options
-    option_ids = OptionInOptionSet.where(option_set_id: question.special_option_set_id).pluck(:option_id).uniq
-    Option.where(id: option_ids)
+    question.special_option_set_id ? question.special_option_set.options : []
   end
 
   def copy(display_id, instrument_id)

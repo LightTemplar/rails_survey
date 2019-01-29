@@ -70,6 +70,7 @@ module PdfUtils
   end
 
   def sanitize_text(text)
+    return text if text.nil?
     sanitizer = Rails::Html::WhiteListSanitizer.new
     tags = %w[b i u strikethrough sub sup]
     text = text.delete("\n")
@@ -81,7 +82,7 @@ module PdfUtils
 
   def format_choice_instructions(str)
     indent(LEFT_INDENTATION) do
-      text str, inline_format: true
+      text sanitize_text(str), inline_format: true
     end
   end
 
@@ -130,12 +131,12 @@ module PdfUtils
         skipped = ''
         m_skips.each do |m_skip|
           q = instrument_questions.where(identifier: m_skip.skip_question_identifier).first
-          skipped << "<b>##{q.number_in_instrument}</b> (#{q.identifier}) & "
+          skipped << "<b>##{q.number_in_instrument}</b> (#{q.identifier}), "
         end
         if option
-          skip_string = "* If <b>(#{LETTERS[options.index(option)]})</b> skip #{skipped.strip.chop}"
+          skip_string = "* If <b>(#{LETTERS[options.index(option)]})</b> skip questions: #{skipped.strip.chop}"
         else
-          skip_string = "* If <b>#{option_identifier}</b> skip #{skipped.strip.chop}"
+          skip_string = "* If <b>#{option_identifier}</b> skip questions: #{skipped.strip.chop}"
         end
         text skip_string, inline_format: true, size: FONT_SIZE - 2
       end
@@ -185,17 +186,21 @@ module PdfUtils
       option_text = option.try(:text)
       option = option.option
     else
-      option_text = "#{LETTERS[index]}) #{option.text}"
+      option_text = option.text
+      if language.nil? || language == 'es' || language == 'en' || language == 'sw'
+        option_text = "#{LETTERS[index]}) #{option.text}"
+      end
     end
     draw_bounding_box(option_text, question, language)
   end
 
   def draw_bounding_box(text_string, question, format = false, language)
-    box_bounds = [bounds.left + OPTION_LEFT_MARGIN + 10, cursor]
-    box_bounds = [bounds.left + OPTION_LEFT_MARGIN + 20, cursor - 5] if question.select_multiple_variant?
+    box_bounds = [bounds.left + OPTION_LEFT_MARGIN + 10, cursor + 5]
+    box_bounds = [bounds.left + OPTION_LEFT_MARGIN + 20, cursor] if question.select_multiple_variant?
     bounding_box(box_bounds, width: bounds.width - (OPTION_LEFT_MARGIN * 2) - 10) do
       format_with_font(text_string, language)
     end
+    move_down 2
   end
 
   def format_with_font(str, language)
@@ -284,42 +289,4 @@ module PdfUtils
     number_pages PAGE, even_options
   end
 
-  def skip_error(option)
-    case @language
-    when 'en'
-      "Error Locating Question #{option.try(:next_question)} for skip pattern!"
-    when 'es'
-      "Error al localizar la pregunta #{option.try(:next_question)} para patrón de salto!"
-    when 'sw'
-      "Swali #{option.try(:next_question)} ambalo linafaa kufuata halikupatikana!"
-    else
-      "Error Locating Question #{option.try(:next_question)} for skip pattern!"
-    end
-  end
-
-  def skip_to
-    case @language
-    when 'en'
-      'If selected skip to #'
-    when 'es'
-      'Si está seleccionado, vaya a'
-    when 'sw'
-      'Ikichaguliwa ruka kwa #'
-    else
-      'If selected skip to #'
-    end
-  end
-
-  def special_responses
-    case @language
-    when 'en'
-      'Special Response (circle one): RF  DK  SK  NA'
-    when 'es'
-      'Respuesta Especial (circule uno):  NR  NS  SP  NA'
-    when 'sw'
-      'Jibu maalum (zunguka moja): KT  SJ  RK  SH'
-    else
-      'Special Response (circle one): RF  DK  SK  NA'
-    end
-  end
 end
