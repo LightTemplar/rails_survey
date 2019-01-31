@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 class TranslationPdf
   include Prawn::View
   include PdfUtils
-  
+
   def initialize(instrument, language)
     super()
     @instrument = instrument
@@ -24,7 +26,7 @@ class TranslationPdf
   end
 
   def header
-    text "#{@instrument.title}", size: FONT_SIZE + 6, style: :bold, align: :center
+    text @instrument.title.to_s, size: FONT_SIZE + 6, style: :bold, align: :center
     text @instrument.language_name(@language), align: :center
     text "version #: #{@instrument.current_version_number}", align: :center
     move_down AFTER_TITLE_MARGIN
@@ -49,11 +51,28 @@ class TranslationPdf
       translated, text = instruction_text(display_instruction.instruction)
       apply_font(:format_instructions, text, translated)
     end
-    format_question_number(question)
+
+    bounds.move_past_bottom if y < MINIMUM_REMAINING_HEIGHT
+    float do
+      format_question_number(question)
+    end
+
+    text_array = []
     translated, instruction = instruction_text(question.question.instruction)
-    apply_font(:format_instructions, instruction, translated)
+    text_array << { text: sanitize_text(instruction) + "\n", styles: [:italic], font: get_font(translated) } unless instruction.blank?
     status, text = question_text(question)
-    apply_font(:format_question_text, text, status)
+    if text.include? '</b>'
+      strs = text.split('</b>')
+      text_array << { text: sanitize_text(strs[0].delete('<b>')) + "\n", styles: [:bold], font: get_font(status) }
+      text_array << { text: sanitize_text(strs[1]), font: get_font(status) }
+    else
+      text_array << { text: sanitize_text(text), font: get_font(status) }
+    end
+    box = Prawn::Text::Formatted::Box.new(text_array, at: [bounds.left + QUESTION_LEFT_MARGIN, cursor], document: self)
+    box.render(dry_run: true)
+    formatted_text_box text_array, at: [bounds.left + QUESTION_LEFT_MARGIN, cursor]
+    move_down QUESTION_TEXT_MARGIN + box.height
+
     ts, tt = instruction_text(question.question.try(:option_set).try(:instruction))
     apply_font(:format_choice_instructions, tt, ts)
     format_question_choices(question, @language)
@@ -78,10 +97,21 @@ class TranslationPdf
 
   def instruction_text(instruction)
     return [false, ''] if instruction.nil?
+
     text = instruction.text
     translation = instruction.instruction_translations.where(language: @language).first
     text = translation.text if translation
     [!translation.nil?, text]
+  end
+
+  def get_font(translated)
+    if translated && @language == 'km'
+      'Noto Sans Khmer'
+    elsif translated && @language == 'am'
+      'Noto Sans Ethiopic'
+    else
+      'Noto Sans'
+    end
   end
 
   def apply_font(method, args, translated)
