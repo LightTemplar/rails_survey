@@ -16,7 +16,7 @@ module PdfUtils
   AFTER_HORIZONTAL_RULE_MARGIN = 10
   AFTER_QUESTION_MARGIN = 20
   NUMBER_OF_COLUMNS = 2
-  FONT_SIZE = 12
+  FONT_SIZE = 10
   PAGE = '<page>'.freeze
   LETTERS = ('a'..'z').to_a
 
@@ -27,15 +27,30 @@ module PdfUtils
         bold: "#{Rails.root}/app/pdfs/fonts/NotoSans-Bold.ttf",
         italic: "#{Rails.root}/app/pdfs/fonts/NotoSans-Italic.ttf"
       },
-      'Noto Sans Khmer' => {
-        normal: "#{Rails.root}/app/pdfs/fonts/NotoSansKhmer-Regular.ttf",
-        bold: "#{Rails.root}/app/pdfs/fonts/NotoSansKhmer-Bold.ttf",
-        italic: "#{Rails.root}/app/pdfs/fonts/NotoSansKhmer-Thin.ttf"
-      },
       'Noto Sans Ethiopic' => {
         normal: "#{Rails.root}/app/pdfs/fonts/NotoSansEthiopic-Regular.ttf",
         bold: "#{Rails.root}/app/pdfs/fonts/NotoSansEthiopic-Bold.ttf",
         italic: "#{Rails.root}/app/pdfs/fonts/NotoSansEthiopic-Thin.ttf"
+      },
+      'Khmer SBBIC Serif Font' => {
+        normal: "#{Rails.root}/app/pdfs/fonts/kmSBBICsf.ttf",
+        bold: "#{Rails.root}/app/pdfs/fonts/kmSBBICsf.ttf",
+        italic: "#{Rails.root}/app/pdfs/fonts/kmSBBICsf.ttf"
+      },
+      'Khmer SBBIC System Font' => {
+        normal: "#{Rails.root}/app/pdfs/fonts/kmSBBICsys.ttf",
+        bold: "#{Rails.root}/app/pdfs/fonts/kmSBBICsys.ttf",
+        italic: "#{Rails.root}/app/pdfs/fonts/kmSBBICsys.ttf"
+      },
+      'Bayon' => {
+        normal: "#{Rails.root}/app/pdfs/fonts/Bayon.ttf",
+        bold: "#{Rails.root}/app/pdfs/fonts/Bayon.ttf",
+        italic: "#{Rails.root}/app/pdfs/fonts/Bayon.ttf"
+      },
+      'DaunPenh' => {
+        normal: "#{Rails.root}/app/pdfs/fonts/DaunPenh.ttf",
+        bold: "#{Rails.root}/app/pdfs/fonts/DaunPenh.ttf",
+        italic: "#{Rails.root}/app/pdfs/fonts/DaunPenh.ttf"
       }
     )
     font 'Noto Sans'
@@ -83,7 +98,7 @@ module PdfUtils
 
   def format_choice_instructions(str)
     indent(QUESTION_LEFT_MARGIN) do
-      text sanitize_text(str), inline_format: true
+      pad(2) { text sanitize_text(str), inline_format: true, fallback_fonts: ['Khmer SBBIC Serif Font', 'Bayon', 'DaunPenh'] }
     end
     move_down CHOICE_TEXT_MARGIN
   end
@@ -204,11 +219,11 @@ module PdfUtils
     text_array << if language == 'am'
                     { text: option_text, font: 'Noto Sans Ethiopic' }
                   elsif language == 'km'
-                    { text: option_text, font: 'Noto Sans Khmer' }
+                    { text: option_text, font: 'Khmer SBBIC System Font' }
                   else
                     { text: option_text }
                   end
-    formatted_text text_array
+    pad(2) { formatted_text text_array, fallback_fonts: ['Khmer SBBIC Serif Font', 'Bayon', 'DaunPenh'] }
   end
 
   def draw_other(question)

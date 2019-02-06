@@ -70,7 +70,7 @@ class TranslationPdf
     end
     box = Prawn::Text::Formatted::Box.new(text_array, at: [bounds.left + QUESTION_LEFT_MARGIN, cursor], document: self)
     box.render(dry_run: true)
-    formatted_text_box text_array, at: [bounds.left + QUESTION_LEFT_MARGIN, cursor]
+    formatted_text_box text_array, at: [bounds.left + QUESTION_LEFT_MARGIN, cursor], fallback_fonts: ['Khmer SBBIC Serif Font', 'Bayon', 'DaunPenh']
     move_down QUESTION_TEXT_MARGIN + box.height
 
     ts, tt = instruction_text(question.question.try(:option_set).try(:instruction))
@@ -106,17 +106,15 @@ class TranslationPdf
 
   def get_font(translated)
     if translated && @language == 'km'
-      'Noto Sans Khmer'
+      'Khmer SBBIC System Font'
     elsif translated && @language == 'am'
       'Noto Sans Ethiopic'
-    else
-      'Noto Sans'
     end
   end
 
   def apply_font(method, args, translated)
     if translated && @language == 'km'
-      font('Noto Sans Khmer') do
+      font('Khmer SBBIC System Font') do
         send(method, args)
       end
     elsif translated && @language == 'am'
