@@ -27,34 +27,16 @@ module PdfUtils
         bold: "#{Rails.root}/app/pdfs/fonts/NotoSans-Bold.ttf",
         italic: "#{Rails.root}/app/pdfs/fonts/NotoSans-Italic.ttf"
       },
+      'KhmerOS' => {
+        normal: "#{Rails.root}/app/pdfs/fonts/KhmerOS.ttf"
+      },
       'Noto Sans Ethiopic' => {
-        normal: "#{Rails.root}/app/pdfs/fonts/NotoSansEthiopic-Regular.ttf",
-        bold: "#{Rails.root}/app/pdfs/fonts/NotoSansEthiopic-Bold.ttf",
-        italic: "#{Rails.root}/app/pdfs/fonts/NotoSansEthiopic-Thin.ttf"
-      },
-      'Khmer SBBIC Serif Font' => {
-        normal: "#{Rails.root}/app/pdfs/fonts/kmSBBICsf.ttf",
-        bold: "#{Rails.root}/app/pdfs/fonts/kmSBBICsf.ttf",
-        italic: "#{Rails.root}/app/pdfs/fonts/kmSBBICsf.ttf"
-      },
-      'Khmer SBBIC System Font' => {
-        normal: "#{Rails.root}/app/pdfs/fonts/kmSBBICsys.ttf",
-        bold: "#{Rails.root}/app/pdfs/fonts/kmSBBICsys.ttf",
-        italic: "#{Rails.root}/app/pdfs/fonts/kmSBBICsys.ttf"
-      },
-      'Bayon' => {
-        normal: "#{Rails.root}/app/pdfs/fonts/Bayon.ttf",
-        bold: "#{Rails.root}/app/pdfs/fonts/Bayon.ttf",
-        italic: "#{Rails.root}/app/pdfs/fonts/Bayon.ttf"
-      },
-      'DaunPenh' => {
-        normal: "#{Rails.root}/app/pdfs/fonts/DaunPenh.ttf",
-        bold: "#{Rails.root}/app/pdfs/fonts/DaunPenh.ttf",
-        italic: "#{Rails.root}/app/pdfs/fonts/DaunPenh.ttf"
+        normal: "#{Rails.root}/app/pdfs/fonts/NotoSansEthiopic-Regular.ttf"
       }
     )
     font 'Noto Sans'
     font_size FONT_SIZE
+    self.fallback_fonts = ['KhmerOS', 'Noto Sans Ethiopic']
   end
 
   def format_special_responses(question)
@@ -71,7 +53,7 @@ module PdfUtils
   end
 
   def format_instructions(instructions)
-    text sanitize_text(instructions), style: :italic, inline_format: true
+    text sanitize_text(instructions), inline_format: true
     move_down AFTER_INSTRUCTIONS_MARGIN unless instructions.blank?
   end
 
@@ -81,7 +63,7 @@ module PdfUtils
   end
 
   def format_display_text(text)
-    text "<u>#{text}</u>", align: :center, size: FONT_SIZE + 3, style: :bold, inline_format: true
+    text "<u>#{text}</u>", align: :center, size: FONT_SIZE + 3, inline_format: true
   end
 
   def sanitize_text(text)
@@ -98,7 +80,7 @@ module PdfUtils
 
   def format_choice_instructions(str)
     indent(QUESTION_LEFT_MARGIN) do
-      pad(2) { text sanitize_text(str), inline_format: true, fallback_fonts: ['Khmer SBBIC Serif Font', 'Bayon', 'DaunPenh'] }
+      pad(2) { text sanitize_text(str), inline_format: true }
     end
     move_down CHOICE_TEXT_MARGIN
   end
@@ -214,16 +196,9 @@ module PdfUtils
     move_down 2
   end
 
-  def format_with_font(index_text, option_text, language)
-    text_array = [{ text: index_text }]
-    text_array << if language == 'am'
-                    { text: option_text, font: 'Noto Sans Ethiopic' }
-                  elsif language == 'km'
-                    { text: option_text, font: 'Khmer SBBIC System Font' }
-                  else
-                    { text: option_text }
-                  end
-    pad(2) { formatted_text text_array, fallback_fonts: ['Khmer SBBIC Serif Font', 'Bayon', 'DaunPenh'] }
+  def format_with_font(index_text, option_text, _language)
+    text_array = [{ text: index_text }, { text: option_text }]
+    pad(2) { formatted_text text_array }
   end
 
   def draw_other(question)
