@@ -27,34 +27,16 @@ module PdfUtils
         bold: "#{Rails.root}/app/pdfs/fonts/NotoSans-Bold.ttf",
         italic: "#{Rails.root}/app/pdfs/fonts/NotoSans-Italic.ttf"
       },
+      'KhmerOS' => {
+        normal: "#{Rails.root}/app/pdfs/fonts/KhmerOS.ttf"
+      },
       'Noto Sans Ethiopic' => {
-        normal: "#{Rails.root}/app/pdfs/fonts/NotoSansEthiopic-Regular.ttf",
-        bold: "#{Rails.root}/app/pdfs/fonts/NotoSansEthiopic-Bold.ttf",
-        italic: "#{Rails.root}/app/pdfs/fonts/NotoSansEthiopic-Thin.ttf"
-      },
-      'Khmer SBBIC Serif Font' => {
-        normal: "#{Rails.root}/app/pdfs/fonts/kmSBBICsf.ttf",
-        bold: "#{Rails.root}/app/pdfs/fonts/kmSBBICsf.ttf",
-        italic: "#{Rails.root}/app/pdfs/fonts/kmSBBICsf.ttf"
-      },
-      'Khmer SBBIC System Font' => {
-        normal: "#{Rails.root}/app/pdfs/fonts/kmSBBICsys.ttf",
-        bold: "#{Rails.root}/app/pdfs/fonts/kmSBBICsys.ttf",
-        italic: "#{Rails.root}/app/pdfs/fonts/kmSBBICsys.ttf"
-      },
-      'Bayon' => {
-        normal: "#{Rails.root}/app/pdfs/fonts/Bayon.ttf",
-        bold: "#{Rails.root}/app/pdfs/fonts/Bayon.ttf",
-        italic: "#{Rails.root}/app/pdfs/fonts/Bayon.ttf"
-      },
-      'DaunPenh' => {
-        normal: "#{Rails.root}/app/pdfs/fonts/DaunPenh.ttf",
-        bold: "#{Rails.root}/app/pdfs/fonts/DaunPenh.ttf",
-        italic: "#{Rails.root}/app/pdfs/fonts/DaunPenh.ttf"
+        normal: "#{Rails.root}/app/pdfs/fonts/NotoSansEthiopic-Regular.ttf"
       }
     )
     font 'Noto Sans'
     font_size FONT_SIZE
+    self.fallback_fonts = ['KhmerOS', 'Noto Sans Ethiopic']
   end
 
   def format_special_responses(question)
@@ -71,7 +53,7 @@ module PdfUtils
   end
 
   def format_instructions(instructions)
-    text sanitize_text(instructions), style: :italic, inline_format: true
+    text sanitize_text(instructions), inline_format: true
     move_down AFTER_INSTRUCTIONS_MARGIN unless instructions.blank?
   end
 
@@ -81,7 +63,7 @@ module PdfUtils
   end
 
   def format_display_text(text)
-    text "<u>#{text}</u>", align: :center, size: FONT_SIZE + 3, style: :bold, inline_format: true
+    text "<u>#{text}</u>", align: :center, size: FONT_SIZE + 3, inline_format: true
   end
 
   def sanitize_text(text)
@@ -98,7 +80,7 @@ module PdfUtils
 
   def format_choice_instructions(str)
     indent(QUESTION_LEFT_MARGIN) do
-      pad(2) { text sanitize_text(str), inline_format: true, fallback_fonts: ['Khmer SBBIC Serif Font', 'Bayon', 'DaunPenh'] }
+      pad(2) { text sanitize_text(str), inline_format: true }
     end
     move_down CHOICE_TEXT_MARGIN
   end
@@ -196,34 +178,22 @@ module PdfUtils
     translation = choice.translation_for(language) if language
     choice_text = translation.text if language && translation
     if question.list_of_boxes_variant?
-      format_with_font("#{LETTERS[index]}) ", choice_text, language)
+      pad(2) { text "#{LETTERS[index]}) #{choice_text}" }
       pad(10) { stroke_horizontal_rule }
     else
       stroke_circle [bounds.left + OPTION_LEFT_MARGIN, cursor - 5], CIRCLE_SIZE if question.select_one_variant?
       stroke_rectangle [bounds.left + OPTION_LEFT_MARGIN, cursor - 5], SQUARE_SIZE, SQUARE_SIZE if question.select_multiple_variant?
-      draw_bounding_box("#{LETTERS[index]}) ", choice_text, question, language)
+      draw_bounding_box("#{LETTERS[index]}) ", choice_text, question)
     end
   end
 
-  def draw_bounding_box(index, text_string, question, language)
+  def draw_bounding_box(index, text_string, question)
     box_bounds = [bounds.left + OPTION_LEFT_MARGIN + 10, cursor + 5]
     box_bounds = [bounds.left + OPTION_LEFT_MARGIN + 20, cursor] if question.select_multiple_variant?
     bounding_box(box_bounds, width: bounds.width - (OPTION_LEFT_MARGIN * 2) - 10) do
-      format_with_font(index, text_string, language)
+      pad(2) { text "#{index}#{text_string}" }
     end
     move_down 2
-  end
-
-  def format_with_font(index_text, option_text, language)
-    text_array = [{ text: index_text }]
-    text_array << if language == 'am'
-                    { text: option_text, font: 'Noto Sans Ethiopic' }
-                  elsif language == 'km'
-                    { text: option_text, font: 'Khmer SBBIC System Font' }
-                  else
-                    { text: option_text }
-                  end
-    pad(2) { formatted_text text_array, fallback_fonts: ['Khmer SBBIC Serif Font', 'Bayon', 'DaunPenh'] }
   end
 
   def draw_other(question)
