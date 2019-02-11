@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: instrument_questions
@@ -25,15 +27,27 @@ class InstrumentQuestion < ActiveRecord::Base
   has_many :translations, through: :question
   has_many :display_instructions, dependent: :destroy
   has_many :loop_questions, dependent: :destroy
-  has_many :all_loop_questions, -> {with_deleted}, class_name: 'LoopQuestion'
+  has_many :all_loop_questions, -> { with_deleted }, class_name: 'LoopQuestion'
   has_many :critical_responses, through: :question
   acts_as_paranoid
   has_paper_trail
   validates :identifier, presence: true
   validates :identifier, uniqueness: { scope: :instrument_id,
-    message: 'instrument already has this identifier' }
+                                       message: 'instrument already has this identifier' }
   after_update :update_display_instructions, if: :number_in_instrument_changed?
   after_destroy :renumber_questions
+
+  def letters
+    ('a'..'z').to_a
+  end
+
+  def hashed_options
+    hash = {}
+    non_special_options.each do |option|
+      hash[option.identifier] = option
+    end
+    hash
+  end
 
   def options
     non_special_options + special_options
@@ -45,6 +59,24 @@ class InstrumentQuestion < ActiveRecord::Base
 
   def text
     question.text
+  end
+
+  def translated_text(language)
+    return question.text if language == instrument.language
+
+    translation = question.translations.where(language: language).first
+    translation&.text ? translation.text : question.text
+  end
+
+  def loop_string
+    return if loop_questions.blank?
+
+    skipped = +''
+    loop_questions.each do |loop_question|
+      q = instrument.instrument_questions.where(identifier: loop_question.looped).first
+      skipped << "<b>##{q.number_in_instrument}</b>, "
+    end
+    "-> Ask questions #{skipped.strip.chop} for each of the responses"
   end
 
   def slider_variant?
@@ -80,7 +112,7 @@ class InstrumentQuestion < ActiveRecord::Base
   end
 
   def copy(display_id, instrument_id)
-    iq_copy = self.dup
+    iq_copy = dup
     iq_copy.display_id = display_id
     iq_copy.instrument_id = instrument_id
     i = Instrument.find instrument_id
@@ -104,6 +136,7 @@ class InstrumentQuestion < ActiveRecord::Base
   end
 
   private
+
   def update_display_instructions
     display_instructions.update_all(position: number_in_instrument)
   end

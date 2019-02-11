@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: options
@@ -23,21 +25,25 @@ class Option < ActiveRecord::Base
   validates :text, presence: true, allow_blank: false
   validates :identifier, presence: true, uniqueness: true
 
-  amoeba do
-    enable
-    include_association :translations
+  def translated_text(language, instrument)
+    return text if language == instrument.language
+
+    translation = translations.where(language: language).first
+    translation&.text ? translation.text : text
   end
 
   def to_option_in_option_set
-    OptionInOptionSet.create!(option_id: id, option_set_id: option_set_id,
-      number_in_question: number_in_question) if id && option_set_id && number_in_question
+    if id && option_set_id && number_in_question
+      OptionInOptionSet.create!(option_id: id, option_set_id: option_set_id,
+                                number_in_question: number_in_question)
+    end
   end
 
   def to_s
     text
   end
 
-# TODO: Doesn't work anymore
+  # TODO: Doesn't work anymore
   def instrument_version
     if instrument && (read_attribute(:instrument_version_number) == -1)
       instrument.current_version_number
@@ -66,5 +72,4 @@ class Option < ActiveRecord::Base
     update_column(:instrument_version_number, instrument.current_version_number)
     question.update_column(:instrument_version_number, instrument.current_version_number)
   end
-
 end

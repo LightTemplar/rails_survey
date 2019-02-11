@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class InstrumentsController < ApplicationController
   after_action :verify_authorized
 
@@ -7,9 +9,18 @@ class InstrumentsController < ApplicationController
   end
 
   def show
-    @project = current_project
-    @instrument = current_project.instruments.find(params[:id])
+    @project = current_user.projects.find(params[:project_id])
+    @language = params[:language]
+    @instrument = @project.instruments.includes(displays: [instrument_questions: [:next_questions, :multiple_skips, :critical_responses, :loop_questions, display_instructions: [instruction: [:instruction_translations]], question: [:translations]]]).find(params[:id])
     authorize @instrument
+    respond_to do |format|
+      format.html
+      format.pdf do
+        render pdf: @instrument.title,
+               template: 'instruments/show',
+               encoding: 'UTF-8'
+      end
+    end
   end
 
   def new
@@ -109,9 +120,7 @@ class InstrumentsController < ApplicationController
     @instrument = current_project.instruments.find(params[:id])
     authorize @instrument
     @project = current_user.projects.find(params[:project_id])
-    if @instrument.update_attributes(project_id: params[:end_project])
-      redirect_to project_path(@project)
-    end
+    redirect_to project_path(@project) if @instrument.update_attributes(project_id: params[:end_project])
   end
 
   def copy

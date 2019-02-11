@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: displays
@@ -26,7 +28,7 @@ class Display < ActiveRecord::Base
 
   def copy(instrument, display_type)
     if display_type == 'AS_IT_IS'
-      copy = self.dup
+      copy = dup
       copy.instrument_id = instrument.id
       copy.position = instrument.displays.size + 1
       copy.save!
@@ -34,10 +36,10 @@ class Display < ActiveRecord::Base
         iq.copy(copy.id, instrument.id)
       end
     elsif display_type == 'ONE_QUESTION_PER_SCREEN'
-      instrument_questions.order(:number_in_instrument).each_with_index { |iq, index|
+      instrument_questions.order(:number_in_instrument).each_with_index do |iq, index|
         display_copy = Display.create!(mode: 'SINGLE', position: instrument.displays.size + index, instrument_id: instrument.id, title: "#{title}_#{index}")
         iq.copy(display_copy.id, instrument.id)
-      }
+      end
     end
   end
 
@@ -45,7 +47,7 @@ class Display < ActiveRecord::Base
     destination = instrument.displays.where(id: destination_display_id).first
     if destination_display_id == -1
       destination = instrument.displays.create!(title: 'New Display',
-        position: instrument.displays.size + 1, mode: 'MULTIPLE')
+                                                position: instrument.displays.size + 1, mode: 'MULTIPLE')
     end
     if destination && moved
       moved.each do |id|
@@ -58,4 +60,10 @@ class Display < ActiveRecord::Base
     destination
   end
 
+  def translated_text(language)
+    return title if language == instrument.language
+
+    translation = display_translations.where(language: language).first
+    translation&.text ? translation.text : title
+  end
 end

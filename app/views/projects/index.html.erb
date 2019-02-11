@@ -1,1 +1,32 @@
 <div ui-view></div>
+<%# TODO: Hide when not on AngularJS %>
+<div class="card">
+  <div class="card-body">
+    <h5 class="text-center">Instrument PDF Downloads</h5>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Languages</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @projects.each do |project| %>
+        <% project.instruments.each do |instrument| %>
+        <tr>
+          <td><%= instrument.title %></td>
+          <td>
+            <% instrument.available_languages.each do |language| %>
+              <span><%= link_to instrument.language_name(language),
+                project_instrument_path(project, instrument, format: :pdf, language: language),
+                target: :_blank %></span>
+            <% end %>
+          </td>
+        </tr>
+        <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

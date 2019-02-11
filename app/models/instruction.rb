@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: instructions
@@ -21,11 +23,19 @@ class Instruction < ActiveRecord::Base
   after_touch :touch_instrument_questions, :touch_display_instructions, :touch_instrument
   after_commit :touch_instrument_questions, :touch_display_instructions, :touch_instrument
 
+  def translated_text(language, instrument)
+    return title if language == instrument.language
+
+    translation = instruction_translations.where(language: language).first
+    translation&.text ? translation.text : title
+  end
+
   def instruments
     instrument_questions.map(&:instrument) | display_instructions.map(&:instrument)
   end
 
   private
+
   def touch_instrument_questions
     instrument_questions.update_all(updated_at: Time.now)
   end
@@ -37,5 +47,4 @@ class Instruction < ActiveRecord::Base
   def touch_instrument
     instruments.map(&:touch)
   end
-
 end

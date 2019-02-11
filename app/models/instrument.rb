@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: instruments
@@ -71,6 +73,10 @@ class Instrument < ActiveRecord::Base
     Settings.languages.to_h.key(name)
   end
 
+  def available_languages
+    [language] + question_translations.pluck(:language).uniq
+  end
+
   def self.create_translations
     Instrument.all.each do |instrument|
       languages = instrument.question_translations.pluck(:language).uniq
@@ -78,7 +84,7 @@ class Instrument < ActiveRecord::Base
         instrument_translation = instrument.translations.where(language: translation_language).first
         unless instrument_translation
           instrument.translations.create!(language: translation_language, title: instrument.title,
-            alignment: instrument.alignment)
+                                          alignment: instrument.alignment)
         end
       end
     end
@@ -86,13 +92,13 @@ class Instrument < ActiveRecord::Base
 
   def reorder_displays(display_order)
     ActiveRecord::Base.transaction do
-      display_order.each_with_index { |value, index|
+      display_order.each_with_index do |value, index|
         display = displays.where(id: value).first
         if display && display.position != index + 1
           display.position = index + 1
           display.save!
         end
-      }
+      end
       reload
       renumber_questions
     end
@@ -106,25 +112,25 @@ class Instrument < ActiveRecord::Base
           question_identifier: pattern.question_identifier,
           next_question_identifier: pattern.next_question_identifier
         ).first
-        unless nq
-          iq = instrument_questions.where(identifier: pattern.question_identifier).first
-          niq = instrument_questions.where(identifier: pattern.next_question_identifier).first
-          oi_present = iq.options.pluck(:identifier).include?(pattern.option_identifier) if iq && niq
-          if oi_present
-            NextQuestion.create!(
-              option_identifier: pattern.option_identifier,
-              question_identifier: pattern.question_identifier,
-              next_question_identifier: pattern.next_question_identifier,
-              instrument_question_id: iq.id
-            )
-          end
-        end
+        next if nq
+
+        iq = instrument_questions.where(identifier: pattern.question_identifier).first
+        niq = instrument_questions.where(identifier: pattern.next_question_identifier).first
+        oi_present = iq.options.pluck(:identifier).include?(pattern.option_identifier) if iq && niq
+        next unless oi_present
+
+        NextQuestion.create!(
+          option_identifier: pattern.option_identifier,
+          question_identifier: pattern.question_identifier,
+          next_question_identifier: pattern.next_question_identifier,
+          instrument_question_id: iq.id
+        )
       end
     end
   end
 
   def copy(project, display)
-    instrument_copy = self.dup
+    instrument_copy = dup
     instrument_copy.project_id = project.id
     instrument_copy.title = title + "_#{Time.now.to_i}"
     instrument_copy.save!
@@ -171,7 +177,7 @@ class Instrument < ActiveRecord::Base
   end
 
   def delete_duplicate_surveys
-    grouped_surveys = surveys.group_by {|survey| survey.uuid}
+    grouped_surveys = surveys.group_by(&:uuid)
     grouped_surveys.values.each do |duplicates|
       duplicates.shift
       duplicates.map(&:delete)
@@ -183,14 +189,13 @@ class Instrument < ActiveRecord::Base
       deleted_special_options = special_options_was - special_options
       options.special_options.where(text: deleted_special_options).delete_all unless deleted_special_options.blank?
       new_special_options = special_options - special_options_was
-      if !new_special_options.blank? && !questions.blank?
-        questions.each(&:create_special_options)
-      end
+      questions.each(&:create_special_options) if !new_special_options.blank? && !questions.blank?
     end
   end
 
   def version_by_version_number(version_number)
     return nil if version_number > versions.size || version_number <= 0
+
     versions[version_number - 1].reify
   end
 
@@ -233,6 +238,7 @@ class Instrument < ActiveRecord::Base
       question.options.each do |option|
         format << ['', '', '', "Option for question #{question.question_identifier}", option.text] + translations_for_object(option)
         next unless option.skips
+
         option.skips.each do |skip|
           format << ['', '', '', "For option #{option.text}, SKIP question", skip.question_identifier]
         end
@@ -241,9 +247,7 @@ class Instrument < ActiveRecord::Base
         format << ['', '', '', "Regular expression failure message for #{question.question_identifier}",
                    question.reg_ex_validation_message]
       end
-      if question.identifies_survey
-        format << ['', '', '', 'Question identifies survey', 'YES']
-      end
+      format << ['', '', '', 'Question identifies survey', 'YES'] if question.identifies_survey
     end
   end
 
@@ -259,9 +263,7 @@ class Instrument < ActiveRecord::Base
     sanitizer = Rails::Html::FullSanitizer.new
     text_translations = []
     obj.translations.each do |translation|
-      if instrument_translation_languages.include? translation.language
-        text_translations << sanitizer.sanitize(translation.text)
-      end
+      text_translations << sanitizer.sanitize(translation.text) if instrument_translation_languages.include? translation.language
     end
     text_translations
   end
@@ -367,15 +369,15 @@ class Instrument < ActiveRecord::Base
 
   def short_headers
     %w[identifier survey_id question_identifier question_text response_text
-      response_label special_response other_response]
+       response_label special_response other_response]
   end
 
   def long_headers
     %w[question_identifier short_qid instrument_id instrument_version_number question_version_number
-      instrument_title survey_id survey_uuid device_id device_uuid device_label
-      question_type question_text response response_labels special_response
-      other_response response_time_started response_time_ended device_user_id
-      device_user_username survey_start_time survey_end_time duration_in_seconds] + metadata_keys
+       instrument_title survey_id survey_uuid device_id device_uuid device_label
+       question_type question_text response response_labels special_response
+       other_response response_time_started response_time_ended device_user_id
+       device_user_username survey_start_time survey_end_time duration_in_seconds] + metadata_keys
   end
 
   def create_loop_question(lq, variable_identifiers, question_identifier_variables, idx)
@@ -389,13 +391,13 @@ class Instrument < ActiveRecord::Base
   def wide_headers
     variable_identifiers = []
     question_identifier_variables = %w[_short_qid _question_type _label _special
-      _other _version _text _start_time _end_time]
+                                       _other _version _text _start_time _end_time]
     iqs = Rails.cache.fetch("instrument-questions-#{id}-#{instrument_questions.maximum('updated_at')}",
-    expires_in: 30.minutes) do
+                            expires_in: 30.minutes) do
       instrument_questions.order(:number_in_instrument)
     end
     iqs.each do |iq|
-      if iq.loop_questions.size > 0
+      if !iq.loop_questions.empty?
         iq.loop_questions.each do |lq|
           if iq.question.question_type == 'INTEGER'
             (1..12).each do |n|
@@ -407,9 +409,9 @@ class Instrument < ActiveRecord::Base
                 create_loop_question(lq, variable_identifiers, question_identifier_variables, ind)
               end
             else
-              iq.question.options.each_with_index { |option, idx|
+              iq.question.options.each_with_index do |_option, idx|
                 create_loop_question(lq, variable_identifiers, question_identifier_variables, idx)
-              }
+              end
             end
           end
         end
@@ -420,10 +422,10 @@ class Instrument < ActiveRecord::Base
         end
       end
     end
-    variable_identifiers.map! {|identifier| "q_#{identifier}"}
+    variable_identifiers.map! { |identifier| "q_#{identifier}" }
     %w[survey_id survey_uuid device_identifier device_label latitude longitude
-      instrument_id instrument_version_number instrument_title survey_start_time
-      survey_end_time duration_in_seconds device_user_id device_user_username] + metadata_keys + variable_identifiers
+       instrument_id instrument_version_number instrument_title survey_start_time
+       survey_end_time duration_in_seconds device_user_id device_user_username] + metadata_keys + variable_identifiers
   end
 
   def metadata_keys
@@ -431,6 +433,7 @@ class Instrument < ActiveRecord::Base
       m_keys = []
       surveys.each do |survey|
         next unless survey.metadata
+
         survey.metadata.keys.each do |key|
           m_keys << key unless m_keys.include? key
         end
@@ -482,14 +485,12 @@ class Instrument < ActiveRecord::Base
     real_qids = question_identifiers.select { |qid| db_question_identifiers.include?(qid) }
     # Delete removed questions
     db_question_identifiers.each do |qid|
-      unless real_qids.include?(qid)
-        questions.where(question_identifier: qid).try(:first).try(:destroy)
-      end
+      questions.where(question_identifier: qid).try(:first).try(:destroy) unless real_qids.include?(qid)
     end
     # Update positions of reordered questions
     real_qids.each_with_index do |qid, index|
       question = questions.where(question_identifier: qid).first
-      question.update_attribute(:number_in_instrument, index + 1) if question
+      question&.update_attribute(:number_in_instrument, index + 1)
     end
   end
 
@@ -503,13 +504,13 @@ class Instrument < ActiveRecord::Base
       reordered_displays.each do |dis|
         display_string = dis.split(/: /, 2)
         display = displays.find(display_string[0].to_i)
-        display.update_attribute(:position, display_position) if display
+        display&.update_attribute(:position, display_position)
         display_position += 1
         preserved_displays << display
         display_and_questions = display_string[1].split(/\n\t/)
         display_and_questions.drop(1).each do |qid|
           iq = instrument_questions.where(identifier: qid).first
-          iq.update_attribute(:number_in_instrument, number_in_instrument) if iq
+          iq&.update_attribute(:number_in_instrument, number_in_instrument)
           number_in_instrument += 1
           preserved_questions << iq
         end

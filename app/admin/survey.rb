@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ActiveAdmin.register Survey do
   belongs_to :project
   sidebar 'Survey Associations', only: :show do
@@ -9,7 +11,7 @@ ActiveAdmin.register Survey do
   sidebar :versionate, partial: 'layouts/version', only: :show
 
   permit_params :instrument_id, :instrument_version_number, :uuid, :device_id,
-  :instrument_title, :device_uuid, :latitude, :longitude, :metadata, :completion_rate
+                :instrument_title, :device_uuid, :latitude, :longitude, :metadata, :completion_rate
 
   config.sort_order = 'id_desc'
   config.per_page = [50, 100]
@@ -25,7 +27,7 @@ ActiveAdmin.register Survey do
 
   action_item :calculate_completion_rates, only: :index do
     link_to 'Recalculate Completion Rates',
-    calculate_completion_rates_admin_project_surveys_path(params[:project_id])
+            calculate_completion_rates_admin_project_surveys_path(params[:project_id])
   end
 
   collection_action :remove_duplicates, method: :get do
@@ -34,7 +36,7 @@ ActiveAdmin.register Survey do
 
   action_item :remove_duplicates, only: :index do
     link_to 'Remove Duplicate Responses',
-    remove_duplicates_admin_project_surveys_path(params[:project_id])
+            remove_duplicates_admin_project_surveys_path(params[:project_id])
   end
 
   controller do
@@ -58,7 +60,7 @@ ActiveAdmin.register Survey do
       @versions = @survey.versions
       @survey = @survey.versions[params[:version].to_i].reify if params[:version]
       show! # it seems to need this
-     end
+    end
   end
 
   index do
@@ -67,14 +69,10 @@ ActiveAdmin.register Survey do
       link_to survey.id, admin_project_survey_path(params[:project_id], survey.id)
     end
     column :uuid
-    column 'Identifier' do |survey|
-      survey.identifier
-    end
+    column 'Identifier', &:identifier
     column 'Instrument', sortable: :instrument_title do |survey|
       instrument = Instrument.find_by_id(survey.instrument_id)
-      instrument ? (link_to survey.instrument_title,
-        admin_project_instrument_path(instrument.project_id,
-          survey.instrument_id)) : survey.instrument_title
+      instrument ? (link_to survey.instrument_title, admin_project_instrument_path(instrument.project_id, survey.instrument_id)) : survey.instrument_title
     end
     column 'Instrument Versions', sortable: :instrument_version_number, &:instrument_version_number
     column :created_at do |survey|

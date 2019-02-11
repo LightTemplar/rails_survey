@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: responses
@@ -32,7 +34,7 @@ class Response < ActiveRecord::Base
   has_one :response_image, foreign_key: :response_uuid, primary_key: :uuid
   belongs_to :device_user
   acts_as_paranoid
-  has_paper_trail on: [:update, :destroy]
+  has_paper_trail on: %i[update destroy]
   validates :survey, presence: true
   validates :uuid, presence: true, allow_blank: false, uniqueness: true
   after_destroy :calculate_response_rate
@@ -78,10 +80,11 @@ class Response < ActiveRecord::Base
       options = question.options
       response_identifiers = []
       resps.each do |ind|
-        response_identifiers.push(options[ind.to_i].identifier)
+        option = options[ind.to_i]
+        response_identifiers.push(option.identifier) if option
       end
       identifiers = question.critical_responses.pluck(:option_identifier)
-      (response_identifiers & identifiers).size > 0 # Array intersection
+      !(response_identifiers & identifiers).empty? # Array intersection
     end
   end
 end

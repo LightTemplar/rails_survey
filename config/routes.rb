@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sidekiq/web'
 RailsSurvey::Application.routes.draw do
   devise_for :users
@@ -11,8 +13,8 @@ RailsSurvey::Application.routes.draw do
   end
   namespace :api, defaults: { format: 'json' } do
     namespace :v4 do
-      resources :projects, only: [:index, :show] do
-        resources :instruments, only: [:index, :show]
+      resources :projects, only: %i[index show] do
+        resources :instruments, only: %i[index show]
       end
     end
 
@@ -27,14 +29,14 @@ RailsSurvey::Application.routes.draw do
         resources :randomized_factors, only: :index
         resources :randomized_options, only: :index
         resources :question_randomized_factors, only: :index
-        resources :device_users, only: [:index, :create]
+        resources :device_users, only: %i[index create]
         resources :images, only: %i[index show]
         resources :rules, only: :index
         resources :score_schemes, only: :index
         resources :score_units, only: :index
         resources :option_scores, only: :index
         resources :score_unit_questions, only: :index
-        resources :android_updates, only: [:index, :show]
+        resources :android_updates, only: %i[index show]
         resources :option_sets, only: :index
         resources :displays, only: :index
         resources :next_questions, only: :index
@@ -73,36 +75,36 @@ RailsSurvey::Application.routes.draw do
       end
       resources :option_in_option_sets
       resources :questions
-      resources :question_translations, only: [:index, :create, :update, :show] do
+      resources :question_translations, only: %i[index create update show] do
         collection do
           post :batch_update
         end
       end
-      resources :question_back_translations, only: [:index, :create, :update, :show] do
+      resources :question_back_translations, only: %i[index create update show] do
         collection do
           post :batch_update
         end
       end
       resources :instructions
-      resources :instruction_translations, only: [:index, :create, :update] do
+      resources :instruction_translations, only: %i[index create update] do
         collection do
           post :batch_update
         end
       end
       resources :options
-      resources :option_translations, only: [:index, :create, :update] do
+      resources :option_translations, only: %i[index create update] do
         collection do
           post :batch_update
         end
       end
-      resources :option_back_translations, only: [:index, :create, :update] do
+      resources :option_back_translations, only: %i[index create update] do
         collection do
           post :batch_update
         end
       end
       resources :rules
       resources :validations
-      resources :validation_translations, only: [:index, :create, :update] do
+      resources :validation_translations, only: %i[index create update] do
         collection do
           post :batch_update
         end
@@ -234,6 +236,10 @@ RailsSurvey::Application.routes.draw do
         end
       end
     end
+  end
+
+  resources :projects, only: %i[index show] do
+    resources :instruments, only: [:show]
   end
 
   # resources :projects do

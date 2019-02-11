@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 ActiveAdmin.register Response do
   belongs_to :survey
   permit_params :question_id, :text, :other_response, :special_response,
-  :survey_uuid, :time_started, :time_ended, :question_identifier, :uuid,
-  :device_user_id, :question_version
+                :survey_uuid, :time_started, :time_ended, :question_identifier, :uuid,
+                :device_user_id, :question_version
   config.sort_order = 'id_desc'
   config.per_page = [50, 100, 200]
   config.filters = true
@@ -24,13 +26,9 @@ ActiveAdmin.register Response do
     column :other_response
     column :rank_order
     column :response_image do |response|
-      if response.response_image && response.response_image.picture
-        image_tag(response.response_image.picture.url(:medium))
-      end
+      image_tag(response.response_image.picture.url(:medium)) if response.response_image&.picture
     end
-    column :critical do |response|
-      response.is_critical
-    end
+    column :critical, &:is_critical
     column :created_at do |response|
       time_ago_in_words(response.created_at) + ' ago'
     end
@@ -52,6 +50,6 @@ ActiveAdmin.register Response do
       @versions = @response.versions
       @response = @response.versions[params[:version].to_i].reify if params[:version]
       show!
-     end
+    end
   end
 end
