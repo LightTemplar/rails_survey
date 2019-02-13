@@ -1,0 +1,41 @@
+@import "bootstrap";
+
+div.alwaysbreak {
+  page-break-before: always;
+}
+
+div.nobreak:before {
+  clear: both;
+}
+
+div.nobreak {
+  page-break-inside: avoid;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.page-sub-title {
+  font-size: 11px;
+}
+
+.display-title {
+  text-decoration: underline;
+  font-size: 15px;
+  font-weight: bold;
+  margin: 10px;
+}
+
+.variable {
+  margin: 5px 10px 20px 0;
+}
+
+.question {
+  margin: 0 0 0 15px;
+}
+
+.response {
+  margin: 0 0 0 20px;
+}

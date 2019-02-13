@@ -14,11 +14,14 @@ class InstrumentsController < ApplicationController
     @instrument = @project.instruments.includes(displays: [instrument_questions: [:next_questions, :multiple_skips, :critical_responses, :loop_questions, display_instructions: [instruction: [:instruction_translations]], question: [:translations]]]).find(params[:id])
     authorize @instrument
     respond_to do |format|
-      format.html
+      format.html { render layout: 'pdf.html' }
       format.pdf do
         render pdf: @instrument.title,
                template: 'instruments/show',
-               encoding: 'UTF-8'
+               layout: 'pdf.html',
+               encoding: 'UTF-8',
+               margin: { top: 10, bottom: 15, left: 10, right: 10 },
+               header: { right: '[page] of [topage]' }
       end
     end
   end

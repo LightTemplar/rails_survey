@@ -1,78 +1,65 @@
-<%= render partial: 'instrument_header', locals: {subtitle: ''} %>
+<div class="page-title"><%= @instrument.title %></div>
+<div class="page-sub-title"><%= @instrument.language_name %></div>
+<div class="page-sub-title"><%= "version #: #{@instrument.current_version_number}" %></div>
 
-<div class="card">
-  <div class="card-header">
-    <%= link_to 'Edit', edit_project_instrument_path(@project, @instrument), class: 'btn btn-primary' %>
-    <%= link_to 'Translations', project_instrument_instrument_translations_path(@project, @instrument), class: 'btn btn-primary' %>
-    <!-- <a class="btn btn-primary"
-      href="/projects/<%#= @project.id %>/instruments/<%#= @instrument.id %>/instrument_question_sets">
-      Question Sets
-    </a> -->
-    <a class="btn btn-primary"
-      href="{{baseUrl}}/projects/<%= @project.id %>/instruments/<%= @instrument.id %>/instrument_questions">
-      Questions
-    </a>
-    <!-- <a class="btn btn-primary"
-      href="/projects/<%#= @project.id %>/instruments/<%#= @instrument.id %>/displays">
-      Question Displays
-    </a> -->
+<% @instrument.displays.each do |display| %>
+  <div class="display-title">
+    <%= raw display.translated_text(@language) %>
   </div>
-</div>
-
-<%#= link_to 'Instrument Question Sets', project_instrument_instrument_question_sets_path(@project, @instrument), class: 'btn btn-primary' %>
-<!-- <i class="md-launch">Instrument Question Sets</i> -->
-<%# end %>
-<%#= link_to questions_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-<!-- <i class="md-launch"></i>
-Individual Questions Editor
-<%# end %>
-<%#= link_to project_instrument_grids_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-<i class="md-view-list"></i>
-Tabular Questions Editor
-<%# end %>
-<%#= link_to csv_export_project_instrument_path(@project, @instrument, format: :csv, filename: "#{@instrument.title}_#{@instrument.current_version_number}.csv"), class: 'btn btn-primary m-5' do %>
-<i class="md-cloud-download"></i>
-CSV Export
-<%# end %>
-<%#= link_to pdf_export_project_instrument_path(@project, @instrument, format: :pdf, filename: "#{@instrument.title}_#{@instrument.current_version_number}.pdf"), class: 'btn btn-primary m-5' do %>
-<i class="md-print"></i>
-PDF Export
-<%# end %>
-<%#= link_to project_instrument_instrument_translations_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-<i class="md-language"></i>
-Translations
-<%# end %>
-<%#= link_to project_instrument_sections_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-<i class="md-list"></i>
-Sections
-<%# end %>
-<%#= link_to project_instrument_randomized_factors_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-<i class="md-view-list"></i>
-Randomized Factors
-<%# end %>
-<%#= link_to project_instrument_versions_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-<i class="md-history"></i>
-Past Versions
-<%# end %>
-<%#= link_to edit_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-<i class="md-edit"></i>
-Edit Instrument
-<%# end %>
-<%#= link_to move_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-<i class="md-content-cut"></i>
-Move Instrument
-<%# end %>
-<%#= link_to copy_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5 ' do %>
-<i class="md-content-copy"></i>
-Copy Instrument
-<%# end %>
-<%#= link_to copy_questions_project_instrument_path(@project, @instrument), class: 'btn btn-primary m-5' do %>
-<i class="md-content-copy"></i>
-Copy Questions
-<%# end %>
-<%#= link_to project_instrument_reorder_questions_path(current_project.id, @instrument.id), class: 'btn btn-primary m-5' do %>
-<i class="md-unfold-more"></i>
-Reorder Questions
-<%# end %>-->
-<!-- </div>
-</div> -->
+  <% display.instrument_questions.each do |instrument_question|%>
+    <% instrument_question.display_instructions.each do |dis_ins| %>
+      <p><%= raw dis_ins.translated_text(@language) %></p>
+    <% end %>
+    <div class="nobreak variable">
+      <span><b><%= "#{instrument_question.number_in_instrument})" %> </b></span>
+      <% if instrument_question&.question&.instruction %>
+        <i><%= raw instrument_question&.question&.instruction&.translated_text(@language, @instrument) %></i><br>
+        <span class="question">
+          <%= raw instrument_question.translated_text(@language) %><br>
+        </span>
+      <% else %>
+        <%= raw instrument_question.translated_text(@language) %><br>
+      <% end %>
+      <div class="response">
+        <% if instrument_question.question&.option_set&.instruction %>
+          <i><%= raw instrument_question.question&.option_set&.instruction&.translated_text(@language, @instrument) %></i><br>
+        <% end %>
+        <% if instrument_question.non_special_options? %>
+          <% instrument_question.non_special_options.each_with_index do |option, index| %>
+            <% label = "#{instrument_question.letters[index]}) #{option.translated_text(@language, @instrument)}" %>
+            <% if instrument_question.select_one_variant? %>
+              <input type="radio"> <%= label %> <br>
+            <% elsif instrument_question.select_multiple_variant? %>
+              <input type="checkbox"> <%= label %><br>
+            <% elsif instrument_question.list_of_boxes_variant? %>
+              <%= label %>______________________________________________<br>
+            <% end %>
+          <% end %>
+          <% option_count = instrument_question.non_special_options.size %>
+          <% if instrument_question.other? && instrument_question.select_one_variant? %>
+            <input type="radio"> <%= "#{instrument_question.letters[option_count]}) Other" %><br>
+          <% elsif instrument_question.other? && instrument_question.select_multiple_variant? %>
+            <input type="checkbox"> <%= "#{instrument_question.letters[option_count]}) Other" %><br>
+          <% elsif instrument_question.other? && instrument_question.list_of_boxes_variant? %>
+            <%= "#{instrument_question.letters[option_count]}) Other" %>______________________________________________<br>
+          <% end %>
+        <% else %>
+          <textarea style="border:none;"></textarea><br>
+        <% end %>
+        <% unless instrument_question.special_options.blank? %>
+          <%= "Or: #{instrument_question.special_options.join(' / ')}" %><br>
+        <% end %>
+        <% instrument_question.next_questions.each do |next_question| %>
+          <%= raw next_question.skip_to %><br>
+        <% end %>
+        <% instrument_question.multiple_skips.group_by(&:option_identifier).each do |option_identifier, multiple_skips| %>
+          <%= raw multiple_skips.first.skip_to(option_identifier, multiple_skips) %><br>
+        <% end %>
+        <%= raw instrument_question.loop_string %>
+        <% instrument_question.critical_responses.each do |critical_response| %>
+          <span style="color:red;"><%= raw critical_response.caution_text(instrument_question, @language) %></span>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+<% end %>

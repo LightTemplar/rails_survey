@@ -2,18 +2,13 @@
   <div ng-include="'instruments/show.html'"></div>
   <div class="card">
     <div class="card-body">
-      <div class="row m-1">
-        <label class="col-md-4 text-right">Language</label>
-        <div class="col-md-8 form-group text-left">
-          <select
-            class="form-control"
-            ng-model="instrument.language"
-            ng-options="language[1] as language[0] for language in languages"
-          >
-          </select>
-        </div>
+      <h4 class="text-center">PDF Downloads</h4>
+      <div class="row">
+        <span ng-repeat="language in languages">
+          <a class="col-sm" href="/projects/{{project_id}}/instruments/{{instrument_id}}?language={{language[1]}}&format=pdf"
+          target="_blank"> {{language[0]}}</a>
+        </span>
       </div>
-      <button class="btn btn-primary m-1" ng-click="download(instrument)">Download PDF</button>
     </div>
   </div>
 </div>
