@@ -18,4 +18,10 @@ class Section < ActiveRecord::Base
   acts_as_paranoid
   validates :title, presence: true
 
+  def translated_text(language)
+    return title if language == instrument.language
+
+    translation = translations.where(language: language).first
+    translation&.text ? translation.text : title
+  end
 end

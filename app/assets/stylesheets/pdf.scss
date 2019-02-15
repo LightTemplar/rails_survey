@@ -1,0 +1,76 @@
+.question .info {
+  float: left;
+  text-align: left;
+}
+
+.question .info .number {
+  font-weight: bold;
+  font-size: 14pt;
+}
+
+.question .info .identifier {
+  font-size: 8pt;
+  padding-top: 5px;
+}
+
+.question {
+  margin-bottom: 10px;
+}
+
+.instrument-title {
+  font-weight: bold;
+  font-size: 18px;
+  text-align: center;
+}
+
+.instrument-sub-title {
+  font-size: 14px;
+  text-align: center;
+}
+
+.display-title {
+  margin-bottom: 10px;
+  font-size: 14px;
+  text-align: center;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.page {
+  size: A4;
+  margin: 25px;
+  position: relative;
+  page-break-after: always;
+}
+
+.page .content .column {
+  text-align: justify;
+  font-size: 12pt;
+  padding: 10px;
+}
+
+.page .content .column blockquote {
+  border-left: 2px solid #999999;
+  background: #DEDEDE;
+  padding: 10px;
+  margin: 4px 20px;
+  clear: both;
+}
+
+.page .content .column img {
+  float: left;
+  margin: 10px;
+}
+
+.page .content .column p {
+  padding: 0 10px;
+  margin: 10px 0;
+}
+
+.page .content .column h1 {
+  padding: 0 10px;
+}
+
+.enclosure {
+  border: 1px dashed black;
+}

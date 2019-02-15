@@ -28,7 +28,7 @@ module RailsSurvey
     config.assets.paths << Rails.root.join('vendor', 'assets', 'templates')
     I18n.enforce_available_locales = false
     config.assets.initialize_on_precompile = false
-    config.assets.precompile += %w[active_admin.js active_admin.css.scss pdf.css.scss]
+    config.assets.precompile += %w[active_admin.js active_admin.css.scss]
     config.wiki_path = 'wiki.git'
     config.cache_store = :redis_store, "#{ENV['REDIS_CACHE_URL']}/cache", { expires_in: 6.hours }
     config.autoload_paths += Dir[Rails.root.join('app', 'scorers', '{*/}')]
