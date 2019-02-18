@@ -79,6 +79,19 @@ class InstrumentQuestion < ActiveRecord::Base
     "-> Ask questions #{skipped.strip.chop} for each of the responses"
   end
 
+  def multiple_skip_string(option_identifier, skips)
+    option = hashed_options[option_identifier]
+    skipped_questions = skips.map { |ms| ms.skipped_question.number_in_instrument }
+    skipped_questions = skipped_questions.uniq.sort
+    skipped = skipped_questions.inject(+'') { |str, que| str << "<b>##{que}</b>, " }
+    if option
+      index = non_special_options.index(option)
+      "* If <b>(#{letters[index]})</b> skip questions: #{skipped.strip.chop}"
+    else
+      "* If <b>#{option_identifier}</b> skip questions: #{skipped.strip.chop}"
+    end
+  end
+
   def slider_variant?
     question.slider_variant?
   end

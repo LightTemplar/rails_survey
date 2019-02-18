@@ -1,6 +1,7 @@
 .question .info {
   float: left;
   text-align: left;
+  margin-right: 5px;
 }
 
 .question .info .number {
@@ -36,9 +37,12 @@
   text-decoration: underline;
 }
 
+.response-content {
+  margin-left: 30px;
+}
+
 .page {
-  size: A4;
-  margin: 25px;
+  width: 960px;
   position: relative;
   page-break-after: always;
 }

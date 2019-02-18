@@ -1,5 +1,5 @@
 <div class="page_template">
-  <div class='content row col-md-12'>
+  <div class='content'>
   </div>
 </div>
 
@@ -10,80 +10,82 @@
     <div class="instrument-sub-title"><%= "version #: #{@instrument.current_version_number}" %></div>
   </div>
   <% @instrument.displays.each do |display| %>
-    <div class="row col-md-12 display-title"><%= raw display.translated_text(@language) %></div>
+    <div class="display-title"><%= raw display.translated_text(@language) %></div>
     <% display.instrument_questions.each do |instrument_question|%>
       <% instrument_question.display_instructions.each do |dis_ins| %>
-        <div class="row col-md-12 question dontsplit"><%= raw dis_ins.translated_text(@language) %></div>
+        <div class="question dontsplit"><%= raw dis_ins.translated_text(@language) %></div>
       <% end %>
-      <div class="row question dontsplit">
-        <div class="col-md-2 info">
+      <div class="question dontsplit">
+        <div class="info">
           <div class="number"><%= "#{instrument_question.number_in_instrument})" %></div>
           <div class="identifier"><%= "q:#{instrument_question.identifier}" %></div>
         </div>
-        <div class="col-md-10 content">
+        <div class="content">
           <% if instrument_question&.question&.instruction %>
             <div><%= raw instrument_question&.question&.instruction&.translated_text(@language, @instrument) %></div>
             <div><%= raw instrument_question.translated_text(@language) %></div>
           <% else %>
             <div><%= raw instrument_question.translated_text(@language) %></div>
           <% end %>
-          <% if instrument_question.question&.option_set&.instruction %>
-            <div><%= raw instrument_question.question&.option_set&.instruction&.translated_text(@language, @instrument) %></div>
-          <% end %>
-          <% if instrument_question.non_special_options? %>
-            <table style="width:100%;">
-              <tbody>
-                <% instrument_question.non_special_options.each_with_index do |option, index| %>
-                  <tr>
-                    <% index_label = "#{instrument_question.letters[index]})" %>
-                    <% option_label = option.translated_text(@language, @instrument) %>
-                    <% if instrument_question.select_one_variant? %>
-                      <td style="width:6%;"><input type="radio"> <%= index_label %></td>
-                      <td style="width:94%;"><%= option_label %></td>
-                    <% elsif instrument_question.select_multiple_variant? %>
-                      <td style="width:6%;"><input type="checkbox"> <%= index_label %></td>
-                      <td style="width:94%;"><%= option_label %></td>
-                    <% elsif instrument_question.list_of_boxes_variant? %>
-                      <td style="width:6%;"><%= index_label %> </td>
-                      <td style="width:94%;"><%= option_label %>______________________________________________</td>
-                    <% end %>
-                  </tr>
-                <% end %>
-                <% option_count = instrument_question.non_special_options.size %>
-                <% if instrument_question.other? && instrument_question.select_one_variant? %>
-                  <tr>
-                    <td style="width:6%;"><input type="radio"> <%= "#{instrument_question.letters[option_count]})" %></td>
-                    <td style="width:94%;">Other</td>
-                  </tr>
-                <% elsif instrument_question.other? && instrument_question.select_multiple_variant? %>
-                  <tr>
-                    <td style="width:6%;"><input type="checkbox"> <%= "#{instrument_question.letters[option_count]})" %></td>
-                    <td style="width:94%;">Other</td>
-                  </tr>
-                <% elsif instrument_question.other? && instrument_question.list_of_boxes_variant? %>
-                  <tr>
-                    <td style="width:6%;"><%= "#{instrument_question.letters[option_count]}) " %></td>
-                    <td style="width:94%;">Other ______________________________________________</td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
-          <% else %>
-            <textarea style="border:none;"></textarea>
-          <% end %>
-          <% unless instrument_question.special_options.blank? %>
-            <div><%= "Or: #{instrument_question.special_options.join(' / ')}" %></div>
-          <% end %>
-          <% instrument_question.next_questions.each do |next_question| %>
-            <div><%= raw next_question.skip_to %></div>
-          <% end %>
-          <% instrument_question.multiple_skips.group_by(&:option_identifier).each do |option_identifier, multiple_skips| %>
-            <div><%= raw multiple_skips.first.skip_to(option_identifier, multiple_skips) %></div>
-          <% end %>
-          <%= raw instrument_question.loop_string %>
-          <% instrument_question.critical_responses.each do |critical_response| %>
-            <span style="color:red;"><%= raw critical_response.caution_text(instrument_question, @language) %></span>
-          <% end %>
+          <div class="response-content">
+            <% if instrument_question.question&.option_set&.instruction %>
+              <div><%= raw instrument_question.question&.option_set&.instruction&.translated_text(@language, @instrument) %></div>
+            <% end %>
+            <% if instrument_question.non_special_options? %>
+              <table>
+                <tbody>
+                  <% instrument_question.non_special_options.each_with_index do |option, index| %>
+                    <tr>
+                      <% index_label = "#{instrument_question.letters[index]})" %>
+                      <% option_label = option.translated_text(@language, @instrument) %>
+                      <% if instrument_question.select_one_variant? %>
+                        <td><input type="radio"> <%= index_label %></td>
+                        <td><%= option_label %></td>
+                      <% elsif instrument_question.select_multiple_variant? %>
+                        <td><input type="checkbox"> <%= index_label %></td>
+                        <td><%= option_label %></td>
+                      <% elsif instrument_question.list_of_boxes_variant? %>
+                        <td><%= index_label %> </td>
+                        <td><%= option_label %>______________________________________________</td>
+                      <% end %>
+                    </tr>
+                  <% end %>
+                  <% option_count = instrument_question.non_special_options.size %>
+                  <% if instrument_question.other? && instrument_question.select_one_variant? %>
+                    <tr>
+                      <td><input type="radio"> <%= "#{instrument_question.letters[option_count]})" %></td>
+                      <td>Other</td>
+                    </tr>
+                  <% elsif instrument_question.other? && instrument_question.select_multiple_variant? %>
+                    <tr>
+                      <td><input type="checkbox"> <%= "#{instrument_question.letters[option_count]})" %></td>
+                      <td>Other</td>
+                    </tr>
+                  <% elsif instrument_question.other? && instrument_question.list_of_boxes_variant? %>
+                    <tr>
+                      <td><%= "#{instrument_question.letters[option_count]}) " %></td>
+                      <td>Other ______________________________________________</td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            <% else %>
+              <textarea style="border:none;"></textarea>
+            <% end %>
+            <% unless instrument_question.special_options.blank? %>
+              <div><%= "Or: #{instrument_question.special_options.join(' / ')}" %></div>
+            <% end %>
+            <% instrument_question.next_questions.each do |next_question| %>
+              <div><%= raw next_question.skip_to %></div>
+            <% end %>
+            <% instrument_question.multiple_skips.group_by(&:option_identifier).each do |option_identifier, multiple_skips| %>
+              <div><%= raw instrument_question.multiple_skip_string(option_identifier, multiple_skips) %></div>
+            <% end %>
+            <%= raw instrument_question.loop_string %>
+            <% instrument_question.critical_responses.each do |critical_response| %>
+              <span style="color:red;"><%= raw critical_response.caution_text(instrument_question, @language) %></span>
+            <% end %>
+          </div>
         </div>
       </div>
     <% end %>

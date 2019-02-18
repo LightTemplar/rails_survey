@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: questions
@@ -38,7 +40,7 @@ class Question < ActiveRecord::Base
   has_many :instruments, -> { distinct }, through: :instrument_questions
   has_many :skip_patterns, foreign_key: 'question_identifier', primary_key: 'question_identifier', dependent: :destroy
   before_save :update_question_translation, if: proc { |question| question.text_changed? }
-  after_save :touch_instrument_questions
+  after_touch :touch_instrument_questions
   after_commit :update_instruments_versions, on: %i[update destroy]
   has_paper_trail
   acts_as_paranoid
@@ -107,7 +109,7 @@ class Question < ActiveRecord::Base
   private
 
   def touch_instrument_questions
-    instrument_questions.update_all(updated_at: Time.now)
+    instrument_questions.each(&:touch)
   end
 
   def update_instruments_versions

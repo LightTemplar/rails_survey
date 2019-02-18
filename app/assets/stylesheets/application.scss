@@ -20,6 +20,7 @@
   padding: 0 !important;
 }
 // Needed by ui.select for Bootstrap 4
+
 .ui-select-bootstrap.open .dropdown-menu {
   display: block;
 }
@@ -44,6 +45,7 @@ body {
   line-height: 60px;
   /* Vertically center the text there */
   background-color: #f5f5f5;
+  margin: -30px;
 }
 
 body > .container {
@@ -59,6 +61,7 @@ body > .container {
   background-color: #3A4361;
 }
 // Global font-size and line height
+
 * {
   font-size: 12px;
   line-height: 1.2;

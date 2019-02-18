@@ -24,18 +24,7 @@ class MultipleSkip < ActiveRecord::Base
   validates :instrument_question_id, uniqueness: { scope:
     %i[question_identifier option_identifier skip_question_identifier] }
 
-  def skip_to(op_id, multiple_skips)
-    option = instrument_question.hashed_options[op_id]
-    skipped = +''
-    multiple_skips.each do |m_skip|
-      q = instrument.instrument_questions.where(identifier: m_skip.skip_question_identifier).first
-      skipped << "<b>##{q.number_in_instrument}</b>, "
-    end
-    if option
-      index = instrument_question.non_special_options.index(option)
-      "* If <b>(#{instrument_question.letters[index]})</b> skip questions: #{skipped.strip.chop}"
-    else
-      "* If <b>#{op_id}</b> skip questions: #{skipped.strip.chop}"
-    end
+  def skipped_question
+    instrument.instrument_questions.where(identifier: skip_question_identifier).first
   end
 end
