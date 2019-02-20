@@ -6,12 +6,19 @@
 
 .question .info .number {
   font-weight: bold;
-  font-size: 14pt;
 }
 
 .question .info .identifier {
-  font-size: 8pt;
+  font-size: 12pt !important;
   padding-top: 5px;
+}
+
+.skip-instructions {
+  b,
+  div {
+    font-size: 10pt !important;
+    line-height: 1.2 !important;
+  }
 }
 
 .question {
@@ -20,18 +27,16 @@
 
 .instrument-title {
   font-weight: bold;
-  font-size: 18px;
+  font-size: 20pt !important;
   text-align: center;
 }
 
 .instrument-sub-title {
-  font-size: 14px;
   text-align: center;
 }
 
 .display-title {
   margin-bottom: 10px;
-  font-size: 14px;
   text-align: center;
   font-weight: bold;
   text-decoration: underline;
@@ -44,6 +49,11 @@
 .page-template {
   margin: 50px auto auto;
   display: none;
+
+  * {
+    font-size: 16pt !important;
+    line-height: 1.3 !important;
+  }
 }
 
 .page {
@@ -54,7 +64,6 @@
 
 .page .content .column {
   text-align: justify;
-  font-size: 12pt;
   padding: 10px;
 }
 
