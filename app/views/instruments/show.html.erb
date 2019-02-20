@@ -1,9 +1,9 @@
-<div class="page_template">
+<div class="page-template">
   <div class='content'>
   </div>
 </div>
 
-<div id="pdf_content">
+<div id="pdf-content">
   <div class="text-center" style="margin-bottom:10px;">
     <div class="instrument-title"><%= @instrument.title %></div>
     <div class="instrument-sub-title"><%= @instrument.language_name %></div>
@@ -20,7 +20,7 @@
           <div class="number"><%= "#{instrument_question.number_in_instrument})" %></div>
           <div class="identifier"><%= "q:#{instrument_question.identifier}" %></div>
         </div>
-        <div class="content">
+        <div class="question-content">
           <% if instrument_question&.question&.instruction %>
             <div><%= raw instrument_question&.question&.instruction&.translated_text(@language, @instrument) %></div>
             <div><%= raw instrument_question.translated_text(@language) %></div>
@@ -70,17 +70,15 @@
                 </tbody>
               </table>
             <% else %>
-              <textarea style="border:none;"></textarea>
+              <textarea rows="5" style="border:none;resize:none;"></textarea>
             <% end %>
             <% unless instrument_question.special_options.blank? %>
               <div><%= "Or: #{instrument_question.special_options.join(' / ')}" %></div>
             <% end %>
-            <% instrument_question.next_questions.each do |next_question| %>
-              <div><%= raw next_question.skip_to %></div>
+            <% instrument_question.next_questions.group_by(&:next_question_identifier).each do |question_identifier, next_questions| %>
+              <div><%= raw instrument_question.next_question_string(next_questions) %></div>
             <% end %>
-            <% instrument_question.multiple_skips.group_by(&:option_identifier).each do |option_identifier, multiple_skips| %>
-              <div><%= raw instrument_question.multiple_skip_string(option_identifier, multiple_skips) %></div>
-            <% end %>
+            <%= raw instrument_question.multiple_skip_string %>
             <%= raw instrument_question.loop_string %>
             <% instrument_question.critical_responses.each do |critical_response| %>
               <span style="color:red;"><%= raw critical_response.caution_text(instrument_question, @language) %></span>
@@ -96,18 +94,18 @@
   $(function() {
     var content_height = 1300;
   	function buildPdf() {
-  		if($('#pdf_content').contents().length > 0) {
-  			$page = $(".page_template:first").clone().addClass("page").css("display", "block");
+  		if($('#pdf-content').contents().length > 0) {
+  			$page = $(".page-template:first").clone().addClass("page").css("display", "block");
 
   			$("body").append($page);
 
-  			$('#pdf_content').columnize({
+  			$('#pdf-content').columnize({
   				columns: 2,
           buildOnce : true,
   				target: ".page:last .content",
   				overflow: {
   					height: content_height,
-  					id: "#pdf_content",
+  					id: "#pdf-content",
   					doneFunc: function(){
   						buildPdf();
   					}

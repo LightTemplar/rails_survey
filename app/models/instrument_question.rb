@@ -79,17 +79,73 @@ class InstrumentQuestion < ActiveRecord::Base
     "-> Ask questions #{skipped.strip.chop} for each of the responses"
   end
 
-  def multiple_skip_string(option_identifier, skips)
-    option = hashed_options[option_identifier]
-    skipped_questions = skips.map { |ms| ms.skipped_question.number_in_instrument }
-    skipped_questions = skipped_questions.uniq.sort
-    skipped = skipped_questions.inject(+'') { |str, que| str << "<b>##{que}</b>, " }
-    if option
-      index = non_special_options.index(option)
-      "* If <b>(#{letters[index]})</b> skip questions: #{skipped.strip.chop}"
-    else
-      "* If <b>#{option_identifier}</b> skip questions: #{skipped.strip.chop}"
+  def multiple_skip_string
+    skip_hash = Hash.new { |hash, key| hash[key] = [] }
+    multiple_skips.group_by(&:option_identifier).each do |option_identifier, skips|
+      option = hashed_options[option_identifier]
+      skipped_questions = skips.map { |ms| ms.skipped_question.number_in_instrument }
+      skipped_questions = skipped_questions.compact.uniq.sort
+      skipped_questions = to_ranges(skipped_questions)
+      skipped = skipped_questions.inject(+'') do |str, que|
+        str << if que.first == que.last
+                 "<b>##{que.first}</b>, "
+               else
+                 "<b>##{que.first}-#{que.last}</b>, "
+               end
+      end
+      key = if option
+              index = non_special_options.index(option)
+              "(#{letters[index]})"
+            elsif option_identifier.nil?
+              "(#{skips.map(&:value).uniq.join(',')})"
+            else
+              option_identifier
+            end
+      skip_hash[skipped.strip.chop] << key
     end
+    mss = +''
+    skip_hash.each do |key, values|
+      str = +'<div>* If '
+      values.each do |value|
+        str << "<b>#{value}</b> or "
+      end
+      str = str.strip.chop.chop << "skip questions: #{key} </div>"
+      mss << str
+    end
+    mss
+  end
+
+  def to_ranges(array)
+    ranges = []
+    unless array.empty?
+      left = array.first
+      right = nil
+      array.each do |obj|
+        if right && obj != right.succ
+          ranges << Range.new(left, right)
+          left = obj
+        end
+        right = obj
+      end
+      ranges << Range.new(left, right)
+    end
+    ranges
+  end
+
+  def next_question_string(the_next_questions)
+    skip_to = +'=> If '
+    the_next_questions.each do |next_question|
+      option = hashed_options[next_question.option_identifier]
+      if option
+        index = non_special_options.index(option)
+        skip_to << "<b>(#{letters[index]})</b> or "
+      elsif next_question.value
+        skip_to << "<b>#{next_question.value}</b> or "
+      else
+        skip_to << "<b>#{next_question.option_identifier}</b> or "
+      end
+    end
+    "#{skip_to.strip.chop.chop} go to <b>##{next_questions&.first&.skip_to_question&.number_in_instrument}</b>"
   end
 
   def slider_variant?

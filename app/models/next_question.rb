@@ -25,16 +25,6 @@ class NextQuestion < ActiveRecord::Base
   validates :instrument_question_id, uniqueness: { scope:
     %i[question_identifier option_identifier next_question_identifier] }
 
-  def skip_to
-    option = instrument_question.hashed_options[option_identifier]
-    if option
-      index = instrument_question.non_special_options.index(option)
-      "=> If <b>(#{instrument_question.letters[index]})</b> skip to <b>##{skip_to_question.number_in_instrument}</b>"
-    else
-      "=> If <b>#{option_identifier}</b> skip to <b>##{skip_to_question.number_in_instrument}</b>"
-    end
-  end
-
   def skip_to_question
     instrument.instrument_questions.where(identifier: next_question_identifier).first
   end
