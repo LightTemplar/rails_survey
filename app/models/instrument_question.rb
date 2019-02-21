@@ -29,13 +29,25 @@ class InstrumentQuestion < ActiveRecord::Base
   has_many :loop_questions, dependent: :destroy
   has_many :all_loop_questions, -> { with_deleted }, class_name: 'LoopQuestion'
   has_many :critical_responses, through: :question
+
   acts_as_paranoid
   has_paper_trail
+  acts_as_taggable
+  acts_as_taggable_on :countries
+
   validates :identifier, presence: true
-  validates :identifier, uniqueness: { scope: :instrument_id,
-                                       message: 'instrument already has this identifier' }
+  validates :identifier, uniqueness: { scope: :instrument_id, message: 'instrument already has this identifier' }
+
   after_update :update_display_instructions, if: :number_in_instrument_changed?
   after_destroy :renumber_questions
+
+  def country_specific(language)
+    return false if language == 'en' || country_list.blank?
+
+    return !country_list.include?('cambodia') if language == 'km'
+    return !country_list.include?('ethiopia') if language == 'am'
+    return !country_list.include?('kenya') if language == 'sw'
+  end
 
   def letters
     ('a'..'z').to_a

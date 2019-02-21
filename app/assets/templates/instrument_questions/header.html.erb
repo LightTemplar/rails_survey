@@ -1,5 +1,6 @@
 <h4 class="text-center"> Question Logic</h4>
-<h5 class="text-center">{{instrumentQuestion.identifier}}</h5>
+<p><b>Identifier:</b> {{instrumentQuestion.identifier}}</p>
+<p><b>Text:</b> {{instrumentQuestion.text}}</p>
 <div class="text-center">
   <a ui-sref="followUps({project_id: project_id, instrument_id: instrument_id, id: id})"
   class="btn btn-primary m-1">Follow Ups</a>
@@ -11,4 +12,6 @@
   class="btn btn-primary m-1">Condition Skips</a>
   <a ui-sref="loops({project_id: project_id,
     instrument_id: instrument_id, id: id})" class="btn btn-primary m-1">Loops</a>
+  <a ui-sref="tags({project_id: project_id,
+    instrument_id: instrument_id, id: id})" class="btn btn-primary m-1">Tags</a>
 </div>

@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 module Api
   module V2
     class ProjectsController < ApiApplicationController
       respond_to :json
 
       def index
-        @projects = current_user.projects.includes(:instruments)
+        @projects = current_user.projects
       end
 
       def show

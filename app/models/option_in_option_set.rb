@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: option_in_option_sets
@@ -20,12 +22,11 @@ class OptionInOptionSet < ActiveRecord::Base
   has_paper_trail
   acts_as_paranoid
   after_save :set_special
-  validates :option_set_id, uniqueness: { scope: [:option_id, :number_in_question] }
-  
+  validates :option_set_id, uniqueness: { scope: %i[option_id number_in_question] }
+
   private
 
   def set_special
     update_columns(special: true) if option_set.special
   end
-
 end

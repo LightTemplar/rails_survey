@@ -1,0 +1,20 @@
+<div class="card" ng-controller="ShowInstrumentQuestionCtrl">
+  <div class="card-header">
+    <div ng-include="'instrument_questions/header.html'"></div>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-4">
+        Country Tags (separate with comma if more than one):
+      </div>
+      <div class="col-md-8">
+        <input class="form-control" type="text" name="country-list" ng-model="instrumentQuestion.country_list">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md">
+        <button class="btn btn-success float-right" ng-click="saveTags()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>

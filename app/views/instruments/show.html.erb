@@ -12,6 +12,7 @@
   <% @instrument.displays.each do |display| %>
     <div class="display-title dontend"><%= raw display.translated_text(@language) %></div>
     <% display.instrument_questions.each do |instrument_question|%>
+      <% next if instrument_question.country_specific(@language) %>
       <% instrument_question.display_instructions.each do |dis_ins| %>
         <div class="question dontsplit"><%= raw dis_ins.translated_text(@language) %></div>
       <% end %>

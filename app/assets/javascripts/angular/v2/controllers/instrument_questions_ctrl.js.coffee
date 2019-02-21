@@ -37,6 +37,14 @@ NextQuestion, MultipleSkip, FollowUpQuestion, ConditionSkip, LoopQuestion) ->
     'instrument_question_id': $scope.id
   })
 
+  $scope.saveTags = () ->
+    $scope.instrumentQuestion.project_id = $scope.project_id
+    $scope.instrumentQuestion.$update({},
+      (data, headers) ->
+      (result, headers) ->
+        alert(result.data.errors)
+    )
+
   $scope.getQuestion = (loopQ) ->
     _.findWhere($scope.instrumentQuestions, {identifier: loopQ.looped})
 

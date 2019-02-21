@@ -9,9 +9,12 @@ class InstrumentsController < ApplicationController
   end
 
   def show
-    @project = current_user.projects.find(params[:project_id])
+    project = current_user.projects.find(params[:project_id])
     @language = params[:language]
-    @instrument = @project.instruments.includes(displays: [instrument_questions: [:next_questions, :multiple_skips, :critical_responses, :loop_questions, display_instructions: [instruction: [:instruction_translations]], question: [:translations]]]).find(params[:id])
+    @instrument = project.instruments.includes(displays: [:instrument, instrument_questions:
+      [:instrument, :next_questions, :multiple_skips, :loop_questions, :critical_responses,
+       :taggings, display_instructions: %i[display instruction],
+                  question: [:instruction, :special_option_set, option_set: %i[options instruction]]]]).find(params[:id])
     authorize @instrument
     respond_to do |format|
       format.html { render layout: 'pdf.html' }

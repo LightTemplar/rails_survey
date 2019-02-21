@@ -48,40 +48,40 @@
     </div>
   <div class="card">
     <div class="card-body card-padding">
-      <div class="m-1 mb-2">
-        <button class="btn btn-primary float-left" ng-click="previous(display)">Previous</button>
-        <button class="btn btn-primary float-right" ng-click="next(display)">Next</button>
+      <div class="row">
+        <div class="col-md"><button class="btn btn-primary float-left" ng-click="previous(display)">Previous</button></div>
+        <div class="col-md"><button class="btn btn-primary float-right" ng-click="next(display)">Next</button></div>
       </div>
-      <h5 class="text-center">Questions In Display</h5>
+      <h4 class="text-center">Questions In Display</h4>
       <h6 class="row m-1">
-        <label class="col-md-1">Number</label>
-        <label class="col-md-2">Logic</label>
-        <label class="col-md-2">Type</label>
-        <label class="col-md-3">Text</label>
-        <label class="col-md-2">Identifier</label>
-        <label class="col-md-2">Actions</label>
+        <label class="col-md">Number</label>
+        <label class="col-md">Logic</label>
+        <label class="col-md">Type</label>
+        <label class="col-md">Text</label>
+        <label class="col-md">Identifier</label>
+        <label class="col-md">Actions</label>
       </h6>
       <div class="m-t-5" ui-sortable="sortableInstrumentQuestions" ng-model="displayQuestions">
         <div class="row m-1" ng-repeat="question in displayQuestions | orderBy: '1 * number_in_instrument'">
-          <div class="col-md-1">
+          <div class="col-md">
             <div class="btn btn-primary moveInstrumentQuestion">
               <span class="oi oi-elevator mr-1"></span>
               <span>{{question.number_in_instrument}}</span>
             </div>
           </div>
-          <a class="col-md-2" title="Link to question logic e.g skip patterns and followups"
+          <a class="col-md" title="Link to question logic e.g skip patterns and followups"
           ui-sref="instrumentQuestion({project_id: project_id, instrument_id: instrument_id, id: question.id})">
           {{question.identifier}}</a>
-          <div class="col-md-2">
+          <div class="col-md">
             <a title="Link to original question" ui-sref="questionSetQuestion({question_set_id: question.question_set_id, id: question.question_id})">
               {{question.type | limitTo:25}}
             </a>
           </div>
-          <div class="col-md-3" ng-bind-html="question.text | ToTrustedHtml"></div>
-          <div class="col-md-2">
+          <div class="col-md" ng-bind-html="question.text | ToTrustedHtml"></div>
+          <div class="col-md">
             <input class="form-control input-sm" type="text" ng-model="question.identifier" required/>
           </div>
-          <div class="col-md-2">
+          <div class="col-md">
             <button class="btn btn-success oi oi-cloud-upload m-1"
             ng-click="updateInstrumentQuestion(question)"/>
             <button class="btn btn-danger oi oi-trash m-1"

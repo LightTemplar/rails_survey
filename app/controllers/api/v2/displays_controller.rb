@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V2
     class DisplaysController < ApiApplicationController
@@ -5,11 +7,11 @@ module Api
       before_action :set_instrument_project
 
       def index
-        @displays = @instrument.displays.order(:position).includes(:instrument_questions)
+        @displays = @instrument.displays.order(:position)
       end
 
       def show
-        @display = @instrument.displays.includes(:instrument_questions).find(params[:id])
+        @display = @instrument.displays.find(params[:id])
       end
 
       def create
