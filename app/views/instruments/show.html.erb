@@ -1,6 +1,6 @@
 <div class="page-template">
-  <div class='content'>
-  </div>
+  <div class='content'></div>
+  <div class='pdf-footer'><span>Page </span></div>
 </div>
 
 <div id="pdf-content">
@@ -39,10 +39,10 @@
                       <% index_label = "#{instrument_question.letters[index]})" %>
                       <% option_label = option.translated_text(@language, @instrument) %>
                       <% if instrument_question.select_one_variant? %>
-                        <td style="width:12%;"><input type="radio"> <%= index_label %></input></td>
+                        <td style="width:12%;"><%= '&#x274d;'.html_safe %> <%= index_label %></td>
                         <td><%= option_label %></td>
                       <% elsif instrument_question.select_multiple_variant? %>
-                        <td style="width:12%;"><input type="checkbox"> <%= index_label %></input></td>
+                        <td style="width:12%;"><%= '&#x2752;'.html_safe %> <%= index_label %></td>
                         <td><%= option_label %></td>
                       <% elsif instrument_question.list_of_boxes_variant? %>
                         <td><%= index_label %> </td>
@@ -53,12 +53,12 @@
                   <% option_count = instrument_question.non_special_options.size %>
                   <% if instrument_question.other? && instrument_question.select_one_variant? %>
                     <tr>
-                      <td style="width:12%;"><input type="radio"> <%= "#{instrument_question.letters[option_count]})" %></input></td>
+                      <td style="width:12%;"><%= '&#x274d;'.html_safe %> <%= "#{instrument_question.letters[option_count]})" %></td>
                       <td>Other</td>
                     </tr>
                   <% elsif instrument_question.other? && instrument_question.select_multiple_variant? %>
                     <tr>
-                      <td style="width:12%;"><input type="checkbox"> <%= "#{instrument_question.letters[option_count]})" %></input></td>
+                      <td style="width:12%;"><%= '&#x2752;'.html_safe %> <%= "#{instrument_question.letters[option_count]})" %></td>
                       <td>Other</td>
                     </tr>
                   <% elsif instrument_question.other? && instrument_question.list_of_boxes_variant? %>
@@ -106,12 +106,15 @@
 
 <script language="javascript">
   $(function() {
-    var content_height = 1350;
+    var content_height = 1340;
+    var page = 1;
   	function buildPdf() {
   		if($('#pdf-content').contents().length > 0) {
   			$page = $(".page-template:first").clone().addClass("page").css("display", "block");
 
+        $page.find(".pdf-footer span").append(page);
   			$("body").append($page);
+        page++;
 
   			$('#pdf-content').columnize({
   				columns: 2,
