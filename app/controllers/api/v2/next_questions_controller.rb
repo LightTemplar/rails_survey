@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V2
     class NextQuestionsController < ApiApplicationController
@@ -5,7 +7,7 @@ module Api
       before_action :set_instrument_question
 
       def index
-        @next_questions = @instrument_question.next_questions
+        @next_questions = @instrument_question.next_questions.includes(:instrument_question)
       end
 
       def create
@@ -14,7 +16,7 @@ module Api
           render json: next_question, status: :created
         else
           render json: { errors: next_question.errors.full_messages },
-          status: :unprocessable_entity
+                 status: :unprocessable_entity
         end
       end
 
@@ -29,7 +31,7 @@ module Api
           render nothing: true, status: :ok
         else
           render json: { errors: next_question.errors.full_messages },
-          status: :unprocessable_entity
+                 status: :unprocessable_entity
         end
       end
 
@@ -43,7 +45,7 @@ module Api
 
       def next_question_params
         params.require(:next_question).permit(:question_identifier, :value, :complete_survey,
-          :option_identifier, :next_question_identifier, :instrument_question_id)
+                                              :option_identifier, :next_question_identifier, :instrument_question_id)
       end
     end
   end

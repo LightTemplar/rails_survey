@@ -7,7 +7,7 @@ module Api
       before_action :set_instrument_project
 
       def index
-        @displays = @instrument.displays.includes(%i[instrument instrument_questions]).order(:position)
+        @displays = @instrument.displays.includes(%i[instrument instrument_questions section]).order(:position)
       end
 
       def show

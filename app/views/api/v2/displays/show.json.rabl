@@ -3,7 +3,11 @@
 object @display
 cache @display
 
-attributes :id, :position, :mode, :instrument_id, :title, :section_title, :section_id
+attributes :id, :position, :mode, :instrument_id, :title, :section_id
+
+node :section_title do |d|
+  d.section.title
+end
 
 node :question_count do |d|
   d.instrument_questions.size

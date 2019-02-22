@@ -10,9 +10,9 @@
           <tr>
             <th>Position</th>
             <th>Type</th>
-            <th>Display Title</th>
-            <th>Section Title</th>
-            <th>Questions</th>
+            <th>Title</th>
+            <th>Section</th>
+            <th>Question Range</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -21,9 +21,9 @@
             <!-- Convert position used in filter to numeric -->
             <td>
               <div class="btn btn-info moveDisplay" title="Drag up/down to re-number the displays.">
-                <span class="oi oi-elevator mr-1"></span>
+                <span class="oi oi-elevator"></span>
+                <span>{{display.position}}</span>
               </div>
-              <span>{{display.position}}) {{display.range}}</span>
             </td>
             <td>{{display.mode}}</td>
             <td>
@@ -32,7 +32,7 @@
               </a>
             </td>
             <td>{{display.section_title}}</td>
-            <td>{{display.question_count}}</td>
+            <td>{{display.range}}</td>
             <td>
               <button class="btn btn-danger oi oi-trash" ng-click="delete(display)"/>
             </td>

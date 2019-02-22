@@ -11,25 +11,25 @@
       <input type="search" ng-model="i.title" placeholder="Filter instruments..."
       class="form-control tm-search text-center" />
     </div>
-    <h6 class="row m-1">
-      <div class="col-md-4">Title</div>
-      <div class="col-md-2">Project</div>
-      <div class="col-md-2">Published</div>
-      <div class="col-md-1">Version</div>
-      <div class="col-md-1">Quest</div>
-      <div class="col-md-2">Actions</div>
-    </h6>
+    <h4 class="row m-1">
+      <div class="col-md">Title</div>
+      <div class="col-md">Project</div>
+      <div class="col-md">Published</div>
+      <div class="col-md">Version</div>
+      <div class="col-md">Question Count</div>
+      <div class="col-md">Actions</div>
+    </h4>
     <div ng-repeat="project in projects">
       <div class="row m-1" ng-repeat="instrument in project.instruments | filter:i">
-        <div class="col-md-4">
-          <a ui-sref='instrument({project_id: project.id, id: instrument.id})'>
+        <div class="col-md">
+          <a ui-sref='displays({project_id: project.id, instrument_id: instrument.id})'>
             {{instrument.title}}</a>
           </div>
-          <div class="col-md-2">{{project.name}}</div>
-          <div class="col-md-2">{{instrument.published}}</div>
-          <div class="col-md-1">{{instrument.current_version_number}}</div>
-          <div class="col-md-1">{{instrument.question_count}}</div>
-          <div class="col-md-2">
+          <div class="col-md">{{project.name}}</div>
+          <div class="col-md">{{instrument.published}}</div>
+          <div class="col-md">{{instrument.current_version_number}}</div>
+          <div class="col-md">{{instrument.question_count}}</div>
+          <div class="col-md">
             <button class="btn btn-primary oi oi-pencil" ng-click="editInstrument(instrument)"/>
             <button class="btn btn-danger oi oi-trash" ng-click="deleteInstrument(instrument)"/>
           </div>
