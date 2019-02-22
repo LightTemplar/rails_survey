@@ -14,7 +14,15 @@
     <% display.instrument_questions.each do |instrument_question|%>
       <% next if instrument_question.country_specific(@language) %>
       <% instrument_question.display_instructions.each do |dis_ins| %>
-        <div class="question dontsplit"><%= raw dis_ins.translated_text(@language) %></div>
+        <div class="question dontsplit">
+          <% if dis_ins.audible_list.include?('read-aloud') %>
+            <%= '&#x261e;'.html_safe %> <%= raw dis_ins.translated_text(@language) %>
+          <% elsif dis_ins.audible_list.include?('do-not-read-aloud') %>
+            <%= '&#x26a0;'.html_safe %> <%= raw dis_ins.translated_text(@language) %>
+          <% else %>
+            <%= raw dis_ins.translated_text(@language) %>
+          <% end %>
+        </div>
       <% end %>
       <div class="question dontsplit">
         <div class="info">

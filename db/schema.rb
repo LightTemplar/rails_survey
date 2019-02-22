@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190221161907) do
+ActiveRecord::Schema.define(version: 20190222162145) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -154,6 +154,7 @@ ActiveRecord::Schema.define(version: 20190221161907) do
     t.string   "title"
     t.datetime "deleted_at"
     t.integer  "section_id"
+    t.integer  "instrument_questions_count"
   end
 
   add_index "displays", ["deleted_at"], name: "index_displays_on_deleted_at", using: :btree

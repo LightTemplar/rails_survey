@@ -261,10 +261,10 @@ InstrumentQuestion, QuestionSet, Question, Instruction, Section) ->
   $scope.saveDisplay = () ->
     $scope.display.project_id = $scope.project_id
     $scope.display.$update({},
-        (data, headers) ->
-          $scope.display = data
-        (result, headers) ->
-          alert(result.data.errors)
+      (data, headers) ->
+        $scope.display = data
+      (result, headers) ->
+        alert(result.data.errors)
       )
 
   $scope.addQuestionToDisplay = () ->
@@ -313,7 +313,7 @@ InstrumentQuestion, QuestionSet, Question, Instruction, Section) ->
             (data, headers) ->
               $scope.displayQuestions.push(iq)
               responseCount += 1
-              if responseCount ==  selectedQuestions.length
+              if responseCount == selectedQuestions.length
                 $state.reload()
             (result, headers) ->
               alert(result.data.errors)
@@ -332,7 +332,7 @@ InstrumentQuestion, QuestionSet, Question, Instruction, Section) ->
     if previousQuestion
       previousQuestionCount = previousQuestion.number_in_instrument
     else
-        previousQuestionCount = $scope.display.last_question_number_in_previous_display
+      previousQuestionCount = $scope.display.last_question_number_in_previous_display
     previousQuestionCount
 
   $scope.selectAll = () ->
@@ -397,5 +397,10 @@ InstrumentQuestion, QuestionSet, Question, Instruction, Section) ->
             alert(result.data.errors)
         )
   }
+
+  $scope.getQuestionNumber = (displayInstruction) ->
+    iq = _.findWhere($scope.displayQuestions, {id: displayInstruction.instrument_question_id})
+    if iq
+      iq.number_in_instrument
 
 ]

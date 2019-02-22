@@ -8,7 +8,7 @@ module Api
       before_action :set_instrument_question, only: %i[show update destroy]
 
       def index
-        @instrument_questions = @instrument.instrument_questions.order('instrument_questions.number_in_instrument')
+        @instrument_questions = @instrument.instrument_questions.includes(%i[question taggings]).order('instrument_questions.number_in_instrument')
       end
 
       def show; end

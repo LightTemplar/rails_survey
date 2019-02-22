@@ -19,7 +19,7 @@
 class InstrumentQuestion < ActiveRecord::Base
   belongs_to :instrument, touch: true
   belongs_to :question
-  belongs_to :display, touch: true
+  belongs_to :display, touch: true, counter_cache: true
   has_many :next_questions, dependent: :destroy
   has_many :multiple_skips, dependent: :destroy
   has_many :follow_up_questions, dependent: :destroy

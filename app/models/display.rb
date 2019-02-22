@@ -1,18 +1,18 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: displays
 #
-#  id            :integer          not null, primary key
-#  mode          :string
-#  position      :integer
-#  instrument_id :integer
-#  created_at    :datetime
-#  updated_at    :datetime
-#  title         :string
-#  deleted_at    :datetime
-#  section_id    :integer
+#  id                         :integer          not null, primary key
+#  mode                       :string
+#  position                   :integer
+#  instrument_id              :integer
+#  created_at                 :datetime
+#  updated_at                 :datetime
+#  title                      :string
+#  deleted_at                 :datetime
+#  section_id                 :integer
+#  instrument_questions_count :integer
 #
 
 class Display < ActiveRecord::Base
@@ -21,8 +21,10 @@ class Display < ActiveRecord::Base
   has_many :instrument_questions, -> { order 'number_in_instrument' }, dependent: :destroy
   has_many :display_instructions, dependent: :destroy
   has_many :display_translations, dependent: :destroy
+
   acts_as_paranoid
   has_paper_trail
+
   validates :title, presence: true
   validates :position, presence: true
 

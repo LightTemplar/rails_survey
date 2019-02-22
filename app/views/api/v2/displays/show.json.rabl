@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 object @display
 cache @display
 
@@ -17,9 +19,7 @@ node :last_question_number_in_previous_display do |d|
     previous_display = d.instrument.displays.where(position: d.position - 1).first
     if previous_display
       last_instrument_question = previous_display.instrument_questions.order(:number_in_instrument).last
-      if last_instrument_question
-        lqn = last_instrument_question.number_in_instrument
-      end
+      lqn = last_instrument_question.number_in_instrument if last_instrument_question
     end
   end
   lqn

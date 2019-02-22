@@ -18,8 +18,13 @@ class DisplayInstruction < ActiveRecord::Base
   belongs_to :display, touch: true
   belongs_to :instruction
   belongs_to :instrument_question
+
   acts_as_paranoid
+  acts_as_taggable
+  acts_as_taggable_on :audibles
+
   after_save :update_position
+
   delegate :instrument, to: :display
 
   def translated_text(language)
