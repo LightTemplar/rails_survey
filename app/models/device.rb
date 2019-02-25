@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: devices
@@ -32,9 +34,7 @@ class Device < ActiveRecord::Base
   end
 
   def last_project_survey(project)
-    if projects.include?(project)
-      project.device_surveys(self).order('updated_at ASC').last
-    end
+    project.device_surveys(self).order('updated_at ASC').last if projects.include?(project)
   end
 
   def last_sync_entry(project)
@@ -43,12 +43,11 @@ class Device < ActiveRecord::Base
 
   def uptodate?(project)
     if last_sync_entry project
-      last_sync_entry(project).num_complete_surveys == 0 && !danger_zone?(project) && last_sync_entry(project).current_version_code == (AndroidUpdate.latest_version.version.to_s if AndroidUpdate.latest_version)
+      last_sync_entry(project).num_complete_surveys.zero? && !danger_zone?(project) && last_sync_entry(project).current_version_code == (AndroidUpdate.latest_version.version.to_s if AndroidUpdate.latest_version)
     end
   end
 
   def pretty_label
     label.downcase.gsub(/\W+/, '_') unless label.blank?
   end
-
 end

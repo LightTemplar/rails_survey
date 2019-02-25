@@ -17,7 +17,7 @@
 #
 
 class LoopQuestion < ActiveRecord::Base
-  belongs_to :instrument_question, touch: true
+  belongs_to :instrument_question, touch: true, counter_cache: true
   acts_as_paranoid
   validates :instrument_question_id, uniqueness: { scope: %i[parent looped] }
   validates :looped, uniqueness: { scope: :parent }

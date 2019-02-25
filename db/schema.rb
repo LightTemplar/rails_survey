@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190222162145) do
+ActiveRecord::Schema.define(version: 20190222204000) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -255,6 +255,7 @@ ActiveRecord::Schema.define(version: 20190222162145) do
     t.string   "identifier"
     t.datetime "deleted_at"
     t.string   "table_identifier"
+    t.integer  "loop_questions_count", default: 0
   end
 
   add_index "instrument_questions", ["deleted_at"], name: "index_instrument_questions_on_deleted_at", using: :btree
@@ -373,9 +374,10 @@ ActiveRecord::Schema.define(version: 20190222162145) do
     t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "special",        default: false
+    t.boolean  "special",                     default: false
     t.datetime "deleted_at"
     t.integer  "instruction_id"
+    t.integer  "option_in_option_sets_count", default: 0
   end
 
   create_table "option_translations", force: :cascade do |t|
@@ -461,6 +463,8 @@ ActiveRecord::Schema.define(version: 20190222162145) do
     t.integer  "folder_id"
     t.integer  "validation_id"
     t.boolean  "rank_responses",        default: false
+    t.integer  "versions_count",        default: 0
+    t.integer  "images_count",          default: 0
   end
 
   add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true, using: :btree

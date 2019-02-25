@@ -20,6 +20,8 @@
 #  folder_id             :integer
 #  validation_id         :integer
 #  rank_responses        :boolean          default(FALSE)
+#  versions_count        :integer
+#  images_count          :integer
 #
 
 class Question < ActiveRecord::Base
@@ -42,6 +44,7 @@ class Question < ActiveRecord::Base
   before_save :update_question_translation, if: proc { |question| question.text_changed? }
   after_touch :touch_instrument_questions
   after_commit :update_instruments_versions, on: %i[update destroy]
+  after_save :update_versions_cache
   has_paper_trail
   acts_as_paranoid
   validates :question_identifier, uniqueness: true, presence: true, allow_blank: false
@@ -65,7 +68,9 @@ class Question < ActiveRecord::Base
   end
 
   def option_count
-    options.size
+    return 0 unless option_set
+
+    option_set.option_in_option_sets.size
   end
 
   def image_count
@@ -77,7 +82,7 @@ class Question < ActiveRecord::Base
   end
 
   def other_index
-    options.length
+    options.size
   end
 
   def update_question_translation(status = true)
@@ -87,7 +92,11 @@ class Question < ActiveRecord::Base
   end
 
   def question_version
-    versions.size
+    versions_count
+  end
+
+  def update_versions_cache
+    update_column(:versions_count, versions.length)
   end
 
   def select_one_variant?

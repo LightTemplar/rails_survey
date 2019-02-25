@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V1
     class DeviceSyncEntriesController < ApiApplicationController
@@ -5,7 +7,7 @@ module Api
       respond_to :json
 
       def create
-        device = Device.find_by_identifier(params[:device_sync_entry][:device_uuid])
+        device = Device.includes(:projects).find_by_identifier(params[:device_sync_entry][:device_uuid])
         project = Project.find_by_id(params[:device_sync_entry][:project_id])
         if device
           device.projects << project if project && !device.projects.include?(project)
@@ -29,8 +31,8 @@ module Api
 
       def device_sync_entry_params
         params.require(:device_sync_entry).permit(:latitude, :longitude, :num_complete_surveys,
-          :current_language, :current_version_code, :instrument_versions, :api_key, :device_uuid,
-          :timezone, :current_version_name, :os_build_number, :project_id, :num_incomplete_surveys, :device_label)
+                                                  :current_language, :current_version_code, :instrument_versions, :api_key, :device_uuid,
+                                                  :timezone, :current_version_name, :os_build_number, :project_id, :num_incomplete_surveys, :device_label)
       end
     end
   end

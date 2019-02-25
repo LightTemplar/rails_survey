@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class MultipleSkipsController < Api::V1::ApiApplicationController
@@ -5,7 +7,7 @@ module Api
       respond_to :json
       def index
         @project = Project.find(params[:project_id])
-        @multiple_skips = to_sync(@project.multiple_skips, 'multiple_skips', params[:last_sync_time])
+        @multiple_skips = to_sync(@project.multiple_skips.includes(:instrument_question), 'multiple_skips', params[:last_sync_time])
       end
     end
   end

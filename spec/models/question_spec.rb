@@ -18,6 +18,8 @@
 #  folder_id             :integer
 #  validation_id         :integer
 #  rank_responses        :boolean          default(FALSE)
+#  versions_count        :integer
+#  images_count          :integer
 #
 
 require "spec_helper"

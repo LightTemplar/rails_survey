@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: projects
@@ -55,15 +57,15 @@ class Project < ActiveRecord::Base
 
   def api_option_sets
     option_set_ids = api_questions.pluck(:option_set_id) + api_questions.pluck(:special_option_set_id)
-    OptionSet.where(id: option_set_ids).uniq
+    OptionSet.includes(:instruction).where(id: option_set_ids).uniq
   end
 
   def api_options
-    Option.where(id: api_option_in_option_sets.pluck(:option_id).uniq)
+    Option.includes(:translations).where(id: api_option_in_option_sets.pluck(:option_id).uniq)
   end
 
   def api_instrument_questions
-    InstrumentQuestion.where(instrument_id: published_instruments.pluck(:id))
+    InstrumentQuestion.includes(:instrument, :critical_responses, :all_loop_questions, question: %i[instruction option_set], translations: [:question]).where(instrument_id: published_instruments.pluck(:id))
   end
 
   def api_option_in_option_sets
@@ -76,11 +78,11 @@ class Project < ActiveRecord::Base
   end
 
   def api_displays
-    Display.where(instrument_id: published_instruments.pluck(:id))
+    Display.includes(:display_translations).where(instrument_id: published_instruments.pluck(:id))
   end
 
   def api_display_instructions
-    DisplayInstruction.where(display_id: api_displays.pluck(:id))
+    DisplayInstruction.includes(:instrument_question).where(display_id: api_displays.pluck(:id))
   end
 
   def api_validations
@@ -88,7 +90,7 @@ class Project < ActiveRecord::Base
   end
 
   def api_instructions
-    Instruction.where(id: api_questions.pluck(:instruction_id) | api_display_instructions.pluck(:instruction_id) | critical_responses.with_deleted.pluck(:instruction_id))
+    Instruction.includes(:instruction_translations).where(id: api_questions.pluck(:instruction_id) | api_display_instructions.pluck(:instruction_id) | critical_responses.with_deleted.pluck(:instruction_id))
   end
 
   def special_option_sets
@@ -111,7 +113,7 @@ class Project < ActiveRecord::Base
     count_per_day = {}
     array = []
     response_count_per_period(:group_responses_by_day).each do |day, count|
-      count_per_day[day.to_s[5..9]] = count.inject {|sum, x| sum + x}
+      count_per_day[day.to_s[5..9]] = count.inject { |sum, x| sum + x }
     end
     array << count_per_day
   end
@@ -120,7 +122,7 @@ class Project < ActiveRecord::Base
     count_per_hour = {}
     array = []
     response_count_per_period(:group_responses_by_hour).each do |hour, count|
-      count_per_hour[hour.to_s] = count.inject {|sum, x| sum + x}
+      count_per_hour[hour.to_s] = count.inject { |sum, x| sum + x }
     end
     array << sanitize(count_per_hour)
   end
@@ -188,9 +190,9 @@ class Project < ActiveRecord::Base
     if survey_aggregator == 'device_uuid'
       surveys.where(device_uuid: agg.device_uuid)
     elsif survey_aggregator == 'Center ID'
-      surveys.select {|s| s.center_id == agg.center_id}
+      surveys.select { |s| s.center_id == agg.center_id }
     elsif survey_aggregator == 'Participant ID'
-      surveys.select {|s| s.participant_id == agg.participant_id}
+      surveys.select { |s| s.participant_id == agg.participant_id }
     else
       surveys
     end
@@ -221,6 +223,6 @@ class Project < ActiveRecord::Base
   end
 
   def merge_period_counts(grouped_responses)
-    grouped_responses.map(&:to_a).flatten(1).each_with_object({}) {|(k, v), h| (h[k] ||= []) << v;}
+    grouped_responses.map(&:to_a).flatten(1).each_with_object({}) { |(k, v), h| (h[k] ||= []) << v; }
   end
 end

@@ -18,7 +18,7 @@
 class OptionInOptionSet < ActiveRecord::Base
   default_scope { order('option_in_option_sets.special ASC, option_in_option_sets.number_in_question ASC') }
   belongs_to :option
-  belongs_to :option_set
+  belongs_to :option_set, counter_cache: true
   has_paper_trail
   acts_as_paranoid
   after_save :set_special

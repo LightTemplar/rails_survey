@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: instrument_questions
@@ -14,6 +13,7 @@
 #  identifier           :string
 #  deleted_at           :datetime
 #  table_identifier     :string
+#  loop_questions_count :integer
 #
 
 class InstrumentQuestion < ActiveRecord::Base

@@ -1,76 +1,72 @@
+# frozen_string_literal: true
+
 object @question
 cache @question
 
 attributes :id, :instrument_id, :display_id, :number_in_instrument, :deleted_at, :table_identifier, :question_id
 
 node :text do |iq|
-  iq.question.text if iq.question
+  iq.question&.text
 end
 
 node :question_type do |iq|
-  iq.question.question_type if iq.question
+  iq.question&.question_type
 end
 
-node :question_identifier do |iq|
-  iq.identifier
-end
+node :question_identifier, &:identifier
 
 node :instruction_id do |iq|
-  iq.question.try(:instruction_id) if iq.question
+  iq.question&.try(:instruction_id)
 end
 
 node :instrument_version do |iq|
-  iq.instrument.current_version_number if iq.instrument
+  iq.instrument&.current_version_number
 end
 
 node :question_version do |iq|
- iq.question.question_version if iq.question
+  iq.question&.question_version
 end
 
 node :option_count do |iq|
-  if iq.question && iq.question.option_set_id
-    iq.question.option_set.options.size
-  else
-    0
-  end
+  iq.question&.option_count
 end
 
 node :image_count do |iq|
- iq.question.images.size if iq.question
+  iq.question&.images&.size
 end
 
 node :option_set_id do |iq|
-  iq.question.option_set_id if iq.question
+  iq.question&.option_set_id
 end
 
 node :special_option_set_id do |iq|
-  iq.question.special_option_set_id if iq.question
+  iq.question&.special_option_set_id
 end
 
 node :identifies_survey do |iq|
-  iq.question.identifies_survey if iq.question
+  iq.question&.identifies_survey
 end
 
 node :validation_id do |iq|
-  iq.question.validation_id if iq.question
+  iq.question&.validation_id
 end
 
 node :rank_responses do |iq|
-  iq.question.rank_responses if iq.question
+  iq.question&.rank_responses
 end
 
 node :loop_question_count do |iq|
   iq.loop_questions.size
 end
 
-child :translations do |t|
+child :translations do |_t|
   attributes :id, :question_id, :text, :language, :instructions
 end
 
-child :all_loop_questions => :loop_questions do |t|
+child all_loop_questions: :loop_questions do |_t|
   attributes :id, :parent, :looped, :deleted_at, :option_indices, :same_display, :replacement_text
 end
 
-child :critical_responses do |cr|
+child :critical_responses do |_cr|
   attributes :id, :question_identifier, :option_identifier, :instruction_id, :deleted_at
 end

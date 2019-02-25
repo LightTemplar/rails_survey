@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V1
     class SectionsController < ApiApplicationController
@@ -6,7 +8,7 @@ module Api
 
       def index
         project = Project.find(params[:project_id])
-        @sections = to_sync(project.sections, 'sections', params[:last_sync_time])
+        @sections = to_sync(project.sections.includes(:translations), 'sections', params[:last_sync_time])
       end
 
       def show

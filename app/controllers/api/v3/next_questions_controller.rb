@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class NextQuestionsController < Api::V1::ApiApplicationController
@@ -5,7 +7,7 @@ module Api
       respond_to :json
       def index
         @project = Project.find(params[:project_id])
-        @next_questions = to_sync(@project.next_questions, 'next_questions', params[:last_sync_time])
+        @next_questions = to_sync(@project.next_questions.includes(:instrument_question), 'next_questions', params[:last_sync_time])
       end
     end
   end
