@@ -1,22 +1,22 @@
+# frozen_string_literal: true
+
 namespace :db do
-  desc "Create a lot of data in the database to test syncing performance"
+  desc 'Create a lot of data in the database to test syncing performance'
   task muchdata: :environment do
     10.times do |i_n|
       i = Instrument.create!(title: "Instrument #{i_n}",
-        language: Settings.languages.sample,
-        alignment: "left"
-      )
+                             language: Settings.languages.sample,
+                             alignment: 'left')
       p "Created #{i.title}"
-      10000.times do |q_n|
+      10_000.times do |q_n|
         question_type = Settings.question_types.sample
         question = i.questions.create!(text: "Question #{q_n}",
-          question_identifier: "#{i_n}_q_#{q_n}",
-          question_type: Settings.question_types.sample
-        )
-        if Settings.question_with_options.include? question_type
-          5.times do |o_n|
-            question.options.create!(text: "Option #{o_n}")
-          end
+                                       question_identifier: "#{i_n}_q_#{q_n}",
+                                       question_type: Settings.question_types.sample)
+        next unless Settings.question_with_options.include? question_type
+
+        5.times do |o_n|
+          question.options.create!(text: "Option #{o_n}")
         end
       end
     end
@@ -29,12 +29,13 @@ namespace :db do
         o = Option.create!(
           text: Forgery('lorem_ipsum').word(random: true),
           identifier: "#{t}_o_#{o_n}",
-          option_set_id: os.id)
+          option_set_id: os.id
+        )
       end
     end
-    10.times do |t|
+    10.times do |_t|
       os = Instruction.create!(title: Forgery('lorem_ipsum').title(random: true),
-          text: Forgery('lorem_ipsum').paragraph(random: true))
+                               text: Forgery('lorem_ipsum').paragraph(random: true))
     end
     10.times do |t|
       qs = QuestionSet.create!(title: "Question Set #{t}")
@@ -46,10 +47,10 @@ namespace :db do
           question_set_id: qs.id
         )
         if Settings.question_with_options.include? q.question_type
-          q.option_set_id = OptionSet.ids.shuffle.first
+          q.option_set_id = OptionSet.ids.sample
           q.save!
         end
-        q.instruction_id = Instruction.ids.shuffle.first
+        q.instruction_id = Instruction.ids.sample
         q.save!
       end
     end
@@ -59,10 +60,10 @@ namespace :db do
       language: 'en',
       alignment: 'left'
     )
-    2.times do |t|
+    2.times do |_t|
       iqs = InstrumentQuestionSet.create!(
         instrument_id: i.id,
-        question_set_id: QuestionSet.ids.shuffle.first
+        question_set_id: QuestionSet.ids.sample
       )
     end
   end
@@ -72,7 +73,7 @@ namespace :db do
     u.email = 'user@example.com'
     u.password = u.password_confirmation = 'Password1'
     u.save!
-    %w(user admin manager analyst translator super_admin).each do |name|
+    %w[admin manager analyst translator super_admin].each do |name|
       role = Role.find_by_name(name)
       role = Role.create(name: name) if role.nil?
       u.roles << role unless u.roles.include? role

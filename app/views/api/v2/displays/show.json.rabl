@@ -6,7 +6,7 @@ cache @display
 attributes :id, :position, :mode, :instrument_id, :title, :section_id
 
 node :section_title do |d|
-  d.section.title
+  d&.section&.title
 end
 
 node :question_count do |d|
@@ -14,7 +14,7 @@ node :question_count do |d|
 end
 
 node :range do |d|
-  "#{d.instrument_questions.first.number_in_instrument}-#{d.instrument_questions.last.number_in_instrument}" if d.instrument_questions
+  "#{d&.instrument_questions&.first&.number_in_instrument}-#{d&.instrument_questions&.last&.number_in_instrument}"
 end
 
 node :last_question_number_in_previous_display do |d|

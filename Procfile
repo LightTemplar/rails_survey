@@ -1,1 +1,1 @@
-worker: node node/server.js 
+# worker: node node/server.js 

@@ -28,11 +28,16 @@ module Api
       end
 
       def v1_v2_import
-        file = Tempfile.new('v1_v2_csv', 'tmp')
-        File.open(file.path, 'w:ASCII-8BIT') do |file|
-          file << params[:file].read
-        end
-        RakeTaskWorker.perform_async('v1_v2_import', file.path)
+        # file = Tempfile.new('v1_v2_csv', 'tmp')
+        # File.open(file.path, 'w:ASCII-8BIT') do |file|
+        #   file << params[:file].read
+        # end
+        # RakeTaskWorker.perform_async('v1_v2_import', file.path)
+        require 'rake'
+        Rake::Task.clear
+        RailsSurvey::Application.load_tasks
+        Rake::Task['v1_v2_import'].reenable
+        Rake::Task['v1_v2_import'].invoke(params[:file].tempfile.path)
         render json: :ok, status: :created
       end
     end

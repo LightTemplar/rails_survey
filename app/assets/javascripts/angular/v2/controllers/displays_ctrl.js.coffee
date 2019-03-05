@@ -285,40 +285,31 @@ InstrumentQuestion, QuestionSet, Question, Instruction, Section) ->
 
   $scope.saveInstrumentQuestions = () ->
     previousQuestionCount = getQuestionCount()
-    if $scope.display.mode == 'SINGLE'
-      question = _.findWhere($scope.questionSetQuestions, { id: parseInt($scope.instrumentQuestion.question_id) })
-      if question
-        $scope.instrumentQuestion.identifier = getInstrumentQuestionIdentifier(question)
-        $scope.instrumentQuestion.number_in_instrument = previousQuestionCount + 1
-        $scope.instrumentQuestion.display_id = $scope.display.id
-        $scope.instrumentQuestion.$save({},
-          (data, headers) ->
-            $state.reload()
-          (result, headers) ->
-            alert(result.data.errors)
-        )
-    else
-      selectedQuestions = _.where($scope.questionSetQuestions, {selected: true})
-      responseCount = 0
-      angular.forEach $scope.questionSetQuestions, (q, i) ->
-        if q.selected
-          iq = new InstrumentQuestion()
-          iq.instrument_id = $scope.instrument_id
-          iq.project_id = $scope.project_id
-          iq.number_in_instrument = previousQuestionCount + 1
-          iq.display_id = $scope.display.id
-          iq.question_id = q.id
-          iq.identifier = getInstrumentQuestionIdentifier(q)
-          iq.$save({},
-            (data, headers) ->
-              $scope.displayQuestions.push(iq)
-              responseCount += 1
-              if responseCount == selectedQuestions.length
-                $state.reload()
-            (result, headers) ->
-              alert(result.data.errors)
-          )
-          previousQuestionCount += 1
+    selectedQuestions = _.where($scope.questionSetQuestions, {selected: true})
+    selectedQuestions = _.sortBy(selectedQuestions, 'id')
+    saveInstrumentQuestion(selectedQuestions, previousQuestionCount)
+
+  saveInstrumentQuestion = (selectedQuestions, previousQuestionCount) ->
+    q = selectedQuestions[0]
+    iq = new InstrumentQuestion()
+    iq.instrument_id = $scope.instrument_id
+    iq.project_id = $scope.project_id
+    iq.number_in_instrument = previousQuestionCount + 1
+    iq.display_id = $scope.display.id
+    iq.question_id = q.id
+    iq.identifier = getInstrumentQuestionIdentifier(q)
+    iq.$save({},
+      (data, headers) ->
+        $scope.displayQuestions.push(iq)
+        selectedQuestions.shift()
+        previousQuestionCount += 1
+        if selectedQuestions.length == 0
+          $state.reload()
+        else
+          saveInstrumentQuestion(selectedQuestions, previousQuestionCount)
+      (result, headers) ->
+        alert(result.data.errors)
+    )
 
   getInstrumentQuestionIdentifier = (question) ->
     iq = _.findWhere($scope.instrumentQuestions, { identifier: question.question_identifier})
