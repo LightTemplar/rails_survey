@@ -43,6 +43,8 @@ class Question < ActiveRecord::Base
   has_many :skip_patterns, foreign_key: 'question_identifier', primary_key: 'question_identifier', dependent: :destroy
   before_save :update_question_translation, if: proc { |question| question.text_changed? }
   after_touch :touch_instrument_questions
+  after_save :touch_option_set, if: :option_set_id_changed?
+  after_save :touch_special_option_set, if: :special_option_set_id_changed?
   after_commit :update_instruments_versions, on: %i[update destroy]
   after_save :update_versions_cache
   has_paper_trail
@@ -123,5 +125,13 @@ class Question < ActiveRecord::Base
 
   def update_instruments_versions
     instruments.each(&:touch)
+  end
+
+  def touch_option_set
+    option_set.touch
+  end
+
+  def touch_special_option_set
+    special_option_set.touch
   end
 end

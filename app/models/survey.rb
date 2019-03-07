@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: surveys
@@ -32,7 +34,7 @@ class Survey < ActiveRecord::Base
   has_many :centralized_scores, class_name: 'Score', foreign_key: :survey_id, dependent: :destroy
   has_many :distributed_scores, class_name: 'Score', foreign_key: :survey_uuid, dependent: :destroy
   acts_as_paranoid
-  has_paper_trail on: [:update, :destroy]
+  has_paper_trail on: %i[update destroy]
   delegate :project, to: :instrument
   validates :device_id, presence: true, allow_blank: false
   validates :uuid, presence: true, allow_blank: false
@@ -46,7 +48,7 @@ class Survey < ActiveRecord::Base
   def identifier
     question = instrument.questions.where(identifies_survey: true).first
     response = responses.where(question_identifier: question.question_identifier).first if question
-    response.text if response
+    response&.text
   end
 
   def schedule_export
@@ -59,11 +61,13 @@ class Survey < ActiveRecord::Base
   def switch_instrument(destination_instrument_id)
     destination_instrument = Instrument.find(destination_instrument_id)
     return unless destination_instrument
+
     saved = update_attributes(instrument_id: destination_instrument.id, instrument_version_number: destination_instrument.current_version_number)
     if saved
       responses.each do |response|
         destination_question = destination_instrument.questions.where(question_identifier: "#{response.question_identifier}_#{destination_instrument.project_id}").try(:first)
         next unless destination_question
+
         response.update_attributes(question_identifier: destination_question.question_identifier, question_id: destination_question.id)
       end
     end
@@ -84,9 +88,7 @@ class Survey < ActiveRecord::Base
   def calculate_completion_rate
     valid_response_count = responses.where.not('text = ? AND other_response = ? AND special_response = ?', nil || '', nil || '', nil || '').pluck(:uuid).uniq.count
     valid_question_count = instrument_questions.count
-    if valid_response_count && valid_question_count && valid_question_count != 0
-      rate = (valid_response_count.to_f / valid_question_count.to_f).round(2)
-    end
+    rate = (valid_response_count.to_f / valid_question_count.to_f).round(2) if valid_response_count && valid_question_count && valid_question_count != 0
     update_columns(completion_rate: rate.to_s) if rate
   end
 
@@ -136,7 +138,7 @@ class Survey < ActiveRecord::Base
       if question_identifier.count('_') > 2
         first = question_identifier.index('_')
         last = question_identifier.rindex('_')
-        id = question_identifier[first + 1 ... last]
+        id = question_identifier[first + 1...last]
         iq = instrument.instrument_questions.with_deleted.where(identifier: id).first
       else
         ids = question_identifier.split('_')
@@ -149,6 +151,7 @@ class Survey < ActiveRecord::Base
   def option_labels(response)
     vq = question_by_identifier(response.question_identifier)
     return '' if vq.nil? || !vq.options?
+
     labels = []
     if Settings.list_question_types.include?(vq.question_type)
       labels << vq.options.map(&:text)
@@ -180,14 +183,15 @@ class Survey < ActiveRecord::Base
         [validator, id, response.question_identifier, sanitize(question_by_identifier(response.question_identifier).try(:text)), response.text, option_labels(response), response.special_response, response.other_response]
       end
       push_to_redis("short-row-#{id}-#{instrument.response_export.id}-#{response.id}",
-        "short-keys-#{instrument.id}-#{instrument.response_export.id}", csv)
+                    "short-keys-#{instrument.id}-#{instrument.response_export.id}", csv)
     end
     decrement_export_count("#{instrument.response_export.id}_short")
   end
 
   def validation_identifier
     return unless metadata
-    metadata['Center ID'] ? metadata['Center ID'] : metadata['Participant ID']
+
+    metadata['Center ID'] || metadata['Participant ID']
   end
 
   def start_time
@@ -202,19 +206,21 @@ class Survey < ActiveRecord::Base
     end
   end
 
+  def survey_duration
+    end_time - start_time if end_time && start_time
+  end
+
   def write_wide_row
     headers =
       Rails.cache.fetch("w_w_r_h-#{instrument_id}-#{instrument_version_number}", expires_in: 30.minutes) do
         array = instrument.wide_headers
         Hash[array.map.with_index.to_a]
       end
-    row = [id, uuid, device.identifier, device_label ? device_label : device.label, latitude, longitude,
-      instrument_id, instrument_version_number, instrument_title, start_time, end_time, end_time - start_time]
+    row = [id, uuid, device.identifier, device_label || device.label, latitude, longitude,
+           instrument_id, instrument_version_number, instrument_title, start_time, end_time, survey_duration]
 
-    if metadata
-      metadata.each do |k, v|
-        row[headers[k]] = v
-      end
+    metadata&.each do |k, v|
+      row[headers[k]] = v
     end
 
     responses.each do |response|
@@ -249,7 +255,7 @@ class Survey < ActiveRecord::Base
       row[device_user_username_index] = DeviceUser.find(device_user_ids).map(&:username).uniq.join(',')
     end
     push_to_redis("wide-row-#{id}-#{instrument.response_export.id}-survey-#{id}",
-      "wide-keys-#{instrument_id}-#{instrument.response_export.id}", row)
+                  "wide-keys-#{instrument_id}-#{instrument.response_export.id}", row)
     decrement_export_count("#{instrument.response_export.id}_wide")
   end
 
@@ -261,23 +267,21 @@ class Survey < ActiveRecord::Base
     responses.each do |response|
       row = Rails.cache.fetch("w_l_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}
         -#{response.updated_at}", expires_in: 30.minutes) do
-          ["q_#{response.question_identifier}", "q_#{response.question_id}", instrument_id,
-            response.instrument_version_number, response.question_version, instrument_title, id,
-            response.survey_uuid, device_id, device_uuid, device_label,
-            question_by_identifier(response.question_identifier).try(:question_type),
-            sanitize(question_by_identifier(response.question_identifier).try(:text)),
-            response.text, option_labels(response), response.special_response,
-            response.other_response, response.time_started, response.time_ended,
-            response.device_user.try(:id), response.device_user.try(:username),
-            start_time, end_time, end_time - start_time]
+        ["q_#{response.question_identifier}", "q_#{response.question_id}", instrument_id,
+         response.instrument_version_number, response.question_version, instrument_title, id,
+         response.survey_uuid, device_id, device_uuid, device_label,
+         question_by_identifier(response.question_identifier).try(:question_type),
+         sanitize(question_by_identifier(response.question_identifier).try(:text)),
+         response.text, option_labels(response), response.special_response,
+         response.other_response, response.time_started, response.time_ended,
+         response.device_user.try(:id), response.device_user.try(:username),
+         start_time, end_time, survey_duration]
       end
-      if metadata
-        metadata.each do |k, v|
-          row[headers[k]] = v if headers[k]
-        end
+      metadata&.each do |k, v|
+        row[headers[k]] = v if headers[k]
       end
       push_to_redis("long-row-#{id}-#{instrument.response_export.id}-#{response.id}",
-        "long-keys-#{instrument_id}-#{instrument.response_export.id}", row)
+                    "long-keys-#{instrument_id}-#{instrument.response_export.id}", row)
     end
     decrement_export_count("#{instrument.response_export.id}_long")
   end
