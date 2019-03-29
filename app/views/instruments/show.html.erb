@@ -46,16 +46,15 @@
                   <% instrument_question.non_special_options.each_with_index do |option, index| %>
                     <tr>
                       <% index_label = "#{instrument_question.letters[index]})" %>
-                      <% option_label = option.translated_text(@language, @instrument) %>
                       <% if instrument_question.select_one_variant? %>
                         <td style="width:12%;"><%= '&#x274d;'.html_safe %> <%= index_label %></td>
-                        <td><%= option_label %></td>
+                        <td><%= option.translated_text(@language, @instrument) %></td>
                       <% elsif instrument_question.select_multiple_variant? %>
                         <td style="width:12%;"><%= '&#x2752;'.html_safe %> <%= index_label %></td>
-                        <td><%= option_label %></td>
+                        <td><%= option.translated_text(@language, @instrument) %></td>
                       <% elsif instrument_question.list_of_boxes_variant? %>
                         <td><%= index_label %> </td>
-                        <td><%= option_label %>__________________________________</td>
+                        <td><%= option.translated_text(@language, @instrument) %> ___________________________</td>
                       <% end %>
                     </tr>
                   <% end %>
@@ -63,17 +62,17 @@
                   <% if instrument_question.other? && instrument_question.select_one_variant? %>
                     <tr>
                       <td style="width:12%;"><%= '&#x274d;'.html_safe %> <%= "#{instrument_question.letters[option_count]})" %></td>
-                      <td>Other</td>
+                      <td>Other ___________________________</td>
                     </tr>
                   <% elsif instrument_question.other? && instrument_question.select_multiple_variant? %>
                     <tr>
                       <td style="width:12%;"><%= '&#x2752;'.html_safe %> <%= "#{instrument_question.letters[option_count]})" %></td>
-                      <td>Other</td>
+                      <td>Other ___________________________</td>
                     </tr>
                   <% elsif instrument_question.other? && instrument_question.list_of_boxes_variant? %>
                     <tr>
                       <td><%= "#{instrument_question.letters[option_count]}) " %></td>
-                      <td>Other __________________________________</td>
+                      <td>Other ___________________________</td>
                     </tr>
                   <% end %>
                 </tbody>

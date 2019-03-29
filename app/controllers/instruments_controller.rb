@@ -14,7 +14,7 @@ class InstrumentsController < ApplicationController
     @instrument = project.instruments.includes(displays: [:instrument, instrument_questions:
       [:instrument, :next_questions, :multiple_skips, :loop_questions, :critical_responses,
        :taggings, display_instructions: %i[display instruction taggings],
-                  question: [:instruction, :special_option_set, option_set: %i[options instruction]]]]).find(params[:id])
+                  question: [:instruction, :special_option_set, option_set: %i[instruction]]]]).find(params[:id])
     authorize @instrument
     respond_to do |format|
       format.html { render layout: 'pdf.html' }

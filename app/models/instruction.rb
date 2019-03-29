@@ -24,10 +24,10 @@ class Instruction < ActiveRecord::Base
   after_commit :touch_instrument_questions, :touch_display_instructions, :touch_instrument
 
   def translated_text(language, instrument)
-    return title if language == instrument.language
+    return text if language == instrument.language
 
     translation = instruction_translations.where(language: language).first
-    translation&.text ? translation.text : title
+    translation&.text ? translation.text : text
   end
 
   def instruments
