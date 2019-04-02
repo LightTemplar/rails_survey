@@ -13,7 +13,7 @@
 #  identifier           :string
 #  deleted_at           :datetime
 #  table_identifier     :string
-#  loop_questions_count :integer
+#  loop_questions_count :integer          default(0)
 #
 
 class InstrumentQuestion < ActiveRecord::Base

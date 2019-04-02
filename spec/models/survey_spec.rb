@@ -20,6 +20,7 @@
 #  roster_uuid               :string
 #  language                  :string
 #  skipped_questions         :text
+#  completed_responses_count :integer
 #
 
 require "spec_helper"

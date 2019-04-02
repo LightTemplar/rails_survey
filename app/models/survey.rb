@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: surveys
@@ -22,6 +21,7 @@
 #  roster_uuid               :string
 #  language                  :string
 #  skipped_questions         :text
+#  completed_responses_count :integer
 #
 
 class Survey < ActiveRecord::Base

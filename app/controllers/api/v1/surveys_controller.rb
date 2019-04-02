@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V1
     class SurveysController < ApiApplicationController
@@ -28,8 +30,9 @@ module Api
 
       def survey_params
         params.require(:survey).permit(:instrument_id, :instrument_version_number,
-          :uuid, :device_id, :instrument_title, :device_uuid, :latitude, :longitude,
-          :metadata, :completion_rate, :device_label, :language, :skipped_questions)
+                                       :uuid, :device_id, :instrument_title, :device_uuid, :latitude, :longitude,
+                                       :metadata, :completion_rate, :device_label, :language, :skipped_questions,
+                                       :completed_responses_count)
       end
     end
   end

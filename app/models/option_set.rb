@@ -1,16 +1,16 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: option_sets
 #
-#  id             :integer          not null, primary key
-#  title          :string
-#  created_at     :datetime
-#  updated_at     :datetime
-#  special        :boolean          default(FALSE)
-#  deleted_at     :datetime
-#  instruction_id :integer
+#  id                          :integer          not null, primary key
+#  title                       :string
+#  created_at                  :datetime
+#  updated_at                  :datetime
+#  special                     :boolean          default(FALSE)
+#  deleted_at                  :datetime
+#  instruction_id              :integer
+#  option_in_option_sets_count :integer          default(0)
 #
 
 class OptionSet < ActiveRecord::Base

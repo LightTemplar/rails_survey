@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190222204000) do
+ActiveRecord::Schema.define(version: 20190402175128) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -684,6 +684,7 @@ ActiveRecord::Schema.define(version: 20190222204000) do
     t.string   "roster_uuid"
     t.string   "language"
     t.text     "skipped_questions"
+    t.integer  "completed_responses_count"
   end
 
   add_index "surveys", ["deleted_at"], name: "index_surveys_on_deleted_at", using: :btree

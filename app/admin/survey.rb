@@ -82,6 +82,7 @@ ActiveAdmin.register Survey do
     column :responses do |survey|
       link_to "#{survey.responses.size} responses", admin_survey_responses_path(survey.id)
     end
+    column :completed_responses_count
     actions
   end
 
