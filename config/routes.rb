@@ -127,6 +127,7 @@ RailsSurvey::Application.routes.draw do
           resources :displays do
             member do
               get :copy
+              get :tabulate
               post :move
             end
             resources :display_instructions
@@ -147,6 +148,7 @@ RailsSurvey::Application.routes.draw do
           member do
             get :copy
             get :set_skip_patterns
+            get :tabulate
             post :reorder
             post :reorder_displays
             post :to_pdf

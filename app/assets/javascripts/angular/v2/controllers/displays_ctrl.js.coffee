@@ -183,6 +183,14 @@ InstrumentQuestion, QuestionSet, Question, Instruction, Section) ->
         dq.project_id = $scope.project_id
         dq.$update({},
           (data, headers) ->
+            if $scope.displayQuestions.indexOf(dq) == $scope.displayQuestions.length - 1
+              $scope.display.project_id = $scope.project_id
+              $scope.display.$tabulate({},
+                (data, headers) ->
+                  $state.reload()
+                (result, headers) ->
+                  alert(result.data.errors)
+              )
           (result, headers) ->
             alert(result.data.errors)
         )
@@ -194,8 +202,8 @@ InstrumentQuestion, QuestionSet, Question, Instruction, Section) ->
     if question.id
       question.$update({},
         (data, headers) ->
-          (result, headers) ->
-            alert(result.data.errors)
+        (result, headers) ->
+          alert(result.data.errors)
       )
 
   $scope.createTable = () ->

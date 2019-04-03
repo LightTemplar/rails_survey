@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: displays
@@ -67,5 +68,18 @@ class Display < ActiveRecord::Base
 
     translation = display_translations.where(language: language).first
     translation&.text ? translation.text : title
+  end
+
+  def standardize_tables
+    instrument_questions.group_by(&:table_identifier).each do |t_id, iq|
+      next unless t_id
+      next if iq.size <= 5
+
+      sets = iq.each_slice(5).to_a
+      sets.each_with_index do |iq_set, index|
+        instrument_questions.where(id: iq_set.map(&:id)).update_all(table_identifier: "#{t_id} #{index}", updated_at: Time.now)
+      end
+      touch
+    end
   end
 end

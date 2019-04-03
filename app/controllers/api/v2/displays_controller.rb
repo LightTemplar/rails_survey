@@ -57,6 +57,12 @@ module Api
         end
       end
 
+      def tabulate
+        display = @instrument.displays.find(params[:id])
+        display.standardize_tables
+        render nothing: true, status: :ok
+      end
+
       private
 
       def set_instrument_project

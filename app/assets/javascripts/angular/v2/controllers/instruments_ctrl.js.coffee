@@ -82,7 +82,7 @@ App.controller 'CopyInstrumentCtrl', ['$scope', '$stateParams', 'Instrument', '$
 
 ]
 
-App.controller 'InstrumentSkipPatternsCtrl', ['$scope', '$stateParams', 'Instrument',
+App.controller 'InstrumentConfigsCtrl', ['$scope', '$stateParams', 'Instrument',
 'InstrumentNextQuestion', '$state', ($scope, $stateParams, Instrument, InstrumentNextQuestion, $state) ->
 
   $scope.instrument = Instrument.get({
@@ -99,6 +99,14 @@ App.controller 'InstrumentSkipPatternsCtrl', ['$scope', '$stateParams', 'Instrum
     $scope.instrument.$importSkipPatterns({},
       (data, headers) ->
         $state.reload()
+      (result, headers) ->
+        alert(result.data.errors)
+    )
+
+  $scope.tabulate = () ->
+    $scope.instrument.$tabulate({},
+      (data, headers) ->
+        $state.go('/')
       (result, headers) ->
         alert(result.data.errors)
     )

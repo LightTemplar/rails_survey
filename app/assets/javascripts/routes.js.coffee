@@ -34,10 +34,10 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
       url: '/projects/:project_id/instruments/:id'
       templateUrl: 'instruments/copy.html'
       controller: 'CopyInstrumentCtrl'
-    .state 'instrumentSkipPatterns',
-      url: '/projects/:project_id/instruments/:id'
-      templateUrl: 'instruments/skip_patterns.html'
-      controller: 'InstrumentSkipPatternsCtrl'
+    .state 'instrumentConfigs',
+      url: '/projects/:project_id/instruments/:id/configs'
+      templateUrl: 'instruments/configs.html'
+      controller: 'InstrumentConfigsCtrl'
     .state 'sections',
       url: '/projects/:project_id/instruments/:id'
       templateUrl: 'instruments/sections.html'

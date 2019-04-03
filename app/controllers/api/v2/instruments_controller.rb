@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V2
     class InstrumentsController < ApiApplicationController
@@ -80,12 +82,19 @@ module Api
       def to_pdf
         project = current_user.projects.find params[:project_id]
         instrument = project.instruments.find(params[:id]) if project
-        if params[:language] == 'en'
-          pdf = InstrumentPdf.new(instrument)
-        else
-          pdf = TranslationPdf.new(instrument, params[:language])
-        end
+        pdf = if params[:language] == 'en'
+                InstrumentPdf.new(instrument)
+              else
+                TranslationPdf.new(instrument, params[:language])
+              end
         send_data pdf.render, filename: pdf.display_name, type: 'application/pdf'
+      end
+
+      def tabulate
+        project = current_user.projects.find params[:project_id]
+        instrument = project&.instruments&.find(params[:id])
+        instrument&.displays&.map(&:standardize_tables)
+        render nothing: true, status: :ok
       end
 
       private
@@ -93,7 +102,6 @@ module Api
       def instrument_params
         params.require(:instrument).permit(:title, :language, :published, :project_id, :display_ids)
       end
-
     end
   end
 end
