@@ -71,18 +71,17 @@ ActiveAdmin.register Survey do
     column :uuid
     column 'Identifier', &:identifier
     column 'Instrument', sortable: :instrument_title do |survey|
-      instrument = Instrument.find_by_id(survey.instrument_id)
-      instrument ? (link_to survey.instrument_title, admin_project_instrument_path(instrument.project_id, survey.instrument_id)) : survey.instrument_title
+      link_to survey.instrument_title, "/projects/#{survey.instrument.project_id}/instruments/#{survey.instrument_id}/displays"
     end
     column 'Instrument Versions', sortable: :instrument_version_number, &:instrument_version_number
     column :created_at do |survey|
       time_ago_in_words(survey.created_at) + ' ago'
     end
     column :completion_rate
-    column :responses do |survey|
+    column 'Received Responses', :responses do |survey|
       link_to "#{survey.responses.size} responses", admin_survey_responses_path(survey.id)
     end
-    column :completed_responses_count
+    column 'Completed Responses', :completed_responses_count
     actions
   end
 
