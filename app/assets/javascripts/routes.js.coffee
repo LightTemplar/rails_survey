@@ -122,6 +122,10 @@ App.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
       url: '/option_translations/?option_set_id&option_id&instrument_id&language'
       templateUrl: 'option_translations/show.html'
       controller: 'OptionTranslationsCtrl'
+    .state 'optionSetTranslations',
+      url: '/option_sets/:id/translations?language'
+      templateUrl: 'option_sets/translation.html'
+      controller: 'OptionSetTranslationsCtrl'
     .state 'optionBackTranslations',
       url: '/option_back_translations/?option_set_id&language&instrument_id&option_id'
       templateUrl: 'option_back_translations/show.html'

@@ -1,6 +1,6 @@
 App.controller 'OptionTranslationsCtrl', ['$scope', '$stateParams', '$state', 'Setting',
-'Options', 'OptionTranslation', 'Option', ($scope, $stateParams, $state, Setting,
-Options, OptionTranslation, Option) ->
+'Options', 'OptionTranslation', 'Option', 'OptionSetTranslation', ($scope, $stateParams, $state, Setting,
+Options, OptionTranslation, Option, OptionSetTranslation) ->
   $scope.option_set_id = $stateParams.option_set_id
   $scope.language = $stateParams.language
   $scope.settings = Setting.get({}, ->
@@ -12,6 +12,9 @@ Options, OptionTranslation, Option) ->
     $scope.options = Option.query({'option_set_id': $stateParams.option_set_id})
     $scope.optionTranslations = OptionTranslation.query({
       'language': $stateParams.language, 'option_set_id': $stateParams.option_set_id
+    })
+    $scope.optionSetTranslations = OptionSetTranslation.query({
+      'option_set_id': $stateParams.option_set_id
     })
   else if $stateParams.instrument_id && $stateParams.language
     $scope.options = Options.query({'instrument_id': $stateParams.instrument_id})
@@ -29,14 +32,23 @@ Options, OptionTranslation, Option) ->
     })
 
   $scope.translationFor = (option) ->
-    ot = _.findWhere($scope.optionTranslations, {option_id: option.id})
-    if ot == undefined
+    translation = undefined
+    all = _.where($scope.optionTranslations, {option_id: option.id})
+    if all.length == 0
       ot = new OptionTranslation()
       ot.language = $scope.language
       ot.option_id = option.id
       ot.text = ""
       $scope.optionTranslations.push(ot)
-    ot
+      translation = ot
+    else if all.length == 1
+      translation = all[0]
+    else
+      angular.forEach $scope.optionTranslations, (ot, index) ->
+        ost = _.findWhere($scope.optionSetTranslations, {option_translation_id: ot.id})
+        if ost
+          translation = ot
+    translation
 
   $scope.save = () ->
     ot = new OptionTranslation()
@@ -47,6 +59,9 @@ Options, OptionTranslation, Option) ->
       (result, headers) ->
         alert(result.data.errors)
     )
+
+  $scope.optionTranslationCount = (option) ->
+    _.where($scope.optionTranslations, {option_id: option.id}).length
 
 ]
 

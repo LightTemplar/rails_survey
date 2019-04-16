@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190402175128) do
+ActiveRecord::Schema.define(version: 20190410151001) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -369,6 +369,13 @@ ActiveRecord::Schema.define(version: 20190402175128) do
   end
 
   add_index "option_scores", ["deleted_at"], name: "index_option_scores_on_deleted_at", using: :btree
+
+  create_table "option_set_translations", force: :cascade do |t|
+    t.integer  "option_set_id"
+    t.integer  "option_translation_id"
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
 
   create_table "option_sets", force: :cascade do |t|
     t.string   "title"

@@ -69,6 +69,7 @@ RailsSurvey::Application.routes.draw do
       end
       resources :option_sets do
         resources :options, controller: 'option_set_options'
+        resources :option_set_translations
         member do
           get :copy
         end

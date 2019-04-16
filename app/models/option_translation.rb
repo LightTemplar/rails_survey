@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: option_translations
@@ -16,6 +18,7 @@ class OptionTranslation < ActiveRecord::Base
   include GoogleTranslatable
   belongs_to :option, touch: true
   has_many :back_translations, as: :backtranslatable
+  has_many :option_set_translations
   belongs_to :instrument_translation, touch: true
   validates :text, presence: true, allow_blank: false
 

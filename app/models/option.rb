@@ -33,10 +33,10 @@ class Option < ActiveRecord::Base
   end
 
   def to_option_in_option_set
-    if id && option_set_id && number_in_question
-      OptionInOptionSet.create!(option_id: id, option_set_id: option_set_id,
-                                number_in_question: number_in_question)
-    end
+    return unless id || option_set_id || number_in_question
+
+    OptionInOptionSet.create!(option_id: id, option_set_id: option_set_id,
+                              number_in_question: number_in_question)
   end
 
   def to_s
@@ -61,11 +61,11 @@ class Option < ActiveRecord::Base
   private
 
   def update_instrument_version
-    unless instrument.nil? && question.nil?
-      instrument.update_instrument_version
-      question.update_question_version
-      question.update_column(:instrument_version_number, instrument.current_version_number)
-    end
+    return unless instrument || question
+
+    instrument.update_instrument_version
+    question.update_question_version
+    question.update_column(:instrument_version_number, instrument.current_version_number)
   end
 
   def record_instrument_version_number
