@@ -1,6 +1,7 @@
 require 'scoring/observational/scorer'
 require 'scoring/observational/score_utils'
 
+# Scores wide format files
 namespace :observational do
 
   task :initialize, [:folder_name] => :environment do |task, args|
@@ -15,8 +16,8 @@ namespace :observational do
   end
 
   # Sort long files by survey_id before running this task
-  task flip_file_format: :environment do
-    Dir.glob('/Users/leonardngeno/Desktop/Scoring/surveys/merged_long/*.csv').each do |filename|
+  task :flip_file_format, [:folder_name] => :environment do |task, args|
+    Dir.glob(args[:folder_name] + 'surveys/merged_long/*.csv').each do |filename|
       header = []
       CSV.foreach(filename, encoding: 'iso-8859-1:utf-8') do |row|
         if $. == 1
@@ -35,7 +36,7 @@ namespace :observational do
         end
       end
 
-      csv_file = '/Users/leonardngeno/Desktop/Scoring/surveys/merged_wide/' + filename.split('/').last
+      csv_file = args[:folder_name] + 'surveys/merged_wide/' + filename.split('/').last
       CSV.open(csv_file, 'wb') do |csv|
         csv << header
         current_survey = nil
@@ -56,13 +57,13 @@ namespace :observational do
     end
   end
 
-  task export_scores: :environment do
-    csv_file = '/Users/leonardngeno/Desktop/Scoring/scores.csv'
+  task :export_scores, [:folder_name] => :environment do |task, args|
+    csv_file = args[:folder_name] + 'scores.csv'
     CSV.open(csv_file, 'wb') do |csv|
       header = %w(survey_id survey_uuid device_label device_user survey_start_time survey_end_time parent_unit_name
                 variable_name center_id score_section_name score_sub_section_name unit_score_value unit_score_weight
                 score_X_weight sum_unit_score_weight sum_score_X_weight sub_section_score section_score
-                center_section_subsection center_section domain)
+                center_section_subsection center_section domain sub_domain)
       csv << header
       unit_scores = UnitScore.all.order('center_section_sub_section_name')
       index = 0
@@ -71,7 +72,7 @@ namespace :observational do
                unit_score.survey_score.device_user, unit_score.survey_score.survey_start_time, unit_score.survey_score.survey_end_time,
                unit_score.unit.name, unit_score.variable.name, unit_score.survey_score.center_id,
                unit_score.unit.score_sub_section.score_section.name, unit_score.unit.score_sub_section.name, unit_score.value, unit_score.unit.weight,
-               unit_score.score_weight_product, '', '', '', '', '', '', unit_score.unit.domain]
+               unit_score.score_weight_product, '', '', '', '', '', '', unit_score.unit.domain, unit_score.unit.sub_domain]
         if index + 1 < unit_scores.length
           if unit_score.center_section_sub_section_name != unit_scores[index+1].center_section_sub_section_name
             row[header.index('center_section_subsection')] = unit_score.center_section_sub_section_name

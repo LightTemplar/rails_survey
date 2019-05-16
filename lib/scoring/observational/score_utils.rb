@@ -20,7 +20,11 @@ class ScoreUtils
             current_section = ScoreSection.create(name: row[7], instrument_id: row[9])
             current_sub_section = ScoreSubSection.create(name: row[8], score_section_id: current_section.id)
           end
-          unit = Unit.create(name: row[0], weight: row[6], score_sub_section_id: current_sub_section.id, domain: row[10])
+          subdomain = row[11]
+          if subdomain.class == Float
+            subdomain = subdomain.to_s.chop.chop
+          end
+          unit = Unit.create(name: row[0], weight: row[6], score_sub_section_id: current_sub_section.id, domain: row[10].to_i, sub_domain: subdomain)
           Variable.create(result: row[1], name: row[2], value: row[3], next_variable: row[4], next_unit_name: row[5], unit_id: unit.id)
           current_unit = unit
         end

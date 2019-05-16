@@ -5,7 +5,7 @@ gem 'pg', group: [:production]
 gem 'sass-rails', '~> 4.0.0'
 gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.0.0'
-gem 'therubyracer', platforms: :ruby
+# gem 'therubyracer', platforms: :ruby
 gem 'jquery-rails'
 gem "rubyzip", "~> 1.1.2"
 gem 'zip-zip'
@@ -22,7 +22,7 @@ end
 gem "rails_config"
 gem "twitter-bootstrap-rails"
 gem 'devise'
-gem 'paper_trail', '>= 3.0.0.rc2'
+gem 'paper_trail', '~> 3.0.5'
 
 group :test do
   gem 'rspec-rails', '~> 2.0'
