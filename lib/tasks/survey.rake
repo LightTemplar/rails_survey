@@ -198,13 +198,11 @@ namespace :survey do
     puts 'roster scores added: ' + scores.size.to_s
 
     # Integrate manually scored ones
-
     manual_score_book =  Roo::Spreadsheet.open(base_dir + 'NonObs/Manual_Scoring_V2.xlsx', extension: :xlsx)
     manual_score_sheet = manual_score_book.sheet('ManualScores')
     manual_score_sheet.drop(1).each do |row|
       if row[0] && row[2] && row[6] && row[13] != 'manual' && !row[13].blank?
         selected_score = scores.find_all { |score|
-          # puts "score: #{score.inspect}"
           score.center_id == row[0].to_i &&
           score.survey_id == row[2].to_i.to_s && score.qid == row[6] && score.raw_score == 'manual'
         }
@@ -215,7 +213,6 @@ namespace :survey do
     end
 
     # Integrate observational scores
-
     options = {:encoding => 'UTF-8', :skip_blanks => true}
     csv_header = []
     CSV.foreach(base_dir + 'Obs/scores.csv', options).with_index do |row, line|
@@ -231,9 +228,10 @@ namespace :survey do
       raw_score = csv_header.index('unit_score_value') ? row[csv_header.index('unit_score_value')] : nil
       weight = csv_header.index('unit_score_weight') ? row[csv_header.index('unit_score_weight')] : nil
       domain = csv_header.index('domain') ? row[csv_header.index('domain')] : nil
+      sub_domain = csv_header.index('sub_domain') ? row[csv_header.index('sub_domain')] : nil
       if qid && center_id
         scores << ObservationalScore.new(qid, survey_id, survey_uuid, device_label,
-          device_user, center_id, raw_score, weight, domain)
+          device_user, center_id, raw_score, weight, domain, sub_domain)
       end
     end
     puts 'observational scores added: ' + scores.size.to_s
@@ -248,9 +246,9 @@ namespace :survey do
         raw_score weighted_score domain_score domain_weight weighted_domain_score
         center_score domain_1_avg domain_2_avg domain_3_avg domain_4_avg
         domain_5_avg domain_6_avg domain_7_avg domain_8_avg domain_9_avg
-        domain_10_avg center_score_avg)
-                # subdomain sub_domain_1_score sub_domain_2_score sub_domain_3_score sub_domain_4_score
-                # sub_domain_5_score sub_domain_6_score sub_domain_7_score sub_domain_8_score]
+        domain_10_avg center_score_avg subdomain sub_domain_1_score sub_domain_2_score
+        sub_domain_3_score sub_domain_4_score sub_domain_5_score sub_domain_6_score
+        sub_domain_7_score sub_domain_8_score)
       csv << header
       Center.get_centers.each do |center|
         center_scores = []
@@ -268,8 +266,7 @@ namespace :survey do
             row = [score.center_id, score.instrument_id, score.survey_id, score.survey_uuid, score.device_label,
                    score.device_user, score.qid, score.question_type, score.scheme_description, score.domain,
                    score.weight, reported_score, score.weighted_score, '', '', '', '', '', '', '', '', '', '', '',
-                   '', '', '', '']
-                   #score.sub_domain, '', '', '', '', '', '', '', '', '', '']
+                   '', '', '', '', score.sub_domain, '', '', '', '', '', '', '', '', '', '']
             if score == domain_scores.last
               domain_score = calculate_score(domain_scores)
               if domain_score && domain_score != 0
@@ -282,18 +279,18 @@ namespace :survey do
                 all_domain_scores[domain] = old_value << domain_score
               end
 
-              # TODO Will be added later
-              # sub_domains = []
-              # domain_scores.each do |dm|
-              #   sub_domains << dm.sub_domain.split(',')
-              # end
-              # sub_domains = sub_domains.flatten.compact.uniq.sort
-              # sub_domains.each do |sub_domain|
-              #   sub_domain_scores = domain_scores.find_all{|sub_score| sub_score.sub_domain.include?(sub_domain)}
-              #   sub_domain_score = calculate_score(sub_domain_scores)
-              #   sub_domain_score_index = header.index('sub_domain_' + sub_domain.strip + '_score')
-              #   row[sub_domain_score_index] = sub_domain_score if sub_domain_score_index != nil && sub_domain_score != 0
-              # end
+              # subdomain scores
+              sub_domains = []
+              domain_scores.each do |dm|
+                sub_domains << dm.sub_domain.split(',')
+              end
+              sub_domains = sub_domains.flatten.compact.uniq.sort
+              sub_domains.each do |sub_domain|
+                sub_domain_scores = domain_scores.find_all{|sub_score| sub_score.sub_domain.include?(sub_domain)}
+                sub_domain_score = calculate_score(sub_domain_scores)
+                sub_domain_score_index = header.index('sub_domain_' + sub_domain.strip + '_score')
+                row[sub_domain_score_index] = sub_domain_score if sub_domain_score_index != nil && sub_domain_score != 0
+              end
 
             end
             if index == domains.size - 1 && score == domain_scores.last
