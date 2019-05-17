@@ -52,12 +52,14 @@ class Project < ActiveRecord::Base
   has_many :score_unit_questions, through: :score_units
   has_many :scores, through: :score_schemes
   has_many :critical_responses, through: :instruments
+  has_many :loop_questions, through: :instruments
+
   validates :name, presence: true, allow_blank: false
   validates :description, presence: true, allow_blank: true
 
   def api_option_sets
     option_set_ids = api_questions.pluck(:option_set_id) + api_questions.pluck(:special_option_set_id)
-    OptionSet.includes(:instruction).where(id: option_set_ids).uniq
+    OptionSet.includes(:instruction, :option_set_translations).where(id: option_set_ids).uniq
   end
 
   def api_options
@@ -65,7 +67,7 @@ class Project < ActiveRecord::Base
   end
 
   def api_instrument_questions
-    InstrumentQuestion.includes(:instrument, :critical_responses, :all_loop_questions, question: %i[instruction option_set], translations: [:question]).where(instrument_id: published_instruments.pluck(:id))
+    InstrumentQuestion.includes(:instrument, question: %i[instruction option_set], translations: [:question]).where(instrument_id: published_instruments.pluck(:id))
   end
 
   def api_option_in_option_sets
@@ -90,7 +92,7 @@ class Project < ActiveRecord::Base
   end
 
   def api_instructions
-    Instruction.includes(:instruction_translations).where(id: api_questions.pluck(:instruction_id) | api_display_instructions.pluck(:instruction_id) | critical_responses.with_deleted.pluck(:instruction_id))
+    Instruction.includes(:instruction_translations).where(id: api_questions.pluck(:instruction_id) | api_option_sets.pluck(:instruction_id) | api_display_instructions.pluck(:instruction_id) | critical_responses.with_deleted.pluck(:instruction_id))
   end
 
   def special_option_sets

@@ -62,11 +62,3 @@ end
 child :translations do |_t|
   attributes :id, :question_id, :text, :language, :instructions
 end
-
-child all_loop_questions: :loop_questions do |_t|
-  attributes :id, :parent, :looped, :deleted_at, :option_indices, :same_display, :replacement_text
-end
-
-child :critical_responses do |_cr|
-  attributes :id, :question_identifier, :option_identifier, :instruction_id, :deleted_at
-end

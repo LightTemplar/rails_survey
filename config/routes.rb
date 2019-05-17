@@ -45,6 +45,8 @@ RailsSurvey::Application.routes.draw do
         resources :follow_up_questions, only: :index
         resources :display_instructions, only: :index
         resources :validations, only: :index
+        resources :loop_questions, only: :index
+        resources :critical_responses, only: :index
         resources :surveys, only: :create
         resources :responses, only: :create
         resources :response_images, only: :create

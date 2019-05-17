@@ -1,12 +1,12 @@
+# frozen_string_literal: true
+
 collection @multiple_skips
 cache ['v3-multiple-skips', @multiple_skips]
 
 attributes :id, :question_identifier, :option_identifier,
-:skip_question_identifier, :deleted_at, :value
+           :skip_question_identifier, :deleted_at, :value
 
-node :question_id do |ms|
- ms.instrument_question_id
-end
+node :question_id, &:instrument_question_id
 
 node :instrument_id do |ms|
   ms.instrument_question.instrument_id

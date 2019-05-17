@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: instrument_questions
@@ -27,7 +28,6 @@ class InstrumentQuestion < ActiveRecord::Base
   has_many :translations, through: :question
   has_many :display_instructions, dependent: :destroy
   has_many :loop_questions, dependent: :destroy
-  has_many :all_loop_questions, -> { with_deleted }, class_name: 'LoopQuestion'
   has_many :critical_responses, through: :question
 
   acts_as_paranoid

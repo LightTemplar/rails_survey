@@ -3,11 +3,7 @@
 collection @option_sets
 cache ['v3-option-sets', @option_sets]
 
-attributes :id, :deleted_at, :title, :special
-
-node :instructions do |os|
-  os.instruction&.text
-end
+attributes :id, :deleted_at, :title, :special, :instruction_id
 
 child :option_set_translations do |_t|
   attributes :id, :option_set_id, :option_translation_id
