@@ -10,8 +10,9 @@ development:
   adapter: postgresql
   encoding: unicode
   # database: sets_development
-  database: from_instruments2_development
+  # database: from_instruments2_development
   # database: wci_development
+  database: pofo_development
   pool: 5
   # timeout: 5000
 
