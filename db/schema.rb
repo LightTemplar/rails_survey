@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190410151001) do
+ActiveRecord::Schema.define(version: 20190809174321) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -300,6 +300,8 @@ ActiveRecord::Schema.define(version: 20190410151001) do
     t.boolean  "scorable",                default: false
     t.boolean  "auto_export_responses",   default: true
   end
+
+  add_index "instruments", ["project_id", "title"], name: "index_instruments_on_project_id_and_title", using: :btree
 
   create_table "loop_questions", force: :cascade do |t|
     t.integer  "instrument_question_id"
@@ -642,9 +644,11 @@ ActiveRecord::Schema.define(version: 20190410151001) do
     t.datetime "updated_at"
     t.integer  "instrument_id"
     t.datetime "deleted_at"
+    t.integer  "position"
   end
 
   add_index "sections", ["deleted_at"], name: "index_sections_on_deleted_at", using: :btree
+  add_index "sections", ["instrument_id", "title"], name: "index_sections_on_instrument_id_and_title", using: :btree
 
   create_table "skip_patterns", force: :cascade do |t|
     t.string   "option_identifier"

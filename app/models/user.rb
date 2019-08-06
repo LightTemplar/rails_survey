@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: users
@@ -47,6 +49,7 @@ class User < ActiveRecord::Base
   def set_default_role
     role = Role.find_by_name('user')
     return unless role
+
     UserRole.create(user_id: id, role_id: role.id)
   end
 

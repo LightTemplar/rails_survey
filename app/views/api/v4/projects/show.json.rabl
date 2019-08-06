@@ -1,4 +1,6 @@
-collection @project, root: 'project'
-cache ['v4-project', @project]
+# frozen_string_literal: true
+
+object @project
+cache @project
 
 attributes :id, :name, :description

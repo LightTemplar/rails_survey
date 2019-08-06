@@ -13,8 +13,19 @@ RailsSurvey::Application.routes.draw do
   end
   namespace :api, defaults: { format: 'json' } do
     namespace :v4 do
-      resources :projects, only: %i[index show] do
-        resources :instruments, only: %i[index show]
+      devise_scope :user do
+        post 'login' => 'sessions#create'
+        delete 'logout' => 'sessions#destroy'
+      end
+      resources :instruments, only: :index
+      resources :projects do
+        resources :instruments do
+          member do
+            post :reorder_sections
+          end
+          resources :sections, only: %i[create update destroy]
+          resources :displays
+        end
       end
     end
 

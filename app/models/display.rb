@@ -28,6 +28,8 @@ class Display < ActiveRecord::Base
 
   validates :title, presence: true
   validates :position, presence: true
+  validates :instrument_id, presence: true
+  validates :section_id, presence: true
 
   def copy(instrument, display_type)
     if display_type == 'AS_IT_IS'

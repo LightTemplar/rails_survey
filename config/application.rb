@@ -9,6 +9,15 @@ Bundler.require(:default, Rails.env)
 
 module RailsSurvey
   class Application < Rails::Application
+    config.middleware.insert_before 0, 'Rack::Cors' do
+      allow do
+        origins 'localhost:3001', '127.0.0.1:3001'
+        resource '*', headers: :any,
+                      expose: ['access-token', 'expiry', 'token-type', 'uid', 'client'],
+                      methods: %i[get post put delete options]
+      end
+    end
+
     config.time_zone = 'Eastern Time (US & Canada)'
 
     config.before_configuration do

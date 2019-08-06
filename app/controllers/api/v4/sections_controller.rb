@@ -1,0 +1,43 @@
+# frozen_string_literal: true
+
+module Api
+  module V4
+    class SectionsController < Api::V4::ApiController
+      respond_to :json
+      before_action :set_instrument, only: %i[create update destroy]
+      before_action :set_section, only: %i[update destroy]
+
+      def create
+        section = @instrument.sections.new(section_params)
+        if section.save
+          render json: section, status: :created
+        else
+          render json: { errors: section.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+
+      def update
+        respond_with @section.update_attributes(section_params)
+      end
+
+      def destroy
+        respond_with @section.destroy
+      end
+
+      private
+
+      def section_params
+        params.require(:section).permit(:title, :instrument_id, :position)
+      end
+
+      def set_instrument
+        project = current_user.projects.find(params[:project_id])
+        @instrument = project.instruments.find(params[:instrument_id])
+      end
+
+      def set_section
+        @section = @instrument.sections.find(params[:id])
+      end
+    end
+  end
+end

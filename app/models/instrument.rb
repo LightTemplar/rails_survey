@@ -49,7 +49,7 @@ class Instrument < ActiveRecord::Base
   has_many :responses, through: :surveys
   has_many :response_images, through: :responses
   has_one :response_export
-  has_many :sections, dependent: :destroy
+  has_many :sections, -> { order 'position' }, dependent: :destroy
   has_many :section_translations, through: :sections, source: :translations
   has_many :rules, through: :instrument_rules
   has_many :grids, dependent: :destroy
@@ -67,7 +67,7 @@ class Instrument < ActiveRecord::Base
   acts_as_paranoid
   before_save :update_question_count
   after_update :update_special_options
-  validates :title, presence: true, allow_blank: false
+  validates :title, presence: true, allow_blank: false, uniqueness: { scope: [:project_id] }
   validates :project_id, presence: true, allow_blank: false
 
   def language_name(name = language)
@@ -88,6 +88,16 @@ class Instrument < ActiveRecord::Base
                                           alignment: instrument.alignment)
         end
       end
+    end
+  end
+
+  def reorder_sections(ordering)
+    ActiveRecord::Base.transaction do
+      ordering.each do |order|
+        section = sections.find(order[:id])
+        section.update_columns(position: order[:position], updated_at: Time.current) if section.position != order[:position]
+      end
+      touch unless ordering.blank?
     end
   end
 
