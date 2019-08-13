@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: surveys
@@ -55,7 +56,9 @@ class Survey < ActiveRecord::Base
     job = Sidekiq::ScheduledSet.new.find do |entry|
       entry.item['class'] == 'ExportWorker' && entry.item['args'].first == instrument_id
     end
-    ExportWorker.perform_at(DateTime.now.end_of_day + 2.hours, instrument_id) unless job
+    return if job
+
+    DateTime.now.hour < 12 ? ExportWorker.perform_at(DateTime.now.at_noon, instrument_id) : ExportWorker.perform_at(DateTime.now.tomorrow.at_noon, instrument_id)
   end
 
   def switch_instrument(destination_instrument_id)
