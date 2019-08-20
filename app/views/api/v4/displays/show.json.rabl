@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 object @display
-cache @display
 
 extends 'api/templates/v4/display'
 

@@ -20,13 +20,12 @@ RailsSurvey::Application.routes.draw do
       resources :instruments, only: :index
       resources :projects do
         resources :instruments do
-          member do
-            post :reorder_sections
-          end
-          resources :sections, only: %i[create update destroy]
+          resources :sections
           resources :displays
+          resources :instrument_questions
         end
       end
+      resources :question_sets
     end
 
     namespace :v3 do

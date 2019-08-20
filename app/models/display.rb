@@ -5,7 +5,6 @@
 # Table name: displays
 #
 #  id                         :integer          not null, primary key
-#  mode                       :string
 #  position                   :integer
 #  instrument_id              :integer
 #  created_at                 :datetime
@@ -18,16 +17,16 @@
 
 class Display < ActiveRecord::Base
   belongs_to :instrument, touch: true
-  belongs_to :section
+  belongs_to :section, touch: true
   has_many :instrument_questions, -> { order 'number_in_instrument' }, dependent: :destroy
   has_many :display_instructions, dependent: :destroy
   has_many :display_translations, dependent: :destroy
 
   acts_as_paranoid
   has_paper_trail
+  acts_as_list scope: :instrument
 
   validates :title, presence: true
-  validates :position, presence: true
   validates :instrument_id, presence: true
   validates :section_id, presence: true
 

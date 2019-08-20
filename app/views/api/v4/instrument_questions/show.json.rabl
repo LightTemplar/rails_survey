@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 object @instrument_question
-cache @instrument_question
 
 extends 'api/templates/v4/instrument_question'
 

@@ -4,8 +4,16 @@ module Api
   module V4
     class SectionsController < Api::V4::ApiController
       respond_to :json
-      before_action :set_instrument, only: %i[create update destroy]
+      before_action :set_instrument, only: %i[index show create update destroy]
       before_action :set_section, only: %i[update destroy]
+
+      def index
+        @sections = @instrument.sections.includes(:displays)
+      end
+
+      def show
+        @section = @instrument.sections.includes(:displays).find(params[:id])
+      end
 
       def create
         section = @instrument.sections.new(section_params)

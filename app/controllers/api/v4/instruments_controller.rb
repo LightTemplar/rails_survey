@@ -4,8 +4,8 @@ module Api
   module V4
     class InstrumentsController < Api::V4::ApiController
       respond_to :json
-      before_action :set_project, only: %i[show create update destroy reorder_sections]
-      before_action :set_instrument, only: %i[update destroy reorder_sections]
+      before_action :set_project, only: %i[show create update destroy]
+      before_action :set_instrument, only: %i[update destroy]
 
       def index
         project_ids = current_user.projects.pluck(:id)
@@ -13,7 +13,7 @@ module Api
       end
 
       def show
-        @instrument = @project.instruments.includes(:sections, :displays).find(params[:id])
+        @instrument = @project.instruments.find(params[:id])
       end
 
       def create
@@ -31,14 +31,6 @@ module Api
 
       def destroy
         respond_with @instrument.destroy
-      end
-
-      def reorder_sections
-        if @instrument.reorder_sections(params[:order])
-          render json: :ok, status: :created
-        else
-          render json: { errors: 'sections reorder unsuccessful' }, status: :unprocessable_entity
-        end
       end
 
       private

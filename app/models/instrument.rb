@@ -41,7 +41,7 @@ class Instrument < ActiveRecord::Base
   has_many :option_translations, through: :options, source: :translations
   has_many :option_in_option_sets, -> { distinct }, through: :option_sets
   has_many :options, through: :option_in_option_sets
-  has_many :displays, -> { order 'position' }, dependent: :destroy
+  has_many :displays, -> { order(position: :asc) }, dependent: :destroy
   has_many :display_translations, through: :displays
   has_many :instrument_rules
   has_many :translations, foreign_key: 'instrument_id', class_name: 'InstrumentTranslation', dependent: :destroy
@@ -49,7 +49,7 @@ class Instrument < ActiveRecord::Base
   has_many :responses, through: :surveys
   has_many :response_images, through: :responses
   has_one :response_export
-  has_many :sections, -> { order 'position' }, dependent: :destroy
+  has_many :sections, -> { order(position: :asc) }, dependent: :destroy
   has_many :section_translations, through: :sections, source: :translations
   has_many :rules, through: :instrument_rules
   has_many :grids, dependent: :destroy
@@ -88,16 +88,6 @@ class Instrument < ActiveRecord::Base
                                           alignment: instrument.alignment)
         end
       end
-    end
-  end
-
-  def reorder_sections(ordering)
-    ActiveRecord::Base.transaction do
-      ordering.each do |order|
-        section = sections.find(order[:id])
-        section.update_columns(position: order[:position], updated_at: Time.current) if section.position != order[:position]
-      end
-      touch unless ordering.blank?
     end
   end
 
@@ -224,6 +214,14 @@ class Instrument < ActiveRecord::Base
 
   def question_count
     instrument_questions.count
+  end
+
+  def section_count
+    sections.count
+  end
+
+  def display_count
+    displays.count
   end
 
   def survey_instrument_versions

@@ -34,12 +34,11 @@ class InstrumentQuestion < ActiveRecord::Base
   has_paper_trail
   acts_as_taggable
   acts_as_taggable_on :countries
-
-  validates :identifier, presence: true
-  validates :identifier, uniqueness: { scope: :instrument_id, message: 'instrument already has this identifier' }
+  acts_as_list scope: :instrument, column: :number_in_instrument
 
   after_update :update_display_instructions, if: :number_in_instrument_changed?
-  after_destroy :renumber_questions
+
+  validates :identifier, presence: true, uniqueness: { scope: [:instrument_id] }
 
   def country_specific(language)
     return false if language == 'en' || country_list.blank?
@@ -220,9 +219,5 @@ class InstrumentQuestion < ActiveRecord::Base
 
   def update_display_instructions
     display_instructions.update_all(position: number_in_instrument)
-  end
-
-  def renumber_questions
-    instrument.renumber_questions
   end
 end

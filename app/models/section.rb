@@ -18,7 +18,9 @@ class Section < ActiveRecord::Base
   belongs_to :instrument, touch: true
   has_many :displays, -> { order 'position' }
   has_many :translations, foreign_key: 'section_id', class_name: 'SectionTranslation', dependent: :destroy
+
   acts_as_paranoid
+  acts_as_list scope: :instrument
 
   validates :instrument_id, presence: true, allow_blank: false
   validates :title, presence: true, uniqueness: { scope: [:instrument_id] }
