@@ -2,8 +2,4 @@
 
 object @folder
 
-attributes :id, :title
-
-child :questions do
-  attributes :id, :question_identifier, :text, :question_set_id, :folder_id, :question_type
-end
+extends 'api/templates/v4/folder'

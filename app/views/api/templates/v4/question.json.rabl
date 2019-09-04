@@ -1,3 +1,5 @@
 # frozen_string_literal: true
 
-attributes :id, :text, :question_type, :question_identifier, :instrument_id, :created_at, :updated_at, :deleted_at, :reg_ex_validation, :number_in_instrument, :reg_ex_validation_message, :identifies_survey, :instructions, :child_update_count, :grid_id, :number_in_grid, :instrument_version_number, :section_id, :critical, :option_count, :image_count, :instrument_version, :question_version
+attributes :id, :question_identifier, :parent_identifier, :folder_id, :question_type,
+           :text, :option_set_id, :special_option_set_id, :instruction_id, :identifies_survey,
+           :question_set_id, :validation_id, :rank_responses

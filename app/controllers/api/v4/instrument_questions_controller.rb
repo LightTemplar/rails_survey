@@ -16,19 +16,11 @@ module Api
       end
 
       def update
-        unless params[:country_list].blank?
-          params[:instrument_question][:country_list] = params[:country_list]
-          @instrument_question.touch
-        end
         respond_with @instrument_question.update_attributes(instrument_question_params)
       end
 
       def destroy
-        if @instrument_question.destroy
-          render nothing: true, status: :ok
-        else
-          render json: { errors: @instrument_question.errors.full_messages }, status: :unprocessable_entity
-        end
+        respond_with @instrument_question.destroy
       end
 
       private
@@ -51,7 +43,9 @@ module Api
         ActiveRecord::Base.transaction do
           params[:instrument_questions].map do |iq_params|
             iq = @instrument.instrument_questions.new(iq_params.permit(:instrument_id, :question_id,
-                                                                       :number_in_instrument, :display_id, :identifier))
+                                                                       :number_in_instrument,
+                                                                       :display_id, :identifier))
+            iq.identifier = "#{iq_params[:identifier]}_1" if @instrument.instrument_questions.find_by_identifier(iq_params[:identifier])
             iq.save!
           end
         end

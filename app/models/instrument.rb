@@ -34,7 +34,7 @@ class Instrument < ActiveRecord::Base
   scope :published, -> { where(published: true) }
   belongs_to :project, touch: true
 
-  has_many :instrument_questions, dependent: :destroy
+  has_many :instrument_questions, -> { order(number_in_instrument: :asc) }, dependent: :destroy
   has_many :questions, -> { distinct }, through: :instrument_questions
   has_many :question_translations, through: :questions, source: :translations
   has_many :option_sets, -> { distinct }, through: :questions
@@ -56,12 +56,15 @@ class Instrument < ActiveRecord::Base
   has_many :grid_labels, through: :grids
   has_many :metrics, dependent: :destroy
   has_many :rosters
-  has_many :score_schemes, dependent: :destroy
   has_many :randomized_factors, dependent: :destroy
   has_many :randomized_options, through: :randomized_factors
   has_many :next_questions, -> { order 'instrument_questions.number_in_instrument' }, through: :instrument_questions
   has_many :critical_responses, through: :questions
   has_many :loop_questions, through: :instrument_questions
+
+  # Scoring
+  has_many :score_schemes, dependent: :destroy
+  has_many :score_units, through: :score_schemes
 
   has_paper_trail
   acts_as_paranoid

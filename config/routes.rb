@@ -23,9 +23,31 @@ RailsSurvey::Application.routes.draw do
           resources :sections
           resources :displays
           resources :instrument_questions
+          resources :score_schemes do
+            resources :domains
+            resources :subdomains do
+              resources :score_units do
+                resources :option_scores
+              end
+            end
+          end
         end
       end
-      resources :question_sets
+      resources :question_sets do
+        resources :folders do
+          resources :questions, controller: 'folder_questions'
+        end
+      end
+      resources :option_sets do
+        resources :option_in_option_sets
+        collection do
+          get :total
+        end
+      end
+      resources :instructions
+      resources :options
+      resources :questions, only: [:index]
+      resources :option_translations
     end
 
     namespace :v3 do

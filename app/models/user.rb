@@ -43,6 +43,7 @@ class User < ActiveRecord::Base
   after_create :set_default_role
   has_many :user_projects
   has_many :projects, through: :user_projects
+  has_many :instruments, through: :projects
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
 

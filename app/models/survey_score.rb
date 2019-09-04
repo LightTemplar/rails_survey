@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
-# Table name: scores
+# Table name: survey_scores
 #
 #  id              :integer          not null, primary key
 #  survey_id       :integer
@@ -12,22 +14,15 @@
 #  survey_uuid     :string
 #  device_uuid     :string
 #  device_label    :string
+#  deleted_at      :datetime
 #
 
-class Score < ActiveRecord::Base
-  belongs_to :centralized_survey, class_name: 'Survey', foreign_key: :survey_id
-  belongs_to :distributed_survey, class_name: 'Survey', foreign_key: :survey_uuid
+class SurveyScore < ActiveRecord::Base
   belongs_to :score_scheme
-  has_many :centralized_raw_scores, class_name: 'RawScore', foreign_key: :score_id, dependent: :destroy
-  has_many :distributed_raw_scores, class_name: 'RawScore', foreign_key: :score_uuid, dependent: :destroy
+  belongs_to :survey
+  has_many :raw_scores
 
-  def raw_scores
-    RawScore.where('score_id = ? OR score_uuid = ?', id, uuid)
-  end
-
-  def survey
-    Survey.where('id = ? OR uuid = ?', survey_id, survey_uuid).try(:first)
-  end
+  acts_as_paranoid
 
   def raw_score_sum
     raw_scores.sum(:value)
@@ -39,6 +34,7 @@ class Score < ActiveRecord::Base
 
   def weighted_score(raw_score)
     return 0 unless raw_score.value
+
     raw_score.value * raw_score.score_unit.weight
   end
 end

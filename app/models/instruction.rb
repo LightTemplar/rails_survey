@@ -18,10 +18,14 @@ class Instruction < ActiveRecord::Base
   has_many :instrument_questions, through: :questions
   has_many :instruction_translations, dependent: :destroy
   has_many :display_instructions, dependent: :destroy
+
   acts_as_paranoid
   has_paper_trail
+
   after_touch :touch_instrument_questions, :touch_display_instructions, :touch_instrument
   after_commit :touch_instrument_questions, :touch_display_instructions, :touch_instrument
+
+  validates :title, presence: true, allow_blank: false, uniqueness: true
 
   def translated_text(language, instrument)
     return text if language == instrument.language

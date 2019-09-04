@@ -1,32 +1,35 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: score_units
 #
-#  id              :integer          not null, primary key
-#  score_scheme_id :integer
-#  question_type   :string
-#  min             :float
-#  max             :float
-#  weight          :float
-#  created_at      :datetime
-#  updated_at      :datetime
-#  score_type      :integer
-#  deleted_at      :datetime
+#  id           :integer          not null, primary key
+#  weight       :float
+#  created_at   :datetime
+#  updated_at   :datetime
+#  score_type   :string
+#  deleted_at   :datetime
+#  subdomain_id :integer
+#  title        :string
 #
 
 class ScoreUnit < ActiveRecord::Base
-  belongs_to :score_scheme, touch: true
+  belongs_to :subdomain
   has_many :score_unit_questions, dependent: :destroy
-  has_many :questions, through: :score_unit_questions
-  has_many :option_scores, dependent: :destroy
-  has_many :raw_scores
-  acts_as_paranoid
-  # Add new score_types to the end of the enum to maintain order
-  enum score_type: [:single_select, :multiple_select, :multiple_select_sum, :range, :simple_search]
+  has_many :option_scores, through: :score_unit_questions
 
-  def self.score_types_to_a
-    ar = []
-    score_types.map { |key, value| ar << { key: key, value: value } }
-    ar
+  acts_as_paranoid
+
+  validates :subdomain_id, presence: true, allow_blank: false
+  validates :title, presence: true, uniqueness: { scope: [:subdomain_id] }
+
+  def question_identifiers
+    ids = score_unit_questions.map { |suq| suq.instrument_question.identifier }
+    ids.join(',')
+  end
+
+  def option_score_count
+    option_scores.size
   end
 end

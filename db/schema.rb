@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190809174321) do
+ActiveRecord::Schema.define(version: 20190820153851) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -157,6 +157,16 @@ ActiveRecord::Schema.define(version: 20190809174321) do
   end
 
   add_index "displays", ["deleted_at"], name: "index_displays_on_deleted_at", using: :btree
+
+  create_table "domains", force: :cascade do |t|
+    t.string   "title"
+    t.integer  "score_scheme_id"
+    t.datetime "deleted_at"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "domains", ["deleted_at"], name: "index_domains_on_deleted_at", using: :btree
 
   create_table "folders", force: :cascade do |t|
     t.integer  "question_set_id"
@@ -358,15 +368,14 @@ ActiveRecord::Schema.define(version: 20190809174321) do
   end
 
   create_table "option_scores", force: :cascade do |t|
-    t.integer  "score_unit_id"
-    t.integer  "option_id"
+    t.integer  "score_unit_question_id"
     t.float    "value"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "label"
-    t.boolean  "exists"
-    t.boolean  "next_question"
     t.datetime "deleted_at"
+    t.string   "option_identifier"
+    t.string   "follow_up_qid"
+    t.string   "position"
   end
 
   add_index "option_scores", ["deleted_at"], name: "index_option_scores_on_deleted_at", using: :btree
@@ -406,6 +415,8 @@ ActiveRecord::Schema.define(version: 20190809174321) do
     t.integer  "instrument_version_number", default: -1
     t.string   "identifier"
   end
+
+  add_index "options", ["identifier"], name: "index_options_on_identifier", using: :btree
 
   create_table "project_device_users", force: :cascade do |t|
     t.integer  "project_id"
@@ -493,12 +504,13 @@ ActiveRecord::Schema.define(version: 20190809174321) do
 
   create_table "raw_scores", force: :cascade do |t|
     t.integer  "score_unit_id"
-    t.integer  "score_id"
+    t.integer  "survey_score_id"
     t.float    "value"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "uuid"
-    t.string   "score_uuid"
+    t.string   "survey_score_uuid"
+    t.datetime "deleted_at"
   end
 
   create_table "response_exports", force: :cascade do |t|
@@ -587,13 +599,14 @@ ActiveRecord::Schema.define(version: 20190809174321) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
+    t.boolean  "active"
   end
 
   add_index "score_schemes", ["deleted_at"], name: "index_score_schemes_on_deleted_at", using: :btree
 
   create_table "score_unit_questions", force: :cascade do |t|
     t.integer  "score_unit_id"
-    t.integer  "question_id"
+    t.integer  "instrument_question_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
@@ -602,30 +615,16 @@ ActiveRecord::Schema.define(version: 20190809174321) do
   add_index "score_unit_questions", ["deleted_at"], name: "index_score_unit_questions_on_deleted_at", using: :btree
 
   create_table "score_units", force: :cascade do |t|
-    t.integer  "score_scheme_id"
-    t.string   "question_type"
-    t.float    "min"
-    t.float    "max"
     t.float    "weight"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "score_type"
+    t.string   "score_type"
     t.datetime "deleted_at"
+    t.integer  "subdomain_id"
+    t.string   "title"
   end
 
   add_index "score_units", ["deleted_at"], name: "index_score_units_on_deleted_at", using: :btree
-
-  create_table "scores", force: :cascade do |t|
-    t.integer  "survey_id"
-    t.integer  "score_scheme_id"
-    t.float    "score_sum"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "uuid"
-    t.string   "survey_uuid"
-    t.string   "device_uuid"
-    t.string   "device_label"
-  end
 
   create_table "section_translations", force: :cascade do |t|
     t.integer  "section_id"
@@ -674,6 +673,29 @@ ActiveRecord::Schema.define(version: 20190809174321) do
     t.string   "percent"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "subdomains", force: :cascade do |t|
+    t.string   "title"
+    t.integer  "domain_id"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "subdomains", ["deleted_at"], name: "index_subdomains_on_deleted_at", using: :btree
+
+  create_table "survey_scores", force: :cascade do |t|
+    t.integer  "survey_id"
+    t.integer  "score_scheme_id"
+    t.float    "score_sum"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "uuid"
+    t.string   "survey_uuid"
+    t.string   "device_uuid"
+    t.string   "device_label"
+    t.datetime "deleted_at"
   end
 
   create_table "surveys", force: :cascade do |t|

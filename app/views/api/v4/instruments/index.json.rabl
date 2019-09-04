@@ -2,4 +2,4 @@
 
 collection @instruments
 
-extends 'api/v4/instruments/show'
+extends 'api/templates/v4/instrument'

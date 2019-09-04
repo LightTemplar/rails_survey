@@ -17,10 +17,14 @@
 class OptionTranslation < ActiveRecord::Base
   include GoogleTranslatable
   belongs_to :option, touch: true
+  # belongs_to :instrument_translation, touch: true
+
   has_many :back_translations, as: :backtranslatable
   has_many :option_set_translations
-  belongs_to :instrument_translation, touch: true
+
+  validates :language, presence: true, allow_blank: false
   validates :text, presence: true, allow_blank: false
+  validates :option_id, presence: true, allow_blank: false, uniqueness: { scope: %i[language text] }
 
   def translate_using_google
     text_translation = translation_client.translate sanitize_text(option.text), to: language unless option.text.blank?

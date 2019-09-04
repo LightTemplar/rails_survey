@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: score_schemes
@@ -8,14 +10,21 @@
 #  created_at    :datetime
 #  updated_at    :datetime
 #  deleted_at    :datetime
+#  active        :boolean
 #
 
 class ScoreScheme < ActiveRecord::Base
   belongs_to :instrument
-  has_many :score_units, dependent: :destroy
-  has_many :scores, dependent: :destroy
-  validates :title, presence: true, allow_blank: false
+  has_many :domains, dependent: :destroy
+  has_many :subdomains, through: :domains
+  has_many :score_units, through: :subdomains
+  has_many :score_unit_questions, through: :score_units
+  has_many :option_scores, through: :score_unit_questions
+  has_many :survey_scores
+
   acts_as_paranoid
+
+  validates :title, presence: true, uniqueness: { scope: [:instrument_id] }
 
   def score_unit_count
     score_units.size
@@ -33,17 +42,13 @@ class ScoreScheme < ActiveRecord::Base
 
   def get_score(survey)
     score = scores.where(survey_id: survey.id).try(:first)
-    unless score
-      score = scores.create(survey_id: survey.id, score_scheme_id: id)
-    end
+    score ||= scores.create(survey_id: survey.id, score_scheme_id: id)
     score
   end
 
   def get_raw_score(score, unit)
     raw_score = score.raw_scores.where(score_unit_id: unit.id).try(:first)
-    unless raw_score
-      raw_score = score.raw_scores.create(score_unit_id: unit.id, score_id: score.id)
-    end
+    raw_score ||= score.raw_scores.create(score_unit_id: unit.id, score_id: score.id)
     raw_score
   end
 end

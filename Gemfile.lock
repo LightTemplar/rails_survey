@@ -487,6 +487,7 @@ DEPENDENCIES
   jbuilder (~> 1.2)
   jquery-rails (~> 4.3, >= 4.3.3)
   jquery-ui-rails (= 6.0.1)
+  kaminari (~> 1.1, >= 1.1.1)
   mini_racer (~> 0.2.6)
   newrelic_rpm (~> 6.0, >= 6.0.0.351)
   paper_trail (~> 9.2.0)

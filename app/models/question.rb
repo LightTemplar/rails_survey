@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: questions
@@ -25,13 +26,16 @@
 
 class Question < ActiveRecord::Base
   include Translatable
+
   belongs_to :option_set
   belongs_to :special_option_set, class_name: 'OptionSet'
   belongs_to :question_set
   belongs_to :instruction
   belongs_to :folder
   belongs_to :validation
+
   has_many :options, through: :option_set
+  has_many :special_options, through: :special_option_set, source: :options
   has_many :critical_responses, foreign_key: :question_identifier, primary_key: :question_identifier, dependent: :destroy
   has_many :responses
   has_many :translations, foreign_key: 'question_id', class_name: 'QuestionTranslation', dependent: :destroy
@@ -40,16 +44,20 @@ class Question < ActiveRecord::Base
   has_many :instrument_questions, dependent: :destroy
   has_many :instruments, -> { distinct }, through: :instrument_questions
   has_many :skip_patterns, foreign_key: 'question_identifier', primary_key: 'question_identifier', dependent: :destroy
+
   before_save :update_question_translation, if: proc { |question| question.text_changed? }
   after_touch :touch_instrument_questions
   after_save :touch_option_set, if: :option_set_id_changed?
   after_save :touch_special_option_set, if: :special_option_set_id_changed?
   after_commit :update_instruments_versions, on: %i[update destroy]
   after_save :update_versions_cache
+
   has_paper_trail
   acts_as_paranoid
+
   validates :question_identifier, uniqueness: true, presence: true, allow_blank: false
   validates :text, presence: true, allow_blank: false
+  validates :question_type, presence: true, allow_blank: false
 
   def copy
     new_copy = dup

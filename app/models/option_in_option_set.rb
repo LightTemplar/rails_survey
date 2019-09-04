@@ -19,10 +19,14 @@ class OptionInOptionSet < ActiveRecord::Base
   default_scope { order('option_in_option_sets.special ASC, option_in_option_sets.number_in_question ASC') }
   belongs_to :option
   belongs_to :option_set, touch: true, counter_cache: true
+
+  after_save :set_special
+
   has_paper_trail
   acts_as_paranoid
-  after_save :set_special
-  validates :option_set_id, uniqueness: { scope: %i[option_id number_in_question] }
+  acts_as_list scope: :option_set, column: :number_in_question
+
+  validates :option_id, uniqueness: { scope: [:option_set_id] }
 
   private
 
