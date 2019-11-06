@@ -52,7 +52,7 @@ module Api
 
       def create_children
         ActiveRecord::Base.transaction do
-          params[:option_in_option_sets].each do |oios_params|
+          params[:option_in_option_sets]&.each do |oios_params|
             oios = OptionInOptionSet.find_or_create_by(option_id: oios_params[:option_id], option_set_id: @option_set.id)
             oios.number_in_question = oios_params[:number_in_question]
             oios.special = oios_params[:special]

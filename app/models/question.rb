@@ -45,6 +45,7 @@ class Question < ActiveRecord::Base
   has_many :instruments, -> { distinct }, through: :instrument_questions
   has_many :skip_patterns, foreign_key: 'question_identifier', primary_key: 'question_identifier', dependent: :destroy
 
+  before_save :sanitize_text
   before_save :update_question_translation, if: proc { |question| question.text_changed? }
   after_touch :touch_instrument_questions
   after_save :touch_option_set, if: :option_set_id_changed?
@@ -140,5 +141,10 @@ class Question < ActiveRecord::Base
 
   def touch_special_option_set
     special_option_set.touch
+  end
+
+  def sanitize_text
+    sanitizer = Rails::Html::SafeListSanitizer.new
+    self.text = sanitizer.sanitize(text, tags: %w[p strong em i b u li ul a h1 h2 h3 h4 h5 h6]).gsub(%r{<p>[\s$]*</p>}, '') if attribute_present?('text')
   end
 end

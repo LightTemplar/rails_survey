@@ -5,8 +5,17 @@ module Api
     class QuestionSetsController < Api::V4::ApiController
       respond_to :json
       before_action :set_question_set, only: %i[show update destroy]
+
       def index
-        @question_sets = QuestionSet.all.includes(:folders)
+        @question_sets = if params[:page] && params[:per_page]
+                           QuestionSet.page(params[:page]).per(params[:per_page]).includes(:folders).order(updated_at: :desc)
+                         else
+                           QuestionSet.all.includes(:folders)
+                        end
+      end
+
+      def total
+        respond_with QuestionSet.count
       end
 
       def show; end

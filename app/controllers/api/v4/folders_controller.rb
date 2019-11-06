@@ -8,7 +8,7 @@ module Api
       before_action :set_folder, only: %i[show update destroy]
 
       def index
-        respond_with @question_set.folders
+        @folders = @question_set.folders
       end
 
       def show; end

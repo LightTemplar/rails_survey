@@ -18,14 +18,19 @@ module Api
       def create
         section = @instrument.sections.new(section_params)
         if section.save
-          render json: section, status: :created
+          @section = @instrument.sections.includes(:displays).find(section.id)
+          render 'show'
         else
           render json: { errors: section.errors.full_messages }, status: :unprocessable_entity
         end
       end
 
       def update
-        respond_with @section.update_attributes(section_params)
+        if @section.update_attributes(section_params)
+          render 'show'
+        else
+          render json: { errors: @section.errors.full_messages }, status: :unprocessable_entity
+        end
       end
 
       def destroy
@@ -44,7 +49,7 @@ module Api
       end
 
       def set_section
-        @section = @instrument.sections.find(params[:id])
+        @section = @instrument.sections.includes(:displays).find(params[:id])
       end
     end
   end
