@@ -495,6 +495,15 @@ ActiveRecord::Schema.define(version: 20190820153851) do
     t.datetime "updated_at"
   end
 
+  create_table "randomized_option_translations", force: :cascade do |t|
+    t.integer  "instrument_translation_id"
+    t.integer  "randomized_option_id"
+    t.text     "text"
+    t.string   "language"
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+  end
+
   create_table "randomized_options", force: :cascade do |t|
     t.integer  "randomized_factor_id"
     t.text     "text"

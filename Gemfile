@@ -3,6 +3,7 @@
 source 'https://rubygems.org'
 ruby '2.5.1'
 gem 'activeadmin', '~> 1.1.0'
+gem 'activeadmin_json_editor', '~> 0.0.9'
 gem 'activerecord-import', '~> 1.0', '>= 1.0.2'
 gem 'acts-as-taggable-on', '~> 5.0'
 gem 'acts_as_list', '~> 0.9.19'
@@ -71,6 +72,7 @@ group :development do
   gem 'capistrano-rvm', '~> 0.1.2'
   gem 'capistrano-sidekiq', '~> 0.10.0'
   gem 'quiet_assets', '1.1.0'
+  gem 'rb-readline', '~> 0.5.5'
   gem 'sshkit', '~> 1.7', '>= 1.7.1'
   gem 'web-console', '~> 2.0'
 end

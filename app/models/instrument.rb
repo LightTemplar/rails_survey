@@ -355,6 +355,16 @@ class Instrument < ActiveRecord::Base
     response_export_counter(response_export)
     sanitize_redis_keys
     write_export_rows
+    export_response_images
+  end
+
+  def export_response_images
+    unless response_images.empty?
+      file = File.new(File.join('files', 'exports').to_s + "/#{Time.now.to_i}.zip", 'a+')
+      file.close
+      export = ResponseImagesExport.create(response_export_id: response_export.id, download_url: file.path)
+      InstrumentImagesExportWorker.perform_async(id, file.path, export.id)
+    end
   end
 
   def sanitize_redis_keys

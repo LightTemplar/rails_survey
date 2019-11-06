@@ -48,6 +48,7 @@ RailsSurvey::Application.routes.draw do
       resources :options
       resources :questions, only: [:index]
       resources :option_translations
+      resources :surveys
     end
 
     namespace :v3 do

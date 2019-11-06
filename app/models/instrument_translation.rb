@@ -23,6 +23,7 @@ class InstrumentTranslation < ActiveRecord::Base
   has_many :section_translations, dependent: :destroy
   has_many :grid_translations, dependent: :destroy
   has_many :grid_label_translations, dependent: :destroy
+  has_many :randomized_option_translations, dependent: :destroy
 
   validates :title, presence: true, allow_blank: false
   validates :language, presence: true, allow_blank: false
@@ -84,6 +85,7 @@ class InstrumentTranslation < ActiveRecord::Base
     when Section then section_translations.where(section_id: object.id).try(:first)
     when Grid then grid_translations.where(grid_id: object.id).try(:first)
     when GridLabel then grid_label_translations.where(grid_label_id: object.id).try(:first)
+    when RandomizedOption then randomized_option_translations.where(randomized_option_id: object.id).try(:first)
     end
   end
 
@@ -92,6 +94,7 @@ class InstrumentTranslation < ActiveRecord::Base
     when Question then question_translations.where(question_id: object.id).first_or_initialize
     when Option then option_translations.where(option_id: object.id).first_or_initialize
     when Section then section_translations.where(section_id: object.id).first_or_initialize
+    when RandomizedOption then randomized_option_translations.where(randomized_option_id: object.id).first_or_initialize
     end
   end
 

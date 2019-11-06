@@ -13,6 +13,8 @@ ActiveAdmin.setup do |config|
   config.filters = false
   config.breadcrumb = false
   config.comments = false
+  config.register_stylesheet 'active_admin/json_editor.css'
+  config.register_javascript 'active_admin/json_editor.js'
 
   config.namespace :admin do |admin|
     admin.build_menu :utility_navigation do |menu|

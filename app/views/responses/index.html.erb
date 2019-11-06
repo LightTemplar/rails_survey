@@ -1,38 +1,12 @@
-<!-- <section class="widget">
-  <header>
-    <h4><i class="icon-edit"></i> Project</h4>
-  </header>
-  <div class="body">
-    <table class="table table-hover">
-      <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Export Responses</th>
-      </tr>
-      </thead>
-
-      <tbody>
-        <%# unless current_project.responses.empty? %>
-            <tr>
-              <td><%#= link_to current_project.name, current_project %></td>
-              <td><%#= current_project.description %></td>
-              <%# if policy(current_project).export? %>
-                <td> <%#= link_to 'Export Responses', project_export_responses_path(current_project) %> </td>
-              <%# end %>
-            </tr>
-         <%# end %>
-      </tbody>
-    </table>
-  </div>
-</section> -->
-
 <section class="widget">
-  <header>
-    <h4>
-      <i class="icon-edit"></i>
-      Instruments</h4>
-  </header>
+  <div class="row">
+    <div class="col-md-6"><h4 class="pull-right"><i class="icon-edit"></i>Instruments</h4></div>
+    <div class="col-md-6">
+      <%= link_to project_export_responses_path(current_project) do %>
+        <button class="btn btn-primary pull-right"><i class="md-import-export">Export All</i></button>
+      <% end %>
+    </div>
+  </div>
   <div class="body">
     <table class="table table-hover">
       <thead>

@@ -85,9 +85,10 @@ ActiveAdmin.register Survey do
     actions
   end
 
+  json_editor
   form do |f|
     f.inputs 'Survey Details' do
-      f.input :metadata
+      f.input :metadata, as: :json
     end
     f.actions
   end

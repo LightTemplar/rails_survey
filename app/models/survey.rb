@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: surveys
@@ -96,6 +97,10 @@ class Survey < ActiveRecord::Base
     "#{latitude} / #{longitude}" if latitude && longitude
   end
 
+  def project_name
+    project.name
+  end
+
   def group_responses_by_day
     responses.group_by_day(:created_at).count
   end
@@ -177,7 +182,11 @@ class Survey < ActiveRecord::Base
   end
 
   def write_short_row
-    validator = validation_identifier
+    headers = Rails.cache.fetch("w_s_r_h-#{instrument_id}-#{instrument_version_number}", expires_in: 30.minutes) do
+      array = instrument.short_headers
+      Hash[array.map.with_index.to_a]
+    end
+    row = [id, instrument_id, instrument_title]
     responses.each do |response|
       csv = Rails.cache.fetch("w_s_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 30.minutes) do
         [validator, id, response.question_identifier, sanitize(question_by_identifier(response.question_identifier).try(:text)), response.text, option_labels(response), response.special_response, response.other_response]
@@ -185,6 +194,8 @@ class Survey < ActiveRecord::Base
       push_to_redis("short-row-#{id}-#{instrument.response_export.id}-#{response.id}",
                     "short-keys-#{instrument.id}-#{instrument.response_export.id}", csv)
     end
+    push_to_redis("short-row-#{id}-#{instrument.response_export.id}-survey-#{id}",
+                  "short-keys-#{instrument_id}-#{instrument.response_export.id}", row)
     decrement_export_count("#{instrument.response_export.id}_short")
   end
 

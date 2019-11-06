@@ -10,7 +10,10 @@
 #
 
 class RandomizedOption < ActiveRecord::Base
+  include Translatable
   belongs_to :randomized_factor, touch: true
   validates :text, presence: true
   validates :randomized_factor_id, presence: true
+  has_many :translations, foreign_key: 'randomized_option_id',
+  class_name: 'RandomizedOptionTranslation', dependent: :destroy
 end

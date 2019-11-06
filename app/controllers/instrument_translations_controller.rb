@@ -2,6 +2,7 @@ class InstrumentTranslationsController < ApplicationController
   after_action :verify_authorized, except: [:import_translation]
   before_action :set_translation, only: [:show, :edit, :update, :destroy, :show_pdf]
   before_action :set_questions, only: [:new, :edit]
+  before_action :set_randomized_options, only: [:new, :edit]
 
   def index
     @instrument = current_project.instruments.find(params[:instrument_id])
@@ -110,6 +111,11 @@ class InstrumentTranslationsController < ApplicationController
                  end
   end
 
+  def set_randomized_options
+    instrument = current_project.instruments.find(params[:instrument_id])
+    @randomized_options = instrument.randomized_options
+  end
+
   def update_translations(params, instrument, instrument_translation)
     if params.key? :question_translations
       params[:question_translations].each_pair do |id, translation|
@@ -162,6 +168,15 @@ class InstrumentTranslationsController < ApplicationController
         section.add_or_update_translation_for(translation, :text, instrument_translation)
       end
     end
+
+    if params.key? :randomized_option_translations
+      params[:randomized_option_translations].each_pair do |id, translation|
+        next if translation.blank?
+        randomized_option = instrument.randomized_options.find(id)
+        randomized_option.add_or_update_translation_for(translation, :text, instrument_translation)
+      end
+    end
+
   end
 
   def instrument_translation_params
