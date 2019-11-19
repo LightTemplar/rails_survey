@@ -2,10 +2,13 @@
 
 object @instrument_question
 
-extends 'api/templates/v4/instrument_question'
+attributes :id, :instrument_id, :question_id, :number_in_instrument, :display_id,
+           :identifier, :following_up_question_identifier, :table_identifier
 
-node :instructions do |q|
-  q&.question&.instruction&.text
+node :country_list, &:country_list
+
+child :question do
+  extends 'api/templates/v4/question'
 end
 
 child non_special_options: :options do

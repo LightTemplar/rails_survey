@@ -33,6 +33,9 @@ RailsSurvey::Application.routes.draw do
               end
             end
           end
+          member do
+            get :reorder
+          end
         end
       end
       resources :question_sets do

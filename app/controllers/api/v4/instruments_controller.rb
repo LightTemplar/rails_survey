@@ -4,8 +4,8 @@ module Api
   module V4
     class InstrumentsController < Api::V4::ApiController
       respond_to :json
-      before_action :set_project, only: %i[show create update destroy]
-      before_action :set_instrument, only: %i[update destroy]
+      before_action :set_project, only: %i[show create update destroy reorder]
+      before_action :set_instrument, only: %i[update destroy reorder]
 
       def index
         project_ids = current_user.projects.pluck(:id)
@@ -31,6 +31,14 @@ module Api
 
       def destroy
         respond_with @instrument.destroy
+      end
+
+      def reorder
+        if @instrument.renumber_questions
+          render json: :ok, status: :accepted
+        else
+          render json: { errors: 'question reorder unsuccessful' }, status: :unprocessable_entity
+        end
       end
 
       private

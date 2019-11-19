@@ -8,7 +8,7 @@ module Api
       before_action :set_display, only: %i[update destroy]
 
       def show
-        @display = @instrument.displays.includes(:instrument_questions).find(params[:id])
+        @display = @instrument.displays.includes(instrument_questions: [question: [:instruction]]).find(params[:id])
       end
 
       def create

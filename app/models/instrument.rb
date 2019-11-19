@@ -61,8 +61,6 @@ class Instrument < ActiveRecord::Base
   has_many :next_questions, -> { order 'instrument_questions.number_in_instrument' }, through: :instrument_questions
   has_many :critical_responses, through: :questions
   has_many :loop_questions, through: :instrument_questions
-
-  # Scoring
   has_many :score_schemes, dependent: :destroy
   has_many :score_units, through: :score_schemes
 
@@ -170,10 +168,7 @@ class Instrument < ActiveRecord::Base
       position = 1
       displays.each do |display|
         display.instrument_questions.each do |iq|
-          if iq.number_in_instrument != position
-            iq.number_in_instrument = position
-            iq.save!
-          end
+          iq.update_columns(number_in_instrument: position) if iq.number_in_instrument != position
           position += 1
         end
       end
@@ -324,17 +319,17 @@ class Instrument < ActiveRecord::Base
     csv << ['language_alignment', '', 'Enter left in column 2 if words in the language are read left-to-right or right if they are read right-to-left']
     csv << ['instrument_title', sanitizer.sanitize(title), '', 'Enter instrument_title translation in column 3']
     csv << ['']
-    csv << ['question_identifier',	'question_text',	'Enter question_text translations in this column',	'instructions',	'Enter instructions translations in this column',	'reg_ex_validation_message',	'Enter reg_ex_validation_message translations in this column']
+    csv << ['question_identifier', 'question_text', 'Enter question_text translations in this column', 'instructions', 'Enter instructions translations in this column', 'reg_ex_validation_message', 'Enter reg_ex_validation_message translations in this column']
     questions.each do |question|
       csv << [question.question_identifier, sanitizer.sanitize(question.text), '', sanitizer.sanitize(question.instructions), '', sanitizer.sanitize(question.reg_ex_validation_message), '']
     end
     csv << ['']
-    csv << ['option_id',	'option_text',	'Enter option_text translation in this column']
+    csv << ['option_id', 'option_text', 'Enter option_text translation in this column']
     options.regular.each do |option|
       csv << [option.id, sanitizer.sanitize(option.text), '']
     end
     csv << ['']
-    csv << ['section_id',	'section_title_text',	'Enter section_title_text translation in this column']
+    csv << ['section_id', 'section_title_text', 'Enter section_title_text translation in this column']
     sections.each do |section|
       csv << [section.id, sanitizer.sanitize(section.title), '']
     end

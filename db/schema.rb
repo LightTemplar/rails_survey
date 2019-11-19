@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190820153851) do
+ActiveRecord::Schema.define(version: 20191119172842) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -396,6 +396,8 @@ ActiveRecord::Schema.define(version: 20190820153851) do
     t.integer  "instruction_id"
     t.integer  "option_in_option_sets_count", default: 0
   end
+
+  add_index "option_sets", ["title"], name: "index_option_sets_on_title", unique: true, using: :btree
 
   create_table "option_translations", force: :cascade do |t|
     t.integer  "option_id"
