@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: project_device_users
@@ -9,7 +11,7 @@
 #  updated_at     :datetime
 #
 
-class ProjectDeviceUser < ActiveRecord::Base
+class ProjectDeviceUser < ApplicationRecord
   belongs_to :project
   belongs_to :device_user
 end

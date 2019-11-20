@@ -15,7 +15,7 @@
 #  position               :string
 #
 
-class OptionScore < ActiveRecord::Base
+class OptionScore < ApplicationRecord
   belongs_to :score_unit_question
   belongs_to :option, foreign_key: :option_identifier, primary_key: :identifier
 

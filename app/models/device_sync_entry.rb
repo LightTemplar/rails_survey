@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: device_sync_entries
@@ -21,12 +23,11 @@
 #  device_label           :string
 #
 
-class DeviceSyncEntry < ActiveRecord::Base
+class DeviceSyncEntry < ApplicationRecord
   belongs_to :device, foreign_key: :identifier, primary_key: :device_uuid
   belongs_to :project
 
   def instrument_versions
     JSON.parse(read_attribute(:instrument_versions)) unless read_attribute(:instrument_versions).nil?
   end
-
 end

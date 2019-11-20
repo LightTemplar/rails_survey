@@ -14,7 +14,7 @@
 #  instrument_question_id :integer
 #
 
-class DisplayInstruction < ActiveRecord::Base
+class DisplayInstruction < ApplicationRecord
   belongs_to :display, touch: true
   belongs_to :instruction
   belongs_to :instrument_question

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: instruction_translations
@@ -10,7 +12,7 @@
 #  updated_at     :datetime         not null
 #
 
-class InstructionTranslation < ActiveRecord::Base
+class InstructionTranslation < ApplicationRecord
   belongs_to :instruction, touch: true
   validates :text, presence: true, allow_blank: false
   validates :language, presence: true, allow_blank: false

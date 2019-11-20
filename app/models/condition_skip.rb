@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: condition_skips
@@ -15,7 +17,7 @@
 #  updated_at                    :datetime         not null
 #
 
-class ConditionSkip < ActiveRecord::Base
+class ConditionSkip < ApplicationRecord
   belongs_to :instrument_question, touch: true
   acts_as_paranoid
 end

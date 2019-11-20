@@ -15,7 +15,7 @@
 #  deleted_at        :datetime
 #
 
-class RawScore < ActiveRecord::Base
+class RawScore < ApplicationRecord
   belongs_to :score_unit
   belongs_to :survey_score
 

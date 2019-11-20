@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: skips
@@ -10,7 +12,7 @@
 #  deleted_at          :datetime
 #
 
-class Skip < ActiveRecord::Base
+class Skip < ApplicationRecord
   belongs_to :option
   belongs_to :question, foreign_key: :question_identifier, primary_key: :question_identifier
   before_save :touch_parents

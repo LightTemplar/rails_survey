@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: validation_translations
@@ -10,7 +12,7 @@
 #  updated_at    :datetime         not null
 #
 
-class ValidationTranslation < ActiveRecord::Base
+class ValidationTranslation < ApplicationRecord
   belongs_to :validation, touch: true
   validates :text, presence: true, allow_blank: false
   validates :language, presence: true, allow_blank: false

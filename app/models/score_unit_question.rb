@@ -12,7 +12,7 @@
 #  deleted_at             :datetime
 #
 
-class ScoreUnitQuestion < ActiveRecord::Base
+class ScoreUnitQuestion < ApplicationRecord
   belongs_to :score_unit
   belongs_to :instrument_question
   has_many :option_scores, dependent: :destroy

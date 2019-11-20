@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: instrument_translations
@@ -12,7 +14,7 @@
 #  active        :boolean          default(FALSE)
 #
 
-class InstrumentTranslation < ActiveRecord::Base
+class InstrumentTranslation < ApplicationRecord
   include Alignable
   include LanguageAssignable
   include GoogleTranslatable
@@ -64,6 +66,7 @@ class InstrumentTranslation < ActiveRecord::Base
           next
         end
         next if row[0].strip == 'question_identifier' || row[0].strip == 'option_id' || row[0].strip == 'section_id'
+
         if sector_count.zero?
           question = Question.where(question_identifier: row[0].strip).try(:first)
           question.translations.create(language: csv_data[1][1], text: row[2], instructions: row[4], instrument_translation_id: instrument_translation.id, reg_ex_validation_message: row[6]) if question && row[2]
@@ -100,16 +103,13 @@ class InstrumentTranslation < ActiveRecord::Base
 
   def language_translation_for(object)
     case object
-    when Question then QuestionTranslation.where('question_id = ? AND language = ?',
-      object.id, language).try(:first)
-    when Option then OptionTranslation.where('option_id = ? AND language = ?',
-      object.id, language).try(:first)
-    when Instruction then InstructionTranslation.where('instruction_id = ? AND language = ?',
-      object.id, language).try(:first)
-    # when Section then SectionTranslation.where('section_id = ? AND language = ?',
-    #   object.id, language).try(:first)
-    # when Grid then grid_translations.where(grid_id: object.id).try(:first)
-    # when GridLabel then grid_label_translations.where(grid_label_id: object.id).try(:first)
+    when Question then QuestionTranslation.where('question_id = ? AND language = ?', object.id, language).try(:first)
+    when Option then OptionTranslation.where('option_id = ? AND language = ?', object.id, language).try(:first)
+    when Instruction then InstructionTranslation.where('instruction_id = ? AND language = ?', object.id, language).try(:first)
+      # when Section then SectionTranslation.where('section_id = ? AND language = ?',
+      #   object.id, language).try(:first)
+      # when Grid then grid_translations.where(grid_id: object.id).try(:first)
+      # when GridLabel then grid_label_translations.where(grid_label_id: object.id).try(:first)
     end
   end
 end

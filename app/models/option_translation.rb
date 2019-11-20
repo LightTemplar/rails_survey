@@ -14,7 +14,7 @@
 #  instrument_translation_id :integer
 #
 
-class OptionTranslation < ActiveRecord::Base
+class OptionTranslation < ApplicationRecord
   include GoogleTranslatable
   belongs_to :option, touch: true
   # belongs_to :instrument_translation, touch: true

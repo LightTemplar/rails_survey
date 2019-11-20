@@ -17,7 +17,7 @@
 #  loop_questions_count :integer          default(0)
 #
 
-class InstrumentQuestion < ActiveRecord::Base
+class InstrumentQuestion < ApplicationRecord
   belongs_to :instrument, touch: true
   belongs_to :question
   belongs_to :display, touch: true, counter_cache: true

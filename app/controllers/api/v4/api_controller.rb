@@ -4,7 +4,6 @@ module Api
   module V4
     class ApiController < ApplicationController
       skip_before_action :authenticate_user!
-      skip_before_action :verify_authenticity_token
       before_action :authenticate_user_from_token!
 
       private

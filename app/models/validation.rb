@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: validations
@@ -14,7 +16,7 @@
 #  relational_operator :string
 #
 
-class Validation < ActiveRecord::Base
+class Validation < ApplicationRecord
   has_many :questions, dependent: :nullify
   has_many :validation_translations, dependent: :destroy
   acts_as_paranoid

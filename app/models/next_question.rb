@@ -16,7 +16,7 @@
 #  complete_survey          :boolean
 #
 
-class NextQuestion < ActiveRecord::Base
+class NextQuestion < ApplicationRecord
   belongs_to :option, foreign_key: :option_identifier
   belongs_to :question, foreign_key: :question_identifier
   belongs_to :instrument_question, touch: true

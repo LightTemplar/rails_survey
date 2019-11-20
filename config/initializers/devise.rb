@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
@@ -319,9 +321,5 @@ Devise.setup do |config|
 
   # Change setting to how long to remember device before requiring another token. Change to nil to turn feature off.
   # To change the default, uncomment and change the below:
-  config.ga_remembertime = nil
-end
-
-Devise::Mailer.class_eval do
-  helper :application
+  # config.ga_remembertime = nil
 end

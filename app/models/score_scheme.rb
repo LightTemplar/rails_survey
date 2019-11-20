@@ -13,7 +13,7 @@
 #  active        :boolean
 #
 
-class ScoreScheme < ActiveRecord::Base
+class ScoreScheme < ApplicationRecord
   belongs_to :instrument
   has_many :domains, dependent: :destroy
   has_many :subdomains, through: :domains

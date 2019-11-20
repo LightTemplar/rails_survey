@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: android_updates
@@ -13,7 +15,7 @@
 #  name                    :string
 #
 
-class AndroidUpdate < ActiveRecord::Base
+class AndroidUpdate < ApplicationRecord
   default_scope { order('version DESC') }
   has_attached_file :apk_update, url: '/:attachment/:id/:basename.:extension', path: 'updates/:attachment/:id/:basename.:extension'
   # octet-stream validation is for a binary file.

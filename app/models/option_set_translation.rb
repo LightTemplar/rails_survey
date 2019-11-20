@@ -11,7 +11,7 @@
 #  updated_at            :datetime         not null
 #
 
-class OptionSetTranslation < ActiveRecord::Base
+class OptionSetTranslation < ApplicationRecord
   belongs_to :option_set, touch: true
   belongs_to :option_translation
   validates :option_translation_id, uniqueness: { scope: :option_set_id }

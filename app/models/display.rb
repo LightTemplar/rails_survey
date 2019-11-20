@@ -15,7 +15,7 @@
 #  instrument_questions_count :integer
 #
 
-class Display < ActiveRecord::Base
+class Display < ApplicationRecord
   belongs_to :instrument, touch: true
   belongs_to :section, touch: true
   has_many :instrument_questions, -> { order 'number_in_instrument' }, dependent: :destroy

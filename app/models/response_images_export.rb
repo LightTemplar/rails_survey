@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: response_images_exports
@@ -10,15 +12,15 @@
 #  updated_at         :datetime
 #
 
-class ResponseImagesExport < ActiveRecord::Base
+class ResponseImagesExport < ApplicationRecord
   belongs_to :response_export
   before_destroy :destroy_files
 
   private
+
   def destroy_files
     if download_url
       File.delete(download_url) if File.exist?(download_url)
     end
   end
-
 end

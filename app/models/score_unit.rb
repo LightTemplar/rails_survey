@@ -14,7 +14,7 @@
 #  title        :string
 #
 
-class ScoreUnit < ActiveRecord::Base
+class ScoreUnit < ApplicationRecord
   belongs_to :subdomain
   has_many :score_unit_questions, dependent: :destroy
   has_many :option_scores, through: :score_unit_questions

@@ -13,7 +13,7 @@
 #  identifier                :string
 #
 
-class Option < ActiveRecord::Base
+class Option < ApplicationRecord
   include Translatable
   has_many :option_in_option_sets, dependent: :destroy
   has_many :option_sets, through: :option_in_option_sets

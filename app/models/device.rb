@@ -11,7 +11,7 @@
 #  label      :string
 #
 
-class Device < ActiveRecord::Base
+class Device < ApplicationRecord
   has_many :surveys
   has_many :project_devices
   has_many :projects, through: :project_devices

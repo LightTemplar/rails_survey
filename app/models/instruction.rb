@@ -12,7 +12,7 @@
 #  deleted_at :datetime
 #
 
-class Instruction < ActiveRecord::Base
+class Instruction < ApplicationRecord
   has_many :questions, dependent: :nullify
   has_many :option_sets, dependent: :nullify
   has_many :instrument_questions, through: :questions

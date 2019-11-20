@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: stats
@@ -11,7 +13,7 @@
 #  updated_at :datetime
 #
 
-class Stat < ActiveRecord::Base
+class Stat < ApplicationRecord
   belongs_to :metric
 
   def label
@@ -26,5 +28,4 @@ class Stat < ActiveRecord::Base
       key_value
     end
   end
-
 end

@@ -1,19 +1,27 @@
 # frozen_string_literal: true
 
-require File.expand_path('boot', __dir__)
+require_relative 'boot'
 
 require 'csv'
-require 'rails/all'
+require 'rails'
+require 'active_model/railtie'
+require 'active_job/railtie'
+require 'active_record/railtie'
+require 'action_controller/railtie'
+require 'action_mailer/railtie'
+require 'action_view/railtie'
+require 'action_cable/engine'
+require 'rails/test_unit/railtie'
 
-Bundler.require(:default, Rails.env)
+Bundler.require(*Rails.groups)
 
 module RailsSurvey
   class Application < Rails::Application
-    config.middleware.insert_before 0, 'Rack::Cors' do
+    config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins 'localhost:3001', '127.0.0.1:3001'
         resource '*', headers: :any,
-                      expose: ['access-token', 'expiry', 'token-type', 'uid', 'client'],
+                      expose: %w[access-token expiry token-type uid client],
                       methods: %i[get post put delete options]
       end
     end
@@ -30,18 +38,10 @@ module RailsSurvey
       end
     end
 
-    config.assets.paths << Rails.root.join('app', 'assets', 'fonts')
-    config.assets.paths << Rails.root.join('vendor', 'assets', 'images')
-    config.assets.paths << Rails.root.join('vendor', 'assets', 'lib')
-    config.assets.paths << Rails.root.join('vendor', 'assets', 'fonts')
-    config.assets.paths << Rails.root.join('vendor', 'assets', 'templates')
     I18n.enforce_available_locales = false
-    config.assets.initialize_on_precompile = false
-    config.assets.precompile += %w[active_admin.js active_admin.css.scss]
-    config.wiki_path = 'wiki.git'
     config.cache_store = :redis_store, "#{ENV['REDIS_CACHE_URL']}/cache", { expires_in: 6.hours }
     config.autoload_paths += Dir[Rails.root.join('app', 'scorers', '{*/}')]
-    config.action_controller.include_all_helpers = false
-    config.active_record.raise_in_transactional_callbacks = true
+
+    config.api_only = true
   end
 end

@@ -13,7 +13,7 @@
 #  position      :integer
 #
 
-class Section < ActiveRecord::Base
+class Section < ApplicationRecord
   include Translatable
   belongs_to :instrument, touch: true
   has_many :displays, -> { order 'position' }, dependent: :destroy

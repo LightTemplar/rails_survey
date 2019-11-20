@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: grid_labels
@@ -11,7 +13,7 @@
 #  position   :integer
 #
 
-class GridLabel < ActiveRecord::Base
+class GridLabel < ApplicationRecord
   default_scope { order('position ASC') }
   belongs_to :grid
   has_many :grid_label_translations, dependent: :destroy

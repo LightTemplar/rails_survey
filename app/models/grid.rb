@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: grids
@@ -12,7 +14,7 @@
 #  deleted_at    :datetime
 #
 
-class Grid < ActiveRecord::Base
+class Grid < ApplicationRecord
   belongs_to :instrument
   has_many :questions, dependent: :destroy
   has_many :grid_labels, dependent: :destroy

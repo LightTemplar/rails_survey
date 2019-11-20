@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: skip_patterns
@@ -10,12 +12,12 @@
 #  updated_at               :datetime         not null
 #
 
-class SkipPattern < ActiveRecord::Base
+class SkipPattern < ApplicationRecord
   belongs_to :option, foreign_key: :option_identifier
   belongs_to :question, foreign_key: :question_identifier
-  
+
   validates :option_identifier, presence: true
   validates :question_identifier, presence: true
   validates :next_question_identifier, presence: true
-  validates :question_identifier, uniqueness: { scope: [:option_identifier, :next_question_identifier] }
+  validates :question_identifier, uniqueness: { scope: %i[option_identifier next_question_identifier] }
 end

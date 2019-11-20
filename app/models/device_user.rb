@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: device_users
@@ -11,7 +13,7 @@
 #  updated_at      :datetime
 #
 
-class DeviceUser < ActiveRecord::Base
+class DeviceUser < ApplicationRecord
   has_secure_password
   has_many :device_device_users
   has_many :devices, through: :device_device_users
@@ -24,8 +26,8 @@ class DeviceUser < ActiveRecord::Base
   validates :password_digest, presence: true
 
   private
+
   def generate_api_key
     ApiKey.create!(device_user_id: id) unless api_key
   end
-
 end

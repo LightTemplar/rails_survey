@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: user_roles
@@ -9,11 +11,11 @@
 #  updated_at :datetime
 #
 
-class UserRole < ActiveRecord::Base
+class UserRole < ApplicationRecord
   belongs_to :user
   belongs_to :role
   validates :user_id, presence: true, allow_blank: false
   validates :role_id, presence: true, allow_blank: false
   validates :user_id, uniqueness: { scope: :role_id,
-    message: 'should have one record per role' }
+                                    message: 'should have one record per role' }
 end

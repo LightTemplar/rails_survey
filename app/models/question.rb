@@ -24,7 +24,7 @@
 #  images_count          :integer          default(0)
 #
 
-class Question < ActiveRecord::Base
+class Question < ApplicationRecord
   include Translatable
 
   belongs_to :option_set

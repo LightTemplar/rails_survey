@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: instrument_rules
@@ -10,12 +12,12 @@
 #  updated_at    :datetime         not null
 #
 
-class InstrumentRule < ActiveRecord::Base
+class InstrumentRule < ApplicationRecord
   belongs_to :instrument, touch: true
   belongs_to :rule
   acts_as_paranoid
   validates :instrument_id, presence: true
   validates :rule_id, presence: true
   validates :rule_id, uniqueness: { scope: :instrument_id,
-    message: 'instrument already has this rule' }
+                                    message: 'instrument already has this rule' }
 end

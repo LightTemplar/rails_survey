@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: question_randomized_factors
@@ -10,7 +12,7 @@
 #  updated_at           :datetime
 #
 
-class QuestionRandomizedFactor < ActiveRecord::Base
+class QuestionRandomizedFactor < ApplicationRecord
   belongs_to :question, touch: true
   belongs_to :randomized_factor
   has_many :randomized_options, through: :randomized_factor

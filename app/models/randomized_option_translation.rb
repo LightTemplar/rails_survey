@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: randomized_option_translations
@@ -11,7 +13,7 @@
 #  updated_at                :datetime         not null
 #
 
-class RandomizedOptionTranslation < ActiveRecord::Base
+class RandomizedOptionTranslation < ApplicationRecord
   belongs_to :instrument_translation
   belongs_to :randomized_option
 end

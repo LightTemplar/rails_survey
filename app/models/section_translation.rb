@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: section_translations
@@ -12,7 +14,7 @@
 #  instrument_translation_id :integer
 #
 
-class SectionTranslation < ActiveRecord::Base
+class SectionTranslation < ApplicationRecord
   belongs_to :section, touch: true
   validates :text, presence: true, allow_blank: false
   validates :section_id, presence: true, allow_blank: false

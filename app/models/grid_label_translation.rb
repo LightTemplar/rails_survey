@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: grid_label_translations
@@ -10,7 +12,7 @@
 #  updated_at                :datetime
 #
 
-class GridLabelTranslation < ActiveRecord::Base
+class GridLabelTranslation < ApplicationRecord
   belongs_to :grid_label, touch: true
   belongs_to :instrument_translation, touch: true
 end

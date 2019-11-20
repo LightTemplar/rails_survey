@@ -12,7 +12,7 @@
 #  updated_at      :datetime         not null
 #
 
-class Domain < ActiveRecord::Base
+class Domain < ApplicationRecord
   belongs_to :score_scheme
   has_many :subdomains, dependent: :destroy
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: display_translations
@@ -10,7 +12,7 @@
 #  updated_at :datetime         not null
 #
 
-class DisplayTranslation < ActiveRecord::Base
+class DisplayTranslation < ApplicationRecord
   belongs_to :display, touch: true
   validates :text, presence: true, allow_blank: false
   validates :language, presence: true, allow_blank: false

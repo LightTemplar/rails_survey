@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: api_keys
@@ -9,11 +11,12 @@
 #  device_user_id :integer
 #
 
-class ApiKey < ActiveRecord::Base
+class ApiKey < ApplicationRecord
   before_create :generate_access_token
   belongs_to :device_user
-  
+
   private
+
   def generate_access_token
     begin
       self.access_token = SecureRandom.hex

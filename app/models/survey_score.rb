@@ -17,7 +17,7 @@
 #  deleted_at      :datetime
 #
 
-class SurveyScore < ActiveRecord::Base
+class SurveyScore < ApplicationRecord
   belongs_to :score_scheme
   belongs_to :survey
   has_many :raw_scores

@@ -12,7 +12,7 @@
 #  survey_aggregator :string
 #
 
-class Project < ActiveRecord::Base
+class Project < ApplicationRecord
   include SynchAble
   has_many :instruments, dependent: :destroy
   has_many :instrument_questions, through: :instruments

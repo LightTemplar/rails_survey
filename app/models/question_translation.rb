@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: question_translations
@@ -14,7 +16,7 @@
 #  instrument_translation_id :integer
 #
 
-class QuestionTranslation < ActiveRecord::Base
+class QuestionTranslation < ApplicationRecord
   include GoogleTranslatable
   belongs_to :question, touch: true
   belongs_to :instrument_translation, touch: true
@@ -34,5 +36,4 @@ class QuestionTranslation < ActiveRecord::Base
   def instructions
     question.instruction.instruction_translations.where(language: language).try(:first).try(:text) if question.instruction
   end
-
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: back_translations
@@ -12,6 +14,6 @@
 #  approved              :boolean
 #
 
-class BackTranslation < ActiveRecord::Base
+class BackTranslation < ApplicationRecord
   belongs_to :backtranslatable, polymorphic: true
 end

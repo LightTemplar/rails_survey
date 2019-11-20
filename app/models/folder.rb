@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: folders
@@ -9,7 +11,7 @@
 #  updated_at      :datetime         not null
 #
 
-class Folder < ActiveRecord::Base
+class Folder < ApplicationRecord
   belongs_to :question_set
   has_many :questions
 end

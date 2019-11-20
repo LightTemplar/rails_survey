@@ -35,10 +35,10 @@
 #  invitations_count      :integer          default(0)
 #
 
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   attr_accessor :gauth_token
   include ComplexPassword
-  devise :invitable, :google_authenticatable, :database_authenticatable, :recoverable, :rememberable, :trackable, :validatable, :timeoutable, :lockable
+  devise :invitable, :database_authenticatable, :recoverable, :rememberable, :trackable, :validatable, :timeoutable, :lockable
   before_save :ensure_authentication_token
   after_create :set_default_role
   has_many :user_projects
@@ -80,10 +80,6 @@ class User < ActiveRecord::Base
 
   def translator?
     roles.find_by_name('translator')
-  end
-
-  def wiki_editor?
-    roles.find_by_name('wiki_editor')
   end
 
   def admin_user?

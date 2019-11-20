@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: response_images
@@ -12,12 +14,12 @@
 #  picture_updated_at   :datetime
 #
 
-class ResponseImage < ActiveRecord::Base
+class ResponseImage < ApplicationRecord
   has_attached_file :picture, styles: { small: '150x150>', medium: '300x300>' }, url: '/:attachment/:id/:basename.:extension', path: 'files/:attachment/:id/:style/:basename.:extension', default_url: 'files/:attachment/missing_:style.png'
   belongs_to :response, foreign_key: :response_uuid, primary_key: :uuid
   delegate :project, to: :response
   validates :response_uuid, presence: true
-  validates_attachment_content_type :picture, content_type: /\Aimage\/.*\Z/
+  validates_attachment_content_type :picture, content_type: %r{\Aimage/.*\Z}
   validates_attachment_file_name :picture, matches: [/png\Z/, /jpe?g\Z/]
   validates_with AttachmentSizeValidator, attributes: :picture, less_than: 7.megabytes
 
@@ -43,6 +45,7 @@ class ResponseImage < ActiveRecord::Base
     Zip::OutputStream.open(zipped_file.path) do |zipfile|
       all.each do |response_image|
         next unless response_image.picture.exists?
+
         title = "#{response_image.versioned_question(response_image.response.question_identifier).try(:question_identifier)}-#{response_image.response.id}-#{response_image.picture_file_name}"
         zipfile.put_next_entry("#{name}/#{title}")
         photos_root = File.join('files').to_s

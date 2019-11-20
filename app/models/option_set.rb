@@ -14,7 +14,7 @@
 #  option_in_option_sets_count :integer          default(0)
 #
 
-class OptionSet < ActiveRecord::Base
+class OptionSet < ApplicationRecord
   belongs_to :instruction
 
   has_many :option_in_option_sets, -> { order 'number_in_question' }, dependent: :destroy

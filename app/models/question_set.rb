@@ -10,7 +10,7 @@
 #  updated_at :datetime
 #
 
-class QuestionSet < ActiveRecord::Base
+class QuestionSet < ApplicationRecord
   has_many :questions, dependent: :destroy
   has_many :translations, through: :questions
   has_many :folders, dependent: :destroy

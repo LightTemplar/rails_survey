@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: randomized_factors
@@ -9,7 +11,7 @@
 #  updated_at    :datetime
 #
 
-class RandomizedFactor < ActiveRecord::Base
+class RandomizedFactor < ApplicationRecord
   belongs_to :instrument, touch: true
   has_many :randomized_options, dependent: :destroy
   validates :instrument_id, presence: true

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -25,11 +24,10 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.string   "author_type"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["author_type", "author_id"], name: "index_active_admin_comments_on_author_type_and_author_id", using: :btree
+    t.index ["namespace"], name: "index_active_admin_comments_on_namespace", using: :btree
+    t.index ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource_type_and_resource_id", using: :btree
   end
-
-  add_index "active_admin_comments", ["author_type", "author_id"], name: "index_active_admin_comments_on_author_type_and_author_id", using: :btree
-  add_index "active_admin_comments", ["namespace"], name: "index_active_admin_comments_on_namespace", using: :btree
-  add_index "active_admin_comments", ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource_type_and_resource_id", using: :btree
 
   create_table "android_updates", force: :cascade do |t|
     t.integer  "version"
@@ -57,9 +55,8 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.datetime "created_at",            null: false
     t.datetime "updated_at",            null: false
     t.boolean  "approved"
+    t.index ["backtranslatable_id", "backtranslatable_type", "language"], name: "backtranslatable_index", unique: true, using: :btree
   end
-
-  add_index "back_translations", ["backtranslatable_id", "backtranslatable_type", "language"], name: "backtranslatable_index", unique: true, using: :btree
 
   create_table "condition_skips", force: :cascade do |t|
     t.integer  "instrument_question_id"
@@ -123,9 +120,8 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "label"
+    t.index ["identifier"], name: "index_devices_on_identifier", unique: true, using: :btree
   end
-
-  add_index "devices", ["identifier"], name: "index_devices_on_identifier", unique: true, using: :btree
 
   create_table "display_instructions", force: :cascade do |t|
     t.integer  "display_id"
@@ -154,9 +150,8 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.datetime "deleted_at"
     t.integer  "section_id"
     t.integer  "instrument_questions_count"
+    t.index ["deleted_at"], name: "index_displays_on_deleted_at", using: :btree
   end
-
-  add_index "displays", ["deleted_at"], name: "index_displays_on_deleted_at", using: :btree
 
   create_table "domains", force: :cascade do |t|
     t.string   "title"
@@ -164,9 +159,8 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.datetime "deleted_at"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+    t.index ["deleted_at"], name: "index_domains_on_deleted_at", using: :btree
   end
-
-  add_index "domains", ["deleted_at"], name: "index_domains_on_deleted_at", using: :btree
 
   create_table "folders", force: :cascade do |t|
     t.integer  "question_set_id"
@@ -232,9 +226,8 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.string   "description"
     t.integer  "number"
     t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_images_on_deleted_at", using: :btree
   end
-
-  add_index "images", ["deleted_at"], name: "index_images_on_deleted_at", using: :btree
 
   create_table "instruction_translations", force: :cascade do |t|
     t.integer  "instruction_id"
@@ -250,9 +243,8 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_instructions_on_deleted_at", using: :btree
   end
-
-  add_index "instructions", ["deleted_at"], name: "index_instructions_on_deleted_at", using: :btree
 
   create_table "instrument_questions", force: :cascade do |t|
     t.integer  "question_id"
@@ -265,11 +257,10 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.datetime "deleted_at"
     t.string   "table_identifier"
     t.integer  "loop_questions_count", default: 0
+    t.index ["deleted_at"], name: "index_instrument_questions_on_deleted_at", using: :btree
+    t.index ["instrument_id", "identifier"], name: "index_instrument_questions_on_instrument_id_and_identifier", using: :btree
+    t.index ["question_id"], name: "index_instrument_questions_on_question_id", using: :btree
   end
-
-  add_index "instrument_questions", ["deleted_at"], name: "index_instrument_questions_on_deleted_at", using: :btree
-  add_index "instrument_questions", ["instrument_id", "identifier"], name: "index_instrument_questions_on_instrument_id_and_identifier", using: :btree
-  add_index "instrument_questions", ["question_id"], name: "index_instrument_questions_on_question_id", using: :btree
 
   create_table "instrument_rules", force: :cascade do |t|
     t.integer  "instrument_id"
@@ -308,9 +299,8 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.string   "roster_type"
     t.boolean  "scorable",                default: false
     t.boolean  "auto_export_responses",   default: true
+    t.index ["project_id", "title"], name: "index_instruments_on_project_id_and_title", using: :btree
   end
-
-  add_index "instruments", ["project_id", "title"], name: "index_instruments_on_project_id_and_title", using: :btree
 
   create_table "loop_questions", force: :cascade do |t|
     t.integer  "instrument_question_id"
@@ -376,9 +366,8 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.string   "option_identifier"
     t.string   "follow_up_qid"
     t.string   "position"
+    t.index ["deleted_at"], name: "index_option_scores_on_deleted_at", using: :btree
   end
-
-  add_index "option_scores", ["deleted_at"], name: "index_option_scores_on_deleted_at", using: :btree
 
   create_table "option_set_translations", force: :cascade do |t|
     t.integer  "option_set_id"
@@ -395,9 +384,8 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.datetime "deleted_at"
     t.integer  "instruction_id"
     t.integer  "option_in_option_sets_count", default: 0
+    t.index ["title"], name: "index_option_sets_on_title", unique: true, using: :btree
   end
-
-  add_index "option_sets", ["title"], name: "index_option_sets_on_title", unique: true, using: :btree
 
   create_table "option_translations", force: :cascade do |t|
     t.integer  "option_id"
@@ -416,9 +404,8 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.datetime "deleted_at"
     t.integer  "instrument_version_number", default: -1
     t.string   "identifier"
+    t.index ["identifier"], name: "index_options_on_identifier", using: :btree
   end
-
-  add_index "options", ["identifier"], name: "index_options_on_identifier", using: :btree
 
   create_table "project_device_users", force: :cascade do |t|
     t.integer  "project_id"
@@ -486,9 +473,8 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.boolean  "rank_responses",        default: false
     t.integer  "versions_count",        default: 0
     t.integer  "images_count",          default: 0
+    t.index ["question_identifier"], name: "index_questions_on_question_identifier", unique: true, using: :btree
   end
-
-  add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true, using: :btree
 
   create_table "randomized_factors", force: :cascade do |t|
     t.integer  "instrument_id"
@@ -533,7 +519,7 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.text     "instrument_versions"
     t.boolean  "wide_done",                                   default: false
     t.boolean  "short_done",                                  default: false
-    t.decimal  "completion",          precision: 5, scale: 2, default: 0.0
+    t.decimal  "completion",          precision: 5, scale: 2, default: "0.0"
   end
 
   create_table "response_images", force: :cascade do |t|
@@ -571,13 +557,12 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.datetime "deleted_at"
     t.text     "randomized_data"
     t.string   "rank_order"
+    t.index ["deleted_at"], name: "index_responses_on_deleted_at", using: :btree
+    t.index ["survey_uuid"], name: "index_responses_on_survey_uuid", using: :btree
+    t.index ["time_ended"], name: "index_responses_on_time_ended", using: :btree
+    t.index ["time_started"], name: "index_responses_on_time_started", using: :btree
+    t.index ["uuid"], name: "index_responses_on_uuid", unique: true, using: :btree
   end
-
-  add_index "responses", ["deleted_at"], name: "index_responses_on_deleted_at", using: :btree
-  add_index "responses", ["survey_uuid"], name: "index_responses_on_survey_uuid", using: :btree
-  add_index "responses", ["time_ended"], name: "index_responses_on_time_ended", using: :btree
-  add_index "responses", ["time_started"], name: "index_responses_on_time_started", using: :btree
-  add_index "responses", ["uuid"], name: "index_responses_on_uuid", unique: true, using: :btree
 
   create_table "roles", force: :cascade do |t|
     t.string   "name"
@@ -611,9 +596,8 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.boolean  "active"
+    t.index ["deleted_at"], name: "index_score_schemes_on_deleted_at", using: :btree
   end
-
-  add_index "score_schemes", ["deleted_at"], name: "index_score_schemes_on_deleted_at", using: :btree
 
   create_table "score_unit_questions", force: :cascade do |t|
     t.integer  "score_unit_id"
@@ -621,9 +605,8 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_score_unit_questions_on_deleted_at", using: :btree
   end
-
-  add_index "score_unit_questions", ["deleted_at"], name: "index_score_unit_questions_on_deleted_at", using: :btree
 
   create_table "score_units", force: :cascade do |t|
     t.float    "weight"
@@ -633,9 +616,8 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.datetime "deleted_at"
     t.integer  "subdomain_id"
     t.string   "title"
+    t.index ["deleted_at"], name: "index_score_units_on_deleted_at", using: :btree
   end
-
-  add_index "score_units", ["deleted_at"], name: "index_score_units_on_deleted_at", using: :btree
 
   create_table "section_translations", force: :cascade do |t|
     t.integer  "section_id"
@@ -654,10 +636,9 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.integer  "instrument_id"
     t.datetime "deleted_at"
     t.integer  "position"
+    t.index ["deleted_at"], name: "index_sections_on_deleted_at", using: :btree
+    t.index ["instrument_id", "title"], name: "index_sections_on_instrument_id_and_title", using: :btree
   end
-
-  add_index "sections", ["deleted_at"], name: "index_sections_on_deleted_at", using: :btree
-  add_index "sections", ["instrument_id", "title"], name: "index_sections_on_instrument_id_and_title", using: :btree
 
   create_table "skip_patterns", force: :cascade do |t|
     t.string   "option_identifier"
@@ -673,9 +654,8 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_skips_on_deleted_at", using: :btree
   end
-
-  add_index "skips", ["deleted_at"], name: "index_skips_on_deleted_at", using: :btree
 
   create_table "stats", force: :cascade do |t|
     t.integer  "metric_id"
@@ -692,9 +672,8 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_subdomains_on_deleted_at", using: :btree
   end
-
-  add_index "subdomains", ["deleted_at"], name: "index_subdomains_on_deleted_at", using: :btree
 
   create_table "survey_scores", force: :cascade do |t|
     t.integer  "survey_id"
@@ -728,10 +707,9 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.string   "language"
     t.text     "skipped_questions"
     t.integer  "completed_responses_count"
+    t.index ["deleted_at"], name: "index_surveys_on_deleted_at", using: :btree
+    t.index ["uuid"], name: "index_surveys_on_uuid", unique: true, using: :btree
   end
-
-  add_index "surveys", ["deleted_at"], name: "index_surveys_on_deleted_at", using: :btree
-  add_index "surveys", ["uuid"], name: "index_surveys_on_uuid", unique: true, using: :btree
 
   create_table "taggings", force: :cascade do |t|
     t.integer  "tag_id"
@@ -741,24 +719,22 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.string   "tagger_type"
     t.string   "context",       limit: 128
     t.datetime "created_at"
+    t.index ["context"], name: "index_taggings_on_context", using: :btree
+    t.index ["tag_id", "taggable_id", "taggable_type", "context", "tagger_id", "tagger_type"], name: "taggings_idx", unique: true, using: :btree
+    t.index ["tag_id"], name: "index_taggings_on_tag_id", using: :btree
+    t.index ["taggable_id", "taggable_type", "context"], name: "index_taggings_on_taggable_id_and_taggable_type_and_context", using: :btree
+    t.index ["taggable_id", "taggable_type", "tagger_id", "context"], name: "taggings_idy", using: :btree
+    t.index ["taggable_id"], name: "index_taggings_on_taggable_id", using: :btree
+    t.index ["taggable_type"], name: "index_taggings_on_taggable_type", using: :btree
+    t.index ["tagger_id", "tagger_type"], name: "index_taggings_on_tagger_id_and_tagger_type", using: :btree
+    t.index ["tagger_id"], name: "index_taggings_on_tagger_id", using: :btree
   end
-
-  add_index "taggings", ["context"], name: "index_taggings_on_context", using: :btree
-  add_index "taggings", ["tag_id", "taggable_id", "taggable_type", "context", "tagger_id", "tagger_type"], name: "taggings_idx", unique: true, using: :btree
-  add_index "taggings", ["tag_id"], name: "index_taggings_on_tag_id", using: :btree
-  add_index "taggings", ["taggable_id", "taggable_type", "context"], name: "index_taggings_on_taggable_id_and_taggable_type_and_context", using: :btree
-  add_index "taggings", ["taggable_id", "taggable_type", "tagger_id", "context"], name: "taggings_idy", using: :btree
-  add_index "taggings", ["taggable_id"], name: "index_taggings_on_taggable_id", using: :btree
-  add_index "taggings", ["taggable_type"], name: "index_taggings_on_taggable_type", using: :btree
-  add_index "taggings", ["tagger_id", "tagger_type"], name: "index_taggings_on_tagger_id_and_tagger_type", using: :btree
-  add_index "taggings", ["tagger_id"], name: "index_taggings_on_tagger_id", using: :btree
 
   create_table "tags", force: :cascade do |t|
     t.string  "name"
     t.integer "taggings_count", default: 0
+    t.index ["name"], name: "index_tags_on_name", unique: true, using: :btree
   end
-
-  add_index "tags", ["name"], name: "index_tags_on_name", unique: true, using: :btree
 
   create_table "user_projects", force: :cascade do |t|
     t.integer  "user_id"
@@ -803,14 +779,13 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.integer  "invited_by_id"
     t.string   "invited_by_type"
     t.integer  "invitations_count",      default: 0
+    t.index ["authentication_token"], name: "index_users_on_authentication_token", unique: true, using: :btree
+    t.index ["email"], name: "index_users_on_email", unique: true, using: :btree
+    t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true, using: :btree
+    t.index ["invitations_count"], name: "index_users_on_invitations_count", using: :btree
+    t.index ["invited_by_id"], name: "index_users_on_invited_by_id", using: :btree
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   end
-
-  add_index "users", ["authentication_token"], name: "index_users_on_authentication_token", unique: true, using: :btree
-  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
-  add_index "users", ["invitation_token"], name: "index_users_on_invitation_token", unique: true, using: :btree
-  add_index "users", ["invitations_count"], name: "index_users_on_invitations_count", using: :btree
-  add_index "users", ["invited_by_id"], name: "index_users_on_invited_by_id", using: :btree
-  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
   create_table "validation_translations", force: :cascade do |t|
     t.integer  "validation_id"
@@ -836,10 +811,9 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.integer "version_id"
     t.string  "foreign_key_name", null: false
     t.integer "foreign_key_id"
+    t.index ["foreign_key_name", "foreign_key_id"], name: "index_version_associations_on_foreign_key", using: :btree
+    t.index ["version_id"], name: "index_version_associations_on_version_id", using: :btree
   end
-
-  add_index "version_associations", ["foreign_key_name", "foreign_key_id"], name: "index_version_associations_on_foreign_key", using: :btree
-  add_index "version_associations", ["version_id"], name: "index_version_associations_on_version_id", using: :btree
 
   create_table "versions", force: :cascade do |t|
     t.string   "item_type",      null: false
@@ -849,9 +823,8 @@ ActiveRecord::Schema.define(version: 20191119172842) do
     t.text     "object"
     t.datetime "created_at"
     t.integer  "transaction_id"
+    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
+    t.index ["transaction_id"], name: "index_versions_on_transaction_id", using: :btree
   end
-
-  add_index "versions", ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
-  add_index "versions", ["transaction_id"], name: "index_versions_on_transaction_id", using: :btree
 
 end

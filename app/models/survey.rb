@@ -25,7 +25,7 @@
 #  completed_responses_count :integer
 #
 
-class Survey < ActiveRecord::Base
+class Survey < ApplicationRecord
   include RedisJobTracker
   belongs_to :instrument
   belongs_to :device

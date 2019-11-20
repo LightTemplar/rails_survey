@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: randomized_options
@@ -9,11 +11,11 @@
 #  updated_at           :datetime
 #
 
-class RandomizedOption < ActiveRecord::Base
+class RandomizedOption < ApplicationRecord
   include Translatable
   belongs_to :randomized_factor, touch: true
   validates :text, presence: true
   validates :randomized_factor_id, presence: true
   has_many :translations, foreign_key: 'randomized_option_id',
-  class_name: 'RandomizedOptionTranslation', dependent: :destroy
+                          class_name: 'RandomizedOptionTranslation', dependent: :destroy
 end

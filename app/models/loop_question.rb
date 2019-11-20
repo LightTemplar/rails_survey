@@ -16,7 +16,7 @@
 #  replacement_text       :text
 #
 
-class LoopQuestion < ActiveRecord::Base
+class LoopQuestion < ApplicationRecord
   belongs_to :instrument_question, touch: true, counter_cache: true
   acts_as_paranoid
   validates :instrument_question_id, uniqueness: { scope: %i[parent looped] }

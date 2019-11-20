@@ -15,7 +15,7 @@
 #  is_exclusive       :boolean          default(FALSE)
 #
 
-class OptionInOptionSet < ActiveRecord::Base
+class OptionInOptionSet < ApplicationRecord
   default_scope { order('option_in_option_sets.special ASC, option_in_option_sets.number_in_question ASC') }
   belongs_to :option
   belongs_to :option_set, touch: true, counter_cache: true

@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'rake'
 Rake::Task.clear
-RailsSurvey::Application.load_tasks
+Rails.application.load_tasks
 class RakeTaskWorker
   include Sidekiq::Worker
 

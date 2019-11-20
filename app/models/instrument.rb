@@ -25,7 +25,7 @@
 #  auto_export_responses   :boolean          default(TRUE)
 #
 
-class Instrument < ActiveRecord::Base
+class Instrument < ApplicationRecord
   include Translatable
   include Alignable
   include LanguageAssignable

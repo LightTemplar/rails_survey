@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: response_exports
@@ -14,7 +16,7 @@
 #  completion          :decimal(5, 2)    default(0.0)
 #
 
-class ResponseExport < ActiveRecord::Base
+class ResponseExport < ApplicationRecord
   serialize :instrument_versions
   # belongs_to :project
   belongs_to :instrument
@@ -27,12 +29,11 @@ class ResponseExport < ActiveRecord::Base
   def compute_completion
     total = instrument.surveys.count * 3.0
     return if total == 0.0
-    remainder = %w(long short wide).inject(0){|sum,e| sum += instrument.get_export_count("#{id}_#{e}").to_i}
+
+    remainder = %w[long short wide].inject(0) { |sum, e| sum += instrument.get_export_count("#{id}_#{e}").to_i }
     percent = 100
     percent = (((total - remainder.to_f) / total) * 100).round if remainder > 0
-    if percent >= 100 && (!wide_done || !short_done || !long_done)
-      update_columns(short_done: true, long_done: true, wide_done: true)
-    end
+    update_columns(short_done: true, long_done: true, wide_done: true) if percent >= 100 && (!wide_done || !short_done || !long_done)
     update_column(:completion, percent)
   end
 
@@ -40,8 +41,8 @@ class ResponseExport < ActiveRecord::Base
     csv_data = $redis.get "#{instrument_id}-#{id}-#{format}"
     data = csv_data.nil? ? nil : JSON.parse(csv_data)
     unless data.nil?
-      data = data.reject{|arr| arr.all?(&:blank?)}
-      data = data.sort {|ar1,ar2| ar1[0].to_i <=> ar2[0].to_i}
+      data = data.reject { |arr| arr.all?(&:blank?) }
+      data = data.sort { |ar1, ar2| ar1[0].to_i <=> ar2[0].to_i }
     end
     file = Tempfile.new("#{instrument_id}-#{id}-#{format}")
     CSV.open(file, 'w') do |csv|
@@ -62,6 +63,7 @@ class ResponseExport < ActiveRecord::Base
   # 2) Instrument responses have changed since the last export
   def re_export?
     return false if instrument.surveys.blank?
+
     # return true if csv_blank?
     instrument.responses.maximum('updated_at') > updated_at
   end
@@ -75,10 +77,13 @@ class ResponseExport < ActiveRecord::Base
   def csv_blank?
     wide_csv = $redis.get "#{instrument_id}-#{id}-wide"
     return true if JSON.parse(wide_csv).blank?
+
     long_csv = $redis.get "#{instrument_id}-#{id}-long"
     return true if JSON.parse(long_csv).blank?
+
     short_csv = $redis.get "#{instrument_id}-#{id}-short"
     return true if JSON.parse(short_csv).blank?
+
     false
   end
 

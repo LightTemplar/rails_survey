@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: follow_up_questions
@@ -12,7 +14,7 @@
 #  updated_at                       :datetime         not null
 #
 
-class FollowUpQuestion < ActiveRecord::Base
+class FollowUpQuestion < ApplicationRecord
   # belongs_to :option, foreign_key: :option_identifier
   # belongs_to :question, foreign_key: :question_identifier
   belongs_to :instrument_question, touch: true
@@ -21,5 +23,5 @@ class FollowUpQuestion < ActiveRecord::Base
   validates :question_identifier, presence: true
   validates :instrument_question_id, presence: true
   validates :position, presence: true, uniqueness: { scope: :instrument_question_id,
-    message: 'followup position has already been taken' }
+                                                     message: 'followup position has already been taken' }
 end
