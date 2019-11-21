@@ -35,8 +35,7 @@ class InstrumentQuestion < ActiveRecord::Base
   acts_as_taggable
   acts_as_taggable_on :countries
 
-  validates :identifier, presence: true
-  validates :identifier, uniqueness: { scope: :instrument_id, message: 'instrument already has this identifier' }
+  validates :identifier, presence: true, uniqueness: { scope: :instrument_id, message: 'instrument already has this identifier' }
 
   after_update :update_display_instructions, if: :number_in_instrument_changed?
   after_destroy :renumber_questions

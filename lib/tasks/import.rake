@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 desc 'Import survey(s) from CSV file'
 task :import, [:filename] => :environment do |_t, args|
   if Project.first.nil?
@@ -7,12 +9,10 @@ task :import, [:filename] => :environment do |_t, args|
   title = args[:filename].gsub(/.csv/, '').split('/').last.gsub(/_/, ' ').upcase
   instrument = Project.first.instruments.where(title: title).first
   instrument ||= Instrument.create!(title: title, published: false, language: 'en',
-    alignment: 'left', project_id: Project.first.id)
+                                    alignment: 'left', project_id: Project.first.id)
   question_identifiers = []
   CSV.foreach(args[:filename], headers: true) do |row|
-    if !row[1].strip.blank? && row[2].strip != 'SKIP'
-      question_identifiers << row[1].strip
-    end
+    question_identifiers << row[1].strip if !row[1].strip.blank? && row[2].strip != 'SKIP'
   end
 
   csv_headers = ['Question Set', 'Question Id', 'Question Type', 'Instruction Digest',
@@ -33,7 +33,7 @@ task :import, [:filename] => :environment do |_t, args|
 
       if row[2].strip == 'HEADING'
         display = Display.where(title: row[5].strip, instrument_id: instrument.id).first
-        display ||= Display.create!(title: row[5].strip, mode: 'MULTIPLE', section_id: section.id,
+        display ||= Display.create!(title: row[5].strip, section_id: section.id,
                                     position: instrument.displays.size + 1, instrument_id: instrument.id)
         folder = Folder.where(title: row[5].strip, question_set_id: question_set.id).first
         folder ||= Folder.create!(title: row[5].strip, question_set_id: question_set.id)
@@ -47,10 +47,11 @@ task :import, [:filename] => :environment do |_t, args|
         display_instruction ||= DisplayInstruction.create!(display_id: display.id, instruction_id: instruction.id)
         (6..9).each do |n|
           next if row[n].blank?
+
           it = InstructionTranslation.where(instruction_id: instruction.id,
-            language: Settings.languages.to_h[csv_headers[n]], text: row[n].strip).first
+                                            language: Settings.languages.to_h[csv_headers[n]], text: row[n].strip).first
           it ||= InstructionTranslation.create!(instruction_id: instruction.id,
-            language: Settings.languages.to_h[csv_headers[n]], text: row[n].strip)
+                                                language: Settings.languages.to_h[csv_headers[n]], text: row[n].strip)
         end
         next
       end
@@ -62,34 +63,31 @@ task :import, [:filename] => :environment do |_t, args|
         end
         if display.nil?
           display = Display.where(title: 'Introduction', instrument_id: instrument.id).first
-          display ||= Display.create!(title: 'Introduction', mode: 'MULTIPLE', section_id: section.id,
-            position: instrument.displays.size + 1, instrument_id: instrument.id)
+          display ||= Display.create!(title: 'Introduction', section_id: section.id,
+                                      position: instrument.displays.size + 1, instrument_id: instrument.id)
         end
         question = Question.where(question_identifier: row[1].strip).try(:first)
         question ||= Question.create!(question_identifier: row[1].strip, question_type: row[2].strip,
-          text: row[5].strip, question_set_id: question_set.id, folder_id: folder.id)
+                                      text: row[5].strip, question_set_id: question_set.id, folder_id: folder.id)
         (6..9).each do |n|
           next if row[n].blank?
+
           qt = QuestionTranslation.where(question_id: question.id,
-            language: Settings.languages.to_h[csv_headers[n]], text: row[n]).first
+                                         language: Settings.languages.to_h[csv_headers[n]], text: row[n]).first
           qt ||= QuestionTranslation.create!(question_id: question.id,
-            language: Settings.languages.to_h[csv_headers[n]], text: row[n])
-          if qt && !row[n + 4].blank?
-            bt = BackTranslation.where(text: row[n + 4], language: Settings.languages.to_h[csv_headers[n]],
-              backtranslatable_id: qt.id, backtranslatable_type: 'QuestionTranslation').first
-            bt ||= BackTranslation.create!(text: row[n + 4], language: Settings.languages.to_h[csv_headers[n]],
-              backtranslatable_id: qt.id, backtranslatable_type: 'QuestionTranslation', approved: true)
-          end
+                                             language: Settings.languages.to_h[csv_headers[n]], text: row[n])
+          next unless qt && !row[n + 4].blank?
+
+          bt = BackTranslation.where(language: Settings.languages.to_h[csv_headers[n]],
+                                     backtranslatable_id: qt.id, backtranslatable_type: 'QuestionTranslation').first
+          bt ||= BackTranslation.create!(text: row[n + 4], language: Settings.languages.to_h[csv_headers[n]],
+                                         backtranslatable_id: qt.id, backtranslatable_type: 'QuestionTranslation', approved: true)
         end
         iq = InstrumentQuestion.where(instrument_id: instrument.id, identifier: row[1].strip,
-          question_id: question.id).first
-        if iq
-          InstrumentQuestion.create!(instrument_id: instrument.id, identifier: "#{row[1].strip}_#{Time.now.to_i}",
-            question_id: question.id, display_id: display.id, number_in_instrument: instrument.instrument_questions.size + 1)
-        else
-          InstrumentQuestion.create!(instrument_id: instrument.id, identifier: row[1].strip,
-            question_id: question.id, display_id: display.id, number_in_instrument: instrument.instrument_questions.size + 1)
-        end
+                                      question_id: question.id).first
+        iq ||= InstrumentQuestion.create!(instrument_id: instrument.id, identifier: row[1].strip,
+                                          question_id: question.id, display_id: display.id, number_in_instrument: instrument.instrument_questions.size + 1)
+
         if question.question_type != 'INSTRUCTIONS'
           special_option_set = OptionSet.where(special: true).first
           special_option_set ||= OptionSet.create!(title: 'Special Option Set', special: true)
@@ -98,11 +96,11 @@ task :import, [:filename] => :environment do |_t, args|
             special_option ||= Option.create!(identifier: sp, text: sp)
             oios = OptionInOptionSet.where(option_id: special_option.id, option_set_id: special_option_set.id).first
             next if oios
+
             OptionInOptionSet.create!(option_id: special_option.id, option_set_id: special_option_set.id,
-              special: true, number_in_question: index)
+                                      special: true, number_in_question: index)
           end
-          question.special_option_set_id = special_option_set.id
-          question.save!
+          question.update_columns(special_option_set_id: special_option_set.id)
         end
       end
     end
@@ -110,10 +108,7 @@ task :import, [:filename] => :environment do |_t, args|
     if !row[3].blank? && row[4].blank?
       instruction = Instruction.where(title: row[3].strip).first
       instruction ||= Instruction.create!(title: row[3].strip, text: row[5].strip)
-      unless question.instruction_id
-        question.instruction_id = instruction.id
-        question.save!
-      end
+      question.update_columns(instruction_id: instruction.id) unless question.instruction_id
     end
 
     if !row[3].blank? && !row[4].blank?
@@ -121,41 +116,40 @@ task :import, [:filename] => :environment do |_t, args|
       instruction ||= Instruction.create!(title: row[3].strip, text: row[5].strip)
       os = OptionSet.where(title: row[4].strip).first
       if os && os.instruction_id.nil?
-        os.instruction_id = instruction.id
-        os.save!
+        os.update_columns(instruction_id: instruction.id)
       else
-        OptionSet.create!(title: row[4].strip, instruction_id: instruction.id)
+        OptionSet.create!(title: row[4].strip, instruction_id: instruction.id) unless os
       end
     end
 
     if !row[4].blank? && row[3].blank?
       option_set = OptionSet.where(title: row[4].strip).first
       option_set ||= OptionSet.create!(title: row[4].strip)
-      unless question.option_set_id
-        question.option_set_id = option_set.id
-        question.save!
-      end
+      question.update_columns(option_set_id: option_set.id) unless question.option_set_id
       option = Option.where(identifier: row[5].strip).try(:first)
       option ||= Option.create!(identifier: row[5].strip, text: row[5].strip)
       option_in_option_set = option_set.option_in_option_sets.where(
-          option_id: option.id, option_set_id: option_set.id).try(:first)
+        option_id: option.id, option_set_id: option_set.id
+      ).try(:first)
       unless option_in_option_set
         OptionInOptionSet.create!(option_id: option.id, option_set_id: option_set.id,
                                   number_in_question: option_set.options.size)
       end
       (6..9).each do |n|
         next if row[n].blank?
+
         ot = option.translations.where(option_id: option.id,
-          language: Settings.languages.to_h[csv_headers[n]], text: row[n].strip).try(:first)
+                                       language: Settings.languages.to_h[csv_headers[n]], text: row[n].strip).try(:first)
         next if ot
+
         ot = OptionTranslation.create!(option_id: option.id,
-          language: Settings.languages.to_h[csv_headers[n]], text: row[n].strip)
-        if ot && !row[n + 4].blank?
-          bt = BackTranslation.where(text: row[n + 4], language: Settings.languages.to_h[csv_headers[n]],
-            backtranslatable_id: ot.id, backtranslatable_type: 'OptionTranslation').first
-          bt ||= BackTranslation.create!(text: row[n + 4], language: Settings.languages.to_h[csv_headers[n]],
-            backtranslatable_id: ot.id, backtranslatable_type: 'OptionTranslation', approved: true)
-        end
+                                       language: Settings.languages.to_h[csv_headers[n]], text: row[n].strip)
+        next unless ot && !row[n + 4].blank?
+
+        bt = BackTranslation.where(language: Settings.languages.to_h[csv_headers[n]],
+                                   backtranslatable_id: ot.id, backtranslatable_type: 'OptionTranslation').first
+        bt ||= BackTranslation.create!(text: row[n + 4], language: Settings.languages.to_h[csv_headers[n]],
+                                       backtranslatable_id: ot.id, backtranslatable_type: 'OptionTranslation', approved: true)
       end
     end
 
@@ -169,9 +163,7 @@ task :import, [:filename] => :environment do |_t, args|
       if skip_text.include? 'go to'
         skip_parts = skip_text.split('go to')
         next_question_identifier = skip_parts[1].strip.chomp('.')
-        if next_question_identifier[0..1] == 'q:'
-          next_question_identifier = next_question_identifier[2..-1]
-        end
+        next_question_identifier = next_question_identifier[2..-1] if next_question_identifier[0..1] == 'q:'
       elsif skip_text.include? 'skip next question'
         cqii = question_identifiers.index(question_identifier) + 2
         next_question_identifier = question_identifiers[cqii]
@@ -181,9 +173,7 @@ task :import, [:filename] => :environment do |_t, args|
         puts "Enter manually for question #{question_identifier}"
         next_question_identifier = nil
       end
-      if skip_parts.nil?
-        puts "Enter manually for question #{question_identifier}"
-      end
+      puts "Enter manually for question #{question_identifier}" if skip_parts.nil?
       if !skip_parts.nil? && skip_parts[0].include?('OR')
         skip_determinants = skip_parts[0].strip.split('OR')
         option_identifier = nil
@@ -200,16 +190,18 @@ task :import, [:filename] => :environment do |_t, args|
             puts "Enter manually for question #{question_identifier}"
           end
           next unless question_identifier && option_identifier && next_question_identifier
+
           skip_pattern = SkipPattern.where(question_identifier: question_identifier,
-            option_identifier: option_identifier, next_question_identifier: next_question_identifier).first
+                                           option_identifier: option_identifier, next_question_identifier: next_question_identifier).first
           next if skip_pattern
+
           SkipPattern.create!(question_identifier: question_identifier, option_identifier: option_identifier,
-            next_question_identifier: next_question_identifier)
+                              next_question_identifier: next_question_identifier)
         end
       end
     end
   end
-  instrument.set_skip_patterns
+  # instrument.set_skip_patterns
   OptionSet.without_option_in_option_sets.delete_all
   Instrument.create_translations
 end

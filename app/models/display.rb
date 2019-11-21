@@ -1,11 +1,9 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: displays
 #
 #  id                         :integer          not null, primary key
-#  mode                       :string
 #  position                   :integer
 #  instrument_id              :integer
 #  created_at                 :datetime

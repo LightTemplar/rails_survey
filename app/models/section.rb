@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: sections
@@ -10,6 +9,7 @@
 #  updated_at    :datetime
 #  instrument_id :integer
 #  deleted_at    :datetime
+#  position      :integer
 #
 
 class Section < ActiveRecord::Base
