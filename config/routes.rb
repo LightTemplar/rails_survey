@@ -1,21 +1,10 @@
 # frozen_string_literal: true
 
-# require 'sidekiq/web'
 Rails.application.routes.draw do
   devise_for :users
-  # authenticate :user, ->(u) { u.admin? } do
-  #   mount Sidekiq::Web, at: '/sidekiq', as: 'sidekiq'
-  # end
-  #
-  # concern :paginatable do
-  #   get '(page/:page)', action: :index, on: :collection, as: ''
-  # end
   namespace :api, defaults: { format: 'json' } do
     namespace :v4 do
-      devise_scope :user do
-        post 'login' => 'sessions#create'
-        delete 'logout' => 'sessions#destroy'
-      end
+      post 'user_token' => 'user_token#create'
       resources :instruments, only: :index
       resources :projects do
         resources :instruments do

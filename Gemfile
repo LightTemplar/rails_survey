@@ -14,6 +14,7 @@ gem 'forgery', '~> 0.6.0'
 gem 'google-cloud-translate', '0.22.2'
 gem 'hiredis', '~> 0.6.1'
 gem 'kaminari', '~> 1.1', '>= 1.1.1'
+gem 'knock', '~> 2.1', '>= 2.1.1'
 gem 'mini_racer', '~> 0.2.6'
 gem 'paper_trail', '~> 9.2.0'
 gem 'paper_trail-association_tracking', '~> 1.0.0'
@@ -44,7 +45,7 @@ group :production do
 end
 
 group :development do
-  gem 'annotate', '>=2.5.0'
+  gem 'annotate', '~> 3.0', '>= 3.0.3'
   gem 'better_errors', '2.1.1'
   gem 'binding_of_caller', '0.7.2'
   gem 'bullet', '5.4.2'

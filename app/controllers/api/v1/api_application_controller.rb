@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V1
     class ApiApplicationController < ApplicationController
@@ -5,7 +7,6 @@ module Api
       before_action :check_version_code
       skip_before_action :authenticate_user!
       skip_before_action :authenticate_user_from_token!
-      skip_before_action :set_project
 
       private
 

@@ -39,6 +39,7 @@ class User < ApplicationRecord
   attr_accessor :gauth_token
   include ComplexPassword
   devise :invitable, :database_authenticatable, :recoverable, :rememberable, :trackable, :validatable, :timeoutable, :lockable
+  has_secure_password
   before_save :ensure_authentication_token
   after_create :set_default_role
   has_many :user_projects
@@ -46,6 +47,11 @@ class User < ApplicationRecord
   has_many :instruments, through: :projects
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
+  alias authenticate valid_password?
+
+  def self.from_token_payload(payload)
+    find payload['sub']
+  end
 
   def set_default_role
     role = Role.find_by_name('user')

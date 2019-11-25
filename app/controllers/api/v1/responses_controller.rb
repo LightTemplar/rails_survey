@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module Api
   module V1
     class ResponsesController < ApiApplicationController
-      protect_from_forgery with: :null_session
       respond_to :json
 
       def create
@@ -26,9 +27,9 @@ module Api
 
       def response_params
         params.require(:response).permit(:question_id, :text, :other_response,
-          :special_response, :survey_uuid, :time_started, :time_ended,
-          :question_identifier, :uuid, :device_user_id, :question_version,
-          :randomized_data, :rank_order)
+                                         :special_response, :survey_uuid, :time_started, :time_ended,
+                                         :question_identifier, :uuid, :device_user_id, :question_version,
+                                         :randomized_data, :rank_order)
       end
     end
   end

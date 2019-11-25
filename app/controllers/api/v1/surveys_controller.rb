@@ -3,7 +3,6 @@
 module Api
   module V1
     class SurveysController < ApiApplicationController
-      protect_from_forgery with: :null_session
       respond_to :json
 
       def create
