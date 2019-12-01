@@ -12,7 +12,11 @@ Rails.application.routes.draw do
           resources :displays do
             resources :display_instructions
           end
-          resources :instrument_questions
+          resources :instrument_questions do
+            resources :next_questions
+            resources :multiple_skips
+            resources :loop_questions
+          end
           resources :score_schemes do
             resources :domains
             resources :subdomains do
@@ -30,6 +34,7 @@ Rails.application.routes.draw do
         resources :folders do
           resources :questions, controller: 'folder_questions'
         end
+        resources :questions, controller: 'question_set_questions'
         collection do
           get :total
         end
@@ -44,6 +49,8 @@ Rails.application.routes.draw do
       resources :options
       resources :questions, only: [:index]
       resources :option_translations
+      resources :instruction_translations
+      resources :question_translations
       resources :surveys do
         resources :responses
       end
