@@ -16,8 +16,8 @@
 
 class OptionTranslation < ApplicationRecord
   include GoogleTranslatable
+  include Sanitizable
   belongs_to :option, touch: true
-  # belongs_to :instrument_translation, touch: true
 
   has_many :back_translations, as: :backtranslatable
   has_many :option_set_translations

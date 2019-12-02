@@ -39,7 +39,7 @@ class Api::V4::InstrumentQuestionsController < Api::V4::ApiController
 
   def instrument_question_params
     params.require(:instrument_question).permit(:instrument_id, :question_id, :number_in_instrument,
-                                                :display_id, :identifier)
+                                                :display_id, :identifier, :table_identifier)
   end
 
   def bulk_create

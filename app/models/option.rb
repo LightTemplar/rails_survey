@@ -15,6 +15,7 @@
 
 class Option < ApplicationRecord
   include Translatable
+  include Sanitizable
   has_many :option_in_option_sets, dependent: :destroy
   has_many :option_sets, through: :option_in_option_sets
   has_many :translations, foreign_key: 'option_id', class_name: 'OptionTranslation', dependent: :destroy

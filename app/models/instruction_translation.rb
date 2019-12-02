@@ -13,6 +13,7 @@
 #
 
 class InstructionTranslation < ApplicationRecord
+  include Sanitizable
   belongs_to :instruction, touch: true
   validates :text, presence: true, allow_blank: false
   validates :language, presence: true, allow_blank: false

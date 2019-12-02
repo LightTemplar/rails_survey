@@ -18,6 +18,7 @@
 
 class QuestionTranslation < ApplicationRecord
   include GoogleTranslatable
+  include Sanitizable
   belongs_to :question, touch: true
   belongs_to :instrument_translation, touch: true
   has_many :back_translations, as: :backtranslatable
