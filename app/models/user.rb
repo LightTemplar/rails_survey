@@ -21,10 +21,6 @@
 #  failed_attempts        :integer          default(0)
 #  unlock_token           :string
 #  locked_at              :datetime
-#  gauth_secret           :string
-#  gauth_enabled          :string           default("f")
-#  gauth_tmp              :string
-#  gauth_tmp_datetime     :datetime
 #  invitation_token       :string
 #  invitation_created_at  :datetime
 #  invitation_sent_at     :datetime
@@ -33,12 +29,17 @@
 #  invited_by_id          :integer
 #  invited_by_type        :string
 #  invitations_count      :integer          default(0)
+#  gauth_tmp_datetime     :datetime
+#  gauth_tmp              :string
+#  gauth_enabled          :string
+#  gauth_secret           :string
+#  password_digest        :string
 #
 
 class User < ApplicationRecord
   attr_accessor :gauth_token
   include ComplexPassword
-  devise :invitable, :database_authenticatable, :recoverable, :rememberable, :trackable, :validatable, :timeoutable, :lockable
+  devise :invitable, :recoverable, :rememberable, :trackable, :validatable, :timeoutable, :lockable
   has_secure_password
   before_save :ensure_authentication_token
   after_create :set_default_role
@@ -47,7 +48,6 @@ class User < ApplicationRecord
   has_many :instruments, through: :projects
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
-  alias authenticate valid_password?
 
   def self.from_token_payload(payload)
     find payload['sub']
