@@ -32,7 +32,7 @@ class Api::V4::OptionSetsController < Api::V4::ApiController
   def update
     if @option_set.update_attributes(option_set_params)
       create_children
-      render nothing: true, status: :no_content
+      head :ok
     else
       render json: { errors: @option_set.errors.full_messages }, status: :unprocessable_entity
     end
