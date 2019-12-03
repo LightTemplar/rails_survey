@@ -27,6 +27,7 @@ Rails.application.routes.draw do
           end
           member do
             get :reorder
+            get :pdf_export, defaults: { format: 'pdf' }
           end
         end
       end
