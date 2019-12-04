@@ -5,15 +5,7 @@ class Api::V4::OptionSetsController < Api::V4::ApiController
   before_action :set_option_set, only: %i[update show destroy]
 
   def index
-    @option_sets = if params[:page] && params[:per_page]
-                     OptionSet.page(params[:page]).per(params[:per_page]).includes(option_in_option_sets: [:option]).order(updated_at: :desc)
-                   else
-                     OptionSet.all.includes(option_in_option_sets: [:option]).order(updated_at: :desc)
-                   end
-  end
-
-  def total
-    respond_with OptionSet.count
+    @option_sets = OptionSet.all.includes(option_in_option_sets: [:option]).order(updated_at: :desc)
   end
 
   def show; end

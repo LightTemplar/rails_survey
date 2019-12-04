@@ -42,9 +42,6 @@ Rails.application.routes.draw do
       end
       resources :option_sets do
         resources :option_in_option_sets
-        collection do
-          get :total
-        end
       end
       resources :instructions
       resources :options
