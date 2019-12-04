@@ -5,3 +5,7 @@ attributes :id, :position, :mode, :instrument_id, :title, :section_id, :instrume
 node :section_title do |d|
   d&.section&.title
 end
+
+node :instrument_question_count do |d|
+  d.instrument.question_count
+end

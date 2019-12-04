@@ -48,7 +48,7 @@ class Api::V4::InstrumentQuestionsController < Api::V4::ApiController
         iq = @instrument.instrument_questions.new(iq_params.permit(:instrument_id, :question_id,
                                                                    :number_in_instrument,
                                                                    :display_id, :identifier))
-        iq.identifier = "#{iq_params[:identifier]}_1" if @instrument.instrument_questions.find_by_identifier(iq_params[:identifier])
+        iq.identifier = "#{iq_params[:identifier]}_#{iq_params[:number_in_instrument]}" if @instrument.instrument_questions.find_by_identifier(iq_params[:identifier])
         iq.save!
       end
     end
