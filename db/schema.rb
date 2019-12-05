@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191202152611) do
+ActiveRecord::Schema.define(version: 20191205151849) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -286,17 +286,11 @@ ActiveRecord::Schema.define(version: 20191202152611) do
     t.datetime "updated_at"
     t.string "language"
     t.string "alignment"
-    t.integer "child_update_count", default: 0
-    t.integer "previous_question_count"
+    t.integer "instrument_questions_count", default: 0
     t.integer "project_id"
     t.boolean "published"
     t.datetime "deleted_at"
-    t.boolean "show_instructions", default: false
-    t.text "special_options"
-    t.boolean "show_sections_page", default: false
-    t.boolean "navigate_to_review_page", default: false
-    t.boolean "roster", default: false
-    t.string "roster_type"
+    t.boolean "require_responses", default: false
     t.boolean "scorable", default: false
     t.boolean "auto_export_responses", default: true
     t.index ["project_id", "title"], name: "index_instruments_on_project_id_and_title"

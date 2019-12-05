@@ -4,25 +4,19 @@
 #
 # Table name: instruments
 #
-#  id                      :integer          not null, primary key
-#  title                   :string
-#  created_at              :datetime
-#  updated_at              :datetime
-#  language                :string
-#  alignment               :string
-#  child_update_count      :integer          default(0)
-#  previous_question_count :integer
-#  project_id              :integer
-#  published               :boolean
-#  deleted_at              :datetime
-#  show_instructions       :boolean          default(FALSE)
-#  special_options         :text
-#  show_sections_page      :boolean          default(FALSE)
-#  navigate_to_review_page :boolean          default(FALSE)
-#  roster                  :boolean          default(FALSE)
-#  roster_type             :string
-#  scorable                :boolean          default(FALSE)
-#  auto_export_responses   :boolean          default(TRUE)
+#  id                         :integer          not null, primary key
+#  title                      :string
+#  created_at                 :datetime
+#  updated_at                 :datetime
+#  language                   :string
+#  alignment                  :string
+#  instrument_questions_count :integer          default(0)
+#  project_id                 :integer
+#  published                  :boolean
+#  deleted_at                 :datetime
+#  require_responses          :boolean          default(FALSE)
+#  scorable                   :boolean          default(FALSE)
+#  auto_export_responses      :boolean          default(TRUE)
 #
 
 class Instrument < ApplicationRecord
@@ -30,7 +24,6 @@ class Instrument < ApplicationRecord
   include Alignable
   include LanguageAssignable
   include RedisJobTracker
-  serialize :special_options, Array
   scope :published, -> { where(published: true) }
   belongs_to :project, touch: true
 
@@ -67,8 +60,7 @@ class Instrument < ApplicationRecord
 
   has_paper_trail
   acts_as_paranoid
-  before_save :update_question_count
-  after_update :update_special_options
+
   validates :title, presence: true, allow_blank: false, uniqueness: { scope: [:project_id] }
   validates :project_id, presence: true, allow_blank: false
 
@@ -184,15 +176,6 @@ class Instrument < ApplicationRecord
     end
   end
 
-  def update_special_options
-    if special_options != special_options_was
-      deleted_special_options = special_options_was - special_options
-      options.special_options.where(text: deleted_special_options).delete_all unless deleted_special_options.blank?
-      new_special_options = special_options - special_options_was
-      questions.each(&:create_special_options) if !new_special_options.blank? && !questions.blank?
-    end
-  end
-
   def version_by_version_number(version_number)
     return nil if version_number > versions.size || version_number <= 0
 
@@ -274,11 +257,6 @@ class Instrument < ApplicationRecord
       text_translations << sanitizer.sanitize(translation.text) if instrument_translation_languages.include? translation.language
     end
     text_translations
-  end
-
-  def update_instrument_version
-    # Force update for paper trail
-    increment!(:child_update_count)
   end
 
   def reorder_questions(old_number, new_number)
@@ -536,11 +514,5 @@ class Instrument < ApplicationRecord
       (displays - preserved_displays).each(&:destroy)
       (instrument_questions - preserved_questions).each(&:destroy)
     end
-  end
-
-  private
-
-  def update_question_count
-    self.previous_question_count = questions.count
   end
 end
