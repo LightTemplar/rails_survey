@@ -2,7 +2,7 @@
 
 class Api::V4::OptionSetsController < Api::V4::ApiController
   respond_to :json
-  before_action :set_option_set, only: %i[update show destroy]
+  before_action :set_option_set, only: %i[update show destroy copy]
 
   def index
     @option_sets = OptionSet.all.includes(option_in_option_sets: [:option]).order(updated_at: :desc)
@@ -32,6 +32,11 @@ class Api::V4::OptionSetsController < Api::V4::ApiController
 
   def destroy
     respond_with @option_set.destroy
+  end
+
+  def copy
+    new_option_set = @option_set.copy
+    redirect_to action: 'show', id: new_option_set.id
   end
 
   private

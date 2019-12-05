@@ -42,6 +42,9 @@ Rails.application.routes.draw do
       end
       resources :option_sets do
         resources :option_in_option_sets
+        member do
+          get :copy
+        end
       end
       resources :instructions
       resources :options
