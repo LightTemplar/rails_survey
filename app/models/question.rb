@@ -22,6 +22,9 @@
 #  rank_responses        :boolean          default(FALSE)
 #  versions_count        :integer          default(0)
 #  images_count          :integer          default(0)
+#  pdf_response_height   :integer
+#  pdf_print_options     :boolean          default(TRUE)
+#  pop_up_instruction    :boolean          default(FALSE)
 #
 
 class Question < ApplicationRecord

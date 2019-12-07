@@ -43,7 +43,7 @@ module PdfUtils
     return unless question.special_options
 
     indent(QUESTION_LEFT_MARGIN) do
-      text "Or: #{question.special_options.join(' / ')}"
+      text "Or: #{question.special_options.join(' / ')}" unless question.special_options.blank?
     end
   end
 
@@ -86,6 +86,8 @@ module PdfUtils
   end
 
   def format_question_choices(question, language = nil)
+    return unless question.question.pdf_print_options
+
     indent(QUESTION_LEFT_MARGIN) do
       if question.non_special_options? && !question.slider_variant?
         question.non_special_options.each_with_index do |option, index|
@@ -241,8 +243,8 @@ module PdfUtils
   def pad_after_question(question)
     return if Settings.question_with_options.include?(question.question_type)
 
-    if question.question_type == 'FREE_RESPONSE'
-      move_down 200
+    if question.question_type == 'FREE_RESPONSE' && question.question.pdf_response_height
+      move_down question.question.pdf_response_height
     else
       move_down 50
     end

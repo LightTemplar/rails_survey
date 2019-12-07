@@ -15,7 +15,7 @@ class Api::V4::OptionSetsController < Api::V4::ApiController
     if option_set.save
       @option_set = option_set
       create_children
-      render json: option_set, status: :created
+      redirect_to action: 'show', id: option_set.id
     else
       render json: { errors: option_set.errors.full_messages }, status: :unprocessable_entity
     end
@@ -47,10 +47,12 @@ class Api::V4::OptionSetsController < Api::V4::ApiController
 
   def create_children
     ActiveRecord::Base.transaction do
-      params[:option_in_option_sets]&.each do |oios_params|
+      params[:option_set][:option_in_option_sets]&.each do |oios_params|
         oios = OptionInOptionSet.find_or_create_by(option_id: oios_params[:option_id], option_set_id: @option_set.id)
         oios.number_in_question = oios_params[:number_in_question]
         oios.special = oios_params[:special]
+        oios.instruction_id = oios_params[:instruction_id]
+        oios.allow_text_entry = oios_params[:allow_text_entry]
         oios.save
       end
     end

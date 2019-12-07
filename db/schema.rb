@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191205151849) do
+ActiveRecord::Schema.define(version: 20191207095611) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -349,6 +349,8 @@ ActiveRecord::Schema.define(version: 20191205151849) do
     t.datetime "updated_at", null: false
     t.boolean "special", default: false
     t.boolean "is_exclusive", default: false
+    t.integer "instruction_id"
+    t.boolean "allow_text_entry", default: false
   end
 
   create_table "option_scores", id: :serial, force: :cascade do |t|
@@ -467,6 +469,9 @@ ActiveRecord::Schema.define(version: 20191205151849) do
     t.boolean "rank_responses", default: false
     t.integer "versions_count", default: 0
     t.integer "images_count", default: 0
+    t.integer "pdf_response_height"
+    t.boolean "pdf_print_options", default: true
+    t.boolean "pop_up_instruction", default: false
     t.index ["question_identifier"], name: "index_questions_on_question_identifier", unique: true
   end
 
@@ -697,7 +702,6 @@ ActiveRecord::Schema.define(version: 20191205151849) do
     t.string "completion_rate"
     t.string "device_label"
     t.datetime "deleted_at"
-    t.string "roster_uuid"
     t.string "language"
     t.text "skipped_questions"
     t.integer "completed_responses_count"

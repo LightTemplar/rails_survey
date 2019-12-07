@@ -19,11 +19,12 @@
 #  completion_rate           :string
 #  device_label              :string
 #  deleted_at                :datetime
-#  roster_uuid               :string
 #  language                  :string
 #  skipped_questions         :text
 #  completed_responses_count :integer
 #
+
+require 'sidekiq/api'
 
 class Survey < ApplicationRecord
   include RedisJobTracker
@@ -40,11 +41,11 @@ class Survey < ApplicationRecord
   validates :device_id, presence: true, allow_blank: false
   validates :uuid, presence: true, allow_blank: false
   validates :instrument_id, presence: true, allow_blank: false
-  validates :instrument_version_number, presence: true, allow_blank: false
+  # validates :instrument_version_number, presence: true, allow_blank: false
   paginates_per 50
   after_create :calculate_percentage
   after_commit :schedule_export, if: proc { |survey| survey.instrument.auto_export_responses }
-  scope :non_roster, -> { where(roster_uuid: nil) }
+  # scope :non_roster, -> { where(roster_uuid: nil) }
 
   def identifier
     questions = Question.where(id: instrument.instrument_questions.pluck(:question_id).uniq)

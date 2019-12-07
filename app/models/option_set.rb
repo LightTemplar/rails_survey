@@ -23,7 +23,7 @@ class OptionSet < ApplicationRecord
   has_many :questions, dependent: :nullify
   has_many :option_set_translations
 
-  after_save :set_option_specialty, if: proc { |option_set| option_set.special_changed? }
+  after_save :set_option_specialty, if: proc { |option_set| option_set.saved_change_to_special? }
 
   has_paper_trail
   acts_as_paranoid

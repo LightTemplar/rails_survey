@@ -13,6 +13,8 @@
 #  updated_at         :datetime         not null
 #  special            :boolean          default(FALSE)
 #  is_exclusive       :boolean          default(FALSE)
+#  instruction_id     :integer
+#  allow_text_entry   :boolean          default(FALSE)
 #
 
 class OptionInOptionSet < ApplicationRecord
