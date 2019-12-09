@@ -59,7 +59,7 @@ class Project < ApplicationRecord
 
   def api_option_sets
     option_set_ids = api_questions.pluck(:option_set_id) + api_questions.pluck(:special_option_set_id)
-    OptionSet.includes(:instruction, :option_set_translations).where(id: option_set_ids).uniq
+    OptionSet.includes(:instruction, :option_set_translations).where(id: option_set_ids.uniq)
   end
 
   def api_options
@@ -71,8 +71,7 @@ class Project < ApplicationRecord
   end
 
   def api_option_in_option_sets
-    option_set_ids = api_option_sets.pluck(:id)
-    OptionInOptionSet.where(option_set_id: option_set_ids)
+    OptionInOptionSet.where(option_set_id: api_option_sets.pluck(:id))
   end
 
   def api_questions
