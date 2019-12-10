@@ -57,14 +57,12 @@ class TranslationPdf
 
     text_array = []
     instruction = instruction_text(question.question.instruction)
-    text_array << { text: sanitize_text(instruction) + "\n" } unless instruction.blank?
-    text = question_text(question)
-    if text.include? '</b>'
-      strs = text.split('</b>')
-      text_array << { text: sanitize_text(strs[0].delete('<b>')) + "\n" }
-      text_array << { text: sanitize_text(strs[1]) }
+    if question.question.instruction_after_text || question.question.pop_up_instruction
+      text_array = question_text_array(question, text_array)
+      text_array << { text: sanitize_text(instruction) + "\n", styles: [:italic] } unless instruction.blank?
     else
-      text_array << { text: sanitize_text(text) }
+      text_array << { text: sanitize_text(instruction) + "\n", styles: [:italic] } unless instruction.blank?
+      text_array = question_text_array(question, text_array)
     end
     box = Prawn::Text::Formatted::Box.new(text_array, at: [bounds.left + QUESTION_LEFT_MARGIN, cursor], document: self)
     box.render(dry_run: true)
@@ -76,6 +74,17 @@ class TranslationPdf
     pad_after_question(question)
     format_special_responses(question)
     format_skip_patterns(question)
+  end
+
+  def question_text_array(question, text_array)
+    text = question_text(question)
+    if text.include? '</b>'
+      strs = text.split('</b>')
+      text_array << { text: sanitize_text(strs[0].delete('<b>')) + "\n" }
+      text_array << { text: sanitize_text(strs[1]) }
+    else
+      text_array << { text: sanitize_text(text) }
+    end
   end
 
   def question_text(question)

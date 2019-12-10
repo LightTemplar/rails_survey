@@ -52,13 +52,12 @@ class InstrumentPdf
     end
     text_array = []
     instructions = question.question.instruction&.text
-    text_array << { text: sanitize_text(instructions) + "\n", styles: [:italic] } if instructions
-    if question.text.include? '</b>'
-      strs = question.text.split('</b>')
-      text_array << { text: sanitize_text(strs[0].delete('<b>')) + "\n", styles: [:bold] }
-      text_array << { text: sanitize_text(strs[1]) }
+    if question.question.instruction_after_text || question.question.pop_up_instruction
+      text_array = question_text_array(question, text_array)
+      text_array << { text: sanitize_text(instructions) + "\n", styles: [:italic] } if instructions
     else
-      text_array << { text: sanitize_text(question.text) }
+      text_array << { text: sanitize_text(instructions) + "\n", styles: [:italic] } if instructions
+      text_array = question_text_array(question, text_array)
     end
     box = Prawn::Text::Formatted::Box.new(text_array, at: [bounds.left + QUESTION_LEFT_MARGIN, cursor], document: self)
     box.render(dry_run: true) # Find out the heigh of the text since text_box does not move cursor in the same way as text
@@ -69,5 +68,16 @@ class InstrumentPdf
     pad_after_question(question)
     format_special_responses(question)
     format_skip_patterns(question)
+  end
+
+  def question_text_array(question, array)
+    if question.text.include? '</b>'
+      strs = question.text.split('</b>')
+      array << { text: sanitize_text(strs[0].delete('<b>')) + "\n", styles: [:bold] }
+      array << { text: sanitize_text(strs[1]) }
+    else
+      array << { text: sanitize_text(question.text) }
+    end
+    array
   end
 end

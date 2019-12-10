@@ -37,6 +37,6 @@ class Api::V3::ResponsesController < Api::V3::ApiController
     params.require(:response).permit(:question_id, :text, :other_response,
                                      :special_response, :survey_uuid, :time_started, :time_ended,
                                      :question_identifier, :uuid, :device_user_id, :question_version,
-                                     :randomized_data, :rank_order)
+                                     :randomized_data, :rank_order, :other_text)
   end
 end

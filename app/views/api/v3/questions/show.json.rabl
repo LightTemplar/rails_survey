@@ -59,6 +59,14 @@ node :loop_question_count do |iq|
   iq.loop_questions.size
 end
 
+node :pop_up_instruction do |iq|
+  iq.question&.pop_up_instruction
+end
+
+node :instruction_after_text do |iq|
+  iq.question&.instruction_after_text
+end
+
 child :translations do |_t|
   attributes :id, :question_id, :text, :language, :instructions
 end

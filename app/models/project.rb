@@ -91,7 +91,12 @@ class Project < ApplicationRecord
   end
 
   def api_instructions
-    Instruction.includes(:instruction_translations).where(id: api_questions.pluck(:instruction_id) | api_option_sets.pluck(:instruction_id) | api_display_instructions.pluck(:instruction_id) | critical_responses.with_deleted.pluck(:instruction_id))
+    api_instruction_ids = api_questions.pluck(:instruction_id) +
+                          api_option_sets.pluck(:instruction_id) +
+                          api_display_instructions.pluck(:instruction_id) +
+                          critical_responses.with_deleted.pluck(:instruction_id) +
+                          api_option_in_option_sets.pluck(:instruction_id)
+    Instruction.includes(:instruction_translations).where(id: api_instruction_ids.uniq)
   end
 
   def special_option_sets

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191207095611) do
+ActiveRecord::Schema.define(version: 20191210193602) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -472,6 +472,7 @@ ActiveRecord::Schema.define(version: 20191207095611) do
     t.integer "pdf_response_height"
     t.boolean "pdf_print_options", default: true
     t.boolean "pop_up_instruction", default: false
+    t.boolean "instruction_after_text", default: false
     t.index ["question_identifier"], name: "index_questions_on_question_identifier", unique: true
   end
 
@@ -556,6 +557,7 @@ ActiveRecord::Schema.define(version: 20191207095611) do
     t.datetime "deleted_at"
     t.text "randomized_data"
     t.string "rank_order"
+    t.text "other_text"
     t.index ["deleted_at"], name: "index_responses_on_deleted_at"
     t.index ["survey_uuid"], name: "index_responses_on_survey_uuid"
     t.index ["time_ended"], name: "index_responses_on_time_ended"

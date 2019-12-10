@@ -4,27 +4,28 @@
 #
 # Table name: questions
 #
-#  id                    :integer          not null, primary key
-#  text                  :text
-#  question_type         :string
-#  question_identifier   :string
-#  created_at            :datetime
-#  updated_at            :datetime
-#  deleted_at            :datetime
-#  identifies_survey     :boolean          default(FALSE)
-#  question_set_id       :integer
-#  option_set_id         :integer
-#  instruction_id        :integer
-#  special_option_set_id :integer
-#  parent_identifier     :string
-#  folder_id             :integer
-#  validation_id         :integer
-#  rank_responses        :boolean          default(FALSE)
-#  versions_count        :integer          default(0)
-#  images_count          :integer          default(0)
-#  pdf_response_height   :integer
-#  pdf_print_options     :boolean          default(TRUE)
-#  pop_up_instruction    :boolean          default(FALSE)
+#  id                     :integer          not null, primary key
+#  text                   :text
+#  question_type          :string
+#  question_identifier    :string
+#  created_at             :datetime
+#  updated_at             :datetime
+#  deleted_at             :datetime
+#  identifies_survey      :boolean          default(FALSE)
+#  question_set_id        :integer
+#  option_set_id          :integer
+#  instruction_id         :integer
+#  special_option_set_id  :integer
+#  parent_identifier      :string
+#  folder_id              :integer
+#  validation_id          :integer
+#  rank_responses         :boolean          default(FALSE)
+#  versions_count         :integer          default(0)
+#  images_count           :integer          default(0)
+#  pdf_response_height    :integer
+#  pdf_print_options      :boolean          default(TRUE)
+#  pop_up_instruction     :boolean          default(FALSE)
+#  instruction_after_text :boolean          default(FALSE)
 #
 
 class Question < ApplicationRecord
