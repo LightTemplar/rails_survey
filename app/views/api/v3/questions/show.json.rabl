@@ -3,7 +3,8 @@
 object @question
 cache @question
 
-attributes :id, :instrument_id, :display_id, :number_in_instrument, :deleted_at, :table_identifier, :question_id
+attributes :id, :instrument_id, :display_id, :number_in_instrument, :deleted_at,
+           :table_identifier, :question_id, :carry_forward_identifier
 
 node :text do |iq|
   iq.question&.text
@@ -65,6 +66,14 @@ end
 
 node :instruction_after_text do |iq|
   iq.question&.instruction_after_text
+end
+
+node :carry_forward_option_set_id do |iq|
+  iq.forward_instrument_question&.question&.option_set_id
+end
+
+node :default_response do |iq|
+  iq.question&.default_response
 end
 
 child :translations do |_t|

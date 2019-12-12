@@ -26,6 +26,7 @@
 #  pdf_print_options      :boolean          default(TRUE)
 #  pop_up_instruction     :boolean          default(FALSE)
 #  instruction_after_text :boolean          default(FALSE)
+#  default_response       :text
 #
 
 class Question < ApplicationRecord
@@ -49,10 +50,10 @@ class Question < ApplicationRecord
   has_many :instruments, -> { distinct }, through: :instrument_questions
   has_many :skip_patterns, foreign_key: 'question_identifier', primary_key: 'question_identifier', dependent: :destroy
 
-  before_save :update_question_translation, if: proc { |question| question.text_changed? }
+  before_save :update_question_translation, if: proc { |question| question.saved_change_to_text? }
   after_touch :touch_instrument_questions
-  after_save :touch_option_set, if: :option_set_id_changed?
-  after_save :touch_special_option_set, if: :special_option_set_id_changed?
+  after_save :touch_option_set, if: :saved_change_to_option_set_id?
+  after_save :touch_special_option_set, if: :saved_change_to_special_option_set_id?
   after_commit :update_instruments_versions, on: %i[update destroy]
   after_save :update_versions_cache
 
@@ -162,10 +163,10 @@ class Question < ApplicationRecord
   end
 
   def touch_option_set
-    option_set.touch
+    option_set&.touch
   end
 
   def touch_special_option_set
-    special_option_set.touch
+    special_option_set&.touch
   end
 end

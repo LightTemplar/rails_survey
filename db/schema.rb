@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191210193602) do
+ActiveRecord::Schema.define(version: 20191211162501) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -257,6 +257,7 @@ ActiveRecord::Schema.define(version: 20191210193602) do
     t.datetime "deleted_at"
     t.string "table_identifier"
     t.integer "loop_questions_count", default: 0
+    t.string "carry_forward_identifier"
     t.index ["deleted_at"], name: "index_instrument_questions_on_deleted_at"
     t.index ["instrument_id", "identifier"], name: "index_instrument_questions_on_instrument_id_and_identifier"
     t.index ["question_id"], name: "index_instrument_questions_on_question_id"
@@ -473,6 +474,7 @@ ActiveRecord::Schema.define(version: 20191210193602) do
     t.boolean "pdf_print_options", default: true
     t.boolean "pop_up_instruction", default: false
     t.boolean "instruction_after_text", default: false
+    t.text "default_response"
     t.index ["question_identifier"], name: "index_questions_on_question_identifier", unique: true
   end
 
@@ -674,6 +676,18 @@ ActiveRecord::Schema.define(version: 20191210193602) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
+  end
+
+  create_table "survey_notes", force: :cascade do |t|
+    t.string "uuid"
+    t.string "survey_uuid"
+    t.integer "device_user_id"
+    t.string "reference"
+    t.text "text"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["survey_uuid"], name: "index_survey_notes_on_survey_uuid"
+    t.index ["uuid"], name: "index_survey_notes_on_uuid"
   end
 
   create_table "survey_scores", id: :serial, force: :cascade do |t|

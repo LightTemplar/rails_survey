@@ -24,6 +24,7 @@
 #  pdf_print_options      :boolean          default(TRUE)
 #  pop_up_instruction     :boolean          default(FALSE)
 #  instruction_after_text :boolean          default(FALSE)
+#  default_response       :text
 #
 
 require "spec_helper"

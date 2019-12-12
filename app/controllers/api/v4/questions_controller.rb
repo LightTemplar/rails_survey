@@ -5,5 +5,6 @@ class Api::V4::QuestionsController < Api::V4::ApiController
 
   def index
     @questions = Question.all
+    render partial: 'api/v4/questions/index.json'
   end
 end

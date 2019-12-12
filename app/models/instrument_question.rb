@@ -4,23 +4,25 @@
 #
 # Table name: instrument_questions
 #
-#  id                   :integer          not null, primary key
-#  question_id          :integer
-#  instrument_id        :integer
-#  number_in_instrument :integer
-#  display_id           :integer
-#  created_at           :datetime
-#  updated_at           :datetime
-#  identifier           :string
-#  deleted_at           :datetime
-#  table_identifier     :string
-#  loop_questions_count :integer          default(0)
+#  id                       :integer          not null, primary key
+#  question_id              :integer
+#  instrument_id            :integer
+#  number_in_instrument     :integer
+#  display_id               :integer
+#  created_at               :datetime
+#  updated_at               :datetime
+#  identifier               :string
+#  deleted_at               :datetime
+#  table_identifier         :string
+#  loop_questions_count     :integer          default(0)
+#  carry_forward_identifier :string
 #
 
 class InstrumentQuestion < ApplicationRecord
   belongs_to :instrument, touch: true
   belongs_to :question
   belongs_to :display, touch: true, counter_cache: true
+  belongs_to :forward_instrument_question, class_name: 'InstrumentQuestion', foreign_key: :carry_forward_identifier, primary_key: :identifier
   has_many :next_questions, dependent: :destroy
   has_many :multiple_skips, dependent: :destroy
   has_many :follow_up_questions, dependent: :destroy
