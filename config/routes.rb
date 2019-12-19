@@ -36,9 +36,6 @@ Rails.application.routes.draw do
           resources :questions, controller: 'folder_questions'
         end
         resources :questions, controller: 'question_set_questions'
-        collection do
-          get :total
-        end
       end
       resources :option_sets do
         resources :option_in_option_sets
@@ -48,7 +45,11 @@ Rails.application.routes.draw do
       end
       resources :instructions
       resources :options
-      resources :questions, only: [:index]
+      resources :questions, only: %i[index show copy] do
+        member do
+          get :copy
+        end
+      end
       resources :option_translations
       resources :instruction_translations
       resources :question_translations

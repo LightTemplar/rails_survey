@@ -5,15 +5,7 @@ class Api::V4::QuestionSetsController < Api::V4::ApiController
   before_action :set_question_set, only: %i[show update destroy]
 
   def index
-    @question_sets = if params[:page] && params[:per_page]
-                       QuestionSet.page(params[:page]).per(params[:per_page]).includes(:folders).order(updated_at: :desc)
-                     else
-                       QuestionSet.all.includes(:folders)
-                    end
-  end
-
-  def total
-    respond_with QuestionSet.count
+    @question_sets = QuestionSet.all.includes(:folders).order(updated_at: :desc)
   end
 
   def show; end

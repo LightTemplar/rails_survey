@@ -12,7 +12,6 @@ class Api::V4::OptionInOptionSetsController < Api::V4::ApiController
   private
 
   def option_in_option_set_params
-    params.require(:option_in_option_set).permit(:option_set_id, :option_id,
-                                                 :number_in_question, :special)
+    params.require(:option_in_option_set).permit(:option_set_id, :option_id, :number_in_question, :special)
   end
 end

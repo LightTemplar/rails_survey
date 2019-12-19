@@ -12,6 +12,6 @@
 #
 
 class Folder < ApplicationRecord
-  belongs_to :question_set
+  belongs_to :question_set, touch: true
   has_many :questions
 end

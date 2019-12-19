@@ -64,6 +64,14 @@ class Question < ApplicationRecord
   validates :text, presence: true, allow_blank: false
   validates :question_type, presence: true, allow_blank: false
 
+  def question_set_title
+    question_set&.title
+  end
+
+  def folder_title
+    folder&.title
+  end
+
   def translated(code)
     trans = translations.where(language: code)
     "<ul>#{trans.map { |translation| "<li>#{translation.text}</li>" }.join}</ul>" unless trans.empty?

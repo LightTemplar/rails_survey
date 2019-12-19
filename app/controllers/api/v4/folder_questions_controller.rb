@@ -6,7 +6,7 @@ class Api::V4::FolderQuestionsController < Api::V4::ApiController
   before_action :set_question, only: %i[show update destroy]
 
   def index
-    @questions = @folder.questions.includes(:options, :special_options)
+    @questions = @folder.questions.includes(:question_set, :folder)
   end
 
   def show; end
