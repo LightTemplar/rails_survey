@@ -13,6 +13,7 @@
 #
 
 class DisplayTranslation < ApplicationRecord
+  include Sanitizable
   belongs_to :display, touch: true
   validates :text, presence: true, allow_blank: false
   validates :language, presence: true, allow_blank: false

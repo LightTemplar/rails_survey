@@ -15,6 +15,7 @@
 #
 
 class SectionTranslation < ApplicationRecord
+  include Sanitizable
   belongs_to :section, touch: true
   validates :text, presence: true, allow_blank: false
   validates :section_id, presence: true, allow_blank: false

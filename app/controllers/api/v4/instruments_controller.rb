@@ -3,12 +3,11 @@
 class Api::V4::InstrumentsController < Api::V4::ApiController
   include ActionController::MimeResponds
   respond_to :json, :pdf
-  before_action :set_project, only: %i[show create update destroy reorder pdf_export]
+  before_action :set_project, only: %i[index show create update destroy reorder pdf_export]
   before_action :set_instrument, only: %i[update destroy reorder pdf_export]
 
   def index
-    project_ids = current_user.projects.pluck(:id)
-    @instruments = Instrument.where(project_id: project_ids).order('title')
+    @instruments = @project.instruments.order('title')
   end
 
   def show

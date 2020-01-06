@@ -11,11 +11,16 @@ class Api::V4::OptionsController < Api::V4::ApiController
   def show; end
 
   def create
-    option = Option.new(option_params)
-    if option.save
-      render json: option, status: :created
+    if (resource = Option.only_deleted.find_by(identifier: params[:option][:identifier]))
+      resource.update(deleted_at: nil, text: params[:option][:text])
+      redirect_to action: 'show', id: resource.id
     else
-      render json: { errors: option.errors.full_messages }, status: :unprocessable_entity
+      option = Option.new(option_params)
+      if option.save
+        render json: option, status: :created
+      else
+        render json: { errors: option.errors.full_messages }, status: :unprocessable_entity
+      end
     end
   end
 

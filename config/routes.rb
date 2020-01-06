@@ -9,9 +9,11 @@ Rails.application.routes.draw do
       resources :projects do
         resources :instruments do
           resources :sections
+          resources :section_translations
           resources :displays do
             resources :display_instructions
           end
+          resources :display_translations
           resources :instrument_questions do
             resources :next_questions
             resources :multiple_skips
