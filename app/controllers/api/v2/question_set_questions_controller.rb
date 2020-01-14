@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V2
     class QuestionSetQuestionsController < ApiApplicationController
@@ -14,11 +16,16 @@ module Api
       end
 
       def create
-        question = @question_set.questions.new(question_params)
-        if question.save
-          render json: question, status: :created
+        if (resource = Question.only_deleted.find_by(question_identifier: params[:question_set_question][:question_identifier]))
+          resource.update(deleted_at: nil, question_set_id: params[:question_set_question][:question_set_id])
+          redirect_to action: 'update', id: resource.id
         else
-          render json: {errors: question.errors.full_messages}, status: :unprocessable_entity
+          question = @question_set.questions.new(question_params)
+          if question.save
+            render json: question, status: :created
+          else
+            render json: { errors: question.errors.full_messages }, status: :unprocessable_entity
+          end
         end
       end
 
@@ -51,10 +58,9 @@ module Api
 
       def question_params
         params.require(:question_set_question).permit(:option_set_id, :question_set_id,
-          :text, :question_type, :question_identifier, :parent_identifier, :identifies_survey,
-          :instruction_id, :critical, :special_option_set_id, :folder_id, :validation_id, :rank_responses)
+                                                      :text, :question_type, :question_identifier, :parent_identifier, :identifies_survey,
+                                                      :instruction_id, :critical, :special_option_set_id, :folder_id, :validation_id, :rank_responses)
       end
-
     end
   end
 end

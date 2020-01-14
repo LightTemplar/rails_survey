@@ -151,10 +151,10 @@ class Question < ActiveRecord::Base
   end
 
   def touch_option_set
-    option_set.touch
+    option_set&.touch
   end
 
   def touch_special_option_set
-    special_option_set.touch
+    special_option_set&.touch
   end
 end

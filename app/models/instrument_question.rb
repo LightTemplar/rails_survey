@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: instrument_questions
@@ -94,7 +95,7 @@ class InstrumentQuestion < ActiveRecord::Base
     skip_hash = Hash.new { |hash, key| hash[key] = [] }
     multiple_skips.group_by(&:option_identifier).each do |option_identifier, skips|
       option = hashed_options[option_identifier]
-      skipped_questions = skips.map { |ms| ms.skipped_question.number_in_instrument }
+      skipped_questions = skips.map { |ms| ms.skipped_question&.number_in_instrument }
       skipped_questions = skipped_questions.compact.uniq.sort
       skipped_questions = to_ranges(skipped_questions)
       skipped = skipped_questions.inject(+'') do |str, que|
