@@ -31,4 +31,19 @@ class Section < ApplicationRecord
     translation = translations.where(language: language).first
     translation&.text ? translation.text : title
   end
+
+  def order_displays(order)
+    ActiveRecord::Base.transaction do
+      order.each_with_index do |value, index|
+        display = displays.where(id: value).first
+        display.update_columns(position: index + 1) if display && display.position != index + 1
+      end
+    end
+    reload
+    instrument.order_displays
+  end
+
+  def display_count
+    displays.count
+  end
 end

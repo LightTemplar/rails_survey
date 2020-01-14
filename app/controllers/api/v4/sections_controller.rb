@@ -2,8 +2,8 @@
 
 class Api::V4::SectionsController < Api::V4::ApiController
   respond_to :json
-  before_action :set_instrument, only: %i[index show create update destroy]
-  before_action :set_section, only: %i[update destroy]
+  before_action :set_instrument, only: %i[index show create update destroy order_displays]
+  before_action :set_section, only: %i[update destroy order_displays]
 
   def index
     @sections = @instrument.sections.includes(:displays)
@@ -33,6 +33,11 @@ class Api::V4::SectionsController < Api::V4::ApiController
 
   def destroy
     respond_with @section.destroy
+  end
+
+  def order_displays
+    @section.order_displays(params[:section][:order])
+    render 'show'
   end
 
   private

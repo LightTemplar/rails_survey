@@ -25,6 +25,7 @@
 #  pop_up_instruction     :boolean          default(FALSE)
 #  instruction_after_text :boolean          default(FALSE)
 #  default_response       :text
+#  position               :integer
 #
 
 require "spec_helper"

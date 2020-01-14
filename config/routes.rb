@@ -8,10 +8,17 @@ Rails.application.routes.draw do
       resources :instruments, only: :index
       resources :projects do
         resources :instruments do
-          resources :sections
+          resources :sections do
+            member do
+              post :order_displays
+            end
+          end
           resources :section_translations
           resources :displays do
             resources :display_instructions
+            member do
+              post :order_instrument_questions
+            end
           end
           resources :display_translations
           resources :instrument_questions do
@@ -34,7 +41,13 @@ Rails.application.routes.draw do
         end
       end
       resources :question_sets do
+        member do
+          post :order_folders
+        end
         resources :folders do
+          member do
+            post :order_questions
+          end
           resources :questions, controller: 'folder_questions'
         end
         resources :questions, controller: 'question_set_questions'

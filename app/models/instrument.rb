@@ -85,18 +85,32 @@ class Instrument < ApplicationRecord
     end
   end
 
-  def reorder_displays(display_order)
+  def order_displays
+    position = 1
     ActiveRecord::Base.transaction do
-      display_order.each_with_index do |value, index|
-        display = displays.where(id: value).first
-        if display && display.position != index + 1
-          display.position = index + 1
-          display.save!
+      sections.each do |section|
+        section.displays.each do |display|
+          display.update_columns(instrument_position: position)
+          position += 1
         end
       end
-      reload
-      renumber_questions
     end
+    reload
+  end
+
+  def order_instrument_questions
+    position = 1
+    ActiveRecord::Base.transaction do
+      sections.each do |section|
+        section.displays.each do |display|
+          display.instrument_questions.each do |instrument_question|
+            instrument_question.update_columns(number_in_instrument: position)
+            position += 1
+          end
+        end
+      end
+    end
+    reload
   end
 
   def set_skip_patterns
@@ -154,18 +168,6 @@ class Instrument < ApplicationRecord
       end
     end
     instrument_copy
-  end
-
-  def renumber_questions
-    ActiveRecord::Base.transaction do
-      position = 1
-      displays.each do |display|
-        display.instrument_questions.each do |iq|
-          iq.update_columns(number_in_instrument: position) if iq.number_in_instrument != position
-          position += 1
-        end
-      end
-    end
   end
 
   def delete_duplicate_surveys

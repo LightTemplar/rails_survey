@@ -2,8 +2,8 @@
 
 class Api::V4::DisplaysController < Api::V4::ApiController
   respond_to :json
-  before_action :set_instrument, only: %i[show create update destroy]
-  before_action :set_display, only: %i[update destroy]
+  before_action :set_instrument, only: %i[show create update destroy order_instrument_questions]
+  before_action :set_display, only: %i[update destroy order_instrument_questions]
 
   def show
     @display = @instrument.displays.includes(instrument_questions: [question: [:instruction]]).find(params[:id])
@@ -24,6 +24,11 @@ class Api::V4::DisplaysController < Api::V4::ApiController
 
   def destroy
     respond_with @display.destroy
+  end
+
+  def order_instrument_questions
+    @display.order_instrument_questions(params[:display][:order])
+    render 'show'
   end
 
   private

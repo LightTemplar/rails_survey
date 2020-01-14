@@ -38,7 +38,7 @@ class Api::V4::InstrumentQuestionsController < Api::V4::ApiController
   end
 
   def instrument_question_params
-    params.require(:instrument_question).permit(:instrument_id, :question_id, :number_in_instrument,
+    params.require(:instrument_question).permit(:instrument_id, :question_id, :position,
                                                 :display_id, :identifier, :table_identifier,
                                                 :carry_forward_identifier)
   end
@@ -46,9 +46,9 @@ class Api::V4::InstrumentQuestionsController < Api::V4::ApiController
   def bulk_create
     ActiveRecord::Base.transaction do
       params[:instrument_question][:instrument_questions].map do |iq_params|
-        iq = @instrument.instrument_questions.new(iq_params.permit(:instrument_id, :question_id, :number_in_instrument,
+        iq = @instrument.instrument_questions.new(iq_params.permit(:instrument_id, :question_id, :position,
                                                                    :display_id, :identifier, :carry_forward_identifier))
-        iq.identifier = "#{iq_params[:identifier]}_#{iq_params[:number_in_instrument]}" if @instrument.instrument_questions.find_by_identifier(iq_params[:identifier])
+        iq.identifier = "#{iq_params[:identifier]}_#{iq_params[:position]}" if @instrument.instrument_questions.find_by_identifier(iq_params[:identifier])
         iq.save!
       end
     end

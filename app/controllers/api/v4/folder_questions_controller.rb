@@ -46,6 +46,6 @@ class Api::V4::FolderQuestionsController < Api::V4::ApiController
                                      :instruction_id, :critical, :special_option_set_id, :folder_id,
                                      :validation_id, :rank_responses, :pdf_response_height,
                                      :pdf_print_options, :pop_up_instruction, :instruction_after_text,
-                                     :default_response)
+                                     :default_response, :position)
   end
 end

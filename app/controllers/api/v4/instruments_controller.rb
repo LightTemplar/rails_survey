@@ -3,8 +3,8 @@
 class Api::V4::InstrumentsController < Api::V4::ApiController
   include ActionController::MimeResponds
   respond_to :json, :pdf
-  before_action :set_project, only: %i[index show create update destroy reorder pdf_export]
-  before_action :set_instrument, only: %i[update destroy reorder pdf_export]
+  before_action :set_project, only: %i[index show create update destroy pdf_export]
+  before_action :set_instrument, only: %i[update destroy pdf_export]
 
   def index
     @instruments = @project.instruments.order('title')
@@ -29,14 +29,6 @@ class Api::V4::InstrumentsController < Api::V4::ApiController
 
   def destroy
     respond_with @instrument.destroy
-  end
-
-  def reorder
-    if @instrument.renumber_questions
-      render json: :ok, status: :accepted
-    else
-      render json: { errors: 'question reorder unsuccessful' }, status: :unprocessable_entity
-    end
   end
 
   def pdf_export

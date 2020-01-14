@@ -2,7 +2,7 @@
 
 class Api::V4::QuestionSetsController < Api::V4::ApiController
   respond_to :json
-  before_action :set_question_set, only: %i[show update destroy]
+  before_action :set_question_set, only: %i[show update destroy order_folders]
 
   def index
     @question_sets = QuestionSet.all.includes(:folders).order(updated_at: :desc)
@@ -27,6 +27,11 @@ class Api::V4::QuestionSetsController < Api::V4::ApiController
     respond_with @question_set.destroy
   end
 
+  def order_folders
+    @question_set.order_folders(params[:question_set][:order])
+    render 'show'
+  end
+
   private
 
   def question_set_params
@@ -34,6 +39,6 @@ class Api::V4::QuestionSetsController < Api::V4::ApiController
   end
 
   def set_question_set
-    @question_set = QuestionSet.find(params[:id])
+    @question_set = QuestionSet.includes(:folders).find(params[:id])
   end
 end

@@ -13,18 +13,19 @@
 #  deleted_at                 :datetime
 #  section_id                 :integer
 #  instrument_questions_count :integer
+#  instrument_position        :integer
 #
 
 class Display < ApplicationRecord
   belongs_to :instrument, touch: true
   belongs_to :section, touch: true
-  has_many :instrument_questions, -> { order 'number_in_instrument' }, dependent: :destroy
+  has_many :instrument_questions, -> { order 'position' }, dependent: :destroy
   has_many :display_instructions, dependent: :destroy
   has_many :display_translations, dependent: :destroy
 
   acts_as_paranoid
   has_paper_trail
-  acts_as_list scope: :instrument
+  acts_as_list scope: :section
 
   validates :title, presence: true
   validates :instrument_id, presence: true
@@ -60,7 +61,6 @@ class Display < ApplicationRecord
         iq.save!
       end
     end
-    RenumberQuestionsWorker.perform_async(instrument.id)
     destination
   end
 
@@ -82,5 +82,16 @@ class Display < ApplicationRecord
       end
       touch
     end
+  end
+
+  def order_instrument_questions(order)
+    ActiveRecord::Base.transaction do
+      order.each_with_index do |value, index|
+        instrument_question = instrument_questions.where(id: value).first
+        instrument_question.update_columns(position: index + 1) if instrument_question && instrument_question.position != index + 1
+      end
+    end
+    reload
+    instrument.order_instrument_questions
   end
 end

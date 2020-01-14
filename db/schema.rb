@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191211162501) do
+ActiveRecord::Schema.define(version: 20200114144937) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -150,6 +150,7 @@ ActiveRecord::Schema.define(version: 20191211162501) do
     t.datetime "deleted_at"
     t.integer "section_id"
     t.integer "instrument_questions_count"
+    t.integer "instrument_position"
     t.index ["deleted_at"], name: "index_displays_on_deleted_at"
   end
 
@@ -167,6 +168,7 @@ ActiveRecord::Schema.define(version: 20191211162501) do
     t.string "title"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "position"
   end
 
   create_table "follow_up_questions", id: :serial, force: :cascade do |t|
@@ -258,6 +260,7 @@ ActiveRecord::Schema.define(version: 20191211162501) do
     t.string "table_identifier"
     t.integer "loop_questions_count", default: 0
     t.string "carry_forward_identifier"
+    t.integer "position"
     t.index ["deleted_at"], name: "index_instrument_questions_on_deleted_at"
     t.index ["instrument_id", "identifier"], name: "index_instrument_questions_on_instrument_id_and_identifier"
     t.index ["question_id"], name: "index_instrument_questions_on_question_id"
@@ -475,6 +478,7 @@ ActiveRecord::Schema.define(version: 20191211162501) do
     t.boolean "pop_up_instruction", default: false
     t.boolean "instruction_after_text", default: false
     t.text "default_response"
+    t.integer "position"
     t.index ["question_identifier"], name: "index_questions_on_question_identifier", unique: true
   end
 
