@@ -1,6 +1,7 @@
 # frozen_string_literal: false
 
 module PdfUtils
+  QUESTION_TEXT_LEFT_MARGIN = 30
   QUESTION_LEFT_MARGIN = 40
   QUESTION_NUMBER_MARGIN = 5
   AFTER_INSTRUCTIONS_MARGIN = 5
@@ -15,7 +16,6 @@ module PdfUtils
   AFTER_TITLE_MARGIN = 15
   AFTER_HORIZONTAL_RULE_MARGIN = 10
   AFTER_QUESTION_MARGIN = 20
-  NUMBER_OF_COLUMNS = 2
   FONT_SIZE = 10
   PAGE = '<page>'.freeze
   LETTERS = ('a'..'z').to_a
@@ -43,7 +43,7 @@ module PdfUtils
     return unless question.special_options
 
     indent(QUESTION_LEFT_MARGIN) do
-      text "Or: #{question.special_options.join(' / ')}" unless question.special_options.blank?
+      text sanitize_choice("Or: #{question.special_options.join(' / ')}"), inline_format: true unless question.special_options.blank?
     end
   end
 
@@ -55,11 +55,6 @@ module PdfUtils
   def format_instructions(instructions)
     text sanitize_text(instructions), inline_format: true
     move_down AFTER_INSTRUCTIONS_MARGIN unless instructions.blank?
-  end
-
-  def format_question_text(question_text)
-    text sanitize_text(question_text), inline_format: true
-    move_down QUESTION_TEXT_MARGIN
   end
 
   def format_display_text(text)
@@ -85,6 +80,14 @@ module PdfUtils
     text = text.gsub('</p>', "\n")
     text = text.gsub('</div>', "\n")
     text = text.gsub('<br>', "\n")
+    sanitizer.sanitize(text, tags: tags)
+  end
+
+  def sanitize_choice(text)
+    return text if text.nil?
+
+    sanitizer = Rails::Html::WhiteListSanitizer.new
+    tags = %w[b i u strong em]
     sanitizer.sanitize(text, tags: tags)
   end
 
@@ -190,7 +193,7 @@ module PdfUtils
     translation = choice.translation_for(language) if language
     choice_text = translation.text if language && translation
     if question.list_of_boxes_variant?
-      pad(2) { text "#{LETTERS[index]}) #{choice_text}" }
+      pad(2) { text sanitize_choice("#{LETTERS[index]}) #{choice_text}"), inline_format: true }
       pad(10) { stroke_horizontal_rule }
     else
       stroke_circle [bounds.left + OPTION_LEFT_MARGIN, cursor - 5], CIRCLE_SIZE if question.select_one_variant?
@@ -203,7 +206,7 @@ module PdfUtils
     box_bounds = [bounds.left + OPTION_LEFT_MARGIN + 10, cursor + 5]
     box_bounds = [bounds.left + OPTION_LEFT_MARGIN + 20, cursor] if question.select_multiple_variant?
     bounding_box(box_bounds, width: bounds.width - (OPTION_LEFT_MARGIN * 2) - 10) do
-      pad(2) { text "#{index}#{text_string}" }
+      pad(2) { text sanitize_choice("#{index}#{text_string}"), inline_format: true }
     end
     move_down 2
   end
@@ -242,9 +245,9 @@ module PdfUtils
     question.non_special_options.each_with_index do |option, index|
       bounding_box([left_pos + (width * index), cursor_pos], width: width) do
         if language
-          text option.translated_for(language, :text)
+          text sanitize_choice(option.translated_for(language, :text))
         else
-          text option.text
+          text sanitize_choice(option.text)
         end
       end
     end

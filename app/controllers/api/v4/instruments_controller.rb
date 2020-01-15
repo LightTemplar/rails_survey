@@ -35,9 +35,9 @@ class Api::V4::InstrumentsController < Api::V4::ApiController
     respond_to do |format|
       format.pdf do
         pdf = if params[:language] == 'en'
-                InstrumentPdf.new(@instrument)
+                InstrumentPdf.new(@instrument, params[:column_count])
               else
-                TranslationPdf.new(@instrument, params[:language])
+                TranslationPdf.new(@instrument, params[:language], params[:column_count])
               end
         send_data pdf.render, filename: pdf.display_name, type: 'application/pdf'
       end

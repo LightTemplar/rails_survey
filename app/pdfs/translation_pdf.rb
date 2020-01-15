@@ -4,10 +4,11 @@ class TranslationPdf
   include Prawn::View
   include PdfUtils
 
-  def initialize(instrument, language)
+  def initialize(instrument, language, column_count)
     super()
     @instrument = instrument
     @language = language
+    @column_count = column_count.to_i
     register_fonts
     pdf_content
   end
@@ -33,7 +34,7 @@ class TranslationPdf
   end
 
   def content
-    column_box([0, cursor], columns: NUMBER_OF_COLUMNS, width: bounds.width) do
+    column_box([0, cursor], columns: @column_count, width: bounds.width) do
       @instrument.sections.each do |section|
         format_section_text(section_text(section))
         section.displays.each do |display|
@@ -49,8 +50,10 @@ class TranslationPdf
   end
 
   def format_question(question)
-    question.display_instructions.each do |display_instruction|
-      format_instructions(instruction_text(display_instruction.instruction))
+    if question.question.question_type == 'INSTRUCTIONS'
+      format_instructions(instruction_text(question.question.instruction)) if question.question.instruction
+      format_instructions(question_text(question))
+      return
     end
 
     bounds.move_past_bottom if y < MINIMUM_REMAINING_HEIGHT
@@ -58,22 +61,19 @@ class TranslationPdf
       format_question_number(question)
     end
 
-    text_array = []
-    instruction = instruction_text(question.question.instruction)
-    if question.question.instruction_after_text
-      text_array = question_text_array(question, text_array)
-      text_array << { text: sanitize_text(instruction) + "\n", styles: [:italic] } unless instruction.blank?
-    else
-      text_array << { text: sanitize_text(instruction) + "\n", styles: [:italic] } unless instruction.blank?
-      text_array = question_text_array(question, text_array)
+    instructions = instruction_text(question.question.instruction)
+    bounding_box([bounds.left + QUESTION_TEXT_LEFT_MARGIN, cursor], width: bounds.width - 30) do
+      if question.question.instruction_after_text
+        text sanitize_text(question_text(question)), inline_format: true
+        text sanitize_text("<i>#{instructions}</i>") + "\n", inline_format: true if instructions
+      else
+        text sanitize_text("<i>#{instructions}</i>") + "\n", inline_format: true if instructions
+        text sanitize_text(question_text(question)), inline_format: true
+      end
+      pop_up_instruction = instruction_text(question.question.pop_up_instruction)
+      text sanitize_text("<i>#{pop_up_instruction}</i>") + "\n", inline_format: true if pop_up_instruction
     end
-    pop_up_instruction = instruction_text(question.question.pop_up_instruction)
-    text_array << { text: sanitize_text(pop_up_instruction) + "\n", styles: [:italic] } unless instruction.blank?
-    box = Prawn::Text::Formatted::Box.new(text_array, at: [bounds.left + QUESTION_LEFT_MARGIN, cursor], document: self)
-    box.render(dry_run: true)
-    formatted_text_box text_array, at: [bounds.left + QUESTION_LEFT_MARGIN, cursor]
-    move_down QUESTION_TEXT_MARGIN + box.height
-
+    move_down QUESTION_TEXT_MARGIN
     format_choice_instructions(instruction_text(question.question&.option_set&.instruction))
     format_question_choices(question, @language)
     pad_after_question(question)
