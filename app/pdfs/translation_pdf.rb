@@ -34,12 +34,15 @@ class TranslationPdf
 
   def content
     column_box([0, cursor], columns: NUMBER_OF_COLUMNS, width: bounds.width) do
-      @instrument.displays.each do |display|
-        format_display_text(display_text(display))
-        move_down AFTER_TITLE_MARGIN
-        display.instrument_questions.each do |question|
-          format_question(question)
-          move_down AFTER_QUESTION_MARGIN
+      @instrument.sections.each do |section|
+        format_section_text(section_text(section))
+        section.displays.each do |display|
+          format_display_text(display_text(display))
+          move_down AFTER_TITLE_MARGIN
+          display.instrument_questions.each do |question|
+            format_question(question)
+            move_down AFTER_QUESTION_MARGIN
+          end
         end
       end
     end
@@ -57,13 +60,15 @@ class TranslationPdf
 
     text_array = []
     instruction = instruction_text(question.question.instruction)
-    if question.question.instruction_after_text || question.question.pop_up_instruction
+    if question.question.instruction_after_text
       text_array = question_text_array(question, text_array)
       text_array << { text: sanitize_text(instruction) + "\n", styles: [:italic] } unless instruction.blank?
     else
       text_array << { text: sanitize_text(instruction) + "\n", styles: [:italic] } unless instruction.blank?
       text_array = question_text_array(question, text_array)
     end
+    pop_up_instruction = instruction_text(question.question.pop_up_instruction)
+    text_array << { text: sanitize_text(pop_up_instruction) + "\n", styles: [:italic] } unless instruction.blank?
     box = Prawn::Text::Formatted::Box.new(text_array, at: [bounds.left + QUESTION_LEFT_MARGIN, cursor], document: self)
     box.render(dry_run: true)
     formatted_text_box text_array, at: [bounds.left + QUESTION_LEFT_MARGIN, cursor]
@@ -108,5 +113,12 @@ class TranslationPdf
     translation = instruction.instruction_translations.where(language: @language).first
     text = translation.text if translation
     text
+  end
+
+  def section_text(section)
+    d_text = section.title
+    translation = section.translations.where(language: @language).first
+    d_text = translation.text if translation
+    d_text
   end
 end

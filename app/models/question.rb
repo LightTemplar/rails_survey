@@ -24,10 +24,10 @@
 #  images_count           :integer          default(0)
 #  pdf_response_height    :integer
 #  pdf_print_options      :boolean          default(TRUE)
-#  pop_up_instruction     :boolean          default(FALSE)
 #  instruction_after_text :boolean          default(FALSE)
 #  default_response       :text
 #  position               :integer
+#  pop_up_instruction_id  :integer
 #
 
 class Question < ApplicationRecord
@@ -39,6 +39,7 @@ class Question < ApplicationRecord
   belongs_to :instruction
   belongs_to :folder
   belongs_to :validation
+  belongs_to :pop_up_instruction, class_name: 'Instruction'
 
   has_many :options, through: :option_set
   has_many :special_options, through: :special_option_set, source: :options

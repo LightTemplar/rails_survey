@@ -63,14 +63,24 @@ module PdfUtils
   end
 
   def format_display_text(text)
-    text "<u>#{text}</u>", align: :center, size: FONT_SIZE + 3, inline_format: true
+    text "<u>#{remove_tags(text)}</u>", align: :center, size: FONT_SIZE + 3, style: :bold, inline_format: true
+  end
+
+  def format_section_text(text)
+    text "<u>#{remove_tags(text)}</u>", align: :center, size: FONT_SIZE + 5, style: :bold, inline_format: true
+  end
+
+  def remove_tags(text)
+    text = text.gsub('<p>', '')
+    text = text.gsub('</p>', '')
+    text
   end
 
   def sanitize_text(text)
     return text if text.nil?
 
     sanitizer = Rails::Html::WhiteListSanitizer.new
-    tags = %w[b i u strikethrough sub sup]
+    tags = %w[b i u strong em]
     text = text.delete("\n")
     text = text.gsub('</p>', "\n")
     text = text.gsub('</div>', "\n")

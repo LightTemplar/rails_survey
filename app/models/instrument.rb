@@ -42,7 +42,7 @@ class Instrument < ApplicationRecord
   has_many :responses, through: :surveys
   has_many :response_images, through: :responses
   has_one :response_export
-  has_many :sections, -> { order(position: :asc) }, dependent: :destroy
+  has_many :sections, -> { order 'position' }, dependent: :destroy
   has_many :section_translations, through: :sections, source: :translations
   has_many :rules, through: :instrument_rules
   has_many :grids, dependent: :destroy

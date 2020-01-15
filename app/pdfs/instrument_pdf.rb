@@ -29,12 +29,15 @@ class InstrumentPdf
 
   def content
     column_box([0, cursor], columns: NUMBER_OF_COLUMNS, width: bounds.width) do
-      @instrument.displays.each do |display|
-        text "<u>#{display.title}</u>", align: :center, size: FONT_SIZE + 3, style: :bold, inline_format: true
-        move_down AFTER_TITLE_MARGIN
-        display.instrument_questions.each do |question|
-          format_question(question)
-          move_down AFTER_QUESTION_MARGIN
+      @instrument.sections.each do |section|
+        format_section_text(section.title)
+        section.displays.each do |display|
+          format_display_text(display.title)
+          move_down AFTER_TITLE_MARGIN
+          display.instrument_questions.each do |question|
+            format_question(question)
+            move_down AFTER_QUESTION_MARGIN
+          end
         end
       end
     end
@@ -52,13 +55,15 @@ class InstrumentPdf
     end
     text_array = []
     instructions = question.question.instruction&.text
-    if question.question.instruction_after_text || question.question.pop_up_instruction
+    if question.question.instruction_after_text
       text_array = question_text_array(question, text_array)
       text_array << { text: sanitize_text(instructions) + "\n", styles: [:italic] } if instructions
     else
       text_array << { text: sanitize_text(instructions) + "\n", styles: [:italic] } if instructions
       text_array = question_text_array(question, text_array)
     end
+    pop_up_instruction = question.question.pop_up_instruction&.text
+    text_array << { text: sanitize_text(pop_up_instruction) + "\n", styles: [:italic] } if pop_up_instruction
     box = Prawn::Text::Formatted::Box.new(text_array, at: [bounds.left + QUESTION_LEFT_MARGIN, cursor], document: self)
     box.render(dry_run: true) # Find out the heigh of the text since text_box does not move cursor in the same way as text
     formatted_text_box text_array, at: [bounds.left + QUESTION_LEFT_MARGIN, cursor]
@@ -71,9 +76,9 @@ class InstrumentPdf
   end
 
   def question_text_array(question, array)
-    if question.text.include? '</b>'
-      strs = question.text.split('</b>')
-      array << { text: sanitize_text(strs[0].delete('<b>')) + "\n", styles: [:bold] }
+    if question.text.include? '</strong>'
+      strs = question.text.split('</strong>')
+      array << { text: sanitize_text(strs[0].gsub('<strong>', '')), styles: [:bold] }
       array << { text: sanitize_text(strs[1]) }
     else
       array << { text: sanitize_text(question.text) }

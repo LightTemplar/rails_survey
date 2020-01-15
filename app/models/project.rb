@@ -91,11 +91,12 @@ class Project < ApplicationRecord
   end
 
   def api_instructions
-    api_instruction_ids = api_questions.pluck(:instruction_id) +
-                          api_option_sets.pluck(:instruction_id) +
-                          api_display_instructions.pluck(:instruction_id) +
-                          critical_responses.with_deleted.pluck(:instruction_id) +
-                          api_option_in_option_sets.pluck(:instruction_id)
+    api_instruction_ids = api_questions.pluck(:instruction_id).compact +
+                          api_questions.pluck(:pop_up_instruction_id).compact +
+                          api_option_sets.pluck(:instruction_id).compact +
+                          api_display_instructions.pluck(:instruction_id).compact +
+                          critical_responses.with_deleted.pluck(:instruction_id).compact +
+                          api_option_in_option_sets.pluck(:instruction_id).compact
     Instruction.includes(:instruction_translations).where(id: api_instruction_ids.uniq)
   end
 
