@@ -34,6 +34,7 @@ Rails.application.routes.draw do
               end
             end
           end
+          resources :questions, controller: 'survey_questions'
           member do
             get :reorder
             get :pdf_export, defaults: { format: 'pdf' }
