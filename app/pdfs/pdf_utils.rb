@@ -152,7 +152,7 @@ module PdfUtils
           skipped = ''
           m_skips.each do |m_skip|
             q = instrument_questions.where(identifier: m_skip.skip_question_identifier).first
-            skipped << "<b>##{q.number_in_instrument}</b>, "
+            skipped << "<b>##{q.number_in_instrument}</b>, " if q
           end
           skip_string = if option
                           "* If <b>(#{LETTERS[options.index(option)]})</b> skip questions: #{skipped.strip.chop}"
