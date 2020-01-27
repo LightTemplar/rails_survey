@@ -59,6 +59,7 @@ class Question < ApplicationRecord
   after_save :touch_special_option_set, if: :saved_change_to_special_option_set_id?
   after_commit :update_instruments_versions, on: %i[update destroy]
   after_save :update_versions_cache
+  after_save :update_instrument_questions, if: :saved_change_to_question_identifier?
 
   has_paper_trail
   acts_as_paranoid
@@ -179,5 +180,11 @@ class Question < ApplicationRecord
 
   def touch_special_option_set
     special_option_set&.touch
+  end
+
+  def update_instrument_questions
+    instrument_questions.group_by(&:instrument_id).each do |_instrument_id, i_questions|
+      i_questions.first.update(identifier: question_identifier) if i_questions.size == 1
+    end
   end
 end

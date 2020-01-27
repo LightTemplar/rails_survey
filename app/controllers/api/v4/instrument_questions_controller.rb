@@ -19,7 +19,11 @@ class Api::V4::InstrumentQuestionsController < Api::V4::ApiController
   end
 
   def update
-    respond_with @instrument_question.update_attributes(instrument_question_params)
+    if @instrument_question.update_attributes(instrument_question_params)
+      render json: @instrument_question, status: :accepted
+    else
+      render json: { errors: @instrument_question.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   def destroy

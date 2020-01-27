@@ -20,7 +20,11 @@ class Api::V4::InstructionsController < Api::V4::ApiController
   end
 
   def update
-    respond_with @instruction.update_attributes(instruction_params)
+    if @instruction.update_attributes(instruction_params)
+      render json: @instruction, status: :accepted
+    else
+      render json: { errors: @instruction.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   def destroy

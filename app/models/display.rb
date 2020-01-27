@@ -27,9 +27,9 @@ class Display < ApplicationRecord
   has_paper_trail
   acts_as_list scope: :section
 
-  validates :title, presence: true
   validates :instrument_id, presence: true
   validates :section_id, presence: true
+  validates :title, presence: true, uniqueness: { scope: [:section_id] }
 
   def copy(instrument, display_type)
     if display_type == 'AS_IT_IS'

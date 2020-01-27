@@ -16,6 +16,8 @@ class Folder < ApplicationRecord
   belongs_to :question_set, touch: true
   has_many :questions, -> { order 'position' }
 
+  validates :title, presence: true, uniqueness: { scope: [:question_set_id] }
+
   def order_questions(order)
     ActiveRecord::Base.transaction do
       order.each_with_index do |value, index|

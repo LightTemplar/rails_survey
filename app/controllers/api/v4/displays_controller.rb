@@ -19,7 +19,11 @@ class Api::V4::DisplaysController < Api::V4::ApiController
   end
 
   def update
-    respond_with @display.update_attributes(display_params)
+    if @display.update_attributes(display_params)
+      render json: @display, status: :accepted
+    else
+      render json: { errors: @display.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   def destroy

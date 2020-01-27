@@ -21,7 +21,11 @@ class Api::V4::FoldersController < Api::V4::ApiController
   end
 
   def update
-    respond_with @folder.update_attributes(folder_params)
+    if @folder.update_attributes(folder_params)
+      render json: @folder, status: :accepted
+    else
+      render json: { errors: @folder.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   def destroy

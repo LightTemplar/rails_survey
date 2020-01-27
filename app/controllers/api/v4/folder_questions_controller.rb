@@ -21,7 +21,11 @@ class Api::V4::FolderQuestionsController < Api::V4::ApiController
   end
 
   def update
-    respond_with @question.update_attributes(question_params)
+    if @question.update_attributes(question_params)
+      render json: @question, status: :accepted
+    else
+      render json: { errors: @question.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   def destroy

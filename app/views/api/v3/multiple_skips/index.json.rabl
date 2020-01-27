@@ -9,12 +9,12 @@ attributes :id, :question_identifier, :option_identifier,
 node :question_id, &:instrument_question_id
 
 node :instrument_id do |ms|
-  ms.instrument_question.instrument_id
+  ms.instrument_question&.instrument_id
 end
 
 node :question_identifier do |ms|
   if ms.question_identifier.nil?
-    ms.instrument_question.identifier
+    ms.instrument_question&.identifier
   else
     ms.question_identifier
   end

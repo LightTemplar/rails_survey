@@ -25,7 +25,11 @@ class Api::V4::OptionsController < Api::V4::ApiController
   end
 
   def update
-    respond_with @option.update_attributes(option_params)
+    if @option.update_attributes(option_params)
+      render json: @option, status: :accepted
+    else
+      render json: { errors: @option.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   def destroy
