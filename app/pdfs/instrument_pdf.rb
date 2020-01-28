@@ -57,16 +57,13 @@ class InstrumentPdf
     end
 
     instructions = question.question.instruction&.text
+    after_text_instructions = question.question.after_text_instruction&.text
+    pop_up_instructions = question.question.pop_up_instruction&.text
     bounding_box([bounds.left + QUESTION_TEXT_LEFT_MARGIN, cursor], width: bounds.width - 30) do
-      if question.question.instruction_after_text
-        text sanitize_text(question.text), inline_format: true
-        text sanitize_text("<i>#{instructions}</i>") + "\n", inline_format: true if instructions
-      else
-        text sanitize_text("<i>#{instructions}</i>") + "\n", inline_format: true if instructions
-        text sanitize_text(question.text), inline_format: true
-      end
-      pop_up_instruction = question.question.pop_up_instruction&.text
-      text sanitize_text("<i>#{pop_up_instruction}</i>") + "\n", inline_format: true if pop_up_instruction
+      text sanitize_text("<i>#{instructions}</i>") + "\n", inline_format: true if instructions
+      text sanitize_text(question.text), inline_format: true
+      text sanitize_text("** <i>#{pop_up_instructions}</i>") + "\n", inline_format: true if pop_up_instructions
+      text sanitize_text("<i>#{after_text_instructions}</i>") + "\n", inline_format: true if after_text_instructions
     end
     move_down QUESTION_TEXT_MARGIN
     format_choice_instructions(question.question&.option_set&.instruction&.text)

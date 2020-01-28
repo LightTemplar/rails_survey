@@ -64,8 +64,8 @@ node :pop_up_instruction_id do |iq|
   iq.question&.pop_up_instruction_id
 end
 
-node :instruction_after_text do |iq|
-  iq.question&.instruction_after_text
+node :after_text_instruction_id do |iq|
+  iq.question&.after_text_instruction_id
 end
 
 node :carry_forward_option_set_id do |iq|

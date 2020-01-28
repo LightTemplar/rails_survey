@@ -138,9 +138,9 @@ module PdfUtils
           skip_to_question = instrument_questions.where(identifier: next_question.next_question_identifier).first
           if option
             index = options.index(option)
-            skip_string = "=> If <b>(#{LETTERS[index]})</b> skip to <b>##{skip_to_question.number_in_instrument}</b> (#{next_question.next_question_identifier})"
+            skip_string = "=> If <b>(#{LETTERS[index]})</b> skip to <b>##{skip_to_question&.number_in_instrument}</b> (#{next_question.next_question_identifier})"
           else
-            skip_string = "=> If <b>#{next_question.option_identifier}</b> skip to <b>##{skip_to_question.number_in_instrument}</b> (#{next_question.next_question_identifier})"
+            skip_string = "=> If <b>#{next_question.option_identifier}</b> skip to <b>##{skip_to_question&.number_in_instrument}</b> (#{next_question.next_question_identifier})"
           end
           text skip_string, inline_format: true, size: FONT_SIZE - 2
         end

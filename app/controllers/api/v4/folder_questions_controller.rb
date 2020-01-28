@@ -49,7 +49,7 @@ class Api::V4::FolderQuestionsController < Api::V4::ApiController
                                      :question_identifier, :parent_identifier, :identifies_survey,
                                      :instruction_id, :critical, :special_option_set_id, :folder_id,
                                      :validation_id, :rank_responses, :pdf_response_height,
-                                     :pdf_print_options, :pop_up_instruction_id, :instruction_after_text,
+                                     :pdf_print_options, :pop_up_instruction_id, :after_text_instruction_id,
                                      :default_response, :position)
   end
 end

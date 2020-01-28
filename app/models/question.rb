@@ -4,30 +4,30 @@
 #
 # Table name: questions
 #
-#  id                     :integer          not null, primary key
-#  text                   :text
-#  question_type          :string
-#  question_identifier    :string
-#  created_at             :datetime
-#  updated_at             :datetime
-#  deleted_at             :datetime
-#  identifies_survey      :boolean          default(FALSE)
-#  question_set_id        :integer
-#  option_set_id          :integer
-#  instruction_id         :integer
-#  special_option_set_id  :integer
-#  parent_identifier      :string
-#  folder_id              :integer
-#  validation_id          :integer
-#  rank_responses         :boolean          default(FALSE)
-#  versions_count         :integer          default(0)
-#  images_count           :integer          default(0)
-#  pdf_response_height    :integer
-#  pdf_print_options      :boolean          default(TRUE)
-#  instruction_after_text :boolean          default(FALSE)
-#  default_response       :text
-#  position               :integer
-#  pop_up_instruction_id  :integer
+#  id                        :integer          not null, primary key
+#  text                      :text
+#  question_type             :string
+#  question_identifier       :string
+#  created_at                :datetime
+#  updated_at                :datetime
+#  deleted_at                :datetime
+#  identifies_survey         :boolean          default(FALSE)
+#  question_set_id           :integer
+#  option_set_id             :integer
+#  instruction_id            :integer
+#  special_option_set_id     :integer
+#  parent_identifier         :string
+#  folder_id                 :integer
+#  validation_id             :integer
+#  rank_responses            :boolean          default(FALSE)
+#  versions_count            :integer          default(0)
+#  images_count              :integer          default(0)
+#  pdf_response_height       :integer
+#  pdf_print_options         :boolean          default(TRUE)
+#  default_response          :text
+#  position                  :integer
+#  pop_up_instruction_id     :integer
+#  after_text_instruction_id :integer
 #
 
 class Question < ApplicationRecord
@@ -40,6 +40,7 @@ class Question < ApplicationRecord
   belongs_to :folder
   belongs_to :validation
   belongs_to :pop_up_instruction, class_name: 'Instruction'
+  belongs_to :after_text_instruction, class_name: 'Instruction'
 
   has_many :options, through: :option_set
   has_many :option_translations, through: :options, source: :translations

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200115134630) do
+ActiveRecord::Schema.define(version: 20200128203238) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -475,10 +475,10 @@ ActiveRecord::Schema.define(version: 20200115134630) do
     t.integer "images_count", default: 0
     t.integer "pdf_response_height"
     t.boolean "pdf_print_options", default: true
-    t.boolean "instruction_after_text", default: false
     t.text "default_response"
     t.integer "position"
     t.integer "pop_up_instruction_id"
+    t.integer "after_text_instruction_id"
     t.index ["question_identifier"], name: "index_questions_on_question_identifier", unique: true
   end
 

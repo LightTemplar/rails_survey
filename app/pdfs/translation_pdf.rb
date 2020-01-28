@@ -62,16 +62,13 @@ class TranslationPdf
     end
 
     instructions = instruction_text(question.question.instruction)
+    after_text_instructions = instruction_text(question.question.after_text_instruction)
+    pop_up_instructions = instruction_text(question.question.pop_up_instruction)
     bounding_box([bounds.left + QUESTION_TEXT_LEFT_MARGIN, cursor], width: bounds.width - 30) do
-      if question.question.instruction_after_text
-        text sanitize_text(question_text(question)), inline_format: true
-        text sanitize_text("<i>#{instructions}</i>") + "\n", inline_format: true if instructions
-      else
-        text sanitize_text("<i>#{instructions}</i>") + "\n", inline_format: true if instructions
-        text sanitize_text(question_text(question)), inline_format: true
-      end
-      pop_up_instruction = instruction_text(question.question.pop_up_instruction)
-      text sanitize_text("<i>#{pop_up_instruction}</i>") + "\n", inline_format: true if pop_up_instruction
+      text sanitize_text("<i>#{instructions}</i>") + "\n", inline_format: true if instructions
+      text sanitize_text(question_text(question)), inline_format: true
+      text sanitize_text("** <i>#{pop_up_instructions}</i>") + "\n", inline_format: true if pop_up_instructions
+      text sanitize_text("<i>#{after_text_instructions}</i>") + "\n", inline_format: true if after_text_instructions
     end
     move_down QUESTION_TEXT_MARGIN
     format_choice_instructions(instruction_text(question.question&.option_set&.instruction))
