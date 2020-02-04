@@ -105,6 +105,7 @@ Rails.application.routes.draw do
         resources :critical_responses, only: :index
         resources :surveys, only: :create
         resources :responses, only: :create
+        resources :survey_notes, only: :create
         resources :response_images, only: :create
         resources :device_sync_entries, only: :create
         resources :rosters, only: :create
