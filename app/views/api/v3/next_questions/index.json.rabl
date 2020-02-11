@@ -9,5 +9,5 @@ attributes :id, :question_identifier, :option_identifier,
 node :question_id, &:instrument_question_id
 
 node :instrument_id do |nq|
-  nq.instrument_question.instrument_id
+  nq.instrument_question&.instrument_id
 end
