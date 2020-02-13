@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 object @question
-cache @question
 
 attributes :id, :instrument_id, :display_id, :number_in_instrument, :deleted_at,
            :table_identifier, :question_id, :carry_forward_identifier, :position,
@@ -18,7 +17,7 @@ end
 node :question_identifier, &:identifier
 
 node :instruction_id do |iq|
-  iq.question&.try(:instruction_id)
+  iq.question&.instruction_id
 end
 
 node :instrument_version do |iq|

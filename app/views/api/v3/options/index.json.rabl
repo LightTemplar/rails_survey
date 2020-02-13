@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 collection @options
-cache ['v3-options', @options]
 
 attributes :id, :identifier, :text, :deleted_at
 

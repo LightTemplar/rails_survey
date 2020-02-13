@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 collection @multiple_skips
-cache ['v3-multiple-skips', @multiple_skips]
 
 attributes :id, :question_identifier, :option_identifier,
            :skip_question_identifier, :deleted_at, :value

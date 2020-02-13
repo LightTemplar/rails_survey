@@ -1,13 +1,12 @@
+# frozen_string_literal: true
+
 collection @instruments
-cache ['v3-instruments', @instruments]
 
 attributes :id, :title, :language, :alignment, :child_update_count, :roster,
-:previous_question_count, :deleted_at, :project_id, :published, :special_options,
-:show_sections_page, :scorable, :navigate_to_review_page
+           :previous_question_count, :deleted_at, :project_id, :published, :special_options,
+           :show_sections_page, :scorable, :navigate_to_review_page
 
-node :current_version_number do |i|
-  i.current_version_number
-end
+node :current_version_number, &:current_version_number
 
 node :question_count do |i|
   i.instrument_questions.count

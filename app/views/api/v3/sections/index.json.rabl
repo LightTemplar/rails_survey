@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 collection @sections
-cache ['v3-sections', @sections]
 
 attributes :id, :title, :instrument_id, :deleted_at, :position
 
