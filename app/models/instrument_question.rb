@@ -17,6 +17,7 @@
 #  loop_questions_count     :integer          default(0)
 #  carry_forward_identifier :string
 #  position                 :integer
+#  skip_operation           :string
 #
 
 class InstrumentQuestion < ApplicationRecord

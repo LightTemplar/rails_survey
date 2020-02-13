@@ -53,6 +53,7 @@ class Api::V4::OptionSetsController < Api::V4::ApiController
         oios.special = oios_params[:special]
         oios.instruction_id = oios_params[:instruction_id]
         oios.allow_text_entry = oios_params[:allow_text_entry]
+        oios.exclusion_ids = oios_params[:exclusion_ids]
         oios.save
       end
     end

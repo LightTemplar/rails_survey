@@ -3,4 +3,4 @@
 collection @next_questions
 
 attributes :id, :question_identifier, :option_identifier, :next_question_identifier,
-           :value, :complete_survey, :instrument_question_id
+           :value, :complete_survey, :instrument_question_id, :value_operator

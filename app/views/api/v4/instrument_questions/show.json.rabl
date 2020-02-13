@@ -4,7 +4,7 @@ object @instrument_question
 
 attributes :id, :instrument_id, :question_id, :number_in_instrument, :display_id,
            :identifier, :following_up_question_identifier, :table_identifier,
-           :carry_forward_identifier, :position
+           :carry_forward_identifier, :position, :skip_operation
 
 node :country_list, &:country_list
 

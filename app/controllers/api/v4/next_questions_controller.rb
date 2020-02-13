@@ -47,6 +47,7 @@ class Api::V4::NextQuestionsController < Api::V4::ApiController
 
   def next_question_params
     params.require(:next_question).permit(:question_identifier, :value, :complete_survey,
-                                          :option_identifier, :next_question_identifier, :instrument_question_id)
+                                          :option_identifier, :next_question_identifier,
+                                          :instrument_question_id, :value_operator)
   end
 end
