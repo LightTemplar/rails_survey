@@ -367,13 +367,13 @@ class Instrument < ApplicationRecord
 
   def short_headers
     %w[identifier survey_id question_identifier question_text response_text
-       response_label special_response other_response]
+       response_label other_text special_response other_response]
   end
 
   def long_headers
     %w[question_identifier short_qid instrument_id instrument_version_number question_version_number
        instrument_title survey_id survey_uuid device_id device_uuid device_label
-       question_type question_text response response_labels special_response
+       question_type question_text response response_labels other_text special_response
        other_response response_time_started response_time_ended device_user_id
        device_user_username survey_start_time survey_end_time duration_in_seconds] + metadata_keys
   end
@@ -388,7 +388,7 @@ class Instrument < ApplicationRecord
 
   def wide_headers
     variable_identifiers = []
-    question_identifier_variables = %w[_short_qid _question_type _label _special
+    question_identifier_variables = %w[_short_qid _question_type _label _other_text _special
                                        _other _version _text _start_time _end_time]
     iqs = Rails.cache.fetch("instrument-questions-#{id}-#{instrument_questions.maximum('updated_at')}",
                             expires_in: 30.minutes) do

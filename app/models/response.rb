@@ -74,7 +74,9 @@ class Response < ApplicationRecord
   end
 
   def is_critical
-    if !question.select_one_variant? && !question.select_multiple_variant? && !question.list_of_boxes_variant?
+    if question.nil?
+      false
+    elsif !question.select_one_variant? && !question.select_multiple_variant? && !question.list_of_boxes_variant?
       false
     elsif text.blank?
       false

@@ -50,7 +50,7 @@ class Project < ApplicationRecord
   has_many :score_units, through: :score_schemes
   has_many :option_scores, through: :score_units
   has_many :score_unit_questions, through: :score_units
-  has_many :scores, through: :score_schemes
+  has_many :survey_scores, through: :score_schemes
   has_many :critical_responses, through: :instruments
   has_many :loop_questions, through: :instruments
 

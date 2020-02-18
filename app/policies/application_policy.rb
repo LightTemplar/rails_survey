@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApplicationPolicy
   attr_reader :user, :record
 
@@ -7,7 +9,7 @@ class ApplicationPolicy
   end
 
   def index?
-    @user.admin_user?
+    @user&.admin_user?
   end
 
   def show?
@@ -19,7 +21,7 @@ class ApplicationPolicy
   end
 
   def create?
-    @user.admin_user?
+    @user&.admin_user?
   end
 
   def edit?

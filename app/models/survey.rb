@@ -155,7 +155,7 @@ class Survey < ApplicationRecord
         iq = instrument.instrument_questions.with_deleted.where(identifier: ids[1]).first
       end
     end
-    iq.question
+    iq&.question
   end
 
   def option_labels(response)
@@ -164,13 +164,13 @@ class Survey < ApplicationRecord
 
     labels = []
     if Settings.list_question_types.include?(vq.question_type)
-      labels << vq.options.map(&:text)
+      labels << vq.options.map { |o| sanitize o.text }
     else
       response.text.split(Settings.list_delimiter).each do |option_index|
         labels << if vq.other? && option_index.to_i == vq.other_index
                     'Other'
                   else
-                    label_text(vq, option_index)
+                    sanitize(label_text(vq, option_index))
                   end
       end
     end
@@ -194,7 +194,8 @@ class Survey < ApplicationRecord
     row = [id, instrument_id, instrument_title]
     responses.each do |response|
       csv = Rails.cache.fetch("w_s_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 30.minutes) do
-        [validator, id, response.question_identifier, sanitize(question_by_identifier(response.question_identifier).try(:text)), response.text, option_labels(response), response.special_response, response.other_response]
+        [identifier, id, response.question_identifier, sanitize(question_by_identifier(response.question_identifier).try(:text)), response.text, option_labels(response),
+         response.other_text, response.special_response, response.other_response]
       end
       push_to_redis("short-row-#{id}-#{instrument.response_export.id}-#{response.id}",
                     "short-keys-#{instrument.id}-#{instrument.response_export.id}", csv)
@@ -202,12 +203,6 @@ class Survey < ApplicationRecord
     push_to_redis("short-row-#{id}-#{instrument.response_export.id}-survey-#{id}",
                   "short-keys-#{instrument_id}-#{instrument.response_export.id}", row)
     decrement_export_count("#{instrument.response_export.id}_short")
-  end
-
-  def validation_identifier
-    return unless metadata
-
-    metadata['Center ID'] || metadata['Participant ID']
   end
 
   def start_time
@@ -246,8 +241,10 @@ class Survey < ApplicationRecord
       row[short_qid_index] = response.question_id if short_qid_index
       question_type_index = headers["q_#{response.question_identifier}_question_type"]
       row[question_type_index] = question_by_identifier(response.question_identifier).try(:question_type) if question_type_index
+      other_text_identifier_index = headers["q_#{response.question_identifier}_other_text"]
+      row[other_text_identifier_index] = response.other_text if other_text_identifier_index
       special_identifier_index = headers["q_#{response.question_identifier}_special"]
-      row[special_identifier_index] = response.special_response if special_identifier_index
+      row[special_identifier_index] = sanitize(response.special_response) if special_identifier_index
       other_identifier_index = headers["q_#{response.question_identifier}_other"]
       row[other_identifier_index] = response.other_response if other_identifier_index
       label_index = headers["q_#{response.question_identifier}_label"]
@@ -285,13 +282,11 @@ class Survey < ApplicationRecord
         -#{response.updated_at}", expires_in: 30.minutes) do
         ["q_#{response.question_identifier}", "q_#{response.question_id}", instrument_id,
          response.instrument_version_number, response.question_version, instrument_title, id,
-         response.survey_uuid, device_id, device_uuid, device_label,
-         question_by_identifier(response.question_identifier).try(:question_type),
+         response.survey_uuid, device_id, device_uuid, device_label, question_by_identifier(response.question_identifier).try(:question_type),
          sanitize(question_by_identifier(response.question_identifier).try(:text)),
-         response.text, option_labels(response), response.special_response,
-         response.other_response, response.time_started, response.time_ended,
-         response.device_user.try(:id), response.device_user.try(:username),
-         start_time, end_time, survey_duration]
+         response.text, option_labels(response), response.other_text, sanitize(response.special_response),
+         response.other_response, response.time_started, response.time_ended, response.device_user.try(:id),
+         response.device_user.try(:username), start_time, end_time, survey_duration]
       end
       metadata&.each do |k, v|
         row[headers[k]] = v if headers[k]

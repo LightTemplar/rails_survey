@@ -2,6 +2,7 @@
 
 source 'https://rubygems.org'
 ruby '2.6.3'
+gem 'activeadmin', '~> 2.4'
 gem 'activerecord-import', '~> 1.0', '>= 1.0.3'
 gem 'acts-as-taggable-on', '~> 5.0'
 gem 'acts_as_list', '~> 0.9.19'

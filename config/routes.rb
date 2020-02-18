@@ -1,7 +1,12 @@
 # frozen_string_literal: true
 
+require 'sidekiq/web'
 Rails.application.routes.draw do
   devise_for :users
+  devise_for :admin_users, ActiveAdmin::Devise.config
+  mount Sidekiq::Web, at: '/admin/sidekiq', as: 'sidekiq'
+  ActiveAdmin.routes(self)
+
   namespace :api, defaults: { format: 'json' } do
     namespace :v4 do
       post 'user_token' => 'user_token#create'
