@@ -3,7 +3,7 @@
 collection @multiple_skips
 
 attributes :id, :question_identifier, :option_identifier,
-           :skip_question_identifier, :deleted_at, :value
+           :skip_question_identifier, :deleted_at, :value, :value_operator
 
 node :question_id, &:instrument_question_id
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200217181245) do
+ActiveRecord::Schema.define(version: 20200219161220) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -285,7 +285,10 @@ ActiveRecord::Schema.define(version: 20200217181245) do
     t.integer "loop_questions_count", default: 0
     t.string "carry_forward_identifier"
     t.integer "position"
-    t.string "skip_operation"
+    t.string "next_question_operator"
+    t.string "multiple_skip_operator"
+    t.text "next_question_neutral_ids"
+    t.text "multiple_skip_neutral_ids"
     t.index ["deleted_at"], name: "index_instrument_questions_on_deleted_at"
     t.index ["instrument_id", "identifier"], name: "index_instrument_questions_on_instrument_id_and_identifier"
     t.index ["question_id"], name: "index_instrument_questions_on_question_id"
@@ -355,6 +358,7 @@ ActiveRecord::Schema.define(version: 20200217181245) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "value"
+    t.string "value_operator"
   end
 
   create_table "next_questions", id: :serial, force: :cascade do |t|

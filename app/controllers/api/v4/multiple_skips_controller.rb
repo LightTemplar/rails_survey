@@ -37,7 +37,8 @@ class Api::V4::MultipleSkipsController < Api::V4::ApiController
 
   def multiple_skip_params
     params.require(:multiple_skip).permit(:question_identifier, :value, :option_identifier,
-                                          :skip_question_identifier, :instrument_question_id)
+                                          :skip_question_identifier, :instrument_question_id,
+                                          :value_operator)
   end
 
   def set_instrument_question

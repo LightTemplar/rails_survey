@@ -4,7 +4,8 @@ object @question
 
 attributes :id, :instrument_id, :display_id, :number_in_instrument, :deleted_at,
            :table_identifier, :question_id, :carry_forward_identifier, :position,
-           :skip_operation
+           :next_question_operator, :multiple_skip_operator,
+           :next_question_neutral_ids, :multiple_skip_neutral_ids
 
 node :text do |iq|
   iq.question&.text

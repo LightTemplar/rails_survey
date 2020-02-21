@@ -33,8 +33,8 @@ class Survey < ApplicationRecord
   belongs_to :roster, foreign_key: :roster_uuid, primary_key: :uuid
   has_many :instrument_questions, through: :instrument
   has_many :responses, foreign_key: :survey_uuid, primary_key: :uuid, dependent: :destroy
-  has_many :centralized_scores, class_name: 'Score', foreign_key: :survey_id, dependent: :destroy
-  has_many :distributed_scores, class_name: 'Score', foreign_key: :survey_uuid, dependent: :destroy
+  has_many :centralized_scores, class_name: 'SurveyScore', foreign_key: :survey_id, dependent: :destroy
+  has_many :distributed_scores, class_name: 'SurveyScore', foreign_key: :survey_uuid, dependent: :destroy
   has_many :survey_notes, foreign_key: :survey_uuid, primary_key: :uuid, dependent: :destroy
   acts_as_paranoid
   has_paper_trail on: %i[update destroy]

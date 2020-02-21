@@ -13,6 +13,7 @@
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
 #  value                    :string
+#  value_operator           :string
 #
 
 class MultipleSkip < ApplicationRecord

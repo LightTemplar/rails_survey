@@ -5,8 +5,6 @@ module Api
     class ApiApplicationController < ApplicationController
       before_action :restrict_access
       before_action :check_version_code
-      skip_before_action :authenticate_user!
-      skip_before_action :authenticate_user_from_token!
 
       private
 
