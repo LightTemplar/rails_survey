@@ -2,7 +2,7 @@
 
 module Api
   module V1
-    class ApiApplicationController < ApplicationController
+    class ApiApplicationController < ActionController::API
       before_action :restrict_access
       before_action :check_version_code
 
