@@ -30,6 +30,7 @@ Rails.application.routes.draw do
             resources :next_questions
             resources :multiple_skips
             resources :loop_questions
+            resources :condition_skips
           end
           resources :score_schemes do
             resources :domains

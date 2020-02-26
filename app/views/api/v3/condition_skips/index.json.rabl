@@ -2,15 +2,11 @@
 
 collection @condition_skips
 
-attributes :id, :condition_question_identifier, :condition_option_identifier,
-           :option_identifier, :condition, :next_question_identifier, :deleted_at
+attributes :id, :instrument_question_id, :question_identifier, :next_question_identifier,
+           :question_identifiers, :option_ids, :values, :value_operators, :deleted_at
 
 node :question_id, &:instrument_question_id
 
-node :question_identifier do |cs|
-  cs.instrument_question&.identifier
-end
-
-node :instrument_id do |ms|
-  ms.instrument_question&.instrument_id
+node :instrument_id do |nq|
+  nq.instrument_question&.instrument_id
 end
