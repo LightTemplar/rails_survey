@@ -23,7 +23,6 @@ class Instrument < ApplicationRecord
   include Translatable
   include Alignable
   include LanguageAssignable
-  include RedisJobTracker
   scope :published, -> { where(published: true) }
   belongs_to :project, touch: true
 
@@ -316,20 +315,12 @@ class Instrument < ApplicationRecord
     end
   end
 
-  def response_export_counter(response_export)
-    export_formats.each do |format|
-      set_export_count("#{response_export.id}_#{format}", surveys.count)
-    end
-  end
-
   def export_surveys
     unless response_export
       ResponseExport.create(instrument_id: id, instrument_versions: survey_instrument_versions)
       reload
     end
-    response_export.update_attributes(long_done: false, wide_done: false, short_done: false, completion: 0.0)
-    response_export_counter(response_export)
-    sanitize_redis_keys
+    response_export.update_attributes(completion: 0.0)
     write_export_rows
     export_response_images
   end
@@ -343,26 +334,11 @@ class Instrument < ApplicationRecord
     end
   end
 
-  def sanitize_redis_keys
-    $redis.del "wide-keys-#{id}-#{response_export.id}"
-    $redis.del "long-keys-#{id}-#{response_export.id}"
-    $redis.del "short-keys-#{id}-#{response_export.id}"
-  end
-
   def write_export_rows
-    instrument_surveys = Rails.cache.fetch("instrument-surveys-#{id}-#{surveys.maximum('updated_at')}", expires_in: 30.minutes) do
-      surveys
-    end
-    instrument_surveys.each do |survey|
+    surveys.each do |survey|
       SurveyExportWorker.perform_async(survey.uuid)
     end
-    export_formats.each do |format|
-      StatusWorker.perform_in(10.seconds, response_export.id, format)
-    end
-  end
-
-  def export_formats
-    %w[short long wide]
+    StatusWorker.perform_in(10.seconds, response_export.id)
   end
 
   def short_headers
@@ -438,28 +414,6 @@ class Instrument < ApplicationRecord
       end
       m_keys
     end
-  end
-
-  def stringify_arrays(format)
-    data = []
-    keys = $redis.lrange "#{format}-keys-#{id}-#{response_export.id}", 0, -1
-    keys.each do |key|
-      data_row = $redis.lrange key, 0, -1
-      data << data_row
-    end
-    $redis.set "#{id}-#{response_export.id}-#{format}", data.to_s
-    mark_export_as_complete(format)
-  end
-
-  def mark_export_as_complete(format)
-    if format == 'short'
-      response_export.update_columns(short_done: true)
-    elsif format == 'long'
-      response_export.update_columns(long_done: true)
-    elsif format == 'wide'
-      response_export.update_columns(wide_done: true)
-    end
-    ResponseExportCompletionWorker.perform_async(response_export.id)
   end
 
   def reorder_display_text

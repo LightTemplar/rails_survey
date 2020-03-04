@@ -27,7 +27,6 @@
 require 'sidekiq/api'
 
 class Survey < ApplicationRecord
-  include RedisJobTracker
   belongs_to :instrument
   belongs_to :device
   belongs_to :roster, foreign_key: :roster_uuid, primary_key: :uuid
@@ -36,17 +35,16 @@ class Survey < ApplicationRecord
   has_many :centralized_scores, class_name: 'SurveyScore', foreign_key: :survey_id, dependent: :destroy
   has_many :distributed_scores, class_name: 'SurveyScore', foreign_key: :survey_uuid, dependent: :destroy
   has_many :survey_notes, foreign_key: :survey_uuid, primary_key: :uuid, dependent: :destroy
+  has_one :survey_export
   acts_as_paranoid
   has_paper_trail on: %i[update destroy]
   delegate :project, to: :instrument
   validates :device_id, presence: true, allow_blank: false
   validates :uuid, presence: true, allow_blank: false
   validates :instrument_id, presence: true, allow_blank: false
-  # validates :instrument_version_number, presence: true, allow_blank: false
   paginates_per 50
   after_create :calculate_percentage
   after_commit :schedule_export, if: proc { |survey| survey.instrument.auto_export_responses }
-  # scope :non_roster, -> { where(roster_uuid: nil) }
 
   def identifier
     questions = Question.where(id: instrument.instrument_questions.pluck(:question_id).uniq)
@@ -187,22 +185,16 @@ class Survey < ApplicationRecord
   end
 
   def write_short_row
-    headers = Rails.cache.fetch("w_s_r_h-#{instrument_id}-#{instrument_version_number}", expires_in: 30.minutes) do
-      array = instrument.short_headers
-      Hash[array.map.with_index.to_a]
-    end
-    row = [id, instrument_id, instrument_title]
+    rows = []
     responses.each do |response|
-      csv = Rails.cache.fetch("w_s_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 30.minutes) do
+      row = Rails.cache.fetch("w_s_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 30.minutes) do
         [identifier, id, response.question_identifier, sanitize(question_by_identifier(response.question_identifier).try(:text)), response.text, option_labels(response),
          response.other_text, response.special_response, response.other_response]
       end
-      push_to_redis("short-row-#{id}-#{instrument.response_export.id}-#{response.id}",
-                    "short-keys-#{instrument.id}-#{instrument.response_export.id}", csv)
+      row.map! { |item| item || '' }
+      rows << row
     end
-    push_to_redis("short-row-#{id}-#{instrument.response_export.id}-survey-#{id}",
-                  "short-keys-#{instrument_id}-#{instrument.response_export.id}", row)
-    decrement_export_count("#{instrument.response_export.id}_short")
+    survey_export.update(short: rows.to_s, last_response_at: responses.pluck(:updated_at).max)
   end
 
   def start_time
@@ -267,9 +259,8 @@ class Survey < ApplicationRecord
       row[device_user_id_index] = device_user_ids.join(',')
       row[device_user_username_index] = DeviceUser.find(device_user_ids).map(&:username).uniq.join(',')
     end
-    push_to_redis("wide-row-#{id}-#{instrument.response_export.id}-survey-#{id}",
-                  "wide-keys-#{instrument_id}-#{instrument.response_export.id}", row)
-    decrement_export_count("#{instrument.response_export.id}_wide")
+    row.map! { |item| item || '' }
+    survey_export.update(wide: row.to_s, last_response_at: responses.pluck(:updated_at).max)
   end
 
   def write_long_row
@@ -277,6 +268,7 @@ class Survey < ApplicationRecord
       array = instrument.long_headers
       Hash[array.map.with_index.to_a]
     end
+    csv = []
     responses.each do |response|
       row = Rails.cache.fetch("w_l_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}
         -#{response.updated_at}", expires_in: 30.minutes) do
@@ -291,16 +283,10 @@ class Survey < ApplicationRecord
       metadata&.each do |k, v|
         row[headers[k]] = v if headers[k]
       end
-      push_to_redis("long-row-#{id}-#{instrument.response_export.id}-#{response.id}",
-                    "long-keys-#{instrument_id}-#{instrument.response_export.id}", row)
+      row.map! { |item| item || '' }
+      csv << row
     end
-    decrement_export_count("#{instrument.response_export.id}_long")
-  end
-
-  def push_to_redis(key_one, key_two, data)
-    $redis.del key_one
-    $redis.rpush key_one, data
-    $redis.rpush key_two, key_one
+    survey_export.update(long: csv.to_s, last_response_at: responses.pluck(:updated_at).max)
   end
 
   def score

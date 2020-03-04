@@ -3,8 +3,7 @@
 ActiveAdmin.register ResponseExport do
   belongs_to :project
 
-  permit_params :project_id, :instrument_id, :instrument_versions,
-                :long_done, :wide_done, :short_done, :completion
+  permit_params :project_id, :instrument_id, :instrument_versions, :completion
 
   actions :all, except: %i[new edit]
 

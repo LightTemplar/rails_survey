@@ -42,7 +42,7 @@ module RailsSurvey
     I18n.enforce_available_locales = false
     config.cache_store = :redis_store, "#{ENV['REDIS_CACHE_URL']}/cache", { expires_in: 6.hours }
     config.autoload_paths += Dir[Rails.root.join('app', 'scorers', '{*/}')]
-    config.assets.precompile += %w[active_admin.js active_admin.scss]
+    config.assets.precompile += %w[active_admin.js active_admin.css.scss]
 
     config.api_only = true
 

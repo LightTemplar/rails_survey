@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200225194645) do
+ActiveRecord::Schema.define(version: 20200303161958) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -547,14 +547,10 @@ ActiveRecord::Schema.define(version: 20200225194645) do
   end
 
   create_table "response_exports", id: :serial, force: :cascade do |t|
-    t.boolean "long_done", default: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer "project_id"
     t.integer "instrument_id"
     t.text "instrument_versions"
-    t.boolean "wide_done", default: false
-    t.boolean "short_done", default: false
     t.decimal "completion", precision: 5, scale: 2, default: "0.0"
   end
 
@@ -710,6 +706,16 @@ ActiveRecord::Schema.define(version: 20200225194645) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
+  end
+
+  create_table "survey_exports", force: :cascade do |t|
+    t.integer "survey_id"
+    t.text "long"
+    t.text "short"
+    t.text "wide"
+    t.datetime "last_response_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "survey_notes", force: :cascade do |t|
