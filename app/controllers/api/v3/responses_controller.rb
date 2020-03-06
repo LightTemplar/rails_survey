@@ -6,6 +6,7 @@ class Api::V3::ResponsesController < Api::V3::ApiController
   def create
     @response = Response.where(uuid: params[:response][:uuid])&.first
     if @response
+      modify_timestamps
       if @response.update_attributes(response_params)
         record_device_attributes
         render json: @response, status: :accepted
@@ -14,6 +15,7 @@ class Api::V3::ResponsesController < Api::V3::ApiController
       end
     else
       @response = Response.new(response_params)
+      modify_timestamps
       if @response.save
         record_device_attributes
         render json: @response, status: :created
@@ -24,6 +26,11 @@ class Api::V3::ResponsesController < Api::V3::ApiController
   end
 
   private
+
+  def modify_timestamps
+    @response.time_started = Time.at(params[:response][:time_started] / 1000).to_datetime if params[:response][:time_started]
+    @response.time_ended = Time.at(params[:response][:time_ended] / 1000).to_datetime if params[:response][:time_ended]
+  end
 
   def record_device_attributes
     project = Project.find(params[:project_id])

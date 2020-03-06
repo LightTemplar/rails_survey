@@ -35,7 +35,7 @@ class Survey < ApplicationRecord
   has_many :centralized_scores, class_name: 'SurveyScore', foreign_key: :survey_id, dependent: :destroy
   has_many :distributed_scores, class_name: 'SurveyScore', foreign_key: :survey_uuid, dependent: :destroy
   has_many :survey_notes, foreign_key: :survey_uuid, primary_key: :uuid, dependent: :destroy
-  has_one :survey_export
+  has_one :survey_export, dependent: :destroy
   acts_as_paranoid
   has_paper_trail on: %i[update destroy]
   delegate :project, to: :instrument
@@ -199,13 +199,13 @@ class Survey < ApplicationRecord
 
   def start_time
     Rails.cache.fetch("start-time-#{id}-#{updated_at}", expires_in: 30.minutes) do
-      responses.where.not(time_started: nil).order('time_started ASC').try(:first).try(:time_started)
+      responses.where.not(time_started: nil).order('time_started ASC')&.first&.time_started
     end
   end
 
   def end_time
     Rails.cache.fetch("end-time-#{id}-#{updated_at}", expires_in: 30.minutes) do
-      responses.where.not(time_ended: nil).order('time_ended DESC').try(:first).try(:time_ended)
+      responses.where.not(time_ended: nil).order('time_ended DESC')&.first&.time_ended
     end
   end
 
@@ -220,7 +220,7 @@ class Survey < ApplicationRecord
         Hash[array.map.with_index.to_a]
       end
     row = [id, uuid, device.identifier, device_label || device.label, latitude, longitude,
-           instrument_id, instrument_version_number, instrument_title, start_time, end_time, survey_duration]
+           instrument_id, instrument_version_number, instrument_title, start_time&.to_s, end_time&.to_s, survey_duration]
 
     metadata&.each do |k, v|
       row[headers[k]] = v
@@ -246,9 +246,9 @@ class Survey < ApplicationRecord
       question_text_index = headers["q_#{response.question_identifier}_text"]
       row[question_text_index] = sanitize(question_by_identifier(response.question_identifier).try(:text)) if question_text_index
       start_time_index = headers["q_#{response.question_identifier}_start_time"]
-      row[start_time_index] = response.time_started if start_time_index
+      row[start_time_index] = response.time_started.to_s if start_time_index
       end_time_index = headers["q_#{response.question_identifier}_end_time"]
-      row[end_time_index] = response.time_ended if end_time_index
+      row[end_time_index] = response.time_ended.to_s if end_time_index
     end
     device_user_id_index = headers['device_user_id']
     device_user_username_index = headers['device_user_username']
@@ -277,8 +277,8 @@ class Survey < ApplicationRecord
          response.survey_uuid, device_id, device_uuid, device_label, question_by_identifier(response.question_identifier).try(:question_type),
          sanitize(question_by_identifier(response.question_identifier).try(:text)),
          response.text, option_labels(response), response.other_text, sanitize(response.special_response),
-         response.other_response, response.time_started, response.time_ended, response.device_user.try(:id),
-         response.device_user.try(:username), start_time, end_time, survey_duration]
+         response.other_response, response.time_started.to_s, response.time_ended.to_s, response.device_user.try(:id),
+         response.device_user.try(:username), start_time&.to_s, end_time&.to_s, survey_duration]
       end
       metadata&.each do |k, v|
         row[headers[k]] = v if headers[k]

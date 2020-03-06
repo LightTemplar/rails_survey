@@ -38,7 +38,6 @@ class Response < ApplicationRecord
   belongs_to :device_user
   acts_as_paranoid
   has_paper_trail on: %i[update destroy]
-  validates :survey, presence: true
   validates :uuid, presence: true, allow_blank: false, uniqueness: true
   after_destroy :calculate_response_rate
 
