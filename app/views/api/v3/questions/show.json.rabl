@@ -16,7 +16,7 @@ end
 node :question_identifier, &:identifier
 
 node :instruction_id do |iq|
-  iq.question&.try(:instruction_id)
+  iq.question&.instruction_id
 end
 
 node :instrument_version do |iq|

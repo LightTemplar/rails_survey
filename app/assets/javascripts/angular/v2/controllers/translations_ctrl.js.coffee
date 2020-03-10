@@ -44,10 +44,11 @@ Options, OptionTranslation, Option, OptionSetTranslation) ->
     else if all.length == 1
       translation = all[0]
     else
-      angular.forEach $scope.optionTranslations, (ot, index) ->
+      for ot in all
         ost = _.findWhere($scope.optionSetTranslations, {option_translation_id: ot.id})
         if ost
           translation = ot
+          break
     translation
 
   $scope.save = () ->

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 collection @sections
 cache ['v3-sections', @sections]
 

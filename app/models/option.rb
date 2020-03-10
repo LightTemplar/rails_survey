@@ -19,6 +19,7 @@ class Option < ActiveRecord::Base
   has_many :option_sets, through: :option_in_option_sets
   has_many :translations, foreign_key: 'option_id', class_name: 'OptionTranslation', dependent: :destroy
   has_many :skip_patterns, foreign_key: 'option_identifier', dependent: :destroy
+
   has_paper_trail
   acts_as_paranoid
 
@@ -54,8 +55,16 @@ class Option < ActiveRecord::Base
     end
   end
 
-  def translated_text(language, instrument)
-    return text if language == instrument.language
+  def translated_text(language, instrument_question)
+    return text if language == instrument_question.instrument.language
+
+    unless instrument_question.question.option_set_translations.empty?
+      instrument_question.question.option_set_translations.each do |ost|
+        if ost.option_translation.option_id == id && ost.option_translation.language == language
+          return ost.option_translation&.text ? ost.option_translation.text : text
+        end
+      end
+    end
 
     translation = translations.where(language: language).first
     translation&.text ? translation.text : text

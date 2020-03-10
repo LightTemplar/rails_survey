@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 collection @options
 cache ['v3-options', @options]
 
 attributes :id, :identifier, :text, :deleted_at
 
-node :instrument_version_number do |o|
- -1
+node :instrument_version_number do |_o|
+  -1
 end
 
 child :translations do

@@ -26,13 +26,13 @@
         <td class="col-md-4">
           <div ng-bind-html="instrumentQuestion.text | ToTrustedHtml"/>
           <div class="m-1" ng-show="instrumentQuestion.option_set_id" ng-repeat="oios in questionOptionInOptionSets(instrumentQuestion.option_set_id)">
-            {{getOption(oios.option_id).text}}
+            <span ng-bind-html="getOption(oios.option_id).text | ToTrustedHtml"/>
           </div>
         </td>
         <td class="col-md-3">
           <div ng-bind-html="translationFor(instrumentQuestion).text | ToTrustedHtml"/>
           <div class="m-1" ng-show="instrumentQuestion.option_set_id" ng-repeat="oios in questionOptionInOptionSets(instrumentQuestion.option_set_id)">
-            {{optionTranslationFor(getOption(oios.option_id)).text}}
+            <span ng-bind-html="optionTranslationFor(getOption(oios.option_id)).text | ToTrustedHtml"/>
           </div>
         </td>
         <td class="col-md-1">

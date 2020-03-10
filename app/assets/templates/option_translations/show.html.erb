@@ -18,14 +18,15 @@
       <table class="table table-hover">
         <thead>
         <tr class="row">
-          <th class="col-md-6">Option Text</th>
-          <th class="col-md-6">Translation</th>
+          <th class="col-md-5">Option Text</th>
+          <th class="col-md-5">Translation</th>
+          <th class="col-md-2">Switch</th>
         </tr>
         </thead>
         <tbody>
         <tr class="row" ng-repeat="option in options">
-          <td class="col-md-4">{{option.text}}</td>
-          <td class="col-md-6">
+          <td class="col-md-5" ng-bind-html="option.text | ToTrustedHtml"/>
+          <td class="col-md-5">
             <textarea
               class="form-control"
               name="option-translation-{{option.id}}"

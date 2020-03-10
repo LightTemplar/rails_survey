@@ -48,13 +48,13 @@
                       <% index_label = "#{instrument_question.letters[index]})" %>
                       <% if instrument_question.select_one_variant? %>
                         <td style="width:12%;"><%= '&#x274d;'.html_safe %> <%= index_label %></td>
-                        <td><%= option.translated_text(@language, @instrument) %></td>
+                        <td><%= option.translated_text(@language, instrument_question) %></td>
                       <% elsif instrument_question.select_multiple_variant? %>
                         <td style="width:12%;"><%= '&#x2752;'.html_safe %> <%= index_label %></td>
-                        <td><%= option.translated_text(@language, @instrument) %></td>
+                        <td><%= option.translated_text(@language, instrument_question) %></td>
                       <% elsif instrument_question.list_of_boxes_variant? %>
                         <td><%= index_label %> </td>
-                        <td><%= option.translated_text(@language, @instrument) %> ___________________________</td>
+                        <td><%= option.translated_text(@language, instrument_question) %> ___________________________</td>
                       <% end %>
                     </tr>
                   <% end %>
@@ -93,7 +93,7 @@
               <textarea rows="5" style="border:none;resize:none;width:100%;border-bottom:1pt solid #ccc;"></textarea>
             <% end %>
             <% unless instrument_question.special_options.blank? %>
-              <div><%= "Or: #{instrument_question.special_options.join(' / ')}" %></div>
+              <div><%= strip_tags "Or: #{instrument_question.special_options.join(' / ')}" %></div>
             <% end %>
             <div class="skip-instructions">
               <% instrument_question.next_questions.group_by(&:next_question_identifier).each do |question_identifier, next_questions| %>

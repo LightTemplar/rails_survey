@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 collection @randomized_factors
 cache ['v3-randomized-factors', @randomized_factors]
 

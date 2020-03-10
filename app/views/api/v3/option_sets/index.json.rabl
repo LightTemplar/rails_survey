@@ -13,7 +13,7 @@ child :option_set_translations do |_t|
   attributes :id, :option_set_id, :option_translation_id
 
   node :option_id do |t|
-    t.option.id
+    t.option&.id
   end
 
   node :language, &:language

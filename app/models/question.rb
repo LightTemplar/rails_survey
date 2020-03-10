@@ -41,14 +41,18 @@ class Question < ActiveRecord::Base
   has_many :instrument_questions, dependent: :destroy
   has_many :instruments, -> { distinct }, through: :instrument_questions
   has_many :skip_patterns, foreign_key: 'question_identifier', primary_key: 'question_identifier', dependent: :destroy
+  has_many :option_set_translations, through: :option_set
+
   before_save :update_question_translation, if: proc { |question| question.text_changed? }
-  after_touch :touch_instrument_questions
   after_save :touch_option_set, if: :option_set_id_changed?
   after_save :touch_special_option_set, if: :special_option_set_id_changed?
-  after_commit :update_instruments_versions, on: %i[update destroy]
   after_save :update_versions_cache
+  after_commit :update_instruments_versions, on: %i[update destroy]
+  after_touch :touch_instrument_questions
+
   has_paper_trail
   acts_as_paranoid
+
   validates :question_identifier, uniqueness: true, presence: true, allow_blank: false
   validates :text, presence: true, allow_blank: false
 

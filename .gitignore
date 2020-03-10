@@ -27,6 +27,7 @@ config/newrelic.yml
 config/deploy/production.rb
 config/*.pem
 config/secrets.yml
+config/centers.csv
 
 # Ignore Rubymine files
 scopes/scope_settings.xml
