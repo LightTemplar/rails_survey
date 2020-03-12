@@ -8,3 +8,5 @@ attributes :id, :instrument_id, :question_id, :number_in_instrument, :display_id
            :next_question_operator, :multiple_skip_operator, :multiple_skip_neutral_ids
 
 node :question_type, &:question_type
+
+node :option_set_id, &:option_set_id

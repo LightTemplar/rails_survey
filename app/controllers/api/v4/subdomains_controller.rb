@@ -6,7 +6,7 @@ class Api::V4::SubdomainsController < Api::V4::ApiController
   before_action :set_subdomain, only: %i[update destroy]
 
   def create
-    domain = @score_scheme.domains.find(params[:domain_id])
+    domain = @score_scheme.domains.find(params[:subdomain][:domain_id])
     subdomain = domain.subdomains.new(subdomain_params)
     if subdomain.save
       render json: subdomain, status: :created

@@ -37,6 +37,9 @@ Rails.application.routes.draw do
             resources :subdomains do
               resources :score_units do
                 resources :option_scores
+                member do
+                  get :copy
+                end
               end
             end
           end

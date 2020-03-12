@@ -79,6 +79,10 @@ class InstrumentQuestion < ApplicationRecord
     question.text
   end
 
+  def option_set_id
+    question.option_set_id
+  end
+
   def translated_text(language)
     return question.text if language == instrument.language
 
