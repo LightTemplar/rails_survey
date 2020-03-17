@@ -6,9 +6,10 @@ ActiveAdmin.register Project do
 
   sidebar 'Project Associations', only: :show do
     ul do
-      li link_to 'Survey Responses', admin_project_surveys_path(params[:id])
-      li link_to 'Survey Exports', admin_project_response_exports_path(params[:id])
-      li link_to 'Survey Variables', admin_project_questions_path(params[:id])
+      li link_to 'Surveys', admin_project_surveys_path(params[:id])
+      li link_to 'Exports', admin_project_response_exports_path(params[:id])
+      li link_to 'Questions', admin_project_questions_path(params[:id])
+      li link_to 'Schemes', admin_project_score_schemes_path(params[:id])
     end
   end
 

@@ -32,8 +32,9 @@ class Survey < ApplicationRecord
   belongs_to :roster, foreign_key: :roster_uuid, primary_key: :uuid
   has_many :instrument_questions, through: :instrument
   has_many :responses, foreign_key: :survey_uuid, primary_key: :uuid, dependent: :destroy
-  has_many :centralized_scores, class_name: 'SurveyScore', foreign_key: :survey_id, dependent: :destroy
-  has_many :distributed_scores, class_name: 'SurveyScore', foreign_key: :survey_uuid, dependent: :destroy
+  # has_many :centralized_scores, class_name: 'SurveyScore', foreign_key: :survey_id, dependent: :destroy
+  # has_many :distributed_scores, class_name: 'SurveyScore', foreign_key: :survey_uuid, dependent: :destroy
+  has_many :survey_scores, dependent: :destroy
   has_many :survey_notes, foreign_key: :survey_uuid, primary_key: :uuid, dependent: :destroy
   has_one :survey_export, dependent: :destroy
   acts_as_paranoid
@@ -45,6 +46,10 @@ class Survey < ApplicationRecord
   paginates_per 50
   after_create :calculate_percentage
   after_commit :schedule_export, if: proc { |survey| survey.instrument.auto_export_responses }
+
+  def title
+    "#{id} - #{identifier}"
+  end
 
   def identifier
     questions = Question.where(id: instrument.instrument_questions.pluck(:question_id).uniq)

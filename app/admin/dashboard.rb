@@ -10,6 +10,7 @@ ActiveAdmin.register_page 'Dashboard' do
         column('Responses') { |project| link_to 'Survey Responses', admin_project_surveys_path(project.id) }
         column('Exports') { |project| link_to 'Survey Exports', admin_project_response_exports_path(project.id) }
         column('Questions') { |project| link_to 'Survey Questions', admin_project_questions_path(project.id) }
+        column('Scores') { |project| link_to 'Survey Scores', admin_project_score_schemes_path(project.id) }
       end
     end
   end

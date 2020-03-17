@@ -21,4 +21,12 @@ class ScoreUnitQuestion < ApplicationRecord
 
   validates :score_unit_id, presence: true, allow_blank: false
   validates :instrument_question_id, presence: true, uniqueness: { scope: [:score_unit_id] }
+
+  def response(survey)
+    survey.responses.where(question_identifier: instrument_question.identifier).first
+  end
+
+  def option(response)
+    instrument_question.non_special_options[response.text.to_i]
+  end
 end

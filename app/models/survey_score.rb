@@ -24,6 +24,10 @@ class SurveyScore < ApplicationRecord
 
   acts_as_paranoid
 
+  def title
+    "#{score_scheme_id} - #{survey_id}"
+  end
+
   def raw_score_sum
     raw_scores.sum(:value)
   end

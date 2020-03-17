@@ -2,6 +2,7 @@
 
 ActiveAdmin.register ResponseExport do
   belongs_to :project
+  navigation_menu :project
 
   permit_params :project_id, :instrument_id, :instrument_versions, :completion
 

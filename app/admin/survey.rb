@@ -2,6 +2,8 @@
 
 ActiveAdmin.register Survey do
   belongs_to :project
+  navigation_menu :project
+
   sidebar 'Survey Associations', only: :show do
     ul do
       li link_to 'Responses', admin_survey_responses_path(params[:id])

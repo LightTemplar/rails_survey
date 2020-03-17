@@ -20,4 +20,12 @@ class RawScore < ApplicationRecord
   belongs_to :survey_score
 
   acts_as_paranoid
+
+  def domain
+    subdomain.domain
+  end
+
+  def subdomain
+    score_unit.subdomain
+  end
 end

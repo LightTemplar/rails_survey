@@ -54,4 +54,21 @@ class ScoreUnit < ApplicationRecord
     end
     new_copy
   end
+
+  def score(survey)
+    scores = []
+    if score_type == 'MATCH'
+      score_unit_questions.each do |suq|
+        response = suq.response(survey)
+        next unless response
+
+        response_option = suq.option(response)
+        next unless response_option
+
+        option_score = option_scores.where(option_identifier: response_option.identifier).first
+        scores << option_score if option_score
+      end
+    end
+    scores.reject { |s| s.value.nil? }.max_by(&:value).try(:value)
+  end
 end

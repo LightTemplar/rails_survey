@@ -15,12 +15,15 @@
 
 class ScoreScheme < ApplicationRecord
   belongs_to :instrument
+  has_many :surveys, through: :instrument
   has_many :domains, dependent: :destroy
   has_many :subdomains, through: :domains
   has_many :score_units, through: :subdomains
   has_many :score_unit_questions, through: :score_units
   has_many :option_scores, through: :score_unit_questions
   has_many :survey_scores
+
+  delegate :project, to: :instrument
 
   acts_as_paranoid
 
@@ -50,5 +53,20 @@ class ScoreScheme < ApplicationRecord
     raw_score = score.raw_scores.where(score_unit_id: unit.id).try(:first)
     raw_score ||= score.raw_scores.create(score_unit_id: unit.id, score_id: score.id)
     raw_score
+  end
+
+  def score_surveys
+    surveys.each do |survey|
+      SurveyScoreWorker.perform_async(id, survey.id)
+    end
+  end
+
+  def generate_raw_scores(survey, survey_score)
+    score_units.each do |unit|
+      raw_score = survey_score.raw_scores.where(score_unit_id: unit.id, survey_score_id: survey_score.id).first
+      raw_score ||= RawScore.create(score_unit_id: unit.id, survey_score_id: survey_score.id)
+      raw_score.value = unit.score(survey)
+      raw_score.save
+    end
   end
 end
