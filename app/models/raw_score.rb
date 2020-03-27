@@ -28,4 +28,18 @@ class RawScore < ApplicationRecord
   def subdomain
     score_unit.subdomain
   end
+
+  def identifier
+    survey_score.survey.identifier
+  end
+
+  def weight
+    score_unit.weight
+  end
+
+  def weighted_score
+    return nil unless value
+
+    value * score_unit.weight
+  end
 end

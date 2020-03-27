@@ -9,6 +9,7 @@ ActiveAdmin.register ScoreScheme do
   sidebar 'Scheme Associations', only: :show do
     ul do
       li link_to 'Scores', admin_score_scheme_survey_scores_path(params[:id])
+      li link_to 'Domains', admin_score_scheme_domains_path(params[:id])
     end
   end
 

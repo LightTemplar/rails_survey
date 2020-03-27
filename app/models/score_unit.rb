@@ -19,6 +19,7 @@ class ScoreUnit < ApplicationRecord
   belongs_to :subdomain
   has_many :score_unit_questions, dependent: :destroy
   has_many :option_scores, through: :score_unit_questions
+  has_many :raw_scores
 
   acts_as_paranoid
 
@@ -68,7 +69,22 @@ class ScoreUnit < ApplicationRecord
         option_score = option_scores.where(option_identifier: response_option.identifier).first
         scores << option_score if option_score
       end
+      scores.reject { |s| s.value.nil? }.max_by(&:value).try(:value)
+    elsif score_type == 'SUM'
+      score_unit_questions.each do |suq|
+        response = suq.response(survey)
+        next unless response
+
+        response_option_identifiers = suq.option_identifiers(response)
+        next unless response_option_identifiers
+
+        scores.concat(option_scores.where(option_identifier: response_option_identifiers))
+      end
+      scores.sum(&:value) + base_point_score
     end
-    scores.reject { |s| s.value.nil? }.max_by(&:value).try(:value)
+  end
+
+  def survey_raw_scores(survey_score)
+    raw_scores.where(survey_score_id: survey_score.id)
   end
 end

@@ -3,13 +3,21 @@
 class Api::V4::OptionScoresController < Api::V4::ApiController
   respond_to :json
   before_action :set_score_scheme
-  before_action :set_option_score, only: %i[destroy]
+  before_action :set_option_score, only: %i[update destroy]
+
+  def update
+    respond_with @option_score.update_attributes(option_score_params)
+  end
 
   def destroy
     respond_with @option_score.destroy
   end
 
   private
+
+  def option_score_params
+    params.require(:option_score).permit(:score_unit_question_id, :option_identifier, :value)
+  end
 
   def set_score_scheme
     instrument = current_user.instruments.find(params[:instrument_id])

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200313160205) do
+ActiveRecord::Schema.define(version: 20200401204715) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -742,6 +742,7 @@ ActiveRecord::Schema.define(version: 20200313160205) do
     t.string "device_uuid"
     t.string "device_label"
     t.datetime "deleted_at"
+    t.text "score_data"
   end
 
   create_table "surveys", id: :serial, force: :cascade do |t|

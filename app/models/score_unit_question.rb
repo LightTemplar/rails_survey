@@ -29,4 +29,12 @@ class ScoreUnitQuestion < ApplicationRecord
   def option(response)
     instrument_question.non_special_options[response.text.to_i]
   end
+
+  def option_identifiers(response)
+    identifiers = []
+    response.text.split(',').each do |text|
+      identifiers << instrument_question.non_special_options[text&.to_i]&.identifier
+    end
+    identifiers
+  end
 end

@@ -15,12 +15,14 @@
 #  device_uuid     :string
 #  device_label    :string
 #  deleted_at      :datetime
+#  score_data      :text
 #
 
 class SurveyScore < ApplicationRecord
   belongs_to :score_scheme
   belongs_to :survey
   has_many :raw_scores
+  has_many :domains, through: :score_scheme
 
   acts_as_paranoid
 
