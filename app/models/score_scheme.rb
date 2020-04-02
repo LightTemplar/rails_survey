@@ -73,40 +73,43 @@ class ScoreScheme < ApplicationRecord
 
   def generate_score_data(survey, survey_score)
     csv = []
-    rss = survey_score.raw_score_sum
-    wss = survey_score.weighted_score_sum
-    wcss = 0
-    domains.each do |domain|
-      domain_score_sum = domain.score_sum(survey_score)
-      domain_weighted_score_sum = domain.weighted_score_sum(survey_score)
-      domain_score = domain.score(survey_score)
-      domain.subdomains.each do |subdomain|
-        subdomain_score_sum = subdomain.score_sum(survey_score)
-        subdomain_weighted_score_sum = subdomain.weighted_score_sum(survey_score)
+    domain_scores = []
+    center_score = nil
+    type = category = ''
+    type = survey.center_name&.split('(').last&.split(')')&.first if survey.center_name.include? '('
+    category = survey.center_name&.split('-').last if survey.center_name.include? '-'
+    domains.each_with_index do |domain, d_index|
+      subdomain_scores = []
+      domain.subdomains.each_with_index do |subdomain, index|
         subdomain_score = subdomain.score(survey_score)
+        subdomain_scores << subdomain_score if subdomain_score
         subdomain.score_units.each do |score_unit|
           score_unit.survey_raw_scores(survey_score).each do |raw_score|
             next unless raw_score.value
 
-            csv << [survey.id, survey.uuid, survey.identifier, rss, wss, domain.title,
-                    domain_score_sum, domain_weighted_score_sum, domain_score, subdomain.title,
-                    subdomain_score_sum, subdomain_weighted_score_sum, subdomain_score,
-                    score_unit.title, score_unit.weight, raw_score.value]
+            csv << [survey.id, survey.center_identifier, type, category, survey.identifier, domain.title,
+                    subdomain.title, score_unit.title, score_unit.weight, raw_score.value, '', '', '']
           end
         end
+        domain_score = subdomain_scores.inject(0.0) { |sum, item| sum + item } / subdomain_scores.size if index == domain.subdomains.size - 1
+        domain_scores << domain_score if domain_score && !domain_score.nan?
+        center_score = domain_scores.inject(0.0) { |sum, item| sum + item } / domain_scores.size if d_index == domains.size - 1 && index == domain.subdomains.size - 1
+        csv << ['', '', '', '', survey.identifier, '', '', '', '', '',
+                subdomain_score.nil? ? '' : subdomain_score,
+                domain_score.nil? || domain_score.nan? ? '' : domain_score.round(2),
+                center_score.nil? || center_score.nan? ? '' : center_score.round(2)]
       end
     end
     survey_score.score_data = csv.to_s
+    survey_score.score_sum = center_score.round(2)
     survey_score.save
   end
 
   def download
     file = Tempfile.new(title.to_s)
     CSV.open(file, 'w') do |csv|
-      csv << %w[id uuid identifier raw_score_sum weighted_score_sum domain
-                raw_domain_score weighted_domain_score domain_score subdomain
-                raw_subdomain_score weighted_subdomain_score subdomain_score
-                score_unit weight unit_raw_score]
+      csv << %w[survey_id center_id center_type center_category center_code domain subdomain score_unit
+                score_unit_weight score_unit_score subdomain_score domain_score center_score]
       survey_scores.each do |survey_score|
         data = []
         JSON.parse(survey_score.score_data).each { |arr| data << arr }

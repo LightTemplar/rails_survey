@@ -23,20 +23,6 @@ class Subdomain < ApplicationRecord
 
   default_scope { order(:title) }
 
-  def score_sum(survey_score)
-    raw_scores.where(survey_score_id: survey_score.id).sum(:value)
-  end
-
-  def weighted_score_sum(survey_score)
-    raw_scores.where(survey_score_id: survey_score.id).inject(0) { |sum, item| sum + weighted_score(item) }
-  end
-
-  def weighted_score(score)
-    return 0 unless score.value
-
-    score.value * score.score_unit.weight
-  end
-
   def score(survey_score)
     sanitized_scores = raw_scores.where(survey_score_id: survey_score.id).reject { |score| score.weighted_score.nil? }
     return nil if sanitized_scores.empty?

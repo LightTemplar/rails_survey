@@ -33,7 +33,8 @@ ActiveAdmin.register SurveyScore do
   index do
     column :id
     column :survey
-    column :score_sum
+    column 'Identifier', &:identifier
+    column 'Score', :score_sum
     column 'Raw Scores', :raw_scores do |ss|
       link_to ss.raw_scores.size.to_s, admin_survey_score_raw_scores_path(ss.id)
     end

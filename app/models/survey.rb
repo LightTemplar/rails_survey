@@ -56,6 +56,17 @@ class Survey < ApplicationRecord
     !response&.text.empty? ? response.text : uuid
   end
 
+  def center_identifier
+    cid = responses.where(question_identifier: 'api5').first&.text
+    cid.nil? ? '' : cid
+  end
+
+  def center_name
+    iq = instrument_questions.where(identifier: 'api7').first
+    res = responses.where(question_identifier: 'api7').first
+    iq.non_special_options[res.text&.to_i]&.text if res && iq
+  end
+
   def schedule_export
     job = Sidekiq::ScheduledSet.new.find do |entry|
       entry.item['class'] == 'ExportWorker' && entry.item['args'].first == instrument_id

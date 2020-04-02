@@ -30,6 +30,10 @@ class SurveyScore < ApplicationRecord
     "#{score_scheme_id} - #{survey_id}"
   end
 
+  def identifier
+    survey.identifier
+  end
+
   def raw_score_sum
     raw_scores.sum(:value)
   end
