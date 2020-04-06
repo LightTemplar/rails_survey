@@ -80,7 +80,15 @@ class ScoreUnit < ApplicationRecord
 
         scores.concat(option_scores.where(option_identifier: response_option_identifiers))
       end
-      scores.sum(&:value) + base_point_score
+      return nil if scores.empty? && (base_point_score.nil? || base_point_score == 0.0)
+
+      score_value = scores.sum(&:value) + base_point_score
+      if score_value > 7
+        score_value = 7
+      elsif score_value < 1
+        score_value = 1
+      end
+      score_value
     end
   end
 
