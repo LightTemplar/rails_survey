@@ -13,6 +13,7 @@
 #  subdomain_id     :integer
 #  title            :string
 #  base_point_score :float
+#  institution_type :string
 #
 
 class ScoreUnit < ApplicationRecord

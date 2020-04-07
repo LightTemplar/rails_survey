@@ -14,7 +14,7 @@ development:
   # database: wci_development
   # database: pofo_development
   database: isee
-  pool: 5
+  pool: 15
   # timeout: 5000
 
 # Warning: The database defined as "test" will be erased and

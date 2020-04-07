@@ -7,7 +7,7 @@ set :deploy_via, :copy
 set :pty, false
 set :format, :pretty
 set :keep_releases, 5
-set :linked_files, %w[config/database.yml config/local_env.yml config/secrets.yml]
+set :linked_files, %w[config/database.yml config/local_env.yml config/secrets.yml config/centers.csv]
 set :linked_dirs, %w[log tmp/pids tmp/cache tmp/sockets vendor/bundle]
 set :linked_dirs, fetch(:linked_dirs) + %w[files updates]
 set :bundle_binstubs, nil
@@ -16,7 +16,7 @@ set :sidekiq_default_hooks, true
 set :sidekiq_processes, 4
 set :sidekiq_config, 'config/sidekiq.yml'
 # Wheneverize
-set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }
+# set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }
 # Set Ruby version when using RVM
 set :rvm_ruby_version, '2.6.3'
 

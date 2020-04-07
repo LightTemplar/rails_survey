@@ -56,28 +56,40 @@ class ScoreScheme < ApplicationRecord
   end
 
   def score
+    centers = {}
+    CSV.read('config/centers.csv').each do |row|
+      centers[row[4]] = row
+    end
     surveys.each do |survey|
-      SurveyScoreWorker.perform_async(id, survey.id)
+      SurveyScoreWorker.perform_async(id, survey.id, centers[survey.center_identifier])
     end
   end
 
-  def generate_raw_scores(survey, survey_score)
+  def generate_raw_scores(survey, survey_score, data)
     score_units.each do |unit|
       raw_score = survey_score.raw_scores.where(score_unit_id: unit.id, survey_score_id: survey_score.id).first
       raw_score ||= RawScore.create(score_unit_id: unit.id, survey_score_id: survey_score.id)
       raw_score.value = unit.score(survey)
       raw_score.save
     end
-    generate_score_data(survey, survey_score)
+    generate_score_data(survey, survey_score, data)
   end
 
-  def generate_score_data(survey, survey_score)
+  def generate_score_data(survey, survey_score, data)
+    identifier = survey.center_identifier
     csv = []
     domain_scores = []
     center_score = nil
-    type = category = ''
-    type = survey.center_name&.split('(').last&.split(')')&.first if survey.center_name.include? '('
-    category = survey.center_name&.split('-').last if survey.center_name.include? '-'
+    type = admin = region = department = municipality = ''
+
+    if data
+      type = data[0]
+      admin = data[1]
+      region = data[5]
+      department = data[6]
+      municipality = data[7]
+    end
+
     domains.each_with_index do |domain, d_index|
       subdomain_scores = []
       domain.subdomains.each_with_index do |subdomain, index|
@@ -87,17 +99,20 @@ class ScoreScheme < ApplicationRecord
           score_unit.survey_raw_scores(survey_score).each do |raw_score|
             next unless raw_score.value
 
-            csv << [survey.id, survey.center_identifier, type, category, survey.identifier, domain.title,
+            csv << [survey.id, identifier, type, admin, region, department, municipality, domain.title,
                     subdomain.title, score_unit.title, score_unit.weight, raw_score.value, '', '', '']
           end
         end
         domain_score = subdomain_scores.inject(0.0) { |sum, item| sum + item } / subdomain_scores.size if index == domain.subdomains.size - 1
         domain_scores << domain_score if domain_score && !domain_score.nan?
         center_score = domain_scores.inject(0.0) { |sum, item| sum + item } / domain_scores.size if d_index == domains.size - 1 && index == domain.subdomains.size - 1
-        csv << ['', '', '', '', survey.identifier, '', '', '', '', '',
-                subdomain_score.nil? ? '' : subdomain_score,
-                domain_score.nil? || domain_score.nan? ? '' : domain_score.round(2),
-                center_score.nil? || center_score.nan? ? '' : center_score.round(2)]
+        sd_score = subdomain_score.nil? ? '' : subdomain_score
+        d_score = domain_score.nil? || domain_score.nan? ? '' : domain_score.round(2)
+        c_score = center_score.nil? || center_score.nan? ? '' : center_score.round(2)
+        unless sd_score.blank? && d_score.blank? && c_score.blank?
+          csv << [survey.id, identifier, '', '', '', '', '', '', '', '', '', '',
+                  sd_score, d_score, c_score]
+        end
       end
     end
     survey_score.score_data = csv.to_s
@@ -108,8 +123,9 @@ class ScoreScheme < ApplicationRecord
   def download
     file = Tempfile.new(title.to_s)
     CSV.open(file, 'w') do |csv|
-      csv << %w[survey_id center_id center_type center_category center_code domain subdomain score_unit
-                score_unit_weight score_unit_score subdomain_score domain_score center_score]
+      csv << %w[survey_id center_id center_type center_admin region department
+                municipality domain subdomain score_unit score_unit_weight
+                score_unit_score subdomain_score domain_score center_score]
       survey_scores.each do |survey_score|
         data = []
         JSON.parse(survey_score.score_data).each { |arr| data << arr }

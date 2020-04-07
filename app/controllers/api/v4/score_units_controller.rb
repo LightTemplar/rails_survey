@@ -40,7 +40,7 @@ class Api::V4::ScoreUnitsController < Api::V4::ApiController
 
   def score_unit_params
     params.require(:score_unit).permit(:weight, :score_type, :subdomain_id,
-                                       :title, :base_point_score)
+                                       :title, :base_point_score, :institution_type)
   end
 
   def set_subdomain

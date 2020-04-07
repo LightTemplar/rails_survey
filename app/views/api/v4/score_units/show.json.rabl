@@ -2,7 +2,7 @@
 
 object @score_unit
 
-attributes :id, :weight, :score_type, :title, :subdomain_id, :base_point_score
+attributes :id, :weight, :score_type, :title, :subdomain_id, :base_point_score, :institution_type
 
 node :question_identifiers, &:question_identifiers
 
