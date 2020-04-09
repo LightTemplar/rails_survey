@@ -19,10 +19,6 @@ ActiveAdmin.register RawScore, as: 'SubdomainRawScore' do
   end
 
   controller do
-    # def scoped_collection
-    #   subdomain = Subdomain.find(params[:subdomain_id])
-    #   subdomain.raw_scores
-    # end
     defaults collection_name: 'raw_scores'
   end
 end

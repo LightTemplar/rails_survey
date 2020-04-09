@@ -56,11 +56,6 @@ class Survey < ApplicationRecord
     !response&.text.empty? ? response.text : uuid
   end
 
-  def center_identifier
-    cid = responses.where(question_identifier: 'api5').first&.text
-    cid.nil? ? '' : cid
-  end
-
   def schedule_export
     job = Sidekiq::ScheduledSet.new.find do |entry|
       entry.item['class'] == 'ExportWorker' && entry.item['args'].first == instrument_id
@@ -83,10 +78,6 @@ class Survey < ApplicationRecord
         response.update_attributes(question_identifier: destination_question.question_identifier, question_id: destination_question.id)
       end
     end
-  end
-
-  def scores
-    Score.where('survey_id = ? OR survey_uuid = ?', id, uuid)
   end
 
   def calculate_percentage

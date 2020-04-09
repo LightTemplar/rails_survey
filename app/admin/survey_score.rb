@@ -51,7 +51,7 @@ ActiveAdmin.register SurveyScore do
     def download
       score_scheme = ScoreScheme.find(params[:score_scheme_id])
       send_file score_scheme.download, type: 'text/csv', filename:
-      "#{score_scheme.title}_#{Time.now}.csv"
+      "#{score_scheme.title.split.join('_')}_survey_scores_#{Time.now.to_i}.csv"
     end
   end
 end

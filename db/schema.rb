@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200406153853) do
+ActiveRecord::Schema.define(version: 20200407172125) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -80,6 +80,21 @@ ActiveRecord::Schema.define(version: 20200406153853) do
     t.datetime "updated_at", null: false
     t.boolean "approved"
     t.index ["backtranslatable_id", "backtranslatable_type", "language"], name: "backtranslatable_index", unique: true
+  end
+
+  create_table "centers", force: :cascade do |t|
+    t.integer "score_scheme_id"
+    t.string "identifier"
+    t.string "name"
+    t.string "center_type"
+    t.string "administration"
+    t.string "region"
+    t.string "department"
+    t.string "municipality"
+    t.text "score_data"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["score_scheme_id", "identifier"], name: "index_centers_on_score_scheme_id_and_identifier", unique: true
   end
 
   create_table "condition_skips", id: :serial, force: :cascade do |t|
@@ -744,6 +759,8 @@ ActiveRecord::Schema.define(version: 20200406153853) do
     t.string "device_label"
     t.datetime "deleted_at"
     t.text "score_data"
+    t.string "identifier"
+    t.index ["identifier"], name: "index_survey_scores_on_identifier"
   end
 
   create_table "surveys", id: :serial, force: :cascade do |t|

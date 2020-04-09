@@ -16,6 +16,7 @@
 #  device_label    :string
 #  deleted_at      :datetime
 #  score_data      :text
+#  identifier      :string
 #
 
 class SurveyScore < ApplicationRecord
@@ -28,10 +29,6 @@ class SurveyScore < ApplicationRecord
 
   def title
     "#{score_scheme_id} - #{survey_id}"
-  end
-
-  def identifier
-    survey.identifier
   end
 
   def raw_score_sum
