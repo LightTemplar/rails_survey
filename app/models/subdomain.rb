@@ -24,11 +24,12 @@ class Subdomain < ApplicationRecord
   default_scope { order(:title) }
 
   def score(survey_score)
-    sanitized_scores = raw_scores.where(survey_score_id: survey_score.id).reject { |score| score.weighted_score.nil? }
+    center = domain.score_scheme.centers.find_by(identifier: survey_score.survey.identifier)
+    sanitized_scores = raw_scores.where(survey_score_id: survey_score.id).reject { |score| score.weighted_score(center).nil? }
     return nil if sanitized_scores.empty?
 
-    sum_of_weights = sanitized_scores.map(&:weight).inject(0, &:+)
-    sum_of_weighted_scores = sanitized_scores.map(&:weighted_score).inject(0, &:+)
+    sum_of_weights = sanitized_scores.inject(0.0) { |sum, item| sum + item.weight(center) }
+    sum_of_weighted_scores = sanitized_scores.inject(0.0) { |sum, item| sum + item.weighted_score(center) }
     (sum_of_weighted_scores / sum_of_weights).round(2)
   end
 end

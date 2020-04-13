@@ -90,6 +90,34 @@ class ScoreUnit < ApplicationRecord
         score_value = 1
       end
       score_value
+    elsif score_type == 'CALCULATION'
+      score_value = nil
+      score_unit_questions.each do |suq|
+        response = suq.response(survey)
+        next unless response
+        next if response.text.blank?
+
+        next unless suq.instrument_question.identifier == 'sdm6'
+
+        left_count = response.text.split(',').inject(0.0) { |sum, ans| sum + ans.to_i }
+        total_response = survey.responses.where(question_identifier: 'sdm1').first
+        next unless total_response
+        next if total_response.text.blank?
+
+        total_count = total_response.text.split(',').inject(0.0) { |sum, ans| sum + ans.to_i }
+        rate = left_count / total_count
+
+        if rate == 0.0
+          score_value = 7
+        elsif rate <= 0.25
+          score_value = 5
+        elsif rate > 0.25 && rate <= 0.5
+          score_value = 3
+        elsif rate > 0.5
+          score_value = 1
+        end
+      end
+      score_value
     end
   end
 

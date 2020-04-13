@@ -54,6 +54,11 @@ class Api::V4::ScoreUnitsController < Api::V4::ApiController
   end
 
   def create_children(score_unit)
+    if params[:score_unit][:options].empty?
+      iq = @instrument.instrument_questions.find_by(identifier: score_unit.title)
+      ScoreUnitQuestion.where(score_unit_id: score_unit.id,
+                              instrument_question_id: iq.id).first_or_create!
+    end
     ActiveRecord::Base.transaction do
       params[:score_unit][:options].each do |option|
         suq = ScoreUnitQuestion.where(score_unit_id: score_unit.id,

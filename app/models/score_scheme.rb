@@ -84,7 +84,7 @@ class ScoreScheme < ApplicationRecord
         score_data = []
         JSON.parse(center.survey_scores[0].score_data).each { |arr| score_data << arr }
         score_data.each do |row|
-          next if row[12].blank?
+          next if row[12].blank? && row[13].blank? && row[14].blank?
 
           csv << [center.identifier, center.center_type, center.administration, center.region,
                   center.department, center.municipality, row[0], row[7], row[8], row[12], row[13], row[14]]
@@ -102,8 +102,29 @@ class ScoreScheme < ApplicationRecord
     file
   end
 
+  def skip_grp8(unit, survey)
+    quiz = unit.score_unit_questions.first&.instrument_question&.identifier
+    return false if quiz != 'grp1'
+
+    response1 = survey.responses.where(question_identifier: 'cts5').first
+    count1 = response1.text.split(',').inject(0) { |sum, ans| sum + ans.to_i } if response1
+    return true if count1 && count1 < 8
+
+    response2 = survey.responses.where(question_identifier: 'cts6').first
+    count2 = response2.text.split(',').inject(0) { |sum, ans| sum + ans.to_i } if response2
+    count2.nil? ? true : count2 < 8
+  end
+
   def generate_raw_scores(survey, survey_score)
+    center = centers.find_by(identifier: survey.identifier)
     score_units.each do |unit|
+      wrong_center_type = (unit.institution_type == 'RESIDENTIAL' && center.center_type != 'CDA') ||
+                          (unit.institution_type == 'NON_RESIDENTIAL' &&
+                            (center.center_type != 'CDI' || center.center_type != 'CBI'))
+      next if wrong_center_type
+
+      next if skip_grp8(unit, survey)
+
       raw_score = survey_score.raw_scores.where(score_unit_id: unit.id, survey_score_id: survey_score.id).first
       raw_score ||= RawScore.create(score_unit_id: unit.id, survey_score_id: survey_score.id)
       raw_score.value = unit.score(survey)
