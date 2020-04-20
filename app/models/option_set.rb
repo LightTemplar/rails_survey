@@ -15,15 +15,18 @@
 #
 
 class OptionSet < ActiveRecord::Base
+  belongs_to :instruction
   has_many :option_in_option_sets, -> { order 'number_in_question' }, dependent: :destroy
   has_many :options, through: :option_in_option_sets
   has_many :translations, through: :options
+  has_many :back_translations, through: :translations
   has_many :questions, dependent: :nullify
   has_many :option_set_translations
-  belongs_to :instruction
-  after_save :set_option_specialty, if: proc { |option_set| option_set.special_changed? }
+
   has_paper_trail
   acts_as_paranoid
+
+  after_save :set_option_specialty, if: proc { |option_set| option_set.special_changed? }
 
   def copy
     new_copy = dup

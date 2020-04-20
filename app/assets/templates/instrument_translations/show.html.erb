@@ -22,42 +22,41 @@
         </tr>
       </thead>
       <tbody>
-      <tr class="m-1 row" ng-repeat="instrumentQuestion in instrumentQuestions">
-        <td class="col-md-4">
-          <div ng-bind-html="instrumentQuestion.text | ToTrustedHtml"/>
-          <div class="m-1" ng-show="instrumentQuestion.option_set_id" ng-repeat="oios in questionOptionInOptionSets(instrumentQuestion.option_set_id)">
-            <span ng-bind-html="getOption(oios.option_id).text | ToTrustedHtml"/>
-          </div>
-        </td>
-        <td class="col-md-3">
-          <div ng-bind-html="translationFor(instrumentQuestion).text | ToTrustedHtml"/>
-          <div class="m-1" ng-show="instrumentQuestion.option_set_id" ng-repeat="oios in questionOptionInOptionSets(instrumentQuestion.option_set_id)">
-            <span ng-bind-html="optionTranslationFor(getOption(oios.option_id)).text | ToTrustedHtml"/>
-          </div>
-        </td>
-        <td class="col-md-1">
-          <a ui-sref="questionTranslations({question_set_id: instrumentQuestion.question_set_id,
-          question_id: instrumentQuestion.question_id, language: translationFor(instrumentQuestion).language})">Edit</a><br>
-          <a ng-show="instrumentQuestion.option_set_id"
-          ui-sref="optionTranslations({option_set_id: instrumentQuestion.option_set_id, language: language})">Edit</a>
-        </td>
-        <td class="col-md-3">
-          <div ng-class="backTranslationFor(instrumentQuestion).approved ? 'bg-success' : 'bg-danger'"
-          ng-bind-html="backTranslationFor(instrumentQuestion).text | ToTrustedHtml"/>
-          <div class="m-1"
-          ng-class="optionBackTranslationFor(optionTranslationFor(getOption(oios.option_id)).id).approved ? 'bg-success' : 'bg-danger'"
-          ng-show="instrumentQuestion.option_set_id"
-          ng-repeat="oios in questionOptionInOptionSets(instrumentQuestion.option_set_id)">
-            {{optionBackTranslationFor(optionTranslationFor(getOption(oios.option_id)).id).text}}
-          </div>
-        </td>
-        <td class="col-md-1">
-          <a ui-sref="questionBackTranslations({question_translation_id: translationFor(instrumentQuestion).id,
-          language: translationFor(instrumentQuestion).language})">Edit</a><br>
-          <a ng-show="instrumentQuestion.option_set_id"
-          ui-sref="optionBackTranslations({option_set_id: instrumentQuestion.option_set_id, language: language})">Edit</a>
-        </td>
-      </tr>
+        <tr class="m-1 row" ng-repeat="instrumentQuestion in instrumentQuestions">
+          <td class="col-md-4">
+            <div ng-bind-html="instrumentQuestion.text | ToTrustedHtml"/>
+            <div class="m-1" ng-show="instrumentQuestion.option_set_id" ng-repeat="option in instrumentQuestion.options">
+              <span ng-bind-html="option.text | ToTrustedHtml"/>
+            </div>
+          </td>
+          <td class="col-md-4">
+            <div ng-repeat="questionTranslation in questionTranslationFor(instrumentQuestion.question_translations)">
+              <span ng-bind-html="questionTranslation.text | ToTrustedHtml"/>
+              <a ui-sref="questionTranslations({question_set_id: instrumentQuestion.question_set_id,
+              question_id: instrumentQuestion.question_id, language: questionTranslation.language})">Edit</a>
+            </div>
+            <div ng-repeat="optionTranslation in optionTranslationFor(instrumentQuestion.option_translations)">
+              <span ng-class="selectedTranslation(optionTranslation, instrumentQuestion.option_set_id)" ng-bind-html="optionTranslation.text | ToTrustedHtml"/>
+            </div>
+            <a ng-show="instrumentQuestion.option_set_id"
+            ui-sref="optionTranslations({option_set_id: instrumentQuestion.option_set_id, language: language})">Edit</a>
+          </td>
+
+          <td class="col-md-4">
+            <div ng-repeat="backTranslation in questionBackTranslationFor(instrumentQuestion.back_translations)">
+              <span  ng-class="backTranslation.approved ? 'bg-success' : 'bg-danger'"
+              ng-bind-html="backTranslation.text | ToTrustedHtml"/>
+              <a ui-sref="questionBackTranslations({question_translation_id: backTranslation.backtranslatable_id,
+              language: backTranslation.language})">Edit</a>
+            </div>
+            <div ng-repeat="backTranslation in optionBackTranslationFor(instrumentQuestion.option_back_translations)">
+              <span  ng-class="backTranslation.approved ? 'bg-success' : 'bg-danger'"
+              ng-bind-html="backTranslation.text | ToTrustedHtml"/>
+            </div>
+            <a ng-show="instrumentQuestion.option_set_id"
+            ui-sref="optionBackTranslations({option_set_id: instrumentQuestion.option_set_id, language: language})">Edit</a>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>

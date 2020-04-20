@@ -69,11 +69,11 @@ RailsSurvey::Application.routes.draw do
       end
       resources :option_sets do
         resources :options, controller: 'option_set_options'
-        resources :option_set_translations
         member do
           get :copy
         end
       end
+      resources :option_set_translations
       resources :option_in_option_sets
       resources :questions
       resources :question_translations, only: %i[index create update show] do
@@ -118,6 +118,7 @@ RailsSurvey::Application.routes.draw do
           post :v1_v2_import
         end
         resources :instruments do
+          resources :instrument_question_translations, controller: 'instrument_question_translations'
           resources :instrument_questions do
             resources :next_questions
             resources :multiple_skips

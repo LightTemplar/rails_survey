@@ -5,15 +5,15 @@ InstrumentTranslation, Instrument) ->
   $scope.showInstrumentTranslations = true
   $scope.project_id = $stateParams.project_id
   $scope.instrumentTranslations = InstrumentTranslation.query({
-      'project_id': $stateParams.project_id,
-      'instrument_id': $stateParams.instrument_id
+    'project_id': $stateParams.project_id,
+    'instrument_id': $stateParams.instrument_id
   })
   $scope.settings = Setting.get({}, ->
     $scope.languages = $scope.settings.languages
   )
   $scope.instrument = Instrument.get({
-      'project_id': $stateParams.project_id,
-      'id': $stateParams.instrument_id
+    'project_id': $stateParams.project_id,
+    'id': $stateParams.instrument_id
   })
 
   $scope.languageName = (code) ->
@@ -147,73 +147,45 @@ App.controller 'DisplayTranslationsCtrl', ['$scope', '$stateParams', 'Setting', 
 
 ]
 
-App.controller 'ShowInstrumentTranslationsCtrl', ['$scope', '$stateParams', 'InstrumentTranslation',
-'Instrument', 'InstrumentQuestion', 'QuestionTranslation', 'QuestionBackTranslation', 'Options',
-'OptionInOptionSet', 'OptionTranslation', 'OptionBackTranslation'
-($scope, $stateParams, InstrumentTranslation, Instrument, InstrumentQuestion, QuestionTranslation,
-QuestionBackTranslation, Options, OptionInOptionSet, OptionTranslation, OptionBackTranslation) ->
+App.controller 'ShowInstrumentTranslationsCtrl', ['$scope', '$stateParams',
+'InstrumentTranslation', 'OptionSetTranslation', 'InstrumentQuestionTranslation',
+($scope, $stateParams, InstrumentTranslation, OptionSetTranslation, InstrumentQuestionTranslation) ->
   $scope.project_id = $stateParams.project_id
   $scope.instrument_id = $stateParams.instrument_id
-  $scope.questionBackTranslations = []
   $scope.instrumentQuestions = []
-  $scope.questionTranslations = []
 
-  $scope.instrument = Instrument.get({
-      'project_id': $stateParams.project_id,
-      'id': $stateParams.instrument_id
-  }, ->
-    $scope.instrumentQuestions = InstrumentQuestion.query({
-      'project_id': $scope.project_id,
-      'instrument_id': $scope.instrument_id
-    })
-  )
   $scope.instrumentTranslation = InstrumentTranslation.get({
     'project_id': $stateParams.project_id,
     'instrument_id': $stateParams.instrument_id,
     'id': $stateParams.id
   }, ->
     $scope.language = $scope.instrumentTranslation.language
-    $scope.questionBackTranslations = QuestionBackTranslation.query({
+    $scope.instrumentQuestions = InstrumentQuestionTranslation.query({
+      'project_id': $stateParams.project_id,
+      'instrument_id': $stateParams.instrument_id,
       'language': $scope.language,
-      'instrument_id': $scope.instrument_id
-    })
-    $scope.questionTranslations = QuestionTranslation.query({
-      'language': $scope.language,
-      'instrument_id': $scope.instrument_id
-    })
-    $scope.options = Options.query({'instrument_id': $scope.instrument_id})
-    $scope.optionInOptionSets = OptionInOptionSet.query({
-      'instrument_id': $scope.instrument_id
-    })
-    $scope.optionTranslations = OptionTranslation.query({
-      'language': $scope.language,
-      'instrument_id': $stateParams.instrument_id
-    })
-    $scope.optionBackTranslations = OptionBackTranslation.query({
-      'language': $scope.language,
-      'instrument_id': $scope.instrument_id
     })
   )
 
-  $scope.optionBackTranslationFor = (optionTranslationId) ->
-    _.findWhere($scope.optionBackTranslations, { backtranslatable_id: optionTranslationId })
+  $scope.optionSetTranslations = OptionSetTranslation.query({})
 
-  $scope.optionTranslationFor = (option) ->
-    _.findWhere($scope.optionTranslations, { option_id: option.id})
+  $scope.questionTranslationFor = (instrumentQuestionTranslations) ->
+    _.where(instrumentQuestionTranslations, {language: $scope.language})
 
-  $scope.questionOptionInOptionSets = (optionSetId) ->
-    _.where($scope.optionInOptionSets, { option_set_id: optionSetId})
+  $scope.optionTranslationFor = (optionTranslations) ->
+    _.where(optionTranslations, {language: $scope.language})
 
-  $scope.getOption = (optionId) ->
-    _.findWhere($scope.options, {id: optionId})
+  $scope.questionBackTranslationFor = (backTranslations) ->
+    _.where(backTranslations, {language: $scope.language})
 
-  $scope.translationFor = (instrumentQuestion) ->
-    _.findWhere($scope.questionTranslations, {question_id: instrumentQuestion.question_id})
+  $scope.optionBackTranslationFor = (backTranslations) ->
+    _.where(backTranslations, {language: $scope.language})
 
-  $scope.backTranslationFor = (instrumentQuestion) ->
-    questionTranslation = $scope.translationFor(instrumentQuestion)
-    if questionTranslation != undefined
-      _.findWhere($scope.questionBackTranslations, { language: questionTranslation.language,
-      backtranslatable_id: questionTranslation.id, backtranslatable_type: 'QuestionTranslation' })
+  $scope.selectedTranslation = (optionTranslation, optionSetId) ->
+    ost = _.findWhere($scope.optionSetTranslations, {option_translation_id: optionTranslation.id, option_set_id: optionSetId})
+    if ost
+      return 'bg-success'
+    else
+      return ''
 
 ]

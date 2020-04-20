@@ -7,7 +7,11 @@ module Api
       before_action :set_option_set, only: %i[index create update destroy]
 
       def index
-        respond_with @option_set.option_set_translations
+        if params[:option_set_id].blank?
+          respond_with OptionSetTranslation.all
+        else
+          respond_with @option_set.option_set_translations
+        end
       end
 
       def create
@@ -32,7 +36,7 @@ module Api
       private
 
       def set_option_set
-        @option_set = OptionSet.find(params[:option_set_id])
+        @option_set = OptionSet.find(params[:option_set_id]) unless params[:option_set_id].blank?
       end
 
       def option_set_translation_params

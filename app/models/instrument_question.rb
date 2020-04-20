@@ -26,6 +26,7 @@ class InstrumentQuestion < ActiveRecord::Base
   has_many :follow_up_questions, dependent: :destroy
   has_many :condition_skips, dependent: :destroy
   has_many :translations, through: :question
+  has_many :back_translations, through: :translations
   has_many :display_instructions, dependent: :destroy
   has_many :loop_questions, dependent: :destroy
   has_many :all_loop_questions, -> { with_deleted }, class_name: 'LoopQuestion'
@@ -190,6 +191,14 @@ class InstrumentQuestion < ActiveRecord::Base
 
   def special_options
     question.special_option_set_id ? question.special_option_set.options : []
+  end
+
+  def option_translations
+    question.option_set_id ? question.option_set.translations : []
+  end
+
+  def option_back_translations
+    question.option_set_id ? question.option_set.back_translations : []
   end
 
   def copy(display_id, instrument_id)
