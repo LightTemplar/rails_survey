@@ -42,6 +42,7 @@ Rails.application.routes.draw do
                 end
               end
             end
+            resources :score_units, controller: 'score_scheme_units', only: :index
           end
           resources :questions, controller: 'survey_questions'
           member do

@@ -40,6 +40,14 @@ class ScoreUnit < ApplicationRecord
     subdomain.domain_id
   end
 
+  def domain_title
+    subdomain.domain.title
+  end
+
+  def subdomain_title
+    subdomain.title
+  end
+
   def copy
     new_copy = dup
     new_copy.title = "#{title}_copy"
