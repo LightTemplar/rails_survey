@@ -16,6 +16,7 @@
 class Option < ApplicationRecord
   include Translatable
   include Sanitizable
+  include FullSanitizer
   has_many :option_in_option_sets, dependent: :destroy
   has_many :option_sets, through: :option_in_option_sets
   has_many :translations, foreign_key: 'option_id', class_name: 'OptionTranslation', dependent: :destroy
@@ -41,8 +42,7 @@ class Option < ApplicationRecord
 
   def translated_lines(code)
     trans = translations.where(language: code)
-    sanitizer = Rails::Html::FullSanitizer.new
-    trans.map { |translation| sanitizer.sanitize translation.text }.join("\, ") unless trans.empty?
+    trans.map { |translation| full_sanitizer.sanitize translation.text }.join("\, ") unless trans.empty?
   end
 
   def self.export

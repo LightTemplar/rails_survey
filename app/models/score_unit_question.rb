@@ -27,13 +27,13 @@ class ScoreUnitQuestion < ApplicationRecord
   end
 
   def option(response)
-    instrument_question.non_special_options[response.text.to_i]
+    instrument_question.non_special_options[response.text.to_i] unless response&.text.blank?
   end
 
   def option_identifiers(response)
     identifiers = []
     response.text.split(',').each do |text|
-      identifiers << instrument_question.non_special_options[text&.to_i]&.identifier
+      identifiers << instrument_question.non_special_options[text&.to_i]&.identifier unless text.blank?
     end
     identifiers
   end

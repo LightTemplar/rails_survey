@@ -27,6 +27,7 @@
 require 'sidekiq/api'
 
 class Response < ApplicationRecord
+  include FullSanitizer
   belongs_to :instrument_question, foreign_key: :question_identifier, primary_key: :identifier
   belongs_to :survey, foreign_key: :survey_uuid, primary_key: :uuid, touch: true
   delegate :device, to: :survey
@@ -57,11 +58,43 @@ class Response < ApplicationRecord
   end
 
   def to_s
-    if instrument_question.nil? || instrument_question.options.empty?
-      text
+    return text if instrument_question.nil? || instrument_question.non_special_options.empty?
+
+    labels = []
+    if instrument_question.list_of_boxes_variant?
+      labels << instrument_question.non_special_options.map { |o| full_sanitizer.sanitize o.text }
     else
-      instrument_question.options[text.to_i].to_s
+      text.split(Settings.list_delimiter).each do |option_index|
+        labels << if instrument_question.other? && option_index.to_i == instrument_question.other_index
+                    'Other'
+                  else
+                    full_sanitizer.sanitize instrument_question.non_special_options[option_index.to_i].to_s
+                  end
+      end
     end
+    labels.join(Settings.list_delimiter)
+  end
+
+  def to_s_es
+    return text if instrument_question.nil? || instrument_question.non_special_options.empty?
+
+    labels = []
+    if instrument_question.list_of_boxes_variant?
+      labels << instrument_question.non_special_options.map { |o| full_sanitizer.sanitize o.translations.find_by_language('es')&.text }
+    else
+      text.split(Settings.list_delimiter).each do |option_index|
+        labels << if instrument_question.other? && option_index.to_i == instrument_question.other_index
+                    'Otro'
+                  else
+                    full_sanitizer.sanitize instrument_question.non_special_options[option_index.to_i].translations.find_by_language('es')&.text
+                  end
+      end
+    end
+    labels.join(Settings.list_delimiter)
+  end
+
+  def label_text(versioned_question, option_index)
+    versioned_question.options[option_index.to_i].try(:text)
   end
 
   def grouped_responses

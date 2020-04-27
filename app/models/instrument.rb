@@ -23,6 +23,7 @@ class Instrument < ApplicationRecord
   include Translatable
   include Alignable
   include LanguageAssignable
+  include FullSanitizer
   scope :published, -> { where(published: true) }
   belongs_to :project, touch: true
 
@@ -218,7 +219,6 @@ class Instrument < ApplicationRecord
   end
 
   def export(format)
-    sanitizer = Rails::Html::FullSanitizer.new
     format << ['Instrument id:', id]
     format << ['Instrument title:', title]
     format << ['Version number:', current_version_number]
@@ -226,7 +226,8 @@ class Instrument < ApplicationRecord
     format << ["\n"]
     format << %w[number_in_instrument question_identifier question_type question_instructions question_text] + instrument_translation_languages
     questions.each do |question|
-      format << [question.number_in_instrument, question.question_identifier, question.question_type, sanitizer.sanitize(question.instructions), sanitizer.sanitize(question.text)] + translations_for_object(question)
+      format << [question.number_in_instrument, question.question_identifier, question.question_type,
+                 full_sanitizer.sanitize(question.instructions), full_sanitizer.sanitize(question.text)] + translations_for_object(question)
       question.options.each do |option|
         format << ['', '', '', "Option for question #{question.question_identifier}", option.text] + translations_for_object(option)
         next unless option.skips
@@ -252,10 +253,9 @@ class Instrument < ApplicationRecord
   end
 
   def translations_for_object(obj)
-    sanitizer = Rails::Html::FullSanitizer.new
     text_translations = []
     obj.translations.each do |translation|
-      text_translations << sanitizer.sanitize(translation.text) if instrument_translation_languages.include? translation.language
+      text_translations << full_sanitizer.sanitize(translation.text) if instrument_translation_languages.include? translation.language
     end
     text_translations
   end
@@ -293,25 +293,24 @@ class Instrument < ApplicationRecord
   end
 
   def generate_row(csv)
-    sanitizer = Rails::Html::FullSanitizer.new
     csv << ['instrument_id', id]
     csv << ['translation_language_iso_code', '', 'Enter language ISO 639-1 code in column 2']
     csv << ['language_alignment', '', 'Enter left in column 2 if words in the language are read left-to-right or right if they are read right-to-left']
-    csv << ['instrument_title', sanitizer.sanitize(title), '', 'Enter instrument_title translation in column 3']
+    csv << ['instrument_title', full_sanitizer.sanitize(title), '', 'Enter instrument_title translation in column 3']
     csv << ['']
     csv << ['question_identifier', 'question_text', 'Enter question_text translations in this column', 'instructions', 'Enter instructions translations in this column', 'reg_ex_validation_message', 'Enter reg_ex_validation_message translations in this column']
     questions.each do |question|
-      csv << [question.question_identifier, sanitizer.sanitize(question.text), '', sanitizer.sanitize(question.instructions), '', sanitizer.sanitize(question.reg_ex_validation_message), '']
+      csv << [question.question_identifier, full_sanitizer.sanitize(question.text), '', full_sanitizer.sanitize(question.instructions), '', full_sanitizer.sanitize(question.reg_ex_validation_message), '']
     end
     csv << ['']
     csv << ['option_id', 'option_text', 'Enter option_text translation in this column']
     options.regular.each do |option|
-      csv << [option.id, sanitizer.sanitize(option.text), '']
+      csv << [option.id, full_sanitizer.sanitize(option.text), '']
     end
     csv << ['']
     csv << ['section_id', 'section_title_text', 'Enter section_title_text translation in this column']
     sections.each do |section|
-      csv << [section.id, sanitizer.sanitize(section.title), '']
+      csv << [section.id, full_sanitizer.sanitize(section.title), '']
     end
   end
 
@@ -417,10 +416,9 @@ class Instrument < ApplicationRecord
   end
 
   def reorder_display_text
-    sanitizer = Rails::Html::FullSanitizer.new
     text = ''
     questions.each do |question|
-      text << "#{question.question_identifier}\t#{question.number_in_instrument}\t#{sanitizer.sanitize(question.text).truncate(50)}\n"
+      text << "#{question.question_identifier}\t#{question.number_in_instrument}\t#{full_sanitizer.sanitize(question.text).truncate(50)}\n"
     end
     text
   end

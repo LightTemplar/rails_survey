@@ -194,6 +194,10 @@ class InstrumentQuestion < ApplicationRecord
     question.other?
   end
 
+  def other_index
+    question.other_index
+  end
+
   def non_special_options
     question.option_set_id ? question.option_set.options : []
   end

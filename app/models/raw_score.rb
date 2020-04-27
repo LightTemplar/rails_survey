@@ -13,11 +13,13 @@
 #  uuid              :string
 #  survey_score_uuid :string
 #  deleted_at        :datetime
+#  response_id       :integer
 #
 
 class RawScore < ApplicationRecord
   belongs_to :score_unit
   belongs_to :survey_score
+  belongs_to :response
 
   acts_as_paranoid
 

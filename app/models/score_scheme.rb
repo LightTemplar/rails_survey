@@ -127,8 +127,7 @@ class ScoreScheme < ApplicationRecord
 
       raw_score = survey_score.raw_scores.where(score_unit_id: unit.id, survey_score_id: survey_score.id).first
       raw_score ||= RawScore.create(score_unit_id: unit.id, survey_score_id: survey_score.id)
-      raw_score.value = unit.score(survey)
-      raw_score.save
+      unit.generate_score(survey, raw_score)
     end
     generate_score_data(survey, survey_score)
   end
@@ -151,7 +150,10 @@ class ScoreScheme < ApplicationRecord
 
             csv << [survey.id, identifier, center.center_type, center.administration,
                     center.region, center.department, center.municipality, domain.title,
-                    subdomain.title, score_unit.title, score_unit.weight, raw_score.value, '', '', '']
+                    subdomain.title, score_unit.title, score_unit.weight, raw_score.value,
+                    '', '', '', raw_score.response.nil? ? '' : raw_score.response&.text,
+                    raw_score.response.nil? ? '' : raw_score.response&.to_s,
+                    raw_score.response.nil? ? '' : raw_score.response&.to_s_es]
           end
         end
         domain_score = subdomain_scores.inject(0.0) { |sum, item| sum + item } / subdomain_scores.size if index == domain.subdomains.size - 1
@@ -164,7 +166,7 @@ class ScoreScheme < ApplicationRecord
 
         csv << [survey.id, identifier, center.center_type, center.administration,
                 center.region, center.department, center.municipality, domain.title,
-                subdomain.title, '', '', '', sd_score, d_score, c_score]
+                subdomain.title, '', '', '', sd_score, d_score, c_score, '', '', '']
       end
     end
     survey_score.score_data = csv.to_s
@@ -177,7 +179,8 @@ class ScoreScheme < ApplicationRecord
     CSV.open(file, 'w') do |csv|
       csv << %w[survey_id center_id center_type center_admin region department
                 municipality domain subdomain score_unit score_unit_weight
-                score_unit_score subdomain_score domain_score center_score]
+                score_unit_score subdomain_score domain_score center_score
+                response response_label_en response_label_es]
       survey_scores.each do |survey_score|
         data = []
         JSON.parse(survey_score.score_data).each { |arr| data << arr }

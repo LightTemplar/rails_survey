@@ -11,8 +11,6 @@
 #  updated_at             :datetime
 #  deleted_at             :datetime
 #  option_identifier      :string
-#  follow_up_qid          :string
-#  position               :string
 #
 
 class OptionScore < ApplicationRecord
@@ -21,7 +19,7 @@ class OptionScore < ApplicationRecord
 
   acts_as_paranoid
 
-  validates :position, presence: true, allow_blank: false
   validates :score_unit_question_id, presence: true, allow_blank: false
   validates :option_identifier, presence: true, uniqueness: { scope: [:score_unit_question_id] }
+  validates :value, presence: true
 end

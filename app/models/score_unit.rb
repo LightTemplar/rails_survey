@@ -65,8 +65,16 @@ class ScoreUnit < ApplicationRecord
     new_copy
   end
 
+  def generate_score(survey, raw_score)
+    response, value = score(survey)
+    raw_score.value = value
+    raw_score.response_id = response.id if response
+    raw_score.save
+  end
+
   def score(survey)
     scores = []
+    response = nil
     if score_type == 'MATCH'
       score_unit_questions.each do |suq|
         response = suq.response(survey)
@@ -78,7 +86,7 @@ class ScoreUnit < ApplicationRecord
         option_score = option_scores.where(option_identifier: response_option.identifier).first
         scores << option_score if option_score
       end
-      scores.reject { |s| s.value.nil? }.max_by(&:value).try(:value)
+      return response, scores.reject { |s| s.value.nil? }.max_by(&:value).try(:value)
     elsif score_type == 'SUM'
       score_unit_questions.each do |suq|
         response = suq.response(survey)
@@ -89,7 +97,7 @@ class ScoreUnit < ApplicationRecord
 
         scores.concat(option_scores.where(option_identifier: response_option_identifiers))
       end
-      return nil if scores.empty? && (base_point_score.nil? || base_point_score == 0.0)
+      return response, nil if scores.empty?
 
       score_value = scores.sum(&:value) + base_point_score
       if score_value > 7
@@ -97,7 +105,7 @@ class ScoreUnit < ApplicationRecord
       elsif score_value < 1
         score_value = 1
       end
-      score_value
+      return response, score_value
     elsif score_type == 'CALCULATION'
       score_value = nil
       score_unit_questions.each do |suq|
@@ -125,7 +133,7 @@ class ScoreUnit < ApplicationRecord
           score_value = 1
         end
       end
-      score_value
+      return response, score_value
     end
   end
 

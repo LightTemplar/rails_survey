@@ -5,6 +5,15 @@ class Api::V4::OptionScoresController < Api::V4::ApiController
   before_action :set_score_scheme
   before_action :set_option_score, only: %i[update destroy]
 
+  def create
+    option_score = OptionScore.new(option_score_params)
+    if option_score.save
+      render json: option_score, status: :created
+    else
+      render json: { errors: option_score.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
   def update
     respond_with @option_score.update_attributes(option_score_params)
   end

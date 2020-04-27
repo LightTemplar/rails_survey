@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200407172125) do
+ActiveRecord::Schema.define(version: 20200423144745) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -199,6 +199,7 @@ ActiveRecord::Schema.define(version: 20200407172125) do
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "weight"
     t.index ["deleted_at"], name: "index_domains_on_deleted_at"
   end
 
@@ -409,8 +410,6 @@ ActiveRecord::Schema.define(version: 20200407172125) do
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.string "option_identifier"
-    t.string "follow_up_qid"
-    t.string "position"
     t.index ["deleted_at"], name: "index_option_scores_on_deleted_at"
   end
 
@@ -559,6 +558,7 @@ ActiveRecord::Schema.define(version: 20200407172125) do
     t.string "uuid"
     t.string "survey_score_uuid"
     t.datetime "deleted_at"
+    t.integer "response_id"
   end
 
   create_table "response_exports", id: :serial, force: :cascade do |t|
@@ -722,6 +722,7 @@ ActiveRecord::Schema.define(version: 20200407172125) do
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "weight"
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
   end
 

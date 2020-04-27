@@ -10,11 +10,12 @@
 #  deleted_at :datetime
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  weight     :float
 #
 
 class Subdomain < ApplicationRecord
   belongs_to :domain
-  has_many :score_units, dependent: :destroy
+  has_many :score_units, -> { order 'score_units.title' }, dependent: :destroy
   has_many :raw_scores, through: :score_units
 
   acts_as_paranoid

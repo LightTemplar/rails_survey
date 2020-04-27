@@ -27,6 +27,7 @@
 require 'sidekiq/api'
 
 class Survey < ApplicationRecord
+  include FullSanitizer
   belongs_to :instrument
   belongs_to :device
   belongs_to :roster, foreign_key: :roster_uuid, primary_key: :uuid
@@ -179,8 +180,7 @@ class Survey < ApplicationRecord
   end
 
   def sanitize(str)
-    sanitizer = Rails::Html::FullSanitizer.new
-    sanitizer.sanitize(str)
+    full_sanitizer.sanitize(str)
   end
 
   def write_short_row

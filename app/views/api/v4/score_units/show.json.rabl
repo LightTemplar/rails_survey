@@ -11,5 +11,5 @@ node :option_score_count, &:option_score_count
 node :domain_id, &:domain_id
 
 child :option_scores do
-  attributes :id, :score_unit_question_id, :value, :option_identifier, :follow_up_qid, :position
+  attributes :id, :score_unit_question_id, :value, :option_identifier
 end
