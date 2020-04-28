@@ -206,6 +206,14 @@ class InstrumentQuestion < ApplicationRecord
     question.special_option_set_id ? question.special_option_set.options : []
   end
 
+  def other_option
+    Option.find_by_identifier('Other (specify):')
+  end
+
+  def all_non_special_options
+    other? ? non_special_options + [other_option] : non_special_options
+  end
+
   def copy(display_id, instrument_id)
     iq_copy = dup
     iq_copy.display_id = display_id

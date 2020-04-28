@@ -12,3 +12,7 @@ child :option_in_option_sets do |_os|
     extends 'api/templates/v4/option'
   end
 end
+
+child other_option: :other_option do
+  extends 'api/templates/v4/option'
+end

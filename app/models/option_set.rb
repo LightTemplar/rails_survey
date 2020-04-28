@@ -30,6 +30,10 @@ class OptionSet < ApplicationRecord
 
   validates :title, presence: true, allow_blank: false, uniqueness: true
 
+  def other_option
+    Option.find_by_identifier('Other (specify):')
+  end
+
   def copy
     new_copy = dup
     new_copy.title = "#{title}_#{Time.now.to_i}"
