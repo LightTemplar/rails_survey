@@ -14,6 +14,7 @@
 #
 
 class ScoreScheme < ApplicationRecord
+  include FullSanitizer
   belongs_to :instrument
   has_many :surveys, through: :instrument
   has_many :domains, dependent: :destroy
@@ -29,6 +30,35 @@ class ScoreScheme < ApplicationRecord
   acts_as_paranoid
 
   validates :title, presence: true, uniqueness: { scope: [:instrument_id] }
+
+  def export_file
+    file = Tempfile.new(title)
+    Axlsx::Package.new do |p|
+      domains.each do |domain|
+        p.workbook.add_worksheet(name: "Domain #{domain.title}") do |sheet|
+          sheet.add_row ['Identifier', 'Subdomain', 'Weight', 'Question',
+                         'Score', 'Score Type', 'Base Score', 'Translation']
+          domain.subdomains.each do |subdomain|
+            subdomain.score_units.each do |unit|
+              unit.score_unit_questions.each do |suq|
+                sheet.add_row [unit.title, subdomain.title, unit.weight,
+                               full_sanitizer.sanitize(suq.instrument_question.text), '',
+                               unit.score_type, unit.base_point_score,
+                               full_sanitizer.sanitize(suq.instrument_question.translations.find_by_language('es')&.text)]
+                suq.option_scores.each do |score|
+                  sheet.add_row ['', '', '', full_sanitizer.sanitize(score.option.text),
+                                 unit.score_type == 'SUM' ? "(#{format('%+d', score.value)})" : score.value, '', '',
+                                 full_sanitizer.sanitize(score.option.translations.find_by_language('es')&.text)]
+                end
+              end
+            end
+          end
+        end
+      end
+      p.serialize(file.path)
+    end
+    file
+  end
 
   def score
     surveys.each do |survey|
