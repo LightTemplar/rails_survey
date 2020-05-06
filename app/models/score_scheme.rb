@@ -44,41 +44,41 @@ class ScoreScheme < ApplicationRecord
       option_style = wb.styles.add_style(alignment: wrap_text)
       b_question_style = wb.styles.add_style(b: true, alignment: wrap_text, border: b_style)
       b_option_style = wb.styles.add_style(alignment: wrap_text, border: b_style)
+      c_style = wb.styles.add_style(alignment: { horizontal: :center })
+      c_border = wb.styles.add_style(alignment: { horizontal: :center }, border: b_style)
       domains.sort_by { |domain| domain.title.to_i }.each do |domain|
         wb.add_worksheet(name: "Domain #{domain.title}") do |sheet|
           tab_color = SecureRandom.hex(3)
           sheet.sheet_pr.tab_color = tab_color
-          sheet.add_row ['', '', '', "#{domain.title}: #{domain.name}", '', '', '', '', '', ''],
+          sheet.add_row ['', '', '', '', "#{domain.title}: #{domain.name}", '', '', '', '', ''],
                         style: wb.styles.add_style(b: true, alignment: { horizontal: :center, vertical: :center },
                                                    border: b_style, bg_color: tab_color), height: row_height
-          sheet.add_row ['Identifier', 'Subdomain', 'Weight', 'Question', 'Score',
-                         'Score Type', 'Base Score', 'Response Code', 'Translation', 'Notes'],
+          sheet.add_row %w[Identifier Subdomain Weight Code Question Base Score Type Translation Notes],
                         style: wb.styles.add_style(alignment: { horizontal: :center, vertical: :center }, border: b_style),
                         height: row_height
           domain.subdomains.each do |subdomain|
-            subdomain.score_units.each do |unit|
+            subdomain.score_units.sort_by { |su| [su.title_s, su.title_i] }.each do |unit|
               unit.score_unit_questions.each_with_index do |suq, index|
                 q_style = index == unit.score_unit_questions.size - 1 && suq.option_scores.empty? ?
-                [border, border, border, b_question_style, border,
-                 border, border, border, b_question_style, b_option_style] :
-                [nil, nil, nil, question_style, nil, nil, nil, nil, question_style, option_style]
-                sheet.add_row [unit.title, subdomain.title, unit.weight,
-                               html_decode(full_sanitize(suq.instrument_question.text)), '',
-                               unit.score_type, unit.base_point_score, '',
+                [c_border, c_border, c_border, c_border, b_question_style, c_border, c_border, border,
+                 b_question_style, b_option_style] : [c_style, c_style, c_style, c_style, question_style, c_style,
+                                                      c_style, c_style, question_style, option_style]
+                sheet.add_row [unit.title, subdomain.title, unit.weight, suq.question_identifier,
+                               html_decode(full_sanitize(suq.instrument_question.text)),
+                               unit.base_point_score == 0.0 ? '' : unit.base_point_score, '', unit.score_type,
                                full_sanitize(suq.instrument_question.translations.find_by_language('es')&.text),
                                html_decode(full_sanitize(unit.notes))], style: q_style
-                sheet.column_widths nil, nil, nil, 50, nil, nil, nil, nil, 50, 50
+                sheet.column_widths nil, nil, nil, nil, 50, nil, nil, nil, 50, 50
                 suq.option_scores.each_with_index do |score, index|
                   o_style = index == suq.option_scores.size - 1 ?
-                  [border, border, border, b_option_style, border,
-                   border, border, border, b_option_style, b_option_style] :
-                  [nil, nil, nil, option_style, nil, nil, nil, nil, option_style, option_style]
-                  sheet.add_row ['', '', '', full_sanitizer.sanitize(score.option.text),
-                                 unit.score_type == 'SUM' ? "(#{format('%+d', score.value)})" : score.value, '', '',
-                                 suq.option_index(score.option),
+                  [border, border, border, c_border, b_option_style, border, c_border, c_border,
+                   b_option_style, b_option_style] : [nil, nil, nil, c_style, option_style, nil,
+                                                      c_style, c_style, option_style, option_style]
+                  sheet.add_row ['', '', '', suq.option_index(score.option), full_sanitizer.sanitize(score.option.text),
+                                 '', unit.score_type == 'SUM' ? "(#{format('%+0.1f', score.value)})" : score.value, '',
                                  full_sanitize(score.option.translations.find_by_language('es')&.text),
                                  html_decode(full_sanitize(score.notes))], style: o_style
-                  sheet.column_widths nil, nil, nil, 50, nil, nil, nil, nil, 50, 50
+                  sheet.column_widths nil, nil, nil, nil, 50, nil, nil, nil, 50, 50
                 end
               end
             end

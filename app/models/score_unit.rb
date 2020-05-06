@@ -28,6 +28,14 @@ class ScoreUnit < ApplicationRecord
   validates :subdomain_id, presence: true, allow_blank: false
   validates :title, presence: true, uniqueness: { scope: [:subdomain_id] }
 
+  def title_s
+    title.scan(/\D/).join('')
+  end
+
+  def title_i
+    title.scan(/\d/).join('')&.to_i
+  end
+
   def question_identifiers
     score_unit_questions.map { |suq| suq.instrument_question.identifier }.join(',')
   end
