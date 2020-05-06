@@ -46,6 +46,14 @@ class RawScore < ApplicationRecord
       else
         score_unit.weight
       end
+    elsif score_unit.score_unit_questions.first.instrument_question.identifier == 'grp3'
+      if center.center_type == 'CDA'
+        9
+      elsif center.center_type == 'CDI' || center.center_type == 'CBI'
+        3
+      else
+        score_unit.weight
+      end
     else
       score_unit.weight
     end

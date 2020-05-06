@@ -14,4 +14,5 @@ node :domain_id, &:domain_id
 
 child :option_scores do
   attributes :id, :score_unit_question_id, :value, :option_identifier, :follow_up_qid, :position
+  node :question_identifier, &:question_identifier
 end

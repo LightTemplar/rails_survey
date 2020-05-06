@@ -6,7 +6,7 @@ class Api::V4::DomainsController < Api::V4::ApiController
   before_action :set_domain, only: %i[update destroy]
 
   def index
-    @domains = @score_scheme.domains.includes(:subdomains)
+    @domains = @score_scheme.domains.includes(:subdomains).sort_by { |domain| domain.title.to_i }
   end
 
   def show
@@ -33,7 +33,7 @@ class Api::V4::DomainsController < Api::V4::ApiController
   private
 
   def domain_params
-    params.require(:domain).permit(:title, :score_scheme_id)
+    params.require(:domain).permit(:title, :score_scheme_id, :name)
   end
 
   def set_score_scheme

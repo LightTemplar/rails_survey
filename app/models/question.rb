@@ -33,7 +33,6 @@
 class Question < ApplicationRecord
   include Translatable
   include Sanitizable
-  include FullSanitizer
   belongs_to :option_set
   belongs_to :special_option_set, class_name: 'OptionSet'
   belongs_to :question_set
@@ -85,7 +84,7 @@ class Question < ApplicationRecord
 
   def translated_lines(code)
     trans = translations.where(language: code)
-    trans.map { |translation| full_sanitizer.sanitize translation.text }.join("\, ") unless trans.empty?
+    trans.map { |translation| full_sanitize translation.text }.join("\, ") unless trans.empty?
   end
 
   def self.export
@@ -93,7 +92,7 @@ class Question < ApplicationRecord
       csv << %w[question_identifier question_set folder english swahili amharic khmer]
       Question.all.each do |question|
         csv << [question.question_identifier, question&.question_set&.title, question&.folder&.title,
-                full_sanitizer.sanitize(question.text), question.translated_lines('sw'),
+                full_sanitize(question.text), question.translated_lines('sw'),
                 question.translated_lines('am'), question.translated_lines('km')]
       end
     end

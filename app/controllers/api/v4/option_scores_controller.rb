@@ -25,7 +25,7 @@ class Api::V4::OptionScoresController < Api::V4::ApiController
   private
 
   def option_score_params
-    params.require(:option_score).permit(:score_unit_question_id, :option_identifier, :value)
+    params.require(:option_score).permit(:score_unit_question_id, :option_identifier, :value, :notes)
   end
 
   def set_score_scheme

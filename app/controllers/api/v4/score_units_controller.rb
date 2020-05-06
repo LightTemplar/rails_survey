@@ -39,7 +39,7 @@ class Api::V4::ScoreUnitsController < Api::V4::ApiController
   private
 
   def score_unit_params
-    params.require(:score_unit).permit(:weight, :score_type, :subdomain_id,
+    params.require(:score_unit).permit(:weight, :score_type, :subdomain_id, :notes,
                                        :title, :base_point_score, :institution_type)
   end
 
@@ -56,17 +56,14 @@ class Api::V4::ScoreUnitsController < Api::V4::ApiController
   def create_children(score_unit)
     if params[:score_unit][:options].empty?
       iq = @instrument.instrument_questions.find_by(identifier: score_unit.title)
-      ScoreUnitQuestion.where(score_unit_id: score_unit.id,
-                              instrument_question_id: iq.id).first_or_create!
-    end
-    ActiveRecord::Base.transaction do
-      params[:score_unit][:options].each do |option|
-        suq = ScoreUnitQuestion.where(score_unit_id: score_unit.id,
-                                      instrument_question_id: option[:instrument_question_id]).first_or_create!
-        OptionScore.where(score_unit_question_id: suq.id, option_identifier:
-          option[:option_identifier]).first_or_create!(value: option[:value],
-                                                       follow_up_qid: option[:follow_up_qid],
-                                                       position: option[:position])
+      ScoreUnitQuestion.where(score_unit_id: score_unit.id, instrument_question_id: iq.id).first_or_create!
+    else
+      ActiveRecord::Base.transaction do
+        params[:score_unit][:options].each do |option|
+          suq = ScoreUnitQuestion.where(score_unit_id: score_unit.id, instrument_question_id: option[:instrument_question_id]).first_or_create!
+          OptionScore.where(score_unit_question_id: suq.id, option_identifier:
+            option[:option_identifier]).first_or_create!(value: option[:value], notes: option[:notes])
+        end
       end
     end
   end

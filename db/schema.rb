@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200423144745) do
+ActiveRecord::Schema.define(version: 20200430181725) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -200,6 +200,7 @@ ActiveRecord::Schema.define(version: 20200423144745) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.float "weight"
+    t.string "name"
     t.index ["deleted_at"], name: "index_domains_on_deleted_at"
   end
 
@@ -410,6 +411,7 @@ ActiveRecord::Schema.define(version: 20200423144745) do
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.string "option_identifier"
+    t.text "notes"
     t.index ["deleted_at"], name: "index_option_scores_on_deleted_at"
   end
 
@@ -666,6 +668,7 @@ ActiveRecord::Schema.define(version: 20200423144745) do
     t.string "title"
     t.float "base_point_score"
     t.string "institution_type"
+    t.text "notes"
     t.index ["deleted_at"], name: "index_score_units_on_deleted_at"
   end
 
@@ -723,6 +726,7 @@ ActiveRecord::Schema.define(version: 20200423144745) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.float "weight"
+    t.string "name"
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
   end
 

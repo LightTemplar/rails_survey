@@ -27,7 +27,7 @@
 require 'sidekiq/api'
 
 class Response < ApplicationRecord
-  include FullSanitizer
+  include Sanitizer
   belongs_to :instrument_question, foreign_key: :question_identifier, primary_key: :identifier
   belongs_to :survey, foreign_key: :survey_uuid, primary_key: :uuid, touch: true
   delegate :device, to: :survey

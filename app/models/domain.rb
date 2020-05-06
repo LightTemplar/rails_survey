@@ -11,6 +11,7 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  weight          :float
+#  name            :string
 #
 
 class Domain < ApplicationRecord
@@ -21,6 +22,4 @@ class Domain < ApplicationRecord
   acts_as_paranoid
 
   validates :title, presence: true, allow_blank: false, uniqueness: { scope: [:score_scheme_id] }
-
-  default_scope { order(:title) }
 end

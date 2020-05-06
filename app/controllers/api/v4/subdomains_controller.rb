@@ -26,7 +26,7 @@ class Api::V4::SubdomainsController < Api::V4::ApiController
   private
 
   def subdomain_params
-    params.require(:subdomain).permit(:title, :domain_id)
+    params.require(:subdomain).permit(:title, :domain_id, :name)
   end
 
   def set_domain

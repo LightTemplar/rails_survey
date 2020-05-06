@@ -27,7 +27,7 @@
 require 'sidekiq/api'
 
 class Survey < ApplicationRecord
-  include FullSanitizer
+  include Sanitizer
   belongs_to :instrument
   belongs_to :device
   belongs_to :roster, foreign_key: :roster_uuid, primary_key: :uuid

@@ -14,7 +14,7 @@
 #
 
 class ScoreScheme < ApplicationRecord
-  include FullSanitizer
+  include Sanitizable
   belongs_to :instrument
   has_many :surveys, through: :instrument
   has_many :domains, dependent: :destroy
@@ -33,22 +33,52 @@ class ScoreScheme < ApplicationRecord
 
   def export_file
     file = Tempfile.new(title)
+    black = '000000'
+    row_height = 30
     Axlsx::Package.new do |p|
-      domains.each do |domain|
-        p.workbook.add_worksheet(name: "Domain #{domain.title}") do |sheet|
-          sheet.add_row ['Identifier', 'Subdomain', 'Weight', 'Question',
-                         'Score', 'Score Type', 'Base Score', 'Translation']
+      wb = p.workbook
+      b_style = { style: :thin, color: black, edges: [:bottom] }
+      wrap_text = { wrap_text: true }
+      border = wb.styles.add_style(border: b_style)
+      question_style = wb.styles.add_style(b: true, alignment: wrap_text)
+      option_style = wb.styles.add_style(alignment: wrap_text)
+      b_question_style = wb.styles.add_style(b: true, alignment: wrap_text, border: b_style)
+      b_option_style = wb.styles.add_style(alignment: wrap_text, border: b_style)
+      domains.sort_by { |domain| domain.title.to_i }.each do |domain|
+        wb.add_worksheet(name: "Domain #{domain.title}") do |sheet|
+          tab_color = SecureRandom.hex(3)
+          sheet.sheet_pr.tab_color = tab_color
+          sheet.add_row ['', '', '', "#{domain.title}: #{domain.name}", '', '', '', '', '', ''],
+                        style: wb.styles.add_style(b: true, alignment: { horizontal: :center, vertical: :center },
+                                                   border: b_style, bg_color: tab_color), height: row_height
+          sheet.add_row ['Identifier', 'Subdomain', 'Weight', 'Question', 'Score',
+                         'Score Type', 'Base Score', 'Response Code', 'Translation', 'Notes'],
+                        style: wb.styles.add_style(alignment: { horizontal: :center, vertical: :center }, border: b_style),
+                        height: row_height
           domain.subdomains.each do |subdomain|
             subdomain.score_units.each do |unit|
-              unit.score_unit_questions.each do |suq|
+              unit.score_unit_questions.each_with_index do |suq, index|
+                q_style = index == unit.score_unit_questions.size - 1 && suq.option_scores.empty? ?
+                [border, border, border, b_question_style, border,
+                 border, border, border, b_question_style, b_option_style] :
+                [nil, nil, nil, question_style, nil, nil, nil, nil, question_style, option_style]
                 sheet.add_row [unit.title, subdomain.title, unit.weight,
-                               full_sanitizer.sanitize(suq.instrument_question.text), '',
-                               unit.score_type, unit.base_point_score,
-                               full_sanitizer.sanitize(suq.instrument_question.translations.find_by_language('es')&.text)]
-                suq.option_scores.each do |score|
+                               html_decode(full_sanitize(suq.instrument_question.text)), '',
+                               unit.score_type, unit.base_point_score, '',
+                               full_sanitize(suq.instrument_question.translations.find_by_language('es')&.text),
+                               html_decode(full_sanitize(unit.notes))], style: q_style
+                sheet.column_widths nil, nil, nil, 50, nil, nil, nil, nil, 50, 50
+                suq.option_scores.each_with_index do |score, index|
+                  o_style = index == suq.option_scores.size - 1 ?
+                  [border, border, border, b_option_style, border,
+                   border, border, border, b_option_style, b_option_style] :
+                  [nil, nil, nil, option_style, nil, nil, nil, nil, option_style, option_style]
                   sheet.add_row ['', '', '', full_sanitizer.sanitize(score.option.text),
                                  unit.score_type == 'SUM' ? "(#{format('%+d', score.value)})" : score.value, '', '',
-                                 full_sanitizer.sanitize(score.option.translations.find_by_language('es')&.text)]
+                                 suq.option_index(score.option),
+                                 full_sanitize(score.option.translations.find_by_language('es')&.text),
+                                 html_decode(full_sanitize(score.notes))], style: o_style
+                  sheet.column_widths nil, nil, nil, 50, nil, nil, nil, nil, 50, 50
                 end
               end
             end
@@ -132,7 +162,7 @@ class ScoreScheme < ApplicationRecord
     file
   end
 
-  def skip_grp8(unit, survey)
+  def skip_grp1(unit, survey)
     quiz = unit.score_unit_questions.first&.instrument_question&.identifier
     return false if quiz != 'grp1'
 
@@ -153,7 +183,7 @@ class ScoreScheme < ApplicationRecord
                             (center.center_type != 'CDI' || center.center_type != 'CBI'))
       next if wrong_center_type
 
-      next if skip_grp8(unit, survey)
+      next if skip_grp1(unit, survey)
 
       raw_score = survey_score.raw_scores.where(score_unit_id: unit.id, survey_score_id: survey_score.id).first
       raw_score ||= RawScore.create(score_unit_id: unit.id, survey_score_id: survey_score.id)
@@ -180,7 +210,7 @@ class ScoreScheme < ApplicationRecord
 
             csv << [survey.id, identifier, center.center_type, center.administration,
                     center.region, center.department, center.municipality, domain.title,
-                    subdomain.title, score_unit.title, score_unit.weight, raw_score.value,
+                    subdomain.title, score_unit.title, raw_score.weight(center), raw_score.value,
                     '', '', '', raw_score.response.nil? ? '' : raw_score.response&.text,
                     raw_score.response.nil? ? '' : raw_score.response&.to_s,
                     raw_score.response.nil? ? '' : raw_score.response&.to_s_es]

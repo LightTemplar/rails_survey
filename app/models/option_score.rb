@@ -11,6 +11,7 @@
 #  updated_at             :datetime
 #  deleted_at             :datetime
 #  option_identifier      :string
+#  notes                  :text
 #
 
 class OptionScore < ApplicationRecord
@@ -22,4 +23,8 @@ class OptionScore < ApplicationRecord
   validates :score_unit_question_id, presence: true, allow_blank: false
   validates :option_identifier, presence: true, uniqueness: { scope: [:score_unit_question_id] }
   validates :value, presence: true
+
+  def question_identifier
+    score_unit_question.question_identifier
+  end
 end

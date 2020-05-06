@@ -22,6 +22,10 @@ class ScoreUnitQuestion < ApplicationRecord
   validates :score_unit_id, presence: true, allow_blank: false
   validates :instrument_question_id, presence: true, uniqueness: { scope: [:score_unit_id] }
 
+  def question_identifier
+    instrument_question.identifier
+  end
+
   def response(survey)
     survey.responses.where(question_identifier: instrument_question.identifier).first
   end
@@ -32,9 +36,19 @@ class ScoreUnitQuestion < ApplicationRecord
 
   def option_identifiers(response)
     identifiers = []
-    response.text.split(',').each do |text|
-      identifiers << instrument_question.all_non_special_options[text&.to_i]&.identifier unless text.blank?
+    if instrument_question.list_of_boxes_variant?
+      response.text.split(',').each_with_index do |text, index|
+        identifiers << instrument_question.all_non_special_options[index]&.identifier unless text.blank?
+      end
+    else
+      response.text.split(',').each do |text|
+        identifiers << instrument_question.all_non_special_options[text&.to_i]&.identifier unless text.blank?
+      end
     end
     identifiers
+  end
+
+  def option_index(option)
+    instrument_question.all_non_special_options.index(option)
   end
 end
