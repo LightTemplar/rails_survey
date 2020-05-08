@@ -6,7 +6,7 @@ class Api::V4::ScoreUnitsController < Api::V4::ApiController
   before_action :set_score_unit, only: %i[update destroy copy]
 
   def index
-    @score_units = @subdomain.score_units.includes(:option_scores)
+    @score_units = @subdomain.score_units.includes(:option_scores).sort_by { |su| [su.title_s, su.title_i] }
   end
 
   def show
