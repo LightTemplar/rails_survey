@@ -21,19 +21,19 @@ set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }
 set :rvm_ruby_version, '2.5.1'
 
 # When using Phusion Passenger App Server
-namespace :deploy do
-  desc 'Restart Application'
-  task :restart do
-    desc 'restart Phusion Passenger'
-    on roles(:app), in: :sequence, wait: 5 do
-      execute :touch, current_path.join('tmp/restart.txt')
-    end
-  end
-
-  after :finishing, 'deploy:cleanup'
-  after 'deploy:publishing', 'deploy:restart'
-  # after 'deploy:published', 'sidekiq:monit:config'
-end
+# namespace :deploy do
+#   desc 'Restart Application'
+#   task :restart do
+#     desc 'restart Phusion Passenger'
+#     on roles(:app), in: :sequence, wait: 5 do
+#       execute :touch, current_path.join('tmp/restart.txt')
+#     end
+#   end
+#
+#   after :finishing, 'deploy:cleanup'
+#   after 'deploy:publishing', 'deploy:restart'
+#   # after 'deploy:published', 'sidekiq:monit:config'
+# end
 
 namespace :clients do
   task :deploy_on_all do

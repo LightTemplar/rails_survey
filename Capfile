@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'capistrano/setup'
 require 'capistrano/deploy'
 require 'capistrano/scm/git'
@@ -9,7 +11,7 @@ require 'capistrano/rails/assets'
 require 'capistrano/sidekiq'
 # require 'capistrano/sidekiq/monit'
 require 'capistrano/rails/migrations'
-require 'capistrano/passenger'
+# require 'capistrano/passenger'
 require 'whenever/capistrano'
 
 Dir.glob('lib/capistrano/tasks/*.cap').each { |r| import r }
