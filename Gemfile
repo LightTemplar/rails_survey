@@ -37,7 +37,6 @@ gem 'rubyzip', '~> 1.3'
 gem 'seed_dump', '3.2.4'
 gem 'sidekiq', '~> 4.2', '>= 4.2.10'
 gem 'sidekiq-client-cli', '0.1.7'
-gem 'whenever', '0.9.7', require: false
 gem 'wicked_pdf', '1.1.0'
 gem 'wkhtmltopdf-binary', '0.12.3.1'
 gem 'zip-zip', '0.3'
