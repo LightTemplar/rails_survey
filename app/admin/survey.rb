@@ -41,6 +41,10 @@ ActiveAdmin.register Survey do
             remove_duplicates_admin_project_surveys_path(params[:project_id])
   end
 
+  member_action :download, method: :get do
+    redirect_to resource_path, notice: 'Download successful!'
+  end
+
   controller do
     def calculate_completion_rates
       project = Project.find(params[:project_id])
@@ -63,6 +67,15 @@ ActiveAdmin.register Survey do
       @survey = @survey.versions[params[:version].to_i].reify if params[:version]
       show! # it seems to need this
     end
+
+    def download
+      survey = Survey.find(params[:id])
+      pdf = SurveyPdf.new(survey, 2)
+      name = "#{survey.identifier}.pdf"
+      file = Tempfile.new(name)
+      pdf.save_as(file.path)
+      send_file file, type: 'application/pdf', filename: name
+    end
   end
 
   index do
@@ -76,15 +89,18 @@ ActiveAdmin.register Survey do
     column 'Instrument', sortable: :instrument_title do |survey|
       link_to survey.instrument_title, "/projects/#{survey.instrument.project_id}/instruments/#{survey.instrument_id}"
     end
-    column 'Instrument Versions', sortable: :instrument_version_number, &:instrument_version_number
-    column :created_at do |survey|
+    column 'Versions', sortable: :instrument_version_number, &:instrument_version_number
+    column 'When', sortable: :created_at do |survey|
       time_ago_in_words(survey.created_at) + ' ago'
     end
-    column :completion_rate
-    column 'Received Responses', :responses do |survey|
+    column 'Rate', :completion_rate
+    column 'Received', :responses do |survey|
       link_to survey.responses.size.to_s, admin_survey_responses_path(survey.id)
     end
-    column 'Completed Responses', :completed_responses_count
+    column 'Completed', :completed_responses_count
+    column 'Download' do |survey|
+      link_to 'PDF', download_admin_project_survey_path(params[:project_id], survey.id)
+    end
     actions
   end
 

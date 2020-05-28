@@ -79,6 +79,26 @@ class InstrumentQuestion < ApplicationRecord
     question.text
   end
 
+  def before_text_instruction
+    question.instruction&.text
+  end
+
+  def after_text_instruction
+    question.after_text_instruction&.text
+  end
+
+  def pop_up_instruction_text
+    question.pop_up_instruction&.text
+  end
+
+  def display_title
+    display&.title
+  end
+
+  def section_title
+    display&.section&.title
+  end
+
   def option_set_id
     question.option_set_id
   end

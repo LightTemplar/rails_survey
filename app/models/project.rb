@@ -47,6 +47,8 @@ class Project < ApplicationRecord
   has_many :metrics, through: :instruments
   has_many :rosters, dependent: :destroy
   has_many :score_schemes, through: :instruments
+  has_many :domains, through: :score_schemes
+  has_many :subdomains, through: :score_schemes
   has_many :score_units, through: :score_schemes
   has_many :option_scores, through: :score_units
   has_many :score_unit_questions, through: :score_units

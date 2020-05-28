@@ -31,6 +31,9 @@ Rails.application.routes.draw do
             resources :multiple_skips
             resources :loop_questions
             resources :condition_skips
+            collection do
+              get :all
+            end
           end
           resources :score_schemes do
             resources :domains
@@ -113,6 +116,8 @@ Rails.application.routes.draw do
         resources :validations, only: :index
         resources :loop_questions, only: :index
         resources :critical_responses, only: :index
+        resources :domains, only: :index
+        resources :subdomains, only: :index
         resources :surveys, only: :create
         resources :responses, only: :create
         resources :survey_notes, only: :create
@@ -121,6 +126,7 @@ Rails.application.routes.draw do
         resources :rosters, only: :create
         resources :scores, only: :create
         resources :raw_scores, only: :create
+        resources :survey_scores, only: :create
         member do
           get :current_time
         end

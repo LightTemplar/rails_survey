@@ -10,6 +10,11 @@ class Api::V4::InstrumentQuestionsController < Api::V4::ApiController
     render partial: 'api/v4/instrument_questions/index.json'
   end
 
+  def all
+    @instrument_questions = @instrument.instrument_questions
+    render partial: 'api/v4/instrument_questions/all.json'
+  end
+
   def create
     if bulk_create
       head :ok
