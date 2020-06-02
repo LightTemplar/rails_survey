@@ -7,6 +7,7 @@ class SurveyPdf
 
   def initialize(survey, column_count)
     super()
+    @survey = survey
     @responses = survey.responses
     @instrument = survey.instrument
     @column_count = column_count
@@ -20,70 +21,87 @@ class SurveyPdf
   private
 
   def header
-    text @instrument.title.to_s, size: 16, style: :bold, align: :center
-    text @instrument.language_name, align: :center
-    text "version #: #{@instrument.current_version_number}", align: :center
-    move_down 15
+    formatted_text [{ text: 'Title: ', styles: [:bold] }, { text: "#{@survey.instrument_title} ", font: 'Courier' },
+                    { text: 'Language: ', styles: [:bold] }, { text: "#{@instrument.language_name(@survey.language)} ", font: 'Courier' },
+                    { text: 'Version: ', styles: [:bold] }, { text: "#{@survey.instrument_version_number} ", font: 'Courier' },
+                    { text: 'Identifier: ', styles: [:bold] }, { text: "#{@survey.identifier} ", font: 'Courier' }]
+    horizontal_rule
+    move_down 5
   end
 
   def content
     column_box([0, cursor], columns: @column_count, width: bounds.width) do
-      @instrument.sections.each do |section|
-        format_section_text(section.title)
-        section.displays.each do |display|
-          format_display_text(display.title)
-          move_down 15
-          display.instrument_questions.each do |iq|
-            format_question(iq)
-            move_down 20
-          end
-        end
-      end
-    end
-  end
-
-  def format_question(iq)
-    response = @responses.find_by_question_identifier(iq.identifier)
-    if iq.question.question_type == 'INSTRUCTIONS'
-      format_instructions(iq.question.instruction&.text) if iq.question.instruction
-      format_instructions(iq.text)
-    else
-      float do
-        format_question_number(iq)
-      end
-
-      instructions = iq.question.instruction&.text
-      after_text_instructions = iq.question.after_text_instruction&.text
-      pop_up_instructions = iq.question.pop_up_instruction&.text
-      bounding_box([bounds.left + 30, cursor], width: bounds.width - 30) do
-        text sanitize_text("<i>#{instructions}</i>") + "\n", inline_format: true if instructions
-        text sanitize_text(iq.text), inline_format: true
-        text sanitize_text("** <i>#{pop_up_instructions}</i>") + "\n", inline_format: true if pop_up_instructions
-        text sanitize_text("<i>#{after_text_instructions}</i>") + "\n", inline_format: true if after_text_instructions
-      end
-
-      indent(40) do
-        pad(2) { text sanitize_text(iq.question&.option_set&.instruction&.text), style: :italic }
-        if iq.nil? || iq.non_special_options.empty?
-          font('Courier') { text response&.text }
-        else
-          response&.text.split(Settings.list_delimiter).each_with_index do |res, index|
-            if iq.other? && res.to_i == iq.other_index
-              text 'Other'
-              font('Courier') { response&.other_response }
-            else
-              if iq.list_of_boxes_variant?
-                text full_sanitizer.sanitize iq.non_special_options[index].to_s
-                font('Courier') { text res }
-              else
-                font('Courier') { text full_sanitizer.sanitize iq.non_special_options[res.to_i].to_s }
+      @instrument.sections.includes(:translations).each do |section|
+        section_text = @survey.language == @instrument.language ? section.title : section.translations.where(language: @survey.language)&.first&.text
+        section_text ||= section.title
+        format_section_text(section_text)
+        section.displays.includes(:display_translations).each do |display|
+          display_text = @survey.language == @instrument.language ? display.title :
+          display.display_translations.where(language: @survey.language)&.first&.text
+          display_text ||= display.title
+          format_display_text(display_text)
+          display.instrument_questions.includes(question:
+            [:translations, option_set: [instruction: [:instruction_translations], options: [:translations]],
+                            instruction: [:instruction_translations], after_text_instruction: [:instruction_translations],
+                            pop_up_instruction: [:instruction_translations]]).each do |iq|
+            text "<b>#{iq.number_in_instrument})</b> <i>#{iq.identifier}</i>", inline_format: true
+            ins = iq.question.instruction
+            if ins
+              ins_text = @survey.language == @instrument.language ? ins.text :
+              ins.instruction_translations.where(language: @survey.language)&.first&.text
+              ins_text ||= ins.text
+              text sanitize_text("<i>#{ins_text}</i>"), color: '808080', inline_format: true if ins_text
+            end
+            q_text = @survey.language == @instrument.language ? iq.text :
+            iq.question.translations.where(language: @survey.language)&.first&.text
+            q_text ||= iq.text
+            text sanitize_text(q_text), inline_format: true
+            pop_ins = iq.question.pop_up_instruction
+            if pop_ins
+              pop_ins_text = @survey.language == @instrument.language ? pop_ins.text :
+              pop_ins.instruction_translations.where(language: @survey.language)&.first&.text
+              pop_ins_text ||= pop_ins.text
+              text sanitize_text("<i><sup>*</sup>#{pop_ins_text}</i>"), color: '808080', inline_format: true if pop_ins_text
+            end
+            at_ins = iq.question.after_text_instruction
+            if at_ins
+              at_ins_text = @survey.language == @instrument.language ? at_ins.text :
+              at_ins.instruction_translations.where(language: @survey.language)&.first&.text
+              at_ins_text ||= at_ins.text
+              text sanitize_text("<i>#{at_ins_text}</i>"), color: '808080', inline_format: true if at_ins_text
+            end
+            indent(20) do
+              o_ins = iq.question.option_set&.instruction
+              if o_ins
+                o_ins_text = @survey.language == @instrument.language ? o_ins.text :
+                o_ins.instruction_translations.where(language: @survey.language)&.first&.text
+                o_ins_text ||= o_ins.text
+                pad(2) { text sanitize_text("<i>#{o_ins_text}</i>"), style: :italic, color: '808080', inline_format: true } if o_ins_text
+              end
+              response = @responses.find_by_question_identifier(iq.identifier)
+              font('Courier') do
+                if iq.question.option_set
+                  response&.text&.split(Settings.list_delimiter)&.each_with_index do |res, index|
+                    if iq.question.other? && res.to_i == iq.question.other_index
+                      o_text = @survey.language == 'es' ? 'Otra ' : 'Other '
+                      text "#{o_text}  #{response&.other_response}"
+                    else
+                      if iq.question.list_of_boxes_variant?
+                        text "• #{full_sanitizer.sanitize(iq.question.options[index].to_s)}  #{res}"
+                      else
+                        text "• #{full_sanitizer.sanitize(iq.non_special_options[res.to_i].to_s)}  #{response&.other_text}"
+                      end
+                    end
+                  end
+                else
+                  text "• #{response&.text}" unless response&.text.blank?
+                end
+                text "• #{response&.special_response}" unless response&.special_response.blank?
               end
             end
+            move_down 5
           end
         end
-
-        text response&.other_text
-        text response&.special_response
       end
     end
   end
