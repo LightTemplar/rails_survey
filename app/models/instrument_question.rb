@@ -234,6 +234,15 @@ class InstrumentQuestion < ApplicationRecord
     other? ? non_special_options + [other_option] : non_special_options
   end
 
+  def looped?(l_questions = instrument.loop_questions)
+    !l_questions.where(looped: identifier).empty?
+  end
+
+  def parent(l_questions = instrument.loop_questions, iqs = instrument.instrument_questions)
+    pid = l_questions.where(looped: identifier)&.first&.parent
+    iqs.find_by_identifier(pid) if pid
+  end
+
   def copy(display_id, instrument_id)
     iq_copy = dup
     iq_copy.display_id = display_id

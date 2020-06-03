@@ -10,4 +10,8 @@ module Sanitizer
   def safe_list_sanitizer
     Rails::Html::SafeListSanitizer.new
   end
+
+  def html_decode(str)
+    HTMLEntities.new.decode(str)
+  end
 end
