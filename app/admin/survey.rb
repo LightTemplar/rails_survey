@@ -90,6 +90,7 @@ ActiveAdmin.register Survey do
       link_to survey.instrument_title, "/projects/#{survey.instrument.project_id}/instruments/#{survey.instrument_id}"
     end
     column 'Versions', sortable: :instrument_version_number, &:instrument_version_number
+    column :language
     column 'When', sortable: :created_at do |survey|
       time_ago_in_words(survey.created_at) + ' ago'
     end
