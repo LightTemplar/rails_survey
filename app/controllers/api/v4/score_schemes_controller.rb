@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 class Api::V4::ScoreSchemesController < Api::V4::ApiController
-  respond_to :json
-  before_action :set_instrument, only: %i[index show create update destroy]
-  before_action :set_score_scheme, only: %i[update destroy]
+  include ActionController::MimeResponds
+  respond_to :json, :xlsx
+  before_action :set_instrument, only: %i[index show create update destroy download]
+  before_action :set_score_scheme, only: %i[update destroy download]
 
   def index
     @score_schemes = @instrument.score_schemes
@@ -28,6 +29,14 @@ class Api::V4::ScoreSchemesController < Api::V4::ApiController
 
   def destroy
     respond_with @score_scheme.destroy
+  end
+
+  def download
+    respond_to do |format|
+      format.xlsx do
+        send_file @score_scheme.export_file, filename: @score_scheme.title, type: 'text/xlsx'
+      end
+    end
   end
 
   private

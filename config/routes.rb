@@ -46,6 +46,9 @@ Rails.application.routes.draw do
               end
             end
             resources :score_units, controller: 'score_scheme_units', only: :index
+            member do
+              get :download, defaults: { format: 'xlsx' }
+            end
           end
           resources :questions, controller: 'survey_questions'
           member do
