@@ -340,11 +340,6 @@ class Instrument < ApplicationRecord
     StatusWorker.perform_in(10.seconds, response_export.id)
   end
 
-  def short_headers
-    %w[identifier survey_id question_identifier question_text response_text
-       response_label other_text special_response other_response]
-  end
-
   def long_headers
     %w[question_identifier short_qid instrument_id instrument_version_number question_version_number
        instrument_title survey_id survey_uuid device_id device_uuid device_label

@@ -124,4 +124,8 @@ class Response < ApplicationRecord
       !(response_identifiers & identifiers).empty? # Array intersection
     end
   end
+
+  def empty?
+    text.blank? && other_response.blank? && special_response.blank? && other_text.blank?
+  end
 end

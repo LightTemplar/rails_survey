@@ -53,7 +53,7 @@ class Survey < ApplicationRecord
   def identifier
     questions = Question.where(id: instrument.instrument_questions.pluck(:question_id).uniq)
     question = questions.where(identifies_survey: true).first
-    response = responses.where(question_identifier: question.question_identifier).first if question
+    response = responses.where(question_identifier: question.question_identifier).where.not(text: [nil, '']).first if question
     !response&.text.empty? ? response.text : uuid
   end
 
@@ -183,19 +183,6 @@ class Survey < ApplicationRecord
     full_sanitizer.sanitize(str)
   end
 
-  def write_short_row
-    rows = []
-    responses.each do |response|
-      row = Rails.cache.fetch("w_s_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 30.minutes) do
-        [identifier, id, response.question_identifier, sanitize(question_by_identifier(response.question_identifier).try(:text)), response.text, option_labels(response),
-         response.other_text, response.special_response, response.other_response]
-      end
-      row.map! { |item| item || '' }
-      rows << row
-    end
-    survey_export.update(short: rows.to_s, last_response_at: responses.pluck(:updated_at).max)
-  end
-
   def start_time
     Rails.cache.fetch("start-time-#{id}-#{updated_at}", expires_in: 30.minutes) do
       responses.where.not(time_started: nil).order('time_started ASC')&.first&.time_started
@@ -226,20 +213,20 @@ class Survey < ApplicationRecord
     end
 
     responses.each do |response|
-      identifier_index = headers["q_#{response.question_identifier}"]
+      identifier_index = headers["q_#{response.question_identifier}"] unless response.empty?
       row[identifier_index] = response.text if identifier_index
       short_qid_index = headers["q_#{response.question_identifier}_short_qid"]
       row[short_qid_index] = response.question_id if short_qid_index
       question_type_index = headers["q_#{response.question_identifier}_question_type"]
       row[question_type_index] = question_by_identifier(response.question_identifier).try(:question_type) if question_type_index
-      other_text_identifier_index = headers["q_#{response.question_identifier}_other_text"]
+      other_text_identifier_index = headers["q_#{response.question_identifier}_other_text"] unless response.empty?
       row[other_text_identifier_index] = response.other_text if other_text_identifier_index
-      special_identifier_index = headers["q_#{response.question_identifier}_special"]
+      special_identifier_index = headers["q_#{response.question_identifier}_special"] unless response.empty?
       row[special_identifier_index] = sanitize(response.special_response) if special_identifier_index
-      other_identifier_index = headers["q_#{response.question_identifier}_other"]
+      other_identifier_index = headers["q_#{response.question_identifier}_other"] unless response.empty?
       row[other_identifier_index] = response.other_response if other_identifier_index
       label_index = headers["q_#{response.question_identifier}_label"]
-      row[label_index] = option_labels(response) if label_index
+      row[label_index] = option_labels(response) if label_index && !response.empty?
       question_version_index = headers["q_#{response.question_identifier}_version"]
       row[question_version_index] = response.question_version if question_version_index
       question_text_index = headers["q_#{response.question_identifier}_text"]
@@ -269,6 +256,8 @@ class Survey < ApplicationRecord
     end
     csv = []
     responses.each do |response|
+      next if response.empty?
+
       row = Rails.cache.fetch("w_l_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}
         -#{response.updated_at}", expires_in: 30.minutes) do
         ["q_#{response.question_identifier}", "q_#{response.question_id}", instrument_id,

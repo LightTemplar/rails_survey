@@ -12,7 +12,6 @@ class SurveyExportWorker
 
     survey.survey_export.update(last_response_at: nil)
 
-    survey.write_short_row
     survey.write_long_row
     survey.write_wide_row
   end
