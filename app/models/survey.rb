@@ -22,6 +22,8 @@
 #  language                  :string
 #  skipped_questions         :text
 #  completed_responses_count :integer
+#  device_user_id            :integer
+#  completed                 :boolean          default(FALSE)
 #
 
 require 'sidekiq/api'
@@ -30,21 +32,22 @@ class Survey < ApplicationRecord
   include Sanitizer
   belongs_to :instrument
   belongs_to :device
-  belongs_to :roster, foreign_key: :roster_uuid, primary_key: :uuid
+  belongs_to :device_user
+  delegate :project, to: :instrument
   has_many :instrument_questions, through: :instrument
   has_many :responses, foreign_key: :survey_uuid, primary_key: :uuid, dependent: :destroy
   has_many :survey_scores, dependent: :destroy
   has_many :survey_notes, foreign_key: :survey_uuid, primary_key: :uuid, dependent: :destroy
   has_one :survey_export, dependent: :destroy
+
   acts_as_paranoid
   has_paper_trail on: %i[update destroy]
-  delegate :project, to: :instrument
-  validates :device_id, presence: true, allow_blank: false
-  validates :uuid, presence: true, allow_blank: false
-  validates :instrument_id, presence: true, allow_blank: false
-  paginates_per 50
+
   after_create :calculate_percentage
   after_commit :schedule_export, if: proc { |survey| survey.instrument.auto_export_responses }
+
+  validates :uuid, presence: true, allow_blank: false
+  validates :instrument_id, presence: true, allow_blank: false
 
   def title
     "#{id} - #{identifier}"

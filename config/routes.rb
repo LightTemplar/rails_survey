@@ -136,6 +136,28 @@ Rails.application.routes.draw do
       end
     end
 
+    namespace :v2 do
+      post 'device_user_token' => 'device_user_token#create'
+      resources :device_users
+      resources :projects, only: :index do
+        collection do
+          get :surveys
+        end
+        resources :instruments, only: [] do
+          resources :sections, only: :index
+          resources :instrument_questions, only: :index
+          resources :surveys do
+            resources :responses, only: %i[create update]
+          end
+          resources :section_translations, only: :index
+          resources :display_translations, only: :index
+          resources :question_translations, only: :index
+          resources :option_translations, only: :index
+          resources :instruction_translations, only: :index
+        end
+      end
+    end
+
     namespace :v1 do
       resources :projects do
         resources :instruments, only: %i[index show]

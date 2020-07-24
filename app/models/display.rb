@@ -19,7 +19,15 @@
 class Display < ApplicationRecord
   belongs_to :instrument, touch: true
   belongs_to :section, touch: true
-  has_many :instrument_questions, -> { order 'position' }, dependent: :destroy
+  has_many :instrument_questions, -> { order 'instrument_questions.position' }, dependent: :destroy
+  has_many :questions, through: :instrument_questions
+  has_many :question_translations, through: :questions, source: :translations
+  has_many :options, through: :questions
+  has_many :option_translations, through: :options, source: :translations
+  has_many :option_sets, through: :questions
+  has_many :special_option_sets, through: :questions
+  has_many :critical_responses, through: :questions
+  has_many :option_in_option_sets, through: :option_sets
   has_many :display_instructions, dependent: :destroy
   has_many :display_translations, dependent: :destroy
 
@@ -30,6 +38,18 @@ class Display < ApplicationRecord
   validates :instrument_id, presence: true
   validates :section_id, presence: true
   validates :title, presence: true, uniqueness: { scope: [:section_id] }
+
+  def instruction_translations(language)
+    instruction_ids = questions.pluck(:instruction_id).compact +
+                      questions.pluck(:pop_up_instruction_id).compact +
+                      questions.pluck(:after_text_instruction_id).compact +
+                      display_instructions.pluck(:instruction_id).compact +
+                      critical_responses.pluck(:instruction_id).compact +
+                      option_sets.pluck(:instruction_id).compact +
+                      special_option_sets.pluck(:instruction_id).compact +
+                      option_in_option_sets.pluck(:instruction_id).compact
+    InstructionTranslation.where(instruction_id: instruction_ids.uniq).where(language: language)
+  end
 
   def copy(instrument, display_type)
     if display_type == 'AS_IT_IS'

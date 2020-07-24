@@ -20,7 +20,7 @@ module RailsSurvey
   class Application < Rails::Application
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins 'localhost:3001', '127.0.0.1:3001'
+        origins ENV['ORIGIN_1'], ENV['ORIGIN_2']
         resource '*', headers: :any,
                       expose: %w[access-token expiry token-type uid client],
                       methods: %i[get post put delete options]
