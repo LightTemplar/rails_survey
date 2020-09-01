@@ -6,6 +6,10 @@ module Api
       respond_to :json
       before_action :set_survey, only: %i[update destroy]
 
+      def index
+        @surveys = current_device_user.ongoing_surveys.includes(:instrument, :responses)
+      end
+
       def create
         survey = Survey.new(survey_params)
         if survey.save
@@ -38,7 +42,7 @@ module Api
       def survey_params
         params.require(:survey).permit(:instrument_id, :instrument_version_number,
                                        :uuid, :instrument_title, :device_user_id,
-                                       :language, :metadata)
+                                       :language, :metadata, :completed)
       end
     end
   end

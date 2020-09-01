@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200706212441) do
+ActiveRecord::Schema.define(version: 20200827193419) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -191,6 +191,14 @@ ActiveRecord::Schema.define(version: 20200706212441) do
     t.integer "instrument_questions_count"
     t.integer "instrument_position"
     t.index ["deleted_at"], name: "index_displays_on_deleted_at"
+  end
+
+  create_table "domain_scores", force: :cascade do |t|
+    t.integer "domain_id"
+    t.integer "survey_score_id"
+    t.float "score_sum"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "domains", id: :serial, force: :cascade do |t|
@@ -717,6 +725,14 @@ ActiveRecord::Schema.define(version: 20200706212441) do
     t.string "percent"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "subdomain_scores", force: :cascade do |t|
+    t.integer "subdomain_id"
+    t.integer "survey_score_id"
+    t.float "score_sum"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "subdomains", id: :serial, force: :cascade do |t|

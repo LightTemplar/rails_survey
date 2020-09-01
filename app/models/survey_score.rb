@@ -20,12 +20,25 @@
 #
 
 class SurveyScore < ApplicationRecord
+  include Scoreable
   belongs_to :score_scheme
   belongs_to :survey
   has_many :raw_scores
+  has_many :domain_scores
+  has_many :subdomain_scores
   has_many :domains, through: :score_scheme
+  has_many :subdomains, through: :domains
+  has_many :score_units, through: :subdomains
 
   acts_as_paranoid
+
+  def instrument_id
+    survey.instrument_id
+  end
+
+  def instrument_title
+    survey.instrument_title
+  end
 
   def title
     "#{score_scheme_id} - #{survey_id}"
@@ -43,5 +56,13 @@ class SurveyScore < ApplicationRecord
     return 0 unless raw_score.value
 
     raw_score.value * raw_score.score_unit.weight
+  end
+
+  def center
+    score_scheme.centers.find_by(identifier: survey.identifier)
+  end
+
+  def score
+    update_columns(score_sum: generate_score(score_units, id, center))
   end
 end

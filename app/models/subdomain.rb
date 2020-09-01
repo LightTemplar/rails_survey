@@ -15,9 +15,11 @@
 #
 
 class Subdomain < ApplicationRecord
+  include Scoreable
   belongs_to :domain
   has_many :score_units, -> { order 'score_units.title' }, dependent: :destroy
   has_many :raw_scores, through: :score_units
+  has_many :subdomain_scores
 
   acts_as_paranoid
 
@@ -26,12 +28,14 @@ class Subdomain < ApplicationRecord
   default_scope { order(:title) }
 
   def score(survey_score)
-    center = domain.score_scheme.centers.find_by(identifier: survey_score.survey.identifier)
-    sanitized_scores = raw_scores.where(survey_score_id: survey_score.id).reject { |score| score.weighted_score(center).nil? }
-    return nil if sanitized_scores.empty?
-
-    sum_of_weights = sanitized_scores.inject(0.0) { |sum, item| sum + item.weight(center) }
-    sum_of_weighted_scores = sanitized_scores.inject(0.0) { |sum, item| sum + item.weighted_score(center) }
-    (sum_of_weighted_scores / sum_of_weights).round(2)
+    center = survey_score.center
+    score_sum = generate_score(score_units, survey_score.id, center)
+    subdomain_score = subdomain_scores.where(survey_score_id: survey_score.id).first
+    if subdomain_score
+      subdomain_score.update_columns(score_sum: score_sum)
+    else
+      SubdomainScore.create(subdomain_id: id, survey_score_id: survey_score.id, score_sum: score_sum)
+    end
+    score_sum
   end
 end

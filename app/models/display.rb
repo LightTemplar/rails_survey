@@ -26,6 +26,7 @@ class Display < ApplicationRecord
   has_many :option_translations, through: :options, source: :translations
   has_many :option_sets, through: :questions
   has_many :special_option_sets, through: :questions
+  has_many :special_options, through: :special_option_sets, source: :options
   has_many :critical_responses, through: :questions
   has_many :option_in_option_sets, through: :option_sets
   has_many :display_instructions, dependent: :destroy
@@ -49,6 +50,11 @@ class Display < ApplicationRecord
                       special_option_sets.pluck(:instruction_id).compact +
                       option_in_option_sets.pluck(:instruction_id).compact
     InstructionTranslation.where(instruction_id: instruction_ids.uniq).where(language: language)
+  end
+
+  def all_option_translations
+    option_ids = options.pluck(:id) + special_options.pluck(:id) + [Option.find_by_identifier('Other (specify):')&.id]
+    OptionTranslation.where(option_id: option_ids.uniq)
   end
 
   def copy(instrument, display_type)

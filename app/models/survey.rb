@@ -30,6 +30,10 @@ require 'sidekiq/api'
 
 class Survey < ApplicationRecord
   include Sanitizer
+
+  scope :ongoing, -> { where(completed: [false, nil]) }
+  scope :finished, -> { where(completed: true) }
+
   belongs_to :instrument
   belongs_to :device
   belongs_to :device_user
@@ -45,6 +49,7 @@ class Survey < ApplicationRecord
 
   after_create :calculate_percentage
   after_commit :schedule_export, if: proc { |survey| survey.instrument.auto_export_responses }
+  after_save :score, if: proc { |survey| survey.completed }
 
   validates :uuid, presence: true, allow_blank: false
   validates :instrument_id, presence: true, allow_blank: false
@@ -57,7 +62,7 @@ class Survey < ApplicationRecord
     questions = Question.where(id: instrument.instrument_questions.pluck(:question_id).uniq)
     question = questions.where(identifies_survey: true).first
     response = responses.where(question_identifier: question.question_identifier).where.not(text: [nil, '']).first if question
-    !response&.text.empty? ? response.text : uuid
+    response.nil? || response.text.empty? ? uuid : response.text
   end
 
   def schedule_export
@@ -105,6 +110,10 @@ class Survey < ApplicationRecord
 
   def project_name
     project.name
+  end
+
+  def project_id
+    project.id
   end
 
   def group_responses_by_day
@@ -281,8 +290,9 @@ class Survey < ApplicationRecord
   end
 
   def score
-    scheme = instrument.score_schemes.first
-    scheme.score_survey(self)
+    instrument.score_schemes.each do |scheme|
+      ScoreWorker.perform_async(scheme.id, id)
+    end
   end
 
   def response_for_question(question)

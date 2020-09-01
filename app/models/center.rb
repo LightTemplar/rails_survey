@@ -19,6 +19,7 @@
 #
 
 class Center < ApplicationRecord
+  include Scoreable
   belongs_to :score_scheme
   has_many :survey_scores, foreign_key: :identifier, primary_key: :identifier
   has_many :domains, through: :score_scheme
@@ -34,16 +35,6 @@ class Center < ApplicationRecord
   default_scope { order :identifier }
 
   def score(survey_score)
-    units_by_title = score_units.group_by(&:title)
-    unique_units = []
-    units_by_title.each do |_title, su|
-      unique_units << su[0]
-    end
-    sanitized_scores = unique_units.map(&:raw_scores).flatten.select { |score| score.survey_score_id == survey_score.id }.reject { |score| score.weighted_score(self).nil? }
-    return nil if sanitized_scores.empty?
-
-    sum_of_weights = sanitized_scores.inject(0.0) { |sum, item| sum + item.weight(self) }
-    sum_of_weighted_scores = sanitized_scores.inject(0.0) { |sum, item| sum + item.weighted_score(self) }
-    (sum_of_weighted_scores / sum_of_weights).round(2)
+    generate_score(score_units, survey_score.id, self)
   end
 end

@@ -53,8 +53,10 @@ class Project < ApplicationRecord
   has_many :option_scores, through: :score_units
   has_many :score_unit_questions, through: :score_units
   has_many :survey_scores, through: :surveys
+  has_many :raw_scores, through: :survey_scores
   has_many :critical_responses, through: :instruments
   has_many :loop_questions, through: :instruments
+  has_many :published_instruments, -> { published }, class_name: 'Instrument'
 
   validates :name, presence: true, allow_blank: false
   validates :description, presence: true, allow_blank: true
@@ -109,10 +111,6 @@ class Project < ApplicationRecord
 
   def non_responsive_devices
     devices.includes(:surveys).where('surveys.updated_at < ?', Settings.danger_zone_days.days.ago).order('surveys.updated_at ASC')
-  end
-
-  def published_instruments
-    instruments.where(published: true)
   end
 
   def instrument_response_exports

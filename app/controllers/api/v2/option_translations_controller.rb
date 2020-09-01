@@ -9,7 +9,7 @@ module Api
         project = current_device_user.projects.find(params[:project_id])
         instrument = project.instruments.find(params[:instrument_id])
         display = instrument.displays.find(params[:display_id])
-        @option_translations = display.option_translations.where(language: params[:language])
+        @option_translations = display.all_option_translations.where(language: params[:language])
       end
     end
   end

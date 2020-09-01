@@ -175,7 +175,7 @@ class ScoreScheme < ApplicationRecord
     count2.nil? ? true : count2 < 8
   end
 
-  def generate_raw_scores(survey, survey_score)
+  def generate_unit_scores(survey, survey_score)
     center = centers.find_by(identifier: survey.identifier)
     score_units.each do |unit|
       wrong_center_type = (unit.institution_type == 'RESIDENTIAL' && center.center_type != 'CDA') ||
@@ -189,6 +189,10 @@ class ScoreScheme < ApplicationRecord
       raw_score ||= RawScore.create(score_unit_id: unit.id, survey_score_id: survey_score.id)
       unit.generate_score(survey, raw_score)
     end
+  end
+
+  def generate_raw_scores(survey, survey_score)
+    generate_unit_scores(survey, survey_score)
     generate_score_data(survey, survey_score)
   end
 
@@ -224,7 +228,7 @@ class ScoreScheme < ApplicationRecord
       end
     end
     survey_score.score_data = csv.to_s
-    survey_score.score_sum = center_score
+    survey_score.score_sum = center_score # TODO: Move to center_score model
     survey_score.save
   end
 
