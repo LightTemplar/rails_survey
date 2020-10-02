@@ -143,7 +143,7 @@ Rails.application.routes.draw do
         resources :responses, only: %i[create update]
       end
       resources :survey_scores, only: %i[index show]
-      resources :instruments, only: :index do
+      resources :instruments, only: %i[index show] do
         resources :sections, only: :index
         resources :instrument_questions, only: :index
         resources :section_translations, only: :index

@@ -10,6 +10,7 @@ module Api
         instrument = project.instruments.find(params[:instrument_id])
         display = instrument.displays.find(params[:display_id])
         @instrument_questions = display.instrument_questions.includes(
+          :next_questions,
           question: [:instruction, :after_text_instruction, :pop_up_instruction,
                      option_set: [:instruction, option_in_option_sets: %i[option instruction]],
                      special_option_set: [:instruction, option_in_option_sets: %i[option instruction]]]

@@ -42,7 +42,8 @@ module Api
       def survey_params
         params.require(:survey).permit(:instrument_id, :instrument_version_number,
                                        :uuid, :instrument_title, :device_user_id,
-                                       :language, :metadata, :completed)
+                                       :language, :metadata, :completed,
+                                       :skipped_questions)
       end
     end
   end

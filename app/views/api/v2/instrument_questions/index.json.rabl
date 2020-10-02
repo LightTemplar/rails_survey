@@ -3,7 +3,8 @@
 collection @instrument_questions
 
 attributes :id, :instrument_id, :question_id, :number_in_instrument, :display_id,
-           :identifier, :table_identifier, :position
+           :identifier, :table_identifier, :position, :next_question_operator,
+           :multiple_skip_operator, :next_question_neutral_ids, :multiple_skip_neutral_ids
 
 child :question do
   attributes :id, :question_identifier, :question_type, :text, :option_set_id,
@@ -66,4 +67,9 @@ child :question do
       end
     end
   end
+end
+
+child :next_questions do
+  attributes :id, :question_identifier, :option_identifier, :next_question_identifier,
+             :value, :complete_survey, :value_operator
 end

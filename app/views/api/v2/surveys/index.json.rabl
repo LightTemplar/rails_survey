@@ -3,10 +3,11 @@
 collection @surveys
 
 attributes :id, :uuid, :instrument_id, :instrument_title, :instrument_version_number,
-           :device_user_id, :completed, :metadata, :updated_at, :language
+           :device_user_id, :completed, :metadata, :updated_at, :language, :skipped_questions
 
 node :project_name, &:project_name
 node :project_id, &:project_id
+node :identifier, &:identifier
 
 child :responses do
   attributes :id, :uuid, :survey_uuid, :question_identifier, :question_id,
