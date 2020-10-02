@@ -20,6 +20,8 @@
 #  language                  :string
 #  skipped_questions         :text
 #  completed_responses_count :integer
+#  device_user_id            :integer
+#  completed                 :boolean          default(FALSE)
 #
 
 require "spec_helper"

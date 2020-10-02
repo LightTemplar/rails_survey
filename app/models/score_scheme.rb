@@ -23,13 +23,48 @@ class ScoreScheme < ApplicationRecord
   has_many :score_unit_questions, through: :score_units
   has_many :option_scores, through: :score_unit_questions
   has_many :survey_scores, -> { order 'identifier' }
-  has_many :centers
+  has_many :score_scheme_centers, dependent: :destroy
+  has_many :centers, through: :score_scheme_centers
 
   delegate :project, to: :instrument
 
   acts_as_paranoid
 
   validates :title, presence: true, uniqueness: { scope: [:instrument_id] }
+
+  def copy
+    duplicate = dup
+    duplicate.title = "#{title} copy"
+    duplicate.save!
+    domains.each do |domain|
+      dup_domain = domain.dup
+      dup_domain.score_scheme_id = duplicate.id
+      dup_domain.save!
+      domain.subdomains.each do |subdomain|
+        dup_sub = subdomain.dup
+        dup_sub.domain_id = dup_domain.id
+        dup_sub.save!
+        subdomain.score_units.each do |score_unit|
+          dup_su = score_unit.dup
+          dup_su.subdomain_id = dup_sub.id
+          dup_su.save!
+          score_unit.score_unit_questions.each do |suq|
+            dup_suq = suq.dup
+            dup_suq.score_unit_id = dup_su.id
+            dup_suq.save!
+            suq.option_scores.each do |os|
+              dup_os = os.dup
+              dup_os.score_unit_question_id = dup_suq.id
+              dup_os.save!
+            end
+          end
+        end
+      end
+    end
+    centers.each do |center|
+      ScoreSchemeCenter.create!(center_id: center.id, score_scheme_id: duplicate.id)
+    end
+  end
 
   def export_file
     file = Tempfile.new(title)
@@ -213,7 +248,7 @@ class ScoreScheme < ApplicationRecord
         end
         subdomain_score = subdomain.score(survey_score)
         domain_score = domain.score(survey_score) if index == domain.subdomains.size - 1
-        center_score = center.score(survey_score) if d_index == domains.size - 1 && index == domain.subdomains.size - 1
+        center_score = center.score(survey_score, self) if d_index == domains.size - 1 && index == domain.subdomains.size - 1
         sd_score = subdomain_score.nil? ? '' : subdomain_score
         d_score = domain_score.nil? ? '' : domain_score
         c_score = center_score.nil? ? '' : center_score

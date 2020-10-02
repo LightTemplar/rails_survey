@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200430181725) do
+ActiveRecord::Schema.define(version: 20201002162845) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -83,7 +83,6 @@ ActiveRecord::Schema.define(version: 20200430181725) do
   end
 
   create_table "centers", force: :cascade do |t|
-    t.integer "score_scheme_id"
     t.string "identifier"
     t.string "name"
     t.string "center_type"
@@ -94,7 +93,6 @@ ActiveRecord::Schema.define(version: 20200430181725) do
     t.text "score_data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["score_scheme_id", "identifier"], name: "index_centers_on_score_scheme_id_and_identifier", unique: true
   end
 
   create_table "condition_skips", id: :serial, force: :cascade do |t|
@@ -191,6 +189,14 @@ ActiveRecord::Schema.define(version: 20200430181725) do
     t.integer "instrument_questions_count"
     t.integer "instrument_position"
     t.index ["deleted_at"], name: "index_displays_on_deleted_at"
+  end
+
+  create_table "domain_scores", force: :cascade do |t|
+    t.integer "domain_id"
+    t.integer "survey_score_id"
+    t.float "score_sum"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "domains", id: :serial, force: :cascade do |t|
@@ -639,6 +645,13 @@ ActiveRecord::Schema.define(version: 20200430181725) do
     t.time "deleted_at"
   end
 
+  create_table "score_scheme_centers", force: :cascade do |t|
+    t.integer "center_id"
+    t.integer "score_scheme_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "score_schemes", id: :serial, force: :cascade do |t|
     t.integer "instrument_id"
     t.string "title"
@@ -719,6 +732,14 @@ ActiveRecord::Schema.define(version: 20200430181725) do
     t.datetime "updated_at"
   end
 
+  create_table "subdomain_scores", force: :cascade do |t|
+    t.integer "subdomain_id"
+    t.integer "survey_score_id"
+    t.float "score_sum"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "subdomains", id: :serial, force: :cascade do |t|
     t.string "title"
     t.integer "domain_id"
@@ -786,6 +807,8 @@ ActiveRecord::Schema.define(version: 20200430181725) do
     t.string "language"
     t.text "skipped_questions"
     t.integer "completed_responses_count"
+    t.integer "device_user_id"
+    t.boolean "completed", default: false
     t.index ["deleted_at"], name: "index_surveys_on_deleted_at"
     t.index ["uuid"], name: "index_surveys_on_uuid", unique: true
   end
