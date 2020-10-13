@@ -13,7 +13,8 @@ development:
   # database: from_instruments2_development
   # database: wci_development
   # database: pofo_development
-  database: isee
+  # database: isee
+  database: isee_dev
   pool: 15
   # timeout: 5000
 
