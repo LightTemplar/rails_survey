@@ -4,18 +4,20 @@ ActiveAdmin.register Domain do
   belongs_to :score_scheme
   navigation_menu :score_scheme
 
-  actions :all, except: %i[destroy edit new]
-
-  sidebar 'Domain Associations', only: :show do
-    ul do
-      li link_to 'Subdomains', admin_domain_subdomains_path(params[:id])
-    end
-  end
+  actions :all, except: %i[destroy edit new show]
 
   index do
     column :id
     column :title
-    column :score_scheme
-    actions
+    column :name
+    column 'Subdomains', :subdomains do |domain|
+      link_to domain.subdomains.size.to_s, admin_domain_subdomains_path(domain.id)
+    end
+  end
+
+  controller do
+    def scoped_collection
+      super.where(score_scheme_id: params[:score_scheme_id])
+    end
   end
 end

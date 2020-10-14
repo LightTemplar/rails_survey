@@ -28,14 +28,6 @@ class ScoreUnit < ApplicationRecord
   validates :subdomain_id, presence: true, allow_blank: false
   validates :title, presence: true, uniqueness: { scope: [:subdomain_id] }
 
-  def title_s
-    title.scan(/\D/).join('')
-  end
-
-  def title_i
-    title.scan(/\d/).join('')&.to_i
-  end
-
   def question_identifiers
     score_unit_questions.map { |suq| suq.instrument_question.identifier }.join(',')
   end
@@ -228,7 +220,11 @@ class ScoreUnit < ApplicationRecord
     end
   end
 
-  def survey_raw_scores(survey_score)
-    raw_scores.where(survey_score_id: survey_score.id)
+  def str_title
+    title.scan(/\D/).join('')
+  end
+
+  def int_title
+    title.scan(/\d/).join('')&.to_i
   end
 end

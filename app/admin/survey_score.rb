@@ -26,25 +26,63 @@ ActiveAdmin.register SurveyScore do
 
   sidebar 'Survey Score Associations', only: :show do
     ul do
-      li link_to 'Raw Scores', admin_survey_score_raw_scores_path(params[:id])
+      li link_to 'Domain Scores', admin_survey_score_domain_scores_path(params[:id])
+      li link_to 'Subdomain Scores', admin_survey_score_subdomain_scores_path(params[:id])
     end
   end
 
   index do
     column :id
     column :survey
-    column 'Identifier', &:identifier
+    column 'Identifier', :identifier
     column 'Score', :score_sum
-    column 'Raw Scores', :raw_scores do |ss|
-      link_to ss.raw_scores.size.to_s, admin_survey_score_raw_scores_path(ss.id)
-    end
     actions
+  end
+
+  show do
+    attributes_table do
+      row :id
+      row :survey
+      row :score_scheme
+      row :identifier
+      row :score_sum
+      row :score_data do
+        data = []
+        JSON.parse(survey_score.score_data).each { |arr| data << arr }
+        table_for data do
+          column 'domain' do |csv_row|
+            csv_row[7]
+          end
+          column 'subdomain' do |csv_row|
+            csv_row[8]
+          end
+          column 'unit' do |csv_row|
+            csv_row[9]
+          end
+          column 'weight' do |csv_row|
+            csv_row[10]
+          end
+          column 'unit score' do |csv_row|
+            csv_row[11]
+          end
+          column 'subdomain score' do |csv_row|
+            csv_row[12]
+          end
+          column 'domain score' do |csv_row|
+            csv_row[13]
+          end
+          column 'survey score' do |csv_row|
+            csv_row[14]
+          end
+        end
+      end
+    end
   end
 
   controller do
     def score
       survey_score = SurveyScore.find params[:id]
-      survey_score.score
+      survey_score.generate_raw_scores
       redirect_to admin_score_scheme_survey_score_path(params[:score_scheme_id], params[:id])
     end
 

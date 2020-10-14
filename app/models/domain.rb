@@ -15,27 +15,27 @@
 #
 
 class Domain < ApplicationRecord
+  include Scoreable
   belongs_to :score_scheme
   has_many :subdomains, dependent: :destroy
   has_many :raw_scores, through: :subdomains
   has_many :score_units, through: :subdomains
+  has_many :domain_scores, dependent: :destroy
+  has_many :subdomain_scores, through: :subdomains
 
   acts_as_paranoid
 
   validates :title, presence: true, allow_blank: false, uniqueness: { scope: [:score_scheme_id] }
 
   def score(survey_score)
-    center = score_scheme.centers.find_by(identifier: survey_score.survey.identifier)
-    units_by_title = score_units.group_by(&:title)
-    unique_units = []
-    units_by_title.each do |_title, su|
-      unique_units << su[0]
+    center = survey_score.center
+    score_sum = generate_score(score_units, survey_score.id, center)
+    domain_score = domain_scores.where(survey_score_id: survey_score.id).first
+    if domain_score
+      domain_score.update_columns(score_sum: score_sum)
+    else
+      DomainScore.create(domain_id: id, survey_score_id: survey_score.id, score_sum: score_sum)
     end
-    sanitized_scores = unique_units.map(&:raw_scores).flatten.select { |score| score.survey_score_id == survey_score.id }.reject { |score| score.weighted_score(center).nil? }
-    return nil if sanitized_scores.empty?
-
-    sum_of_weights = sanitized_scores.inject(0.0) { |sum, item| sum + item.weight(center) }
-    sum_of_weighted_scores = sanitized_scores.inject(0.0) { |sum, item| sum + item.weighted_score(center) }
-    (sum_of_weighted_scores / sum_of_weights).round(2)
+    score_sum
   end
 end

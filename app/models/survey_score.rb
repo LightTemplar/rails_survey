@@ -20,12 +20,25 @@
 #
 
 class SurveyScore < ApplicationRecord
+  include Scoreable
   belongs_to :score_scheme
   belongs_to :survey
   has_many :raw_scores
+  has_many :domain_scores
+  has_many :subdomain_scores
   has_many :domains, through: :score_scheme
+  has_many :subdomains, through: :domains
+  has_many :score_units, through: :subdomains
 
   acts_as_paranoid
+
+  def instrument_id
+    survey.instrument_id
+  end
+
+  def instrument_title
+    survey.instrument_title
+  end
 
   def title
     "#{score_scheme_id} - #{survey_id}"
@@ -45,8 +58,8 @@ class SurveyScore < ApplicationRecord
     raw_score.value * raw_score.score_unit.weight
   end
 
-  def score
-    SurveyScoreWorker.perform_async(score_scheme_id, survey_id)
+  def generate_raw_scores
+    ScoreWorker.perform_async(score_scheme_id, survey_id)
   end
 
   def download
@@ -63,5 +76,47 @@ class SurveyScore < ApplicationRecord
       end
     end
     file
+  end
+
+  def save_scores
+    csv = []
+    domains.sort_by { |domain| domain.title.to_i }.each_with_index do |domain, d_index|
+      domain.subdomains.sort_by { |sd| sd.title.to_i }.each_with_index do |subdomain, index|
+        subdomain.score_units.sort_by { |su| [su.str_title, su.int_title] }.each do |score_unit|
+          raw_scores.where(score_unit_id: score_unit.id).each do |raw_score|
+            next unless raw_score.value
+
+            csv << [survey.id, identifier, center&.center_type,
+                    center&.administration, center&.region, center&.department,
+                    center&.municipality, domain.title, subdomain.title,
+                    score_unit.title, raw_score.weight(center), raw_score.value,
+                    '', '', '', raw_score.response.nil? ? '' : raw_score.response&.text,
+                    raw_score.response.nil? ? '' : raw_score.response&.to_s,
+                    raw_score.response.nil? ? '' : raw_score.response&.to_s_es]
+          end
+        end
+        subdomain_score = subdomain_scores.where(subdomain_id: subdomain.id).first&.score_sum
+        domain_score = domain_scores.where(domain_id: domain.id).first&.score_sum if index == domain.subdomains.size - 1
+        center_score = score_sum if d_index == domains.size - 1 && index == domain.subdomains.size - 1
+        sd_score = subdomain_score.nil? ? '' : subdomain_score
+        d_score = domain_score.nil? ? '' : domain_score
+        c_score = center_score.nil? ? '' : center_score
+        next if sd_score.blank? && d_score.blank? && c_score.blank?
+
+        csv << [survey.id, identifier, center&.center_type,
+                center&.administration, center&.region, center&.department,
+                center&.municipality, domain.title, subdomain.title,
+                '', '', '', sd_score, d_score, c_score, '', '', '']
+      end
+    end
+    update_columns(score_data: csv.to_s)
+  end
+
+  def center
+    score_scheme.centers.find_by(identifier: survey.identifier)
+  end
+
+  def score
+    update_columns(score_sum: generate_score(score_units, id, center))
   end
 end

@@ -30,23 +30,29 @@ require 'sidekiq/api'
 
 class Survey < ApplicationRecord
   include Sanitizer
+
+  scope :ongoing, -> { where(completed: [false, nil]) }
+  scope :finished, -> { where(completed: true) }
+
   belongs_to :instrument
   belongs_to :device
-  belongs_to :roster, foreign_key: :roster_uuid, primary_key: :uuid
+  belongs_to :device_user
+  delegate :project, to: :instrument
   has_many :instrument_questions, through: :instrument
   has_many :responses, foreign_key: :survey_uuid, primary_key: :uuid, dependent: :destroy
   has_many :survey_scores, dependent: :destroy
   has_many :survey_notes, foreign_key: :survey_uuid, primary_key: :uuid, dependent: :destroy
   has_one :survey_export, dependent: :destroy
+
   acts_as_paranoid
   has_paper_trail on: %i[update destroy]
-  delegate :project, to: :instrument
-  validates :device_id, presence: true, allow_blank: false
-  validates :uuid, presence: true, allow_blank: false
-  validates :instrument_id, presence: true, allow_blank: false
-  paginates_per 50
+
   after_create :calculate_percentage
   after_commit :schedule_export, if: proc { |survey| survey.instrument.auto_export_responses }
+  after_save :score, if: proc { |survey| survey.completed }
+
+  validates :uuid, presence: true, allow_blank: false
+  validates :instrument_id, presence: true, allow_blank: false
 
   def title
     "#{id} - #{identifier}"
@@ -56,7 +62,7 @@ class Survey < ApplicationRecord
     questions = Question.where(id: instrument.instrument_questions.pluck(:question_id).uniq)
     question = questions.where(identifies_survey: true).first
     response = responses.where(question_identifier: question.question_identifier).where.not(text: [nil, '']).first if question
-    !response&.text.empty? ? response.text : uuid
+    response.nil? || response.text.empty? ? uuid : response.text
   end
 
   def schedule_export
@@ -104,6 +110,10 @@ class Survey < ApplicationRecord
 
   def project_name
     project.name
+  end
+
+  def project_id
+    project.id
   end
 
   def group_responses_by_day
@@ -280,8 +290,9 @@ class Survey < ApplicationRecord
   end
 
   def score
-    scheme = instrument.score_schemes.first
-    scheme.score_survey(self)
+    instrument.score_schemes.where(active: true).each do |scheme|
+      ScoreWorker.perform_async(scheme.id, id)
+    end
   end
 
   def response_for_question(question)

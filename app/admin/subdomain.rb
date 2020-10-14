@@ -4,21 +4,15 @@ ActiveAdmin.register Subdomain do
   belongs_to :domain
   navigation_menu :domain
 
-  actions :all, except: %i[destroy edit new]
-
-  sidebar 'Subdomain Associations', only: :show do
-    ul do
-      li link_to 'Raw Scores', admin_subdomain_subdomain_raw_scores_path(params[:id])
-    end
-  end
+  actions :all, except: %i[destroy edit new show]
 
   index do
     column :id
     column :title
     column :domain
-    column 'Raw Scores', :raw_scores do |sd|
-      link_to sd.raw_scores.size.to_s, admin_subdomain_subdomain_raw_scores_path(sd.id)
+    column :name
+    column 'Score Units', :score_units do |subdomain|
+      link_to subdomain.score_units.size.to_s, admin_subdomain_score_units_path(subdomain.id)
     end
-    actions
   end
 end

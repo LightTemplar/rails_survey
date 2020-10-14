@@ -19,15 +19,23 @@ class DeviceUser < ApplicationRecord
   has_many :devices, through: :device_device_users
   has_many :project_device_users
   has_many :projects, through: :project_device_users
-  has_one :api_key, dependent: :destroy
-  after_create :generate_api_key
+  has_many :published_instruments, through: :projects
+  has_many :surveys
+  has_many :ongoing_surveys, -> { ongoing }, class_name: 'Survey'
+  has_many :completed_surveys, -> { finished }, class_name: 'Survey'
+  has_many :survey_scores, through: :completed_surveys
+
   validates :username, presence: true, uniqueness: true, allow_blank: false
   validates :name, presence: true
   validates :password_digest, presence: true
 
-  private
+  def self.from_token_payload(payload)
+    find payload['sub']
+  end
 
-  def generate_api_key
-    ApiKey.create!(device_user_id: id) unless api_key
+  def self.from_token_request(request)
+    puts request.params
+    user_name = request.params['auth'] && request.params['auth']['username']
+    find_by username: user_name
   end
 end

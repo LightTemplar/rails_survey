@@ -24,11 +24,11 @@ class RawScore < ApplicationRecord
   acts_as_paranoid
 
   def domain
-    subdomain.domain
+    subdomain&.domain
   end
 
   def subdomain
-    score_unit.subdomain
+    score_unit&.subdomain
   end
 
   def identifier
@@ -36,6 +36,8 @@ class RawScore < ApplicationRecord
   end
 
   def weight(center)
+    return score_unit.weight if center.nil?
+
     if score_unit.score_unit_questions.first.instrument_question.identifier == 'sdm6'
       if center.center_type == 'CBI'
         6
