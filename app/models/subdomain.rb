@@ -38,4 +38,8 @@ class Subdomain < ApplicationRecord
     end
     score_sum
   end
+
+  def title_name
+    "#{title} #{name}"
+  end
 end

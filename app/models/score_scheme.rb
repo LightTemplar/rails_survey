@@ -82,10 +82,10 @@ class ScoreScheme < ApplicationRecord
       c_style = wb.styles.add_style(alignment: { horizontal: :center })
       c_border = wb.styles.add_style(alignment: { horizontal: :center }, border: b_style)
       domains.sort_by { |domain| domain.title.to_i }.each do |domain|
-        wb.add_worksheet(name: "Domain #{domain.title}") do |sheet|
+        wb.add_worksheet(name: domain.title_name) do |sheet|
           tab_color = SecureRandom.hex(3)
           sheet.sheet_pr.tab_color = tab_color
-          sheet.add_row ['', '', '', '', "#{domain.title}: #{domain.name}", '', '', '', '', ''],
+          sheet.add_row ['', '', '', '', domain.title_name, '', '', '', '', ''],
                         style: wb.styles.add_style(b: true, alignment: { horizontal: :center, vertical: :center },
                                                    border: b_style, bg_color: tab_color), height: row_height
           sheet.add_row %w[Identifier Subdomain Weight Code Question Base Score Type Translation Notes],
@@ -98,8 +98,8 @@ class ScoreScheme < ApplicationRecord
                 [c_border, c_border, c_border, c_border, b_question_style, c_border, c_border, border,
                  b_question_style, b_option_style] : [c_style, c_style, c_style, c_style, question_style, c_style,
                                                       c_style, c_style, question_style, option_style]
-                sheet.add_row [unit.title, subdomain.title, unit.weight, suq.question_identifier,
-                               html_decode(full_sanitize(suq.instrument_question.text)),
+                sheet.add_row [unit.title, subdomain.title_name, unit.weight,
+                               suq.question_identifier, html_decode(full_sanitize(suq.instrument_question.text)),
                                unit.base_point_score == 0.0 ? '' : unit.base_point_score, '', unit.score_type,
                                full_sanitize(suq.instrument_question.translations.find_by_language('es')&.text),
                                html_decode(full_sanitize(unit.notes))], style: q_style

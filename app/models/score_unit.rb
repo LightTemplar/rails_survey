@@ -44,8 +44,16 @@ class ScoreUnit < ApplicationRecord
     subdomain.domain.title
   end
 
+  def domain_name
+    subdomain.domain.name
+  end
+
   def subdomain_title
     subdomain.title
+  end
+
+  def subdomain_name
+    subdomain.name
   end
 
   def copy
