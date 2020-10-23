@@ -1,7 +1,7 @@
 # frozen_string_literal: false
 
 module PdfUtils
-  QUESTION_TEXT_LEFT_MARGIN = 30
+  QUESTION_TEXT_LEFT_MARGIN = 35
   QUESTION_LEFT_MARGIN = 40
   QUESTION_NUMBER_MARGIN = 5
   AFTER_INSTRUCTIONS_MARGIN = 5
@@ -127,10 +127,28 @@ module PdfUtils
     hash
   end
 
+  def skips_array(m_skips, instrument_questions)
+    skipped = []
+    m_skips.each do |m_skip|
+      q = instrument_questions.where(identifier: m_skip.skip_question_identifier).first
+      skipped << q.number_in_instrument if q
+    end
+    skipped = skipped.sort
+    prev = skipped[0]
+    arr = skipped.slice_before do |e|
+      prev2 = prev
+      prev = e
+      prev2 + 1 != e
+    end.map { |b, *, c| c ? (b..c) : b }
+    arr
+  end
+
   def format_skip_patterns(question)
     next_questions, multiple_skips, loop_questions, critical_responses, options = question_associations(question)
     instrument_questions = question.instrument.instrument_questions
     options_hash = options_to_h(options)
+    multiple_skip_hash = multiple_skips.group_by(&:option_identifier) unless multiple_skips.blank?
+    h = {}
     indent(QUESTION_LEFT_MARGIN) do
       unless next_questions.blank?
         next_questions.each do |next_question|
@@ -138,29 +156,43 @@ module PdfUtils
           skip_to_question = instrument_questions.where(identifier: next_question.next_question_identifier).first
           if option
             index = options.index(option)
-            skip_string = "=> If <b>(#{LETTERS[index]})</b> skip to <b>##{skip_to_question&.number_in_instrument}</b> (#{next_question.next_question_identifier})"
+            skip_string = "* If <b>(#{LETTERS[index]})</b> skip to #<b>#{skip_to_question&.number_in_instrument}</b> (#{next_question.next_question_identifier})"
+            unless multiple_skip_hash.nil?
+              m_skips = multiple_skip_hash[option.identifier]
+              unless m_skips.nil?
+                skip_string = "#{skip_string} <b>AND</b> skip questions #: "
+                skips_array(m_skips, instrument_questions).each do |item|
+                  skip_string.concat("<b>#{item.to_s.gsub('..', '-')}</b>, ")
+                end
+                skip_string.chomp!(', ')
+                h[LETTERS[index]] = skip_string
+              end
+              multiple_skip_hash.delete(option.identifier)
+            end
           else
-            skip_string = "=> If <b>#{next_question.option_identifier}</b> skip to <b>##{skip_to_question&.number_in_instrument}</b> (#{next_question.next_question_identifier})"
+            skip_string = "* If <b>#{next_question.option_identifier}</b> skip to #<b>#{skip_to_question&.number_in_instrument}</b> (#{next_question.next_question_identifier})"
+            h[next_question.option_identifier] = skip_string
           end
-          text skip_string, inline_format: true, size: FONT_SIZE - 2
         end
       end
-      unless multiple_skips.blank?
-        multiple_skip_hash = multiple_skips.group_by(&:option_identifier)
-        multiple_skip_hash.each do |option_identifier, m_skips|
-          option = options_hash[option_identifier]
-          skipped = ''
-          m_skips.each do |m_skip|
-            q = instrument_questions.where(identifier: m_skip.skip_question_identifier).first
-            skipped << "<b>##{q.number_in_instrument}</b>, " if q
-          end
-          skip_string = if option
-                          "* If <b>(#{LETTERS[options.index(option)]})</b> skip questions: #{skipped.strip.chop}"
-                        else
-                          "* If <b>#{option_identifier}</b> skip questions: #{skipped.strip.chop}"
-                        end
-          text skip_string, inline_format: true, size: FONT_SIZE - 2
+      multiple_skip_hash&.each do |option_identifier, m_skips|
+        skip_string = if options_hash[option_identifier]
+                        "* If <b>(#{LETTERS[options.index(options_hash[option_identifier])]})</b> skip questions #: "
+                      else
+                        "* If <b>#{option_identifier}</b> skip questions #: "
+                      end
+        skips_array(m_skips, instrument_questions).each do |item|
+          skip_string.concat("<b>#{item.to_s.gsub('..', '-')}</b>, ")
         end
+        skip_string.chomp!(', ')
+        if options_hash[option_identifier]
+          h[LETTERS[options.index(options_hash[option_identifier])]] = skip_string
+        else
+          h[option_identifier] = skip_string
+        end
+      end
+      h.sort.to_h.each do |_key, value|
+        text value, inline_format: true, size: FONT_SIZE - 2
       end
       unless loop_questions.blank?
         skipped = ''
