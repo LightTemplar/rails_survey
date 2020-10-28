@@ -20,6 +20,7 @@ class Subdomain < ApplicationRecord
   has_many :score_units, -> { order 'score_units.title' }, dependent: :destroy
   has_many :raw_scores, through: :score_units
   has_many :subdomain_scores
+  delegate :score_scheme, to: :domain
 
   acts_as_paranoid
 

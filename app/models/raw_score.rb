@@ -38,17 +38,7 @@ class RawScore < ApplicationRecord
   def weight(center)
     return score_unit.weight if center.nil?
 
-    if score_unit.score_unit_questions.first.instrument_question.identifier == 'sdm6'
-      if center.center_type == 'CBI'
-        6
-      elsif center.center_type == 'CDI'
-        7
-      elsif center.center_type == 'CDA'
-        9
-      else
-        score_unit.weight
-      end
-    elsif score_unit.score_unit_questions.first.instrument_question.identifier == 'grp3'
+    if score_unit.score_unit_questions.first.instrument_question.identifier == 'grp3'
       if center.center_type == 'CDA'
         9
       elsif center.center_type == 'CDI' || center.center_type == 'CBI'
