@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ScoreWorker
+class ScoreGeneratorWorker
   include Sidekiq::Worker
 
   def perform(score_scheme_id, survey_id)
@@ -10,13 +10,6 @@ class ScoreWorker
     survey_score ||= SurveyScore.create(survey_id: survey_id, score_scheme_id: score_scheme_id)
     survey_score.update_attributes(identifier: survey.identifier)
     score_scheme.generate_unit_scores(survey, survey_score)
-    survey_score.score
-    score_scheme.domains.each do |domain|
-      domain.score(survey_score)
-    end
-    score_scheme.subdomains.each do |subdomain|
-      subdomain.score(survey_score)
-    end
-    survey_score.save_scores
+    ScoreCacheWorker.perform_in(1.minute, score_scheme_id, survey_score.id)
   end
 end

@@ -291,7 +291,7 @@ class Survey < ApplicationRecord
 
   def score
     instrument.score_schemes.where(active: true).each do |scheme|
-      ScoreWorker.perform_async(scheme.id, id)
+      ScoreGeneratorWorker.perform_async(scheme.id, id)
     end
   end
 

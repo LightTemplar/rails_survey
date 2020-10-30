@@ -127,7 +127,7 @@ class ScoreScheme < ApplicationRecord
 
   def score
     surveys.each do |survey|
-      ScoreWorker.perform_async(id, survey.id)
+      ScoreGeneratorWorker.perform_async(id, survey.id)
     end
   end
 

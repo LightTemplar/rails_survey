@@ -188,7 +188,11 @@ class ScoreUnit < ApplicationRecord
 
           age_scores << sleep_score(item, index)
         end
-        score_value = age_scores.sum(0.0) / age_scores.size
+        score_value = if age_scores.empty?
+                        nil
+                      else
+                        age_scores.sum(0.0) / age_scores.size
+                      end
       elsif suq.instrument_question.identifier == 'sdm6'
         left_count = response.text.split(',').inject(0.0) { |sum, ans| sum + ans.to_i }
         total_response = survey.responses.where(question_identifier: 'sdm1').first

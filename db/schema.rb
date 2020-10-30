@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201002162845) do
+ActiveRecord::Schema.define(version: 20201030024320) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -93,6 +93,7 @@ ActiveRecord::Schema.define(version: 20201002162845) do
     t.text "score_data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["identifier"], name: "index_centers_on_identifier"
   end
 
   create_table "condition_skips", id: :serial, force: :cascade do |t|
@@ -197,6 +198,8 @@ ActiveRecord::Schema.define(version: 20201002162845) do
     t.float "score_sum"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["domain_id"], name: "index_domain_scores_on_domain_id"
+    t.index ["survey_score_id"], name: "index_domain_scores_on_survey_score_id"
   end
 
   create_table "domains", id: :serial, force: :cascade do |t|
@@ -208,6 +211,7 @@ ActiveRecord::Schema.define(version: 20201002162845) do
     t.float "weight"
     t.string "name"
     t.index ["deleted_at"], name: "index_domains_on_deleted_at"
+    t.index ["score_scheme_id"], name: "index_domains_on_score_scheme_id"
   end
 
   create_table "folders", id: :serial, force: :cascade do |t|
@@ -313,6 +317,7 @@ ActiveRecord::Schema.define(version: 20201002162845) do
     t.text "next_question_neutral_ids"
     t.text "multiple_skip_neutral_ids"
     t.index ["deleted_at"], name: "index_instrument_questions_on_deleted_at"
+    t.index ["identifier"], name: "index_instrument_questions_on_identifier"
     t.index ["instrument_id", "identifier"], name: "index_instrument_questions_on_instrument_id_and_identifier"
     t.index ["question_id"], name: "index_instrument_questions_on_question_id"
   end
@@ -408,6 +413,10 @@ ActiveRecord::Schema.define(version: 20201002162845) do
     t.integer "instruction_id"
     t.boolean "allow_text_entry", default: false
     t.text "exclusion_ids"
+    t.index ["instruction_id"], name: "index_option_in_option_sets_on_instruction_id"
+    t.index ["number_in_question"], name: "index_option_in_option_sets_on_number_in_question"
+    t.index ["option_id"], name: "index_option_in_option_sets_on_option_id"
+    t.index ["option_set_id"], name: "index_option_in_option_sets_on_option_set_id"
   end
 
   create_table "option_scores", id: :serial, force: :cascade do |t|
@@ -419,6 +428,8 @@ ActiveRecord::Schema.define(version: 20201002162845) do
     t.string "option_identifier"
     t.text "notes"
     t.index ["deleted_at"], name: "index_option_scores_on_deleted_at"
+    t.index ["option_identifier"], name: "index_option_scores_on_option_identifier"
+    t.index ["score_unit_question_id"], name: "index_option_scores_on_score_unit_question_id"
   end
 
   create_table "option_set_translations", id: :serial, force: :cascade do |t|
@@ -531,7 +542,9 @@ ActiveRecord::Schema.define(version: 20201002162845) do
     t.integer "position"
     t.integer "pop_up_instruction_id"
     t.integer "after_text_instruction_id"
+    t.index ["option_set_id"], name: "index_questions_on_option_set_id"
     t.index ["question_identifier"], name: "index_questions_on_question_identifier", unique: true
+    t.index ["special_option_set_id"], name: "index_questions_on_special_option_set_id"
   end
 
   create_table "randomized_factors", id: :serial, force: :cascade do |t|
@@ -567,6 +580,10 @@ ActiveRecord::Schema.define(version: 20201002162845) do
     t.string "survey_score_uuid"
     t.datetime "deleted_at"
     t.integer "response_id"
+    t.index ["response_id"], name: "index_raw_scores_on_response_id"
+    t.index ["score_unit_id", "survey_score_id"], name: "index_raw_scores_on_score_unit_id_and_survey_score_id"
+    t.index ["score_unit_id"], name: "index_raw_scores_on_score_unit_id"
+    t.index ["survey_score_id"], name: "index_raw_scores_on_survey_score_id"
   end
 
   create_table "response_exports", id: :serial, force: :cascade do |t|
@@ -614,6 +631,7 @@ ActiveRecord::Schema.define(version: 20201002162845) do
     t.string "rank_order"
     t.text "other_text"
     t.index ["deleted_at"], name: "index_responses_on_deleted_at"
+    t.index ["question_identifier"], name: "index_responses_on_question_identifier"
     t.index ["survey_uuid"], name: "index_responses_on_survey_uuid"
     t.index ["time_ended"], name: "index_responses_on_time_ended"
     t.index ["time_started"], name: "index_responses_on_time_started"
@@ -650,6 +668,8 @@ ActiveRecord::Schema.define(version: 20201002162845) do
     t.integer "score_scheme_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["center_id"], name: "index_score_scheme_centers_on_center_id"
+    t.index ["score_scheme_id"], name: "index_score_scheme_centers_on_score_scheme_id"
   end
 
   create_table "score_schemes", id: :serial, force: :cascade do |t|
@@ -669,6 +689,8 @@ ActiveRecord::Schema.define(version: 20201002162845) do
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_score_unit_questions_on_deleted_at"
+    t.index ["instrument_question_id"], name: "index_score_unit_questions_on_instrument_question_id"
+    t.index ["score_unit_id"], name: "index_score_unit_questions_on_score_unit_id"
   end
 
   create_table "score_units", id: :serial, force: :cascade do |t|
@@ -683,6 +705,8 @@ ActiveRecord::Schema.define(version: 20201002162845) do
     t.string "institution_type"
     t.text "notes"
     t.index ["deleted_at"], name: "index_score_units_on_deleted_at"
+    t.index ["subdomain_id"], name: "index_score_units_on_subdomain_id"
+    t.index ["title"], name: "index_score_units_on_title"
   end
 
   create_table "section_translations", id: :serial, force: :cascade do |t|
@@ -738,6 +762,8 @@ ActiveRecord::Schema.define(version: 20201002162845) do
     t.float "score_sum"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["subdomain_id"], name: "index_subdomain_scores_on_subdomain_id"
+    t.index ["survey_score_id"], name: "index_subdomain_scores_on_survey_score_id"
   end
 
   create_table "subdomains", id: :serial, force: :cascade do |t|
@@ -749,6 +775,7 @@ ActiveRecord::Schema.define(version: 20201002162845) do
     t.float "weight"
     t.string "name"
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
+    t.index ["domain_id"], name: "index_subdomains_on_domain_id"
   end
 
   create_table "survey_exports", force: :cascade do |t|
@@ -787,6 +814,7 @@ ActiveRecord::Schema.define(version: 20201002162845) do
     t.text "score_data"
     t.string "identifier"
     t.index ["identifier"], name: "index_survey_scores_on_identifier"
+    t.index ["survey_id", "score_scheme_id"], name: "index_survey_scores_on_survey_id_and_score_scheme_id"
   end
 
   create_table "surveys", id: :serial, force: :cascade do |t|
@@ -810,6 +838,7 @@ ActiveRecord::Schema.define(version: 20201002162845) do
     t.integer "device_user_id"
     t.boolean "completed", default: false
     t.index ["deleted_at"], name: "index_surveys_on_deleted_at"
+    t.index ["instrument_id"], name: "index_surveys_on_instrument_id"
     t.index ["uuid"], name: "index_surveys_on_uuid", unique: true
   end
 

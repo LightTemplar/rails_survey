@@ -59,7 +59,7 @@ class SurveyScore < ApplicationRecord
   end
 
   def generate_raw_scores
-    ScoreWorker.perform_async(score_scheme_id, survey_id)
+    ScoreGeneratorWorker.perform_async(score_scheme_id, survey_id)
   end
 
   def download
@@ -84,7 +84,7 @@ class SurveyScore < ApplicationRecord
       domain.subdomains.sort_by { |sd| sd.title.to_i }.each_with_index do |subdomain, index|
         subdomain.score_units.sort_by { |su| [su.str_title, su.int_title] }.each do |score_unit|
           raw_scores.where(score_unit_id: score_unit.id).each do |raw_score|
-            next unless raw_score.value
+            next if raw_score.value.nil? || raw_score.value.nan?
 
             csv << [survey.id, identifier, center&.center_type,
                     center&.administration, center&.region, center&.department,
@@ -98,9 +98,9 @@ class SurveyScore < ApplicationRecord
         subdomain_score = subdomain_scores.where(subdomain_id: subdomain.id).first&.score_sum
         domain_score = domain_scores.where(domain_id: domain.id).first&.score_sum if index == domain.subdomains.size - 1
         center_score = score_sum if d_index == domains.size - 1 && index == domain.subdomains.size - 1
-        sd_score = subdomain_score.nil? ? '' : subdomain_score
-        d_score = domain_score.nil? ? '' : domain_score
-        c_score = center_score.nil? ? '' : center_score
+        sd_score = subdomain_score.nil? || subdomain_score.nan? ? '' : subdomain_score
+        d_score = domain_score.nil? || domain_score.nan? ? '' : domain_score
+        c_score = center_score.nil? || center_score.nan? ? '' : center_score
         next if sd_score.blank? && d_score.blank? && c_score.blank?
 
         csv << [survey.id, identifier, center&.center_type,
@@ -116,7 +116,11 @@ class SurveyScore < ApplicationRecord
     score_scheme.centers.find_by(identifier: survey.identifier)
   end
 
-  def score
-    update_columns(score_sum: generate_score(score_units, id, center))
+  def sanitized_raw_scores
+    raw_scores.where.not(value: nil)
+  end
+
+  def score(ctr, srs)
+    update_columns(score_sum: generate_score(score_units, ctr, srs))
   end
 end
