@@ -27,8 +27,17 @@ class Domain < ApplicationRecord
 
   validates :title, presence: true, allow_blank: false, uniqueness: { scope: [:score_scheme_id] }
 
+  def distinct_score_units
+    by_title = score_units.group_by(&:title)
+    unique_units = []
+    by_title.each do |_title, score_unit|
+      unique_units << score_unit[0]
+    end
+    unique_units
+  end
+
   def score(survey_score, center, srs)
-    score_sum = generate_score(score_units, center, srs)
+    score_sum = generate_score(distinct_score_units, center, srs)
     domain_score = domain_scores.where(survey_score_id: survey_score.id).first
     if domain_score
       domain_score.update_columns(score_sum: score_sum)

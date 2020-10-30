@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201030140109) do
+ActiveRecord::Schema.define(version: 20201030192314) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -288,6 +288,8 @@ ActiveRecord::Schema.define(version: 20201030140109) do
     t.text "text"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["instruction_id"], name: "index_instruction_translations_on_instruction_id"
+    t.index ["language"], name: "index_instruction_translations_on_language"
   end
 
   create_table "instructions", id: :serial, force: :cascade do |t|
@@ -439,6 +441,8 @@ ActiveRecord::Schema.define(version: 20201030140109) do
     t.integer "option_translation_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["option_set_id"], name: "index_option_set_translations_on_option_set_id"
+    t.index ["option_translation_id"], name: "index_option_set_translations_on_option_translation_id"
   end
 
   create_table "option_sets", id: :serial, force: :cascade do |t|
@@ -460,6 +464,8 @@ ActiveRecord::Schema.define(version: 20201030140109) do
     t.datetime "updated_at"
     t.boolean "option_changed", default: false
     t.integer "instrument_translation_id"
+    t.index ["language"], name: "index_option_translations_on_language"
+    t.index ["option_id"], name: "index_option_translations_on_option_id"
   end
 
   create_table "options", id: :serial, force: :cascade do |t|
@@ -518,6 +524,8 @@ ActiveRecord::Schema.define(version: 20201030140109) do
     t.boolean "question_changed", default: false
     t.text "instructions"
     t.integer "instrument_translation_id"
+    t.index ["language"], name: "index_question_translations_on_language"
+    t.index ["question_id"], name: "index_question_translations_on_question_id"
   end
 
   create_table "questions", id: :serial, force: :cascade do |t|

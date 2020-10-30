@@ -32,6 +32,12 @@ class SurveyScore < ApplicationRecord
 
   acts_as_paranoid
 
+  def nullify_scores
+    domain_scores.update_all(score_sum: nil)
+    subdomain_scores.update_all(score_sum: nil)
+    raw_scores.update_all(value: nil)
+  end
+
   def instrument_id
     survey.instrument_id
   end
@@ -69,10 +75,12 @@ class SurveyScore < ApplicationRecord
                 municipality domain subdomain score_unit score_unit_weight
                 score_unit_score subdomain_score domain_score center_score
                 response response_label_en response_label_es]
-      data = []
-      JSON.parse(score_data).each { |arr| data << arr }
-      data.each do |row|
-        csv << row
+      unless score_data.nil?
+        data = []
+        JSON.parse(score_data).each { |arr| data << arr }
+        data.each do |row|
+          csv << row
+        end
       end
     end
     file
@@ -121,6 +129,6 @@ class SurveyScore < ApplicationRecord
   end
 
   def score(ctr, srs)
-    update_columns(score_sum: generate_score(score_units, ctr, srs))
+    update_columns(score_sum: generate_score(score_scheme.distinct_score_units, ctr, srs))
   end
 end

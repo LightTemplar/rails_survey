@@ -191,7 +191,7 @@ class ScoreUnit < ApplicationRecord
         score_value = if age_scores.empty?
                         nil
                       else
-                        age_scores.sum(0.0) / age_scores.size
+                        (age_scores.sum(0.0) / age_scores.size).round(2)
                       end
       elsif suq.instrument_question.identifier == 'sdm6'
         left_count = response.text.split(',').inject(0.0) { |sum, ans| sum + ans.to_i }

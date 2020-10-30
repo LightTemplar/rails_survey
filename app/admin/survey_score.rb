@@ -59,32 +59,34 @@ ActiveAdmin.register SurveyScore do
       row :identifier
       row :score_sum
       row :score_data do
-        data = []
-        JSON.parse(survey_score.score_data).each { |arr| data << arr }
-        table_for data do
-          column 'domain' do |csv_row|
-            csv_row[7]
-          end
-          column 'subdomain' do |csv_row|
-            csv_row[8]
-          end
-          column 'unit' do |csv_row|
-            csv_row[9]
-          end
-          column 'weight' do |csv_row|
-            csv_row[10]
-          end
-          column 'unit score' do |csv_row|
-            csv_row[11]
-          end
-          column 'subdomain score' do |csv_row|
-            csv_row[12]
-          end
-          column 'domain score' do |csv_row|
-            csv_row[13]
-          end
-          column 'survey score' do |csv_row|
-            csv_row[14]
+        unless survey_score.score_data.nil?
+          data = []
+          JSON.parse(survey_score.score_data).each { |arr| data << arr }
+          table_for data do
+            column 'domain' do |csv_row|
+              csv_row[7]
+            end
+            column 'subdomain' do |csv_row|
+              csv_row[8]
+            end
+            column 'unit' do |csv_row|
+              csv_row[9]
+            end
+            column 'weight' do |csv_row|
+              csv_row[10]
+            end
+            column 'unit score' do |csv_row|
+              csv_row[11]
+            end
+            column 'subdomain score' do |csv_row|
+              csv_row[12]
+            end
+            column 'domain score' do |csv_row|
+              csv_row[13]
+            end
+            column 'survey score' do |csv_row|
+              csv_row[14]
+            end
           end
         end
       end

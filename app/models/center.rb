@@ -36,12 +36,15 @@ class Center < ApplicationRecord
   def self.download(score_scheme)
     csv = []
     score_scheme.centers.sort_by { |c| c.identifier.to_i }.each do |center|
-      if center.survey_scores.size > 1
+      css = center.survey_scores.where(score_scheme_id: score_scheme.id)
+      if css.size > 1
         domain_scores = {}
         subdomain_scores = {}
         survey_ids = []
         cds = []
-        center.survey_scores.each do |survey_score|
+        css.each do |survey_score|
+          next if survey_score.score_data.nil?
+
           survey_ids << survey_score.survey_id
           score_data = []
           JSON.parse(survey_score.score_data).each { |arr| score_data << arr }
@@ -78,15 +81,17 @@ class Center < ApplicationRecord
                     center_score.nil? ? '' : center_score.round(2)]
           end
         end
-      elsif center.survey_scores.size == 1
-        score_data = []
-        JSON.parse(center.survey_scores[0].score_data).each { |arr| score_data << arr }
-        score_data.each do |row|
-          next if row[12].blank? && row[13].blank? && row[14].blank?
+      elsif css.size == 1
+        unless css[0].score_data.nil?
+          score_data = []
+          JSON.parse(css[0].score_data).each { |arr| score_data << arr }
+          score_data.each do |row|
+            next if row[12].blank? && row[13].blank? && row[14].blank?
 
-          csv << [center.identifier, center.center_type, center.administration,
-                  center.region, center.department, center.municipality,
-                  row[0], row[7], row[8], row[12], row[13], row[14]]
+            csv << [center.identifier, center.center_type, center.administration,
+                    center.region, center.department, center.municipality,
+                    row[0], row[7], row[8], row[12], row[13], row[14]]
+          end
         end
       end
     end

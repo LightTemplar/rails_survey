@@ -32,6 +32,15 @@ class ScoreScheme < ApplicationRecord
 
   validates :title, presence: true, uniqueness: { scope: [:instrument_id] }
 
+  def distinct_score_units
+    by_title = score_units.group_by(&:title)
+    unique_units = []
+    by_title.each do |_title, score_unit|
+      unique_units << score_unit[0]
+    end
+    unique_units
+  end
+
   def copy
     duplicate = dup
     duplicate.title = "#{title} copy"
@@ -168,6 +177,8 @@ class ScoreScheme < ApplicationRecord
                 score_unit_score subdomain_score domain_score center_score
                 response response_label_en response_label_es]
       survey_scores.sort_by { |ss| ss.identifier.to_i }.each do |survey_score|
+        next if survey_score.score_data.nil?
+
         data = []
         JSON.parse(survey_score.score_data).each { |arr| data << arr }
         data.each do |row|
