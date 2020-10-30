@@ -6,6 +6,7 @@ ActiveAdmin.register SubdomainScore do
 
   actions :all, except: %i[destroy edit new]
   config.per_page = [50, 100]
+  config.filters = false
 
   index do
     column :id

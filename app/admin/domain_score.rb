@@ -5,6 +5,7 @@ ActiveAdmin.register DomainScore do
   navigation_menu :survey_score
 
   actions :all, except: %i[destroy edit new]
+  config.filters = false
 
   index do
     column :id

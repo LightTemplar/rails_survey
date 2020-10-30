@@ -7,6 +7,14 @@ ActiveAdmin.register SurveyScore do
   actions :all, except: %i[destroy edit new]
 
   config.per_page = [50, 100]
+  config.filters = true
+  filter :survey_id
+  filter :identifier
+  filter :score_sum
+
+  collection_action :download_all, method: :get do
+    redirect_to resource_path
+  end
 
   member_action :score, method: :get do
     redirect_to resource_path
@@ -14,6 +22,10 @@ ActiveAdmin.register SurveyScore do
 
   member_action :download, method: :get do
     redirect_to resource_path
+  end
+
+  action_item :download_all, only: :index do
+    link_to 'Download Survey Scores', download_all_admin_score_scheme_survey_scores_path(params[:score_scheme_id])
   end
 
   action_item :score, only: :show do
@@ -80,6 +92,12 @@ ActiveAdmin.register SurveyScore do
   end
 
   controller do
+    def download_all
+      score_scheme = ScoreScheme.find(params[:score_scheme_id])
+      send_file score_scheme.download, type: 'text/csv', filename:
+      "#{score_scheme.title.split.join('_')}_survey_scores_#{Time.now.to_i}.csv"
+    end
+
     def score
       survey_score = SurveyScore.find params[:id]
       survey_score.generate_raw_scores

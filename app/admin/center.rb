@@ -11,7 +11,7 @@ ActiveAdmin.register Center do
     redirect_to resource_path
   end
 
-  action_item :download do
+  action_item :download, only: :index do
     link_to 'Download Center Scores', download_admin_score_scheme_centers_path(params[:score_scheme_id])
   end
 

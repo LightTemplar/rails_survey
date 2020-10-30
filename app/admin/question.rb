@@ -5,6 +5,8 @@ ActiveAdmin.register Question do
   actions :all, except: %i[new edit destroy]
   config.per_page = [50, 100, 250, 500]
   config.sort_order = 'id_asc'
+  config.filters = false
+
   index do
     column :id
     column :question_identifier
@@ -39,6 +41,13 @@ ActiveAdmin.register Question do
       row :deleted_at
     end
 
+    h3 'Response Summary Statistics'
+    table_for question.responses.group(:text).count.each do
+      column('Response') { |response, _count| response }
+      column('Count') { |_response, count| count }
+      column('Percentage') { |_response, count| (count / question.responses.size.to_f * 100.0).round(3) }
+    end
+
     h3 'Responses to question'
     table_for question.responses do
       column :id
@@ -58,12 +67,5 @@ ActiveAdmin.register Question do
       column :created_at
       column :updated_at
     end
-  end
-
-  sidebar 'Summary Statistics', only: :show do
-    render partial: 'summary', locals: {
-      responses: question.responses.group(:text).count,
-      total: question.responses.size
-    }
   end
 end

@@ -5,6 +5,7 @@ ActiveAdmin.register Domain do
   navigation_menu :score_scheme
 
   actions :all, except: %i[destroy edit new show]
+  config.filters = false
 
   index do
     column :id

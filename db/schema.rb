@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201030024320) do
+ActiveRecord::Schema.define(version: 20201030140109) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -317,8 +317,10 @@ ActiveRecord::Schema.define(version: 20201030024320) do
     t.text "next_question_neutral_ids"
     t.text "multiple_skip_neutral_ids"
     t.index ["deleted_at"], name: "index_instrument_questions_on_deleted_at"
+    t.index ["display_id"], name: "index_instrument_questions_on_display_id"
     t.index ["identifier"], name: "index_instrument_questions_on_identifier"
     t.index ["instrument_id", "identifier"], name: "index_instrument_questions_on_instrument_id_and_identifier"
+    t.index ["instrument_id"], name: "index_instrument_questions_on_instrument_id"
     t.index ["question_id"], name: "index_instrument_questions_on_question_id"
   end
 
@@ -631,6 +633,7 @@ ActiveRecord::Schema.define(version: 20201030024320) do
     t.string "rank_order"
     t.text "other_text"
     t.index ["deleted_at"], name: "index_responses_on_deleted_at"
+    t.index ["question_id"], name: "index_responses_on_question_id"
     t.index ["question_identifier"], name: "index_responses_on_question_identifier"
     t.index ["survey_uuid"], name: "index_responses_on_survey_uuid"
     t.index ["time_ended"], name: "index_responses_on_time_ended"

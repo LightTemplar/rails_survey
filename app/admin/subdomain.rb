@@ -5,6 +5,7 @@ ActiveAdmin.register Subdomain do
   navigation_menu :domain
 
   actions :all, except: %i[destroy edit new show]
+  config.filters = false
 
   index do
     column :id
