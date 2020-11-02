@@ -87,17 +87,16 @@ class SurveyScore < ApplicationRecord
   end
 
   def save_scores
+    ctr = center
     csv = []
     domains.sort_by { |domain| domain.title.to_i }.each_with_index do |domain, d_index|
-      domain.subdomains.sort_by { |sd| sd.title.to_i }.each_with_index do |subdomain, index|
+      domain.subdomains.sort_by { |sd| sd.title.to_f }.each_with_index do |subdomain, index|
         subdomain.score_units.sort_by { |su| [su.str_title, su.int_title] }.each do |score_unit|
           raw_scores.where(score_unit_id: score_unit.id).each do |raw_score|
-            next if raw_score.value.nil? || raw_score.value.nan?
-
-            csv << [survey.id, identifier, center&.center_type,
-                    center&.administration, center&.region, center&.department,
-                    center&.municipality, domain.title, subdomain.title,
-                    score_unit.title, raw_score.weight(center), raw_score.value,
+            rs = raw_score.value.nil? || raw_score.value.nan? ? '' : raw_score.value
+            csv << [survey.id, identifier, ctr&.center_type, ctr&.administration,
+                    ctr&.region, ctr&.department, ctr&.municipality, domain.title,
+                    subdomain.title, score_unit.title, raw_score.weight(ctr), rs,
                     '', '', '', raw_score.response.nil? ? '' : raw_score.response&.text,
                     raw_score.response.nil? ? '' : raw_score.response&.to_s,
                     raw_score.response.nil? ? '' : raw_score.response&.to_s_es]
@@ -109,19 +108,17 @@ class SurveyScore < ApplicationRecord
         sd_score = subdomain_score.nil? || subdomain_score.nan? ? '' : subdomain_score
         d_score = domain_score.nil? || domain_score.nan? ? '' : domain_score
         c_score = center_score.nil? || center_score.nan? ? '' : center_score
-        next if sd_score.blank? && d_score.blank? && c_score.blank?
 
-        csv << [survey.id, identifier, center&.center_type,
-                center&.administration, center&.region, center&.department,
-                center&.municipality, domain.title, subdomain.title,
-                '', '', '', sd_score, d_score, c_score, '', '', '']
+        csv << [survey.id, identifier, ctr&.center_type, ctr&.administration,
+                ctr&.region, ctr&.department, ctr&.municipality, domain.title,
+                subdomain.title, '', '', '', sd_score, d_score, c_score, '', '', '']
       end
     end
     update_columns(score_data: csv.to_s)
   end
 
   def center
-    score_scheme.centers.find_by(identifier: survey.identifier)
+    score_scheme.centers.find_by(identifier: identifier)
   end
 
   def sanitized_raw_scores

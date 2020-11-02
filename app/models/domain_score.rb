@@ -15,4 +15,6 @@
 class DomainScore < ApplicationRecord
   belongs_to :domain
   belongs_to :survey_score
+
+  validates :domain_id, presence: true, allow_blank: false, uniqueness: { scope: [:survey_score_id] }
 end

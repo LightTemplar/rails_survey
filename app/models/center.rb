@@ -49,18 +49,14 @@ class Center < ApplicationRecord
           score_data = []
           JSON.parse(survey_score.score_data).each { |arr| score_data << arr }
           score_data.each do |row|
-            next if row[12].blank?
-
             sd_scores = subdomain_scores[row[8]]
             sd_scores = [] if sd_scores.nil?
-            sd_scores << row[12]
+            sd_scores << row[12] unless row[12].blank?
             subdomain_scores[row[8]] = sd_scores
-
-            next if row[13].blank?
 
             d_scores = domain_scores[row[7]]
             d_scores = [] if d_scores.nil?
-            d_scores << row[13]
+            d_scores << row[13] unless row[13].blank?
             domain_scores[row[7]] = d_scores
           end
         end
@@ -76,9 +72,9 @@ class Center < ApplicationRecord
             csv << [center.identifier, center.center_type, center.administration,
                     center.region, center.department, center.municipality,
                     survey_ids.join('-'), domain.title, subdomain.title,
-                    subdomain_score.nil? ? '' : subdomain_score.round(2),
-                    domain_score.nil? ? '' : domain_score.round(2),
-                    center_score.nil? ? '' : center_score.round(2)]
+                    subdomain_score.nil? || subdomain_score.nan? ? '' : subdomain_score.round(2),
+                    domain_score.nil? || domain_score.nan? ? '' : domain_score.round(2),
+                    center_score.nil? || center_score.nan? ? '' : center_score.round(2)]
           end
         end
       elsif css.size == 1
@@ -86,7 +82,7 @@ class Center < ApplicationRecord
           score_data = []
           JSON.parse(css[0].score_data).each { |arr| score_data << arr }
           score_data.each do |row|
-            next if row[12].blank? && row[13].blank? && row[14].blank?
+            next if (row[12].blank? && row[13].blank? && row[14].blank?) && !row[9].blank?
 
             csv << [center.identifier, center.center_type, center.administration,
                     center.region, center.department, center.municipality,

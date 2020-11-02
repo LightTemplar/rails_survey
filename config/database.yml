@@ -15,7 +15,7 @@ development:
   # database: pofo_development
   # database: isee
   database: isee_dev
-  pool: 15
+  pool: 30
   # timeout: 5000
 
 # Warning: The database defined as "test" will be erased and

@@ -13,7 +13,7 @@ set :linked_dirs, fetch(:linked_dirs) + %w[files updates]
 set :bundle_binstubs, nil
 # Sikekiq configurations
 set :sidekiq_default_hooks, true
-set :sidekiq_processes, 4
+set :sidekiq_processes, 5
 set :sidekiq_config, 'config/sidekiq.yml'
 # Wheneverize
 # set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }
