@@ -21,7 +21,7 @@ class ScoreUnit < ApplicationRecord
   belongs_to :subdomain
   has_many :score_unit_questions, dependent: :destroy
   has_many :option_scores, through: :score_unit_questions
-  has_many :raw_scores
+  has_many :raw_scores, dependent: :destroy
   delegate :score_scheme, to: :subdomain
 
   acts_as_paranoid

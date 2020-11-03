@@ -35,8 +35,8 @@ class InstrumentPdf
         section.displays.each do |display|
           format_display_text(display.title)
           move_down AFTER_TITLE_MARGIN
-          display.instrument_questions.each do |question|
-            format_question(question)
+          display.instrument_questions.each do |iq|
+            format_question(iq)
             move_down AFTER_QUESTION_MARGIN
           end
         end
@@ -44,32 +44,32 @@ class InstrumentPdf
     end
   end
 
-  def format_question(question)
-    if question.question.question_type == 'INSTRUCTIONS'
-      format_instructions(question.question.instruction&.text) if question.question.instruction
-      format_instructions(question.text)
+  def format_question(iq)
+    if iq.question.question_type == 'INSTRUCTIONS'
+      format_instructions(iq.question.instruction&.text) if iq.question.instruction
+      format_instructions(iq.text)
       return
     end
 
     bounds.move_past_bottom if y < MINIMUM_REMAINING_HEIGHT
     float do
-      format_question_number(question)
+      format_question_number(iq)
     end
 
-    instructions = question.question.instruction&.text
-    after_text_instructions = question.question.after_text_instruction&.text
-    pop_up_instructions = question.question.pop_up_instruction&.text
+    instructions = iq.question.instruction&.text
+    after_text_instructions = iq.question.after_text_instruction&.text
+    pop_up_instructions = iq.question.pop_up_instruction&.text
     bounding_box([bounds.left + QUESTION_TEXT_LEFT_MARGIN, cursor], width: bounds.width - 30) do
       text sanitize_text("<i>#{instructions}</i>") + "\n", inline_format: true if instructions
-      text sanitize_text(question.text), inline_format: true
+      text sanitize_text(iq.text), inline_format: true
       text sanitize_text("** <i>#{pop_up_instructions}</i>") + "\n", inline_format: true if pop_up_instructions
       text sanitize_text("<i>#{after_text_instructions}</i>") + "\n", inline_format: true if after_text_instructions
     end
     move_down QUESTION_TEXT_MARGIN
-    format_choice_instructions(question.question&.option_set&.instruction&.text)
-    format_question_choices(question)
-    pad_after_question(question)
-    format_special_responses(question)
-    format_skip_patterns(question)
+    format_choice_instructions(iq.question&.option_set&.instruction&.text)
+    format_question_choices(iq)
+    pad_after_question(iq)
+    format_special_responses(iq)
+    format_skip_patterns(iq)
   end
 end

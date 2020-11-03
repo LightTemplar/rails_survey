@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201030192314) do
+ActiveRecord::Schema.define(version: 20201103155639) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -116,6 +116,9 @@ ActiveRecord::Schema.define(version: 20201030192314) do
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["instruction_id"], name: "index_critical_responses_on_instruction_id"
+    t.index ["option_identifier"], name: "index_critical_responses_on_option_identifier"
+    t.index ["question_identifier"], name: "index_critical_responses_on_question_identifier"
   end
 
   create_table "device_device_users", id: :serial, force: :cascade do |t|
@@ -190,6 +193,9 @@ ActiveRecord::Schema.define(version: 20201030192314) do
     t.integer "instrument_questions_count"
     t.integer "instrument_position"
     t.index ["deleted_at"], name: "index_displays_on_deleted_at"
+    t.index ["instrument_id"], name: "index_displays_on_instrument_id"
+    t.index ["position"], name: "index_displays_on_position"
+    t.index ["section_id"], name: "index_displays_on_section_id"
   end
 
   create_table "domain_scores", force: :cascade do |t|
@@ -220,6 +226,8 @@ ActiveRecord::Schema.define(version: 20201030192314) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "position"
+    t.index ["position"], name: "index_folders_on_position"
+    t.index ["question_set_id"], name: "index_folders_on_question_set_id"
   end
 
   create_table "follow_up_questions", id: :serial, force: :cascade do |t|
@@ -323,6 +331,8 @@ ActiveRecord::Schema.define(version: 20201030192314) do
     t.index ["identifier"], name: "index_instrument_questions_on_identifier"
     t.index ["instrument_id", "identifier"], name: "index_instrument_questions_on_instrument_id_and_identifier"
     t.index ["instrument_id"], name: "index_instrument_questions_on_instrument_id"
+    t.index ["number_in_instrument"], name: "index_instrument_questions_on_number_in_instrument"
+    t.index ["position"], name: "index_instrument_questions_on_position"
     t.index ["question_id"], name: "index_instrument_questions_on_question_id"
   end
 
@@ -370,6 +380,7 @@ ActiveRecord::Schema.define(version: 20201030192314) do
     t.string "option_indices"
     t.boolean "same_display", default: false
     t.text "replacement_text"
+    t.index ["instrument_question_id"], name: "index_loop_questions_on_instrument_question_id"
   end
 
   create_table "metrics", id: :serial, force: :cascade do |t|
@@ -391,6 +402,8 @@ ActiveRecord::Schema.define(version: 20201030192314) do
     t.datetime "updated_at", null: false
     t.string "value"
     t.string "value_operator"
+    t.index ["instrument_question_id"], name: "index_multiple_skips_on_instrument_question_id"
+    t.index ["option_identifier"], name: "index_multiple_skips_on_option_identifier"
   end
 
   create_table "next_questions", id: :serial, force: :cascade do |t|
@@ -404,6 +417,8 @@ ActiveRecord::Schema.define(version: 20201030192314) do
     t.string "value"
     t.boolean "complete_survey"
     t.string "value_operator"
+    t.index ["instrument_question_id"], name: "index_next_questions_on_instrument_question_id"
+    t.index ["option_identifier"], name: "index_next_questions_on_option_identifier"
   end
 
   create_table "option_in_option_sets", id: :serial, force: :cascade do |t|
@@ -453,6 +468,7 @@ ActiveRecord::Schema.define(version: 20201030192314) do
     t.datetime "deleted_at"
     t.integer "instruction_id"
     t.integer "option_in_option_sets_count", default: 0
+    t.index ["instruction_id"], name: "index_option_sets_on_instruction_id"
     t.index ["title"], name: "index_option_sets_on_title", unique: true
   end
 
@@ -552,8 +568,13 @@ ActiveRecord::Schema.define(version: 20201030192314) do
     t.integer "position"
     t.integer "pop_up_instruction_id"
     t.integer "after_text_instruction_id"
+    t.index ["after_text_instruction_id"], name: "index_questions_on_after_text_instruction_id"
+    t.index ["instruction_id"], name: "index_questions_on_instruction_id"
     t.index ["option_set_id"], name: "index_questions_on_option_set_id"
+    t.index ["pop_up_instruction_id"], name: "index_questions_on_pop_up_instruction_id"
+    t.index ["position"], name: "index_questions_on_position"
     t.index ["question_identifier"], name: "index_questions_on_question_identifier", unique: true
+    t.index ["question_set_id"], name: "index_questions_on_question_set_id"
     t.index ["special_option_set_id"], name: "index_questions_on_special_option_set_id"
   end
 
@@ -728,6 +749,8 @@ ActiveRecord::Schema.define(version: 20201030192314) do
     t.datetime "updated_at"
     t.boolean "section_changed", default: false
     t.integer "instrument_translation_id"
+    t.index ["language"], name: "index_section_translations_on_language"
+    t.index ["section_id"], name: "index_section_translations_on_section_id"
   end
 
   create_table "sections", id: :serial, force: :cascade do |t|
@@ -739,6 +762,8 @@ ActiveRecord::Schema.define(version: 20201030192314) do
     t.integer "position"
     t.index ["deleted_at"], name: "index_sections_on_deleted_at"
     t.index ["instrument_id", "title"], name: "index_sections_on_instrument_id_and_title"
+    t.index ["instrument_id"], name: "index_sections_on_instrument_id"
+    t.index ["position"], name: "index_sections_on_position"
   end
 
   create_table "skip_patterns", id: :serial, force: :cascade do |t|
@@ -883,6 +908,8 @@ ActiveRecord::Schema.define(version: 20201030192314) do
     t.integer "project_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["project_id"], name: "index_user_projects_on_project_id"
+    t.index ["user_id"], name: "index_user_projects_on_user_id"
   end
 
   create_table "user_roles", id: :serial, force: :cascade do |t|
