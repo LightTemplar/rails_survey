@@ -36,8 +36,8 @@ class Domain < ApplicationRecord
     unique_units
   end
 
-  def score(survey_score, center, srs)
-    score_sum = generate_score(distinct_score_units, center, srs)
+  def score(survey_score, srs)
+    score_sum = generate_score(distinct_score_units, srs)
     domain_score = domain_scores.where(survey_score_id: survey_score.id).first
     if domain_score
       domain_score.update_columns(score_sum: score_sum)

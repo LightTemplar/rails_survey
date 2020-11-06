@@ -30,7 +30,7 @@ class Center < ApplicationRecord
   default_scope { order :identifier }
 
   def score(survey_score, score_scheme)
-    generate_score(score_scheme.score_units, survey_score.id, self)
+    generate_score(score_scheme.score_units, survey_score.id)
   end
 
   def self.download(score_scheme)

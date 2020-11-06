@@ -96,7 +96,7 @@ class SurveyScore < ApplicationRecord
             rs = raw_score.value.nil? || raw_score.value.nan? ? '' : raw_score.value
             csv << [survey.id, identifier, ctr&.center_type, ctr&.administration,
                     ctr&.region, ctr&.department, ctr&.municipality, domain.title,
-                    subdomain.title, score_unit.title, raw_score.weight(ctr), rs,
+                    subdomain.title, score_unit.title, raw_score.weight, rs,
                     '', '', '', raw_score.response.nil? ? '' : raw_score.response&.text,
                     raw_score.response.nil? ? '' : raw_score.response&.to_s,
                     raw_score.response.nil? ? '' : raw_score.response&.to_s_es]
@@ -125,7 +125,7 @@ class SurveyScore < ApplicationRecord
     raw_scores.where.not(value: nil)
   end
 
-  def score(ctr, srs)
-    update_columns(score_sum: generate_score(score_scheme.distinct_score_units, ctr, srs))
+  def score(srs)
+    update_columns(score_sum: generate_score(score_scheme.distinct_score_units, srs))
   end
 end

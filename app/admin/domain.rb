@@ -14,6 +14,9 @@ ActiveAdmin.register Domain do
     column 'Subdomains', :subdomains do |domain|
       link_to domain.subdomains.size.to_s, admin_domain_subdomains_path(domain.id)
     end
+    column 'Score Units', :score_units do |domain|
+      domain.score_units.size.to_s
+    end
   end
 
   controller do

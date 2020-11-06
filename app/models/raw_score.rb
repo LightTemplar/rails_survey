@@ -32,28 +32,18 @@ class RawScore < ApplicationRecord
   end
 
   def identifier
-    survey_score.survey.identifier
+    survey_score.identifier
   end
 
-  def weight(center)
-    return score_unit.weight if center.nil?
+  def weight
+    return nil if score_unit.nil? || score_unit.weight.nil?
 
-    if score_unit.score_unit_questions.first.instrument_question.identifier == 'grp3'
-      if center.center_type == 'CDA'
-        9
-      elsif center.center_type == 'CDI' || center.center_type == 'CBI'
-        3
-      else
-        score_unit.weight
-      end
-    else
-      score_unit.weight
-    end
+    score_unit.weight
   end
 
-  def weighted_score(center)
-    return nil unless value
+  def weighted_score
+    return nil if value.nil?
 
-    value * weight(center)
+    value * weight
   end
 end

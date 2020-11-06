@@ -6,14 +6,13 @@ class ScoreCacheWorker
   def perform(score_scheme_id, survey_score_id)
     score_scheme = ScoreScheme.find score_scheme_id
     survey_score = SurveyScore.find survey_score_id
-    center = survey_score.center
     srs = survey_score.sanitized_raw_scores
-    survey_score.score(center, srs)
+    survey_score.score(srs)
     score_scheme.domains.each do |domain|
-      domain.score(survey_score, center, srs)
+      domain.score(survey_score, srs)
     end
     score_scheme.subdomains.each do |subdomain|
-      subdomain.score(survey_score, center, srs)
+      subdomain.score(survey_score, srs)
     end
     survey_score.save_scores
   end
