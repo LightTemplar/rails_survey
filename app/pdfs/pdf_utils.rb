@@ -1,9 +1,7 @@
 # frozen_string_literal: false
 
 module PdfUtils
-  QUESTION_TEXT_LEFT_MARGIN = 35
-  QUESTION_LEFT_MARGIN = 40
-  QUESTION_NUMBER_MARGIN = 5
+  QUESTION_LEFT_MARGIN = 20
   AFTER_INSTRUCTIONS_MARGIN = 5
   QUESTION_TEXT_MARGIN = 5
   CHOICE_TEXT_MARGIN = 2
@@ -47,9 +45,8 @@ module PdfUtils
     end
   end
 
-  def format_question_number(question)
-    text "#{question.number_in_instrument})", size: FONT_SIZE + 6, style: :bold
-    text question.identifier, size: FONT_SIZE - 2, style: :bold
+  def format_question_number(iq)
+    text "<b>#{iq.number_in_instrument})</b> <i>#{iq.identifier}</i>", inline_format: true
   end
 
   def format_instructions(instructions)
@@ -93,7 +90,7 @@ module PdfUtils
 
   def format_choice_instructions(str)
     indent(QUESTION_LEFT_MARGIN) do
-      pad(2) { text sanitize_text(str), inline_format: true }
+      pad(2) { text sanitize_text(str), color: '808080', inline_format: true }
     end
     move_down CHOICE_TEXT_MARGIN
   end
@@ -291,7 +288,7 @@ module PdfUtils
     if question.question_type == 'FREE_RESPONSE' && question.question.pdf_response_height
       move_down question.question.pdf_response_height
     else
-      move_down 50
+      move_down 30
     end
   end
 

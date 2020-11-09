@@ -56,21 +56,19 @@ class TranslationPdf
       return
     end
 
-    bounds.move_past_bottom if y < MINIMUM_REMAINING_HEIGHT
-    float do
-      format_question_number(question)
-    end
+    format_question_number(question)
 
     instructions = instruction_text(question.question.instruction)
     after_text_instructions = instruction_text(question.question.after_text_instruction)
     pop_up_instructions = instruction_text(question.question.pop_up_instruction)
-    bounding_box([bounds.left + QUESTION_TEXT_LEFT_MARGIN, cursor], width: bounds.width - 30) do
-      text sanitize_text("<i>#{instructions}</i>") + "\n", inline_format: true if instructions
-      text sanitize_text(question_text(question)), inline_format: true
-      text sanitize_text("** <i>#{pop_up_instructions}</i>") + "\n", inline_format: true if pop_up_instructions
-      text sanitize_text("<i>#{after_text_instructions}</i>") + "\n", inline_format: true if after_text_instructions
-    end
+
+    text sanitize_text("<i>#{instructions}</i>"), color: '808080', inline_format: true if instructions
+    text sanitize_text(question_text(question)),  inline_format: true
+    text sanitize_text("<i><sup>*</sup>#{pop_up_instructions}</i>"), color: '808080', inline_format: true if pop_up_instructions
+    text sanitize_text("<i>#{after_text_instructions}</i>"), color: '808080', inline_format: true if after_text_instructions
+
     move_down QUESTION_TEXT_MARGIN
+
     format_choice_instructions(instruction_text(question.question&.option_set&.instruction))
     format_question_choices(question, @language)
     pad_after_question(question)
