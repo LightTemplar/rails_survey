@@ -12,8 +12,20 @@ ActiveAdmin.register ScoreScheme do
     redirect_to resource_path
   end
 
+  member_action :filter, method: :get do
+    redirect_to resource_path
+  end
+
+  member_action :filter_scores, method: :post do
+    redirect_to resource_path
+  end
+
   action_item :score, only: :show do
     link_to 'Generate Scores', score_admin_project_score_scheme_path(params[:project_id], params[:id])
+  end
+
+  action_item :filter, only: :show do
+    link_to 'Filter Scores', filter_admin_project_score_scheme_path(params[:project_id], params[:id])
   end
 
   sidebar 'Score Scheme Associations', only: :show do
@@ -39,6 +51,18 @@ ActiveAdmin.register ScoreScheme do
     def score
       score_scheme = ScoreScheme.find(params[:id])
       score_scheme.score
+      redirect_to admin_project_score_scheme_path(params[:project_id], params[:id])
+    end
+
+    def filter; end
+
+    def filter_scores
+      weight = params[:filter][:score_unit_weight].to_f
+      operator = params[:filter][:operator]
+      score_scheme = ScoreScheme.find(params[:id])
+      score_scheme.survey_scores.each do |survey_score|
+        ScoreDataGeneratorWorker.perform_async(survey_score.id, operator, weight)
+      end
       redirect_to admin_project_score_scheme_path(params[:project_id], params[:id])
     end
   end

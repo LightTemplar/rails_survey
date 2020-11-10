@@ -23,6 +23,7 @@ class ScoreScheme < ApplicationRecord
   has_many :score_unit_questions, through: :score_units
   has_many :option_scores, through: :score_unit_questions
   has_many :survey_scores, -> { order 'identifier' }
+  has_many :score_data, through: :survey_scores
   has_many :score_scheme_centers, dependent: :destroy
   has_many :centers, through: :score_scheme_centers
 
@@ -169,23 +170,39 @@ class ScoreScheme < ApplicationRecord
     end
   end
 
-  def download
-    file = Tempfile.new(title.to_s)
-    CSV.open(file, 'w') do |csv|
-      csv << %w[survey_id center_id center_type center_admin region department
-                municipality domain subdomain score_unit score_unit_weight
-                score_unit_score subdomain_score domain_score center_score
-                response response_label_en response_label_es]
-      survey_scores.sort_by { |ss| ss.identifier.to_i }.each do |survey_score|
-        next if survey_score.score_data.nil?
+  def download_headers
+    %w[survey_id center_id center_type center_admin region department municipality
+       domain subdomain score_unit score_unit_weight score_unit_score subdomain_score
+       domain_score center_score response response_label_en response_label_es]
+  end
 
-        data = []
-        JSON.parse(survey_score.score_data).each { |arr| data << arr }
-        data.each do |row|
-          csv << row
+  def download_scores
+    weights = score_data.pluck(:weight).uniq
+    files = {}
+    weights.each do |weight|
+      filename = "#{title.split.join('_')}_#{weight}.csv"
+      file = Tempfile.new(filename)
+      CSV.open(file, 'w') do |csv|
+        csv << download_headers
+        score_data.where(weight: weight).each do |score_datum|
+          next if score_datum.content.nil?
+
+          data = []
+          JSON.parse(score_datum.content).each { |arr| data << arr }
+          data.each do |row|
+            csv << row
+          end
         end
       end
+      files[filename] = file
     end
-    file
+
+    zip_file = Tempfile.new("#{title}_#{Time.now.to_i}.zip")
+    Zip::File.open(zip_file, Zip::File::CREATE) do |zipfile|
+      files.each do |filename, file|
+        zipfile.add(filename, file.path)
+      end
+    end
+    zip_file
   end
 end

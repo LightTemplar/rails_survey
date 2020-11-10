@@ -10,7 +10,6 @@ ActiveAdmin.register SurveyScore do
   config.filters = true
   filter :survey_id
   filter :identifier
-  filter :score_sum
 
   collection_action :download_all, method: :get do
     redirect_to resource_path
@@ -24,30 +23,34 @@ ActiveAdmin.register SurveyScore do
     redirect_to resource_path
   end
 
+  member_action :filter, method: :get do
+    redirect_to resource_path
+  end
+
+  member_action :filter_scores, method: :post do
+    redirect_to resource_path
+  end
+
   action_item :download_all, only: :index do
     link_to 'Download Survey Scores', download_all_admin_score_scheme_survey_scores_path(params[:score_scheme_id])
   end
 
   action_item :score, only: :show do
-    link_to 'Score', score_admin_score_scheme_survey_score_path(params[:score_scheme_id], params[:id])
+    link_to 'Generate Scores', score_admin_score_scheme_survey_score_path(params[:score_scheme_id], params[:id])
+  end
+
+  action_item :filter, only: :show do
+    link_to 'Filter Scores', filter_admin_score_scheme_survey_score_path(params[:score_scheme_id], params[:id])
   end
 
   action_item :download, only: :show do
     link_to 'Download', download_admin_score_scheme_survey_score_path(params[:score_scheme_id], params[:id])
   end
 
-  sidebar 'Survey Score Associations', only: :show do
-    ul do
-      li link_to 'Domain Scores', admin_survey_score_domain_scores_path(params[:id])
-      li link_to 'Subdomain Scores', admin_survey_score_subdomain_scores_path(params[:id])
-    end
-  end
-
   index do
     column :id
     column :survey
     column 'Identifier', :identifier
-    column 'Score', :score_sum
     actions
   end
 
@@ -57,11 +60,18 @@ ActiveAdmin.register SurveyScore do
       row :survey
       row :score_scheme
       row :identifier
-      row :score_sum
       row :score_data do
-        unless survey_score.score_data.nil?
+        survey_score.score_data.each do |score_datum|
+          next if score_datum.content.nil?
+
+          table_for score_datum do
+            column :operator
+            column :weight
+            column :score_sum
+          end
+
           data = []
-          JSON.parse(survey_score.score_data).each { |arr| data << arr }
+          JSON.parse(score_datum.content).each { |arr| data << arr }
           table_for data do
             column 'domain' do |csv_row|
               csv_row[7]
@@ -96,8 +106,8 @@ ActiveAdmin.register SurveyScore do
   controller do
     def download_all
       score_scheme = ScoreScheme.find(params[:score_scheme_id])
-      send_file score_scheme.download, type: 'text/csv', filename:
-      "#{score_scheme.title.split.join('_')}_survey_scores_#{Time.now.to_i}.csv"
+      send_file score_scheme.download_scores, type: 'application/zip',
+                                              filename: "#{score_scheme.title.split.join('_')}_survey_scores_#{Time.now.to_i}.zip"
     end
 
     def score
@@ -110,8 +120,18 @@ ActiveAdmin.register SurveyScore do
       survey_score = SurveyScore.find params[:id]
       filename = survey_score.identifier
       filename = survey_score.title if filename.blank?
-      send_file survey_score.download, type: 'text/csv', filename:
-      "#{filename}_#{Time.now.to_i}.csv"
+      send_file survey_score.download_scores, type: 'application/zip',
+                                              filename: "#{filename}_#{Time.now.to_i}.zip"
+    end
+
+    def filter; end
+
+    def filter_scores
+      weight = params[:filter][:score_unit_weight].to_f
+      operator = params[:filter][:operator]
+      survey_score = SurveyScore.find params[:id]
+      ScoreDataGeneratorWorker.perform_async(survey_score.id, operator, weight)
+      redirect_to admin_score_scheme_survey_score_path(params[:score_scheme_id], params[:id])
     end
   end
 end

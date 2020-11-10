@@ -19,7 +19,7 @@ class Subdomain < ApplicationRecord
   belongs_to :domain
   has_many :score_units, -> { order 'score_units.title' }, dependent: :destroy
   has_many :raw_scores, through: :score_units
-  has_many :subdomain_scores
+  has_many :subdomain_scores, dependent: :destroy
   delegate :score_scheme, to: :domain
 
   acts_as_paranoid
@@ -28,18 +28,19 @@ class Subdomain < ApplicationRecord
 
   default_scope { order(:title) }
 
-  def score(survey_score, srs)
-    score_sum = generate_score(score_units, srs)
-    subdomain_score = subdomain_scores.where(survey_score_id: survey_score.id).first
-    if subdomain_score
-      subdomain_score.update_columns(score_sum: score_sum)
-    else
-      SubdomainScore.create(subdomain_id: id, survey_score_id: survey_score.id, score_sum: score_sum)
-    end
-    score_sum
-  end
-
   def title_name
     "#{title} #{name}"
+  end
+
+  def default_subdomain_score(default_score_datum)
+    subdomain_score = subdomain_scores.where(score_datum_id: default_score_datum.id).first
+    subdomain_score ||= SubdomainScore.create(subdomain_id: id, score_datum_id: default_score_datum.id)
+  end
+
+  def score(survey_score, srs)
+    score_sum = generate_score(score_units, srs)
+    subdomain_score = default_subdomain_score(survey_score.default_score_datum)
+    subdomain_score.update_columns(score_sum: score_sum)
+    score_sum
   end
 end

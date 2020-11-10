@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201103155639) do
+ActiveRecord::Schema.define(version: 20201110203843) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -90,7 +90,6 @@ ActiveRecord::Schema.define(version: 20201103155639) do
     t.string "region"
     t.string "department"
     t.string "municipality"
-    t.text "score_data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["identifier"], name: "index_centers_on_identifier"
@@ -200,12 +199,12 @@ ActiveRecord::Schema.define(version: 20201103155639) do
 
   create_table "domain_scores", force: :cascade do |t|
     t.integer "domain_id"
-    t.integer "survey_score_id"
     t.float "score_sum"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "score_datum_id"
     t.index ["domain_id"], name: "index_domain_scores_on_domain_id"
-    t.index ["survey_score_id"], name: "index_domain_scores_on_survey_score_id"
+    t.index ["score_datum_id"], name: "index_domain_scores_on_score_datum_id"
   end
 
   create_table "domains", id: :serial, force: :cascade do |t|
@@ -695,6 +694,18 @@ ActiveRecord::Schema.define(version: 20201103155639) do
     t.time "deleted_at"
   end
 
+  create_table "score_data", force: :cascade do |t|
+    t.text "content"
+    t.integer "survey_score_id"
+    t.float "weight"
+    t.string "operator"
+    t.float "score_sum"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["survey_score_id", "operator", "weight"], name: "index_score_data_on_survey_score_id_and_operator_and_weight", unique: true
+    t.index ["survey_score_id"], name: "index_score_data_on_survey_score_id"
+  end
+
   create_table "score_scheme_centers", force: :cascade do |t|
     t.integer "center_id"
     t.integer "score_scheme_id"
@@ -794,12 +805,12 @@ ActiveRecord::Schema.define(version: 20201103155639) do
 
   create_table "subdomain_scores", force: :cascade do |t|
     t.integer "subdomain_id"
-    t.integer "survey_score_id"
     t.float "score_sum"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "score_datum_id"
+    t.index ["score_datum_id"], name: "index_subdomain_scores_on_score_datum_id"
     t.index ["subdomain_id"], name: "index_subdomain_scores_on_subdomain_id"
-    t.index ["survey_score_id"], name: "index_subdomain_scores_on_survey_score_id"
   end
 
   create_table "subdomains", id: :serial, force: :cascade do |t|
@@ -839,7 +850,6 @@ ActiveRecord::Schema.define(version: 20201103155639) do
   create_table "survey_scores", id: :serial, force: :cascade do |t|
     t.integer "survey_id"
     t.integer "score_scheme_id"
-    t.float "score_sum"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string "uuid"
@@ -847,7 +857,6 @@ ActiveRecord::Schema.define(version: 20201103155639) do
     t.string "device_uuid"
     t.string "device_label"
     t.datetime "deleted_at"
-    t.text "score_data"
     t.string "identifier"
     t.index ["identifier"], name: "index_survey_scores_on_identifier"
     t.index ["survey_id", "score_scheme_id"], name: "index_survey_scores_on_survey_id_and_score_scheme_id"

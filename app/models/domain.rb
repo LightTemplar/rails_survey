@@ -36,14 +36,15 @@ class Domain < ApplicationRecord
     unique_units
   end
 
+  def default_domain_score(default_score_datum)
+    domain_score = domain_scores.where(score_datum_id: default_score_datum.id).first
+    domain_score ||= DomainScore.create(domain_id: id, score_datum_id: default_score_datum.id)
+  end
+
   def score(survey_score, srs)
     score_sum = generate_score(distinct_score_units, srs)
-    domain_score = domain_scores.where(survey_score_id: survey_score.id).first
-    if domain_score
-      domain_score.update_columns(score_sum: score_sum)
-    else
-      DomainScore.create(domain_id: id, survey_score_id: survey_score.id, score_sum: score_sum)
-    end
+    domain_score = default_domain_score(survey_score.default_score_datum)
+    domain_score.update_columns(score_sum: score_sum)
     score_sum
   end
 

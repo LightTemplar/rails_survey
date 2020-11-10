@@ -12,7 +12,7 @@ ActiveAdmin.register Center do
   end
 
   action_item :download, only: :index do
-    link_to 'Download Center Scores', download_admin_score_scheme_centers_path(params[:score_scheme_id])
+    link_to 'Download', download_admin_score_scheme_centers_path(params[:score_scheme_id])
   end
 
   index do
@@ -32,8 +32,8 @@ ActiveAdmin.register Center do
   controller do
     def download
       score_scheme = ScoreScheme.find(params[:score_scheme_id])
-      send_file Center.download(score_scheme), type: 'text/csv', filename:
-      "#{score_scheme.title.split.join('_')}_center_scores_#{Time.now.to_i}.csv"
+      send_file Center.download(score_scheme), type: 'application/zip',
+                                               filename: "#{score_scheme.title.split.join('_')}_center_scores_#{Time.now.to_i}.zip"
     end
   end
 end
