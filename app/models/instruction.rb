@@ -23,9 +23,6 @@ class Instruction < ApplicationRecord
   acts_as_paranoid
   has_paper_trail
 
-  after_touch :touch_instrument_questions, :touch_display_instructions, :touch_instrument
-  after_commit :touch_instrument_questions, :touch_display_instructions, :touch_instrument
-
   validates :title, presence: true, allow_blank: false, uniqueness: true
 
   def translated_text(language, instrument)
@@ -37,19 +34,5 @@ class Instruction < ApplicationRecord
 
   def instruments
     instrument_questions.map(&:instrument) | display_instructions.map(&:instrument)
-  end
-
-  private
-
-  def touch_instrument_questions
-    instrument_questions.update_all(updated_at: Time.now)
-  end
-
-  def touch_display_instructions
-    display_instructions.update_all(updated_at: Time.now)
-  end
-
-  def touch_instrument
-    instruments.map(&:touch)
   end
 end

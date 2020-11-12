@@ -36,6 +36,7 @@ class InstrumentQuestion < ApplicationRecord
   has_many :display_instructions, dependent: :destroy
   has_many :loop_questions, dependent: :destroy
   has_many :critical_responses, through: :question
+  has_many :red_flags, dependent: :destroy
 
   acts_as_paranoid
   has_paper_trail

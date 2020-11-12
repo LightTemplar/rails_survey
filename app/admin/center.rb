@@ -11,6 +11,10 @@ ActiveAdmin.register Center do
     redirect_to resource_path
   end
 
+  member_action :download_red_flags, method: :get do
+    redirect_to resource_path
+  end
+
   action_item :download, only: :index do
     link_to 'Download', download_admin_score_scheme_centers_path(params[:score_scheme_id])
   end
@@ -26,6 +30,9 @@ ActiveAdmin.register Center do
     column :region
     column :department
     column :municipality
+    column 'Red Flags' do |center|
+      link_to 'Download', download_red_flags_admin_score_scheme_center_path(params[:score_scheme_id], center.id)
+    end
     actions
   end
 
@@ -34,6 +41,13 @@ ActiveAdmin.register Center do
       score_scheme = ScoreScheme.find(params[:score_scheme_id])
       send_file Center.download(score_scheme), type: 'application/zip',
                                                filename: "#{score_scheme.title.split.join('_')}_center_scores_#{Time.now.to_i}.zip"
+    end
+
+    def download_red_flags
+      score_scheme = ScoreScheme.find(params[:score_scheme_id])
+      center = Center.find params[:id]
+      send_file center.red_flags(score_scheme), type: 'text/csv',
+                                                filename: "#{center.identifier}_red_flags_#{Time.now.to_i}.csv"
     end
   end
 end

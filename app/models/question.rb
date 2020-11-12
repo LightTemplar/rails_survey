@@ -42,6 +42,7 @@ class Question < ApplicationRecord
   belongs_to :pop_up_instruction, class_name: 'Instruction'
   belongs_to :after_text_instruction, class_name: 'Instruction'
 
+  has_many :option_in_option_sets, through: :option_set
   has_many :options, through: :option_set
   has_many :option_translations, through: :options, source: :translations
   has_many :special_options, through: :special_option_set, source: :options

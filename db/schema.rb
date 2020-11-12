@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201110203843) do
+ActiveRecord::Schema.define(version: 20201112155640) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -69,6 +69,7 @@ ActiveRecord::Schema.define(version: 20201110203843) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer "device_user_id"
+    t.index ["device_user_id"], name: "index_api_keys_on_device_user_id"
   end
 
   create_table "back_translations", id: :serial, force: :cascade do |t|
@@ -106,6 +107,7 @@ ActiveRecord::Schema.define(version: 20201110203843) do
     t.text "option_ids"
     t.text "values"
     t.text "value_operators"
+    t.index ["instrument_question_id"], name: "index_condition_skips_on_instrument_question_id"
   end
 
   create_table "critical_responses", id: :serial, force: :cascade do |t|
@@ -153,6 +155,7 @@ ActiveRecord::Schema.define(version: 20201110203843) do
     t.boolean "active", default: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["username"], name: "index_device_users_on_username"
   end
 
   create_table "devices", id: :serial, force: :cascade do |t|
@@ -306,6 +309,7 @@ ActiveRecord::Schema.define(version: 20201110203843) do
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_instructions_on_deleted_at"
+    t.index ["title"], name: "index_instructions_on_title", unique: true
   end
 
   create_table "instrument_questions", id: :serial, force: :cascade do |t|
@@ -616,6 +620,18 @@ ActiveRecord::Schema.define(version: 20201110203843) do
     t.index ["survey_score_id"], name: "index_raw_scores_on_survey_score_id"
   end
 
+  create_table "red_flags", force: :cascade do |t|
+    t.integer "instrument_question_id"
+    t.integer "instruction_id"
+    t.string "option_identifier"
+    t.boolean "selected", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["instruction_id"], name: "index_red_flags_on_instruction_id"
+    t.index ["instrument_question_id", "instruction_id", "option_identifier"], name: "instrument_question_instruction_option", unique: true
+    t.index ["instrument_question_id"], name: "index_red_flags_on_instrument_question_id"
+  end
+
   create_table "response_exports", id: :serial, force: :cascade do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -673,6 +689,7 @@ ActiveRecord::Schema.define(version: 20201110203843) do
     t.string "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["name"], name: "index_roles_on_name"
   end
 
   create_table "rosters", id: :serial, force: :cascade do |t|
@@ -926,6 +943,8 @@ ActiveRecord::Schema.define(version: 20201110203843) do
     t.integer "role_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["role_id"], name: "index_user_roles_on_role_id"
+    t.index ["user_id"], name: "index_user_roles_on_user_id"
   end
 
   create_table "users", id: :serial, force: :cascade do |t|

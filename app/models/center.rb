@@ -18,6 +18,7 @@
 
 class Center < ApplicationRecord
   include Scoreable
+  include Sanitizer
   has_many :score_scheme_centers, dependent: :destroy
   has_many :score_schemes, through: :score_scheme_centers
   has_many :survey_scores, foreign_key: :identifier, primary_key: :identifier
@@ -112,5 +113,22 @@ class Center < ApplicationRecord
       end
     end
     zip_file
+  end
+
+  def red_flags(score_scheme)
+    file = Tempfile.new(identifier)
+    CSV.open(file, 'w') do |row|
+      row << %w[center_id survey_id question_id response description]
+      survey_scores.where(score_scheme_id: score_scheme.id).each do |survey_score|
+        survey_score.survey.responses.each do |response|
+          next unless response.is_red_flag?
+
+          row << [identifier, survey_score.survey.id, response.question_identifier,
+                  full_sanitizer.sanitize(response.red_flag_response).strip,
+                  full_sanitizer.sanitize(response.red_flag_descriptions).strip]
+        end
+      end
+    end
+    file
   end
 end

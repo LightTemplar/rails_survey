@@ -31,6 +31,7 @@ Rails.application.routes.draw do
             resources :multiple_skips
             resources :loop_questions
             resources :condition_skips
+            resources :red_flags
             collection do
               get :all
             end
