@@ -19,7 +19,6 @@
 #  completion_rate           :string
 #  device_label              :string
 #  deleted_at                :datetime
-#  roster_uuid               :string
 #  language                  :string
 #  skipped_questions         :text
 #  completed_responses_count :integer
@@ -219,7 +218,7 @@ class Survey < ActiveRecord::Base
         array = instrument.wide_headers
         Hash[array.map.with_index.to_a]
       end
-    row = [id, uuid, device.identifier, device_label || device.label, latitude, longitude,
+    row = [id, uuid, device&.identifier, device_label || device.label, latitude, longitude,
            instrument_id, instrument_version_number, instrument_title, start_time, end_time, survey_duration]
 
     metadata&.each do |k, v|

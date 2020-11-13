@@ -1,20 +1,22 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: instrument_questions
 #
-#  id                   :integer          not null, primary key
-#  question_id          :integer
-#  instrument_id        :integer
-#  number_in_instrument :integer
-#  display_id           :integer
-#  created_at           :datetime
-#  updated_at           :datetime
-#  identifier           :string
-#  deleted_at           :datetime
-#  table_identifier     :string
-#  loop_questions_count :integer          default(0)
+#  id                       :integer          not null, primary key
+#  question_id              :integer
+#  instrument_id            :integer
+#  number_in_instrument     :integer
+#  display_id               :integer
+#  created_at               :datetime
+#  updated_at               :datetime
+#  identifier               :string
+#  deleted_at               :datetime
+#  table_identifier         :string
+#  loop_questions_count     :integer          default(0)
+#  carry_forward_identifier :string
+#  position                 :integer
+#  skip_operation           :string
 #
 
 class InstrumentQuestion < ActiveRecord::Base

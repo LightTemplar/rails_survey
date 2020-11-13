@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: next_questions
@@ -14,6 +13,7 @@
 #  deleted_at               :datetime
 #  value                    :string
 #  complete_survey          :boolean
+#  value_operator           :string
 #
 
 class NextQuestion < ActiveRecord::Base

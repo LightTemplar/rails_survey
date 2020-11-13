@@ -12,6 +12,7 @@
 #  deleted_at                 :datetime
 #  section_id                 :integer
 #  instrument_questions_count :integer
+#  instrument_position        :integer
 #
 
 class Display < ActiveRecord::Base

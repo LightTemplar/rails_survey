@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: option_in_option_sets
@@ -12,7 +11,9 @@
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #  special            :boolean          default(FALSE)
-#  is_exclusive       :boolean          default(FALSE)
+#  instruction_id     :integer
+#  allow_text_entry   :boolean          default(FALSE)
+#  exclusion_ids      :text
 #
 
 class OptionInOptionSet < ActiveRecord::Base
