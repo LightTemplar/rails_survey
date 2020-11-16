@@ -25,7 +25,6 @@
 #
 
 class Survey < ActiveRecord::Base
-  include RedisJobTracker
   belongs_to :instrument
   belongs_to :device
   belongs_to :roster, foreign_key: :roster_uuid, primary_key: :uuid
@@ -33,13 +32,14 @@ class Survey < ActiveRecord::Base
   has_many :responses, foreign_key: :survey_uuid, primary_key: :uuid, dependent: :destroy
   has_many :centralized_scores, class_name: 'Score', foreign_key: :survey_id, dependent: :destroy
   has_many :distributed_scores, class_name: 'Score', foreign_key: :survey_uuid, dependent: :destroy
+  has_one :survey_export
+
   acts_as_paranoid
   has_paper_trail on: %i[update destroy]
   delegate :project, to: :instrument
   validates :device_id, presence: true, allow_blank: false
   validates :uuid, presence: true, allow_blank: false
   validates :instrument_id, presence: true, allow_blank: false
-  validates :instrument_version_number, presence: true, allow_blank: false
   paginates_per 50
   after_create :calculate_percentage
   after_commit :schedule_export, if: proc { |survey| survey.instrument.auto_export_responses }
@@ -179,15 +179,16 @@ class Survey < ActiveRecord::Base
   end
 
   def write_short_row
-    validator = validation_identifier
+    rows = []
     responses.each do |response|
-      csv = Rails.cache.fetch("w_s_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 30.minutes) do
-        [validator, id, response.question_identifier, sanitize(question_by_identifier(response.question_identifier).try(:text)), response.text, option_labels(response), response.special_response, response.other_response]
+      row = Rails.cache.fetch("w_s_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 30.minutes) do
+        [identifier, id, response.question_identifier, sanitize(question_by_identifier(response.question_identifier).try(:text)), response.text, option_labels(response),
+         response.special_response, response.other_response]
       end
-      push_to_redis("short-row-#{id}-#{instrument.response_export.id}-#{response.id}",
-                    "short-keys-#{instrument.id}-#{instrument.response_export.id}", csv)
+      row.map! { |item| item || '' }
+      rows << row
     end
-    decrement_export_count("#{instrument.response_export.id}_short")
+    survey_export.update(short: rows.to_s, last_response_at: responses.pluck(:updated_at).max)
   end
 
   def validation_identifier
@@ -218,8 +219,9 @@ class Survey < ActiveRecord::Base
         array = instrument.wide_headers
         Hash[array.map.with_index.to_a]
       end
-    row = [id, uuid, device&.identifier, device_label || device.label, latitude, longitude,
-           instrument_id, instrument_version_number, instrument_title, start_time, end_time, survey_duration]
+    row = [id, uuid, device&.identifier, device_label || device.label, latitude,
+           longitude, instrument_id, instrument_version_number, instrument_title,
+           start_time&.to_s, end_time&.to_s, survey_duration]
 
     metadata&.each do |k, v|
       row[headers[k]] = v
@@ -243,9 +245,9 @@ class Survey < ActiveRecord::Base
       question_text_index = headers["q_#{response.question_identifier}_text"]
       row[question_text_index] = sanitize(question_by_identifier(response.question_identifier).try(:text)) if question_text_index
       start_time_index = headers["q_#{response.question_identifier}_start_time"]
-      row[start_time_index] = response.time_started if start_time_index
+      row[start_time_index] = response.time_started&.to_s if start_time_index
       end_time_index = headers["q_#{response.question_identifier}_end_time"]
-      row[end_time_index] = response.time_ended if end_time_index
+      row[end_time_index] = response.time_ended&.to_s if end_time_index
     end
     device_user_id_index = headers['device_user_id']
     device_user_username_index = headers['device_user_username']
@@ -256,9 +258,8 @@ class Survey < ActiveRecord::Base
       row[device_user_id_index] = device_user_ids.join(',')
       row[device_user_username_index] = DeviceUser.find(device_user_ids).map(&:username).uniq.join(',')
     end
-    push_to_redis("wide-row-#{id}-#{instrument.response_export.id}-survey-#{id}",
-                  "wide-keys-#{instrument_id}-#{instrument.response_export.id}", row)
-    decrement_export_count("#{instrument.response_export.id}_wide")
+    row.map! { |item| item || '' }
+    survey_export.update(wide: row.to_s, last_response_at: responses.pluck(:updated_at).max)
   end
 
   def write_long_row
@@ -266,6 +267,7 @@ class Survey < ActiveRecord::Base
       array = instrument.long_headers
       Hash[array.map.with_index.to_a]
     end
+    csv = []
     responses.each do |response|
       row = Rails.cache.fetch("w_l_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}
         -#{response.updated_at}", expires_in: 30.minutes) do
@@ -275,23 +277,17 @@ class Survey < ActiveRecord::Base
          question_by_identifier(response.question_identifier).try(:question_type),
          sanitize(question_by_identifier(response.question_identifier).try(:text)),
          response.text, option_labels(response), response.special_response,
-         response.other_response, response.time_started, response.time_ended,
+         response.other_response, response.time_started&.to_s, response.time_ended&.to_s,
          response.device_user.try(:id), response.device_user.try(:username),
-         start_time, end_time, survey_duration]
+         start_time&.to_s, end_time&.to_s, survey_duration]
       end
       metadata&.each do |k, v|
         row[headers[k]] = v if headers[k]
       end
-      push_to_redis("long-row-#{id}-#{instrument.response_export.id}-#{response.id}",
-                    "long-keys-#{instrument_id}-#{instrument.response_export.id}", row)
+      row.map! { |item| item || '' }
+      csv << row
     end
-    decrement_export_count("#{instrument.response_export.id}_long")
-  end
-
-  def push_to_redis(key_one, key_two, data)
-    $redis.del key_one
-    $redis.rpush key_one, data
-    $redis.rpush key_two, key_one
+    survey_export.update(long: csv.to_s, last_response_at: responses.pluck(:updated_at).max)
   end
 
   def score

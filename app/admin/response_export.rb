@@ -1,7 +1,6 @@
 ActiveAdmin.register ResponseExport do
   belongs_to :project
-  permit_params :project_id, :instrument_id, :instrument_versions,
-  :long_done, :wide_done, :short_done, :completion
+  permit_params :project_id, :instrument_id, :instrument_versions, :completion
   actions :all, except: %i[new edit]
 
   collection_action :export_surveys, method: :get do
@@ -60,7 +59,6 @@ ActiveAdmin.register ResponseExport do
   end
 
   controller do
-
     def long_download
       export = ResponseExport.find_by_id(params[:id])
       send_file export.export_file('long'), type: 'text/csv', filename:
@@ -82,12 +80,9 @@ ActiveAdmin.register ResponseExport do
     def export_surveys
       project = Project.find(params[:project_id])
       project.instruments.each do |instrument|
-        if instrument.surveys.size > 0
-          instrument.export_surveys
-        end
+        instrument.export_surveys if instrument.surveys.size > 0
       end
       redirect_to admin_project_response_exports_path(params[:project_id])
     end
-
   end
 end

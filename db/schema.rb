@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201113145109) do
+ActiveRecord::Schema.define(version: 20201116193614) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -586,14 +586,10 @@ ActiveRecord::Schema.define(version: 20201113145109) do
   end
 
   create_table "response_exports", force: :cascade do |t|
-    t.boolean  "long_done",                                   default: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "project_id"
     t.integer  "instrument_id"
     t.text     "instrument_versions"
-    t.boolean  "wide_done",                                   default: false
-    t.boolean  "short_done",                                  default: false
     t.decimal  "completion",          precision: 5, scale: 2, default: 0.0
   end
 
@@ -764,6 +760,18 @@ ActiveRecord::Schema.define(version: 20201113145109) do
   end
 
   add_index "subdomains", ["deleted_at"], name: "index_subdomains_on_deleted_at", using: :btree
+
+  create_table "survey_exports", force: :cascade do |t|
+    t.integer  "survey_id"
+    t.text     "long"
+    t.text     "short"
+    t.text     "wide"
+    t.datetime "last_response_at"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+  end
+
+  add_index "survey_exports", ["survey_id"], name: "index_survey_exports_on_survey_id", using: :btree
 
   create_table "survey_notes", id: :bigserial, force: :cascade do |t|
     t.string   "uuid"

@@ -4,6 +4,6 @@ class ResponseExportCompletionWorker
 
   def perform(id)
     export = ResponseExport.find id
-    export.compute_completion if export
+    export&.compute_completion
   end
 end
