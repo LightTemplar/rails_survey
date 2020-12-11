@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201116193614) do
+ActiveRecord::Schema.define(version: 20201208185338) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -80,6 +80,8 @@ ActiveRecord::Schema.define(version: 20201116193614) do
     t.datetime "updated_at",                    null: false
   end
 
+  add_index "condition_skips", ["instrument_question_id"], name: "index_condition_skips_on_instrument_question_id", using: :btree
+
   create_table "critical_responses", force: :cascade do |t|
     t.string   "question_identifier"
     t.string   "option_identifier"
@@ -128,6 +130,8 @@ ActiveRecord::Schema.define(version: 20201116193614) do
     t.datetime "updated_at"
   end
 
+  add_index "device_users", ["username"], name: "index_device_users_on_username", using: :btree
+
   create_table "devices", force: :cascade do |t|
     t.string   "identifier"
     t.datetime "created_at"
@@ -147,6 +151,10 @@ ActiveRecord::Schema.define(version: 20201116193614) do
     t.integer  "instrument_question_id"
   end
 
+  add_index "display_instructions", ["display_id"], name: "index_display_instructions_on_display_id", using: :btree
+  add_index "display_instructions", ["instruction_id"], name: "index_display_instructions_on_instruction_id", using: :btree
+  add_index "display_instructions", ["instrument_question_id"], name: "index_display_instructions_on_instrument_question_id", using: :btree
+
   create_table "display_translations", force: :cascade do |t|
     t.integer  "display_id"
     t.text     "text"
@@ -154,6 +162,9 @@ ActiveRecord::Schema.define(version: 20201116193614) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  add_index "display_translations", ["display_id"], name: "index_display_translations_on_display_id", using: :btree
+  add_index "display_translations", ["language"], name: "index_display_translations_on_language", using: :btree
 
   create_table "displays", force: :cascade do |t|
     t.integer  "position"
@@ -181,6 +192,7 @@ ActiveRecord::Schema.define(version: 20201116193614) do
   end
 
   add_index "domains", ["deleted_at"], name: "index_domains_on_deleted_at", using: :btree
+  add_index "domains", ["score_scheme_id"], name: "index_domains_on_score_scheme_id", using: :btree
 
   create_table "folders", force: :cascade do |t|
     t.integer  "question_set_id"
@@ -202,6 +214,8 @@ ActiveRecord::Schema.define(version: 20201116193614) do
     t.datetime "created_at",                       null: false
     t.datetime "updated_at",                       null: false
   end
+
+  add_index "follow_up_questions", ["instrument_question_id"], name: "index_follow_up_questions_on_instrument_question_id", using: :btree
 
   create_table "grid_label_translations", force: :cascade do |t|
     t.integer  "grid_label_id"
@@ -253,6 +267,7 @@ ActiveRecord::Schema.define(version: 20201116193614) do
   end
 
   add_index "images", ["deleted_at"], name: "index_images_on_deleted_at", using: :btree
+  add_index "images", ["question_id"], name: "index_images_on_question_id", using: :btree
 
   create_table "instruction_translations", force: :cascade do |t|
     t.integer  "instruction_id"
@@ -274,6 +289,7 @@ ActiveRecord::Schema.define(version: 20201116193614) do
   end
 
   add_index "instructions", ["deleted_at"], name: "index_instructions_on_deleted_at", using: :btree
+  add_index "instructions", ["title"], name: "index_instructions_on_title", using: :btree
 
   create_table "instrument_questions", force: :cascade do |t|
     t.integer  "question_id"
@@ -307,6 +323,9 @@ ActiveRecord::Schema.define(version: 20201116193614) do
     t.datetime "updated_at",    null: false
   end
 
+  add_index "instrument_rules", ["instrument_id"], name: "index_instrument_rules_on_instrument_id", using: :btree
+  add_index "instrument_rules", ["rule_id"], name: "index_instrument_rules_on_rule_id", using: :btree
+
   create_table "instrument_translations", force: :cascade do |t|
     t.integer  "instrument_id"
     t.string   "language"
@@ -316,6 +335,9 @@ ActiveRecord::Schema.define(version: 20201116193614) do
     t.datetime "updated_at"
     t.boolean  "active",        default: false
   end
+
+  add_index "instrument_translations", ["instrument_id"], name: "index_instrument_translations_on_instrument_id", using: :btree
+  add_index "instrument_translations", ["language"], name: "index_instrument_translations_on_language", using: :btree
 
   create_table "instruments", force: :cascade do |t|
     t.string   "title"
@@ -333,6 +355,7 @@ ActiveRecord::Schema.define(version: 20201116193614) do
   end
 
   add_index "instruments", ["project_id", "title"], name: "index_instruments_on_project_id_and_title", using: :btree
+  add_index "instruments", ["project_id"], name: "index_instruments_on_project_id", using: :btree
 
   create_table "loop_questions", force: :cascade do |t|
     t.integer  "instrument_question_id"
@@ -417,6 +440,7 @@ ActiveRecord::Schema.define(version: 20201116193614) do
   end
 
   add_index "option_scores", ["deleted_at"], name: "index_option_scores_on_deleted_at", using: :btree
+  add_index "option_scores", ["score_unit_question_id"], name: "index_option_scores_on_score_unit_question_id", using: :btree
 
   create_table "option_set_translations", force: :cascade do |t|
     t.integer  "option_set_id"
@@ -472,6 +496,9 @@ ActiveRecord::Schema.define(version: 20201116193614) do
     t.datetime "updated_at"
   end
 
+  add_index "project_device_users", ["device_user_id"], name: "index_project_device_users_on_device_user_id", using: :btree
+  add_index "project_device_users", ["project_id"], name: "index_project_device_users_on_project_id", using: :btree
+
   create_table "project_devices", force: :cascade do |t|
     t.integer  "project_id"
     t.integer  "device_id"
@@ -495,11 +522,16 @@ ActiveRecord::Schema.define(version: 20201116193614) do
     t.datetime "updated_at"
   end
 
+  add_index "question_randomized_factors", ["question_id"], name: "index_question_randomized_factors_on_question_id", using: :btree
+  add_index "question_randomized_factors", ["randomized_factor_id"], name: "index_question_randomized_factors_on_randomized_factor_id", using: :btree
+
   create_table "question_sets", force: :cascade do |t|
     t.string   "title"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "question_sets", ["title"], name: "index_question_sets_on_title", using: :btree
 
   create_table "question_translations", force: :cascade do |t|
     t.integer  "question_id"
@@ -550,6 +582,7 @@ ActiveRecord::Schema.define(version: 20201116193614) do
   add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true, using: :btree
   add_index "questions", ["question_set_id"], name: "index_questions_on_question_set_id", using: :btree
   add_index "questions", ["special_option_set_id"], name: "index_questions_on_special_option_set_id", using: :btree
+  add_index "questions", ["validation_id"], name: "index_questions_on_validation_id", using: :btree
 
   create_table "randomized_factors", force: :cascade do |t|
     t.integer  "instrument_id"
@@ -557,6 +590,8 @@ ActiveRecord::Schema.define(version: 20201116193614) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "randomized_factors", ["instrument_id"], name: "index_randomized_factors_on_instrument_id", using: :btree
 
   create_table "randomized_option_translations", force: :cascade do |t|
     t.integer  "instrument_translation_id"
@@ -573,6 +608,8 @@ ActiveRecord::Schema.define(version: 20201116193614) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "randomized_options", ["randomized_factor_id"], name: "index_randomized_options_on_randomized_factor_id", using: :btree
 
   create_table "raw_scores", force: :cascade do |t|
     t.integer  "score_unit_id"
@@ -674,6 +711,7 @@ ActiveRecord::Schema.define(version: 20201116193614) do
   end
 
   add_index "score_schemes", ["deleted_at"], name: "index_score_schemes_on_deleted_at", using: :btree
+  add_index "score_schemes", ["instrument_id"], name: "index_score_schemes_on_instrument_id", using: :btree
 
   create_table "score_unit_questions", force: :cascade do |t|
     t.integer  "score_unit_id"
@@ -684,6 +722,8 @@ ActiveRecord::Schema.define(version: 20201116193614) do
   end
 
   add_index "score_unit_questions", ["deleted_at"], name: "index_score_unit_questions_on_deleted_at", using: :btree
+  add_index "score_unit_questions", ["instrument_question_id"], name: "index_score_unit_questions_on_instrument_question_id", using: :btree
+  add_index "score_unit_questions", ["score_unit_id"], name: "index_score_unit_questions_on_score_unit_id", using: :btree
 
   create_table "score_units", force: :cascade do |t|
     t.float    "weight"
@@ -696,6 +736,7 @@ ActiveRecord::Schema.define(version: 20201116193614) do
   end
 
   add_index "score_units", ["deleted_at"], name: "index_score_units_on_deleted_at", using: :btree
+  add_index "score_units", ["subdomain_id"], name: "index_score_units_on_subdomain_id", using: :btree
 
   create_table "section_translations", force: :cascade do |t|
     t.integer  "section_id"
@@ -760,6 +801,7 @@ ActiveRecord::Schema.define(version: 20201116193614) do
   end
 
   add_index "subdomains", ["deleted_at"], name: "index_subdomains_on_deleted_at", using: :btree
+  add_index "subdomains", ["domain_id"], name: "index_subdomains_on_domain_id", using: :btree
 
   create_table "survey_exports", force: :cascade do |t|
     t.integer  "survey_id"
@@ -913,6 +955,9 @@ ActiveRecord::Schema.define(version: 20201116193614) do
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
   end
+
+  add_index "validation_translations", ["language"], name: "index_validation_translations_on_language", using: :btree
+  add_index "validation_translations", ["validation_id"], name: "index_validation_translations_on_validation_id", using: :btree
 
   create_table "validations", force: :cascade do |t|
     t.string   "title"
