@@ -2,15 +2,14 @@
 
 class Api::V4::RedFlagsController < Api::V4::ApiController
   respond_to :json
-  before_action :set_instrument_project
-  before_action :set_instrument_question
+  before_action :set_score_scheme
 
   def index
-    @red_flags = @instrument_question.red_flags
+    @red_flags = @score_scheme.red_flags.includes(:instrument_question, :option, :instruction)
   end
 
   def create
-    red_flag = @instrument_question.red_flags.new(red_flag_params)
+    red_flag = @score_scheme.red_flags.new(red_flag_params)
     if red_flag.save
       render json: red_flag, status: :created
     else
@@ -20,12 +19,12 @@ class Api::V4::RedFlagsController < Api::V4::ApiController
   end
 
   def update
-    red_flag = @instrument_question.red_flags.find(params[:id])
+    red_flag = @score_scheme.red_flags.find(params[:id])
     respond_with red_flag.update_attributes(red_flag_params)
   end
 
   def destroy
-    red_flag = @instrument_question.red_flags.find(params[:id])
+    red_flag = @score_scheme.red_flags.find(params[:id])
     if red_flag.destroy
       head :ok
     else
@@ -36,17 +35,14 @@ class Api::V4::RedFlagsController < Api::V4::ApiController
 
   private
 
-  def set_instrument_project
+  def set_score_scheme
     project = Project.find(params[:project_id])
     @instrument = project.instruments.find(params[:instrument_id])
-  end
-
-  def set_instrument_question
-    @instrument_question = @instrument.instrument_questions.find(params[:instrument_question_id])
+    @score_scheme = @instrument.score_schemes.find(params[:score_scheme_id])
   end
 
   def red_flag_params
     params.require(:red_flag).permit(:instruction_id, :selected, :option_identifier,
-                                     :instrument_question_id)
+                                     :instrument_question_id, :score_scheme_id)
   end
 end

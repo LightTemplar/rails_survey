@@ -11,12 +11,14 @@
 #  selected               :boolean          default(TRUE)
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
+#  score_scheme_id        :integer
 #
 
 class RedFlag < ApplicationRecord
+  belongs_to :score_scheme
   belongs_to :instrument_question
   belongs_to :instruction
-  belongs_to :option, foreign_key: :option_identifier
+  belongs_to :option, foreign_key: :option_identifier, primary_key: :identifier
 
   delegate :instrument, to: :instrument_question
 
@@ -26,5 +28,25 @@ class RedFlag < ApplicationRecord
 
   def description
     instruction&.text
+  end
+
+  def iq_identifier
+    instrument_question&.identifier
+  end
+
+  def iq_text
+    instrument_question&.text
+  end
+
+  def option_text
+    option&.text
+  end
+
+  def section_title
+    instrument_question&.section_title
+  end
+
+  def display_title
+    instrument_question&.display_title
   end
 end

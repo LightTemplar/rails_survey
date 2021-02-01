@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201112155640) do
+ActiveRecord::Schema.define(version: 20210201162911) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -627,9 +627,11 @@ ActiveRecord::Schema.define(version: 20201112155640) do
     t.boolean "selected", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "score_scheme_id"
     t.index ["instruction_id"], name: "index_red_flags_on_instruction_id"
     t.index ["instrument_question_id", "instruction_id", "option_identifier"], name: "instrument_question_instruction_option", unique: true
     t.index ["instrument_question_id"], name: "index_red_flags_on_instrument_question_id"
+    t.index ["score_scheme_id"], name: "index_red_flags_on_score_scheme_id"
   end
 
   create_table "response_exports", id: :serial, force: :cascade do |t|

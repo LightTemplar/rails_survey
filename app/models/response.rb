@@ -135,7 +135,7 @@ class Response < ApplicationRecord
     text.blank? && other_response.blank? && special_response.blank? && other_text.blank?
   end
 
-  def is_red_flag?
+  def is_red_flag?(score_scheme)
     if question.question_identifier == 'cts7'
       cts7_all = text.split(',').inject(0.0) { |sum, ans| sum + ans.to_i }
       cts8 = survey.responses.where(question_identifier: 'cts8').first
@@ -170,10 +170,23 @@ class Response < ApplicationRecord
       return (cts6a / cts4) > 1.5
     end
 
-    return false if text.blank?
+    rff = red_flags.where(score_scheme_id: score_scheme.id).where(selected: false)
+    if text.blank?
+      return true unless rff.empty?
+
+      return false
+    end
+
+    unless rff.empty?
+      rfi = rff.pluck(:option_identifier)
+      roi = response_options.map(&:identifier)
+      rfi.each do |rf|
+        return true unless roi.include?(rf)
+      end
+    end
 
     nso = question.options
-    red_flag_ids = red_flags.pluck(:option_identifier)
+    red_flag_ids = red_flags.where(score_scheme_id: score_scheme.id).pluck(:option_identifier)
     response_options.each do |ro|
       is_rf = ro && red_flag_ids.include?(ro.identifier)
       if is_rf && question.question_identifier == 'ltc12' # takes care of (f) & (g)
@@ -202,10 +215,21 @@ class Response < ApplicationRecord
     text.split(',').map { |index| nso[index.to_i] }
   end
 
-  def red_flag_response_options
+  def red_flag_response_options(score_scheme)
     rfro = []
     nso = question.options
-    red_flag_ids = red_flags.pluck(:option_identifier)
+    rfs = red_flags.where(score_scheme_id: score_scheme.id)
+    rff = rfs.where(selected: false).pluck(:option_identifier)
+    unless rff.empty?
+      roi = response_options.map(&:identifier)
+      rff.each do |rf|
+        next unless rf && !roi.include?(rf)
+
+        op = nso.select { |ro| ro.identifier == rf }.first
+        rfro << op if op
+      end
+    end
+    red_flag_ids = rfs.pluck(:option_identifier)
     response_options.each do |ro|
       is_rf = ro && red_flag_ids.include?(ro.identifier)
       if is_rf && question.question_identifier == 'ltc12'
@@ -220,11 +244,11 @@ class Response < ApplicationRecord
     rfro
   end
 
-  def red_flag_descriptions
-    red_flags.map(&:description).join(', ')
+  def red_flag_descriptions(score_scheme)
+    red_flags.where(score_scheme_id: score_scheme.id).map(&:description).uniq.join(', ')
   end
 
-  def red_flag_response
-    red_flag_response_options.map(&:text).uniq.join(', ')
+  def red_flag_response(score_scheme)
+    red_flag_response_options(score_scheme).map(&:text).uniq.join(', ')
   end
 end

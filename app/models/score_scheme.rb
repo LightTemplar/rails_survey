@@ -26,6 +26,7 @@ class ScoreScheme < ApplicationRecord
   has_many :score_data, through: :survey_scores
   has_many :score_scheme_centers, dependent: :destroy
   has_many :centers, through: :score_scheme_centers
+  has_many :red_flags
 
   delegate :project, to: :instrument
 

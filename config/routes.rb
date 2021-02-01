@@ -31,7 +31,6 @@ Rails.application.routes.draw do
             resources :multiple_skips
             resources :loop_questions
             resources :condition_skips
-            resources :red_flags
             collection do
               get :all
             end
@@ -46,6 +45,7 @@ Rails.application.routes.draw do
                 end
               end
             end
+            resources :red_flags
             resources :score_units, controller: 'score_scheme_units', only: :index
             member do
               get :download, defaults: { format: 'xlsx' }

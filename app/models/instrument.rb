@@ -57,6 +57,7 @@ class Instrument < ApplicationRecord
   has_many :loop_questions, through: :instrument_questions
   has_many :score_schemes, dependent: :destroy
   has_many :score_units, through: :score_schemes
+  has_many :red_flags, through: :instrument_questions
 
   has_paper_trail
   acts_as_paranoid
