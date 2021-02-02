@@ -58,7 +58,6 @@ group :development do
   gem 'capistrano-passenger', '~> 0.2.0'
   gem 'capistrano-rails', '~> 1.4'
   gem 'capistrano-rvm', '~> 0.1.2'
-  gem 'capistrano-sidekiq', '~> 0.10.0'
   gem 'rb-readline', '~> 0.5.5'
   gem 'sshkit', '~> 1.7', '>= 1.7.1'
 end
