@@ -70,8 +70,8 @@ ActiveAdmin.register Survey do
 
     def download
       survey = Survey.find(params[:id])
-      pdf = SurveyPdf.new(survey, 2)
-      name = "#{survey.identifier}.pdf"
+      pdf = SurveyPdf.new(survey, params[:language], 2)
+      name = "#{survey.identifier}-#{params[:language]}.pdf"
       file = Tempfile.new(name)
       pdf.save_as(file.path)
       send_file file, type: 'application/pdf', filename: name
@@ -90,7 +90,6 @@ ActiveAdmin.register Survey do
       link_to survey.instrument_title, "/projects/#{survey.instrument.project_id}/instruments/#{survey.instrument_id}"
     end
     column 'Versions', sortable: :instrument_version_number, &:instrument_version_number
-    column :language
     column 'When', sortable: :created_at do |survey|
       time_ago_in_words(survey.created_at) + ' ago'
     end
@@ -99,8 +98,9 @@ ActiveAdmin.register Survey do
       link_to survey.responses.size.to_s, admin_survey_responses_path(survey.id)
     end
     column 'Completed', :completed_responses_count
-    column 'Download' do |survey|
-      link_to 'PDF', download_admin_project_survey_path(params[:project_id], survey.id)
+    column 'PDF' do |survey|
+      span { link_to 'English', download_admin_project_survey_path(params[:project_id], survey.id, language: 'en') }
+      span { link_to 'Spanish', download_admin_project_survey_path(params[:project_id], survey.id, language: 'es') }
     end
     actions
   end

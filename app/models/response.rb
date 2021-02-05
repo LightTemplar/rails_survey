@@ -229,7 +229,7 @@ class Response < ApplicationRecord
         rfro << op if op
       end
     end
-    red_flag_ids = rfs.pluck(:option_identifier)
+    red_flag_ids = rfs.pluck(:option_identifier) - rff
     response_options.each do |ro|
       is_rf = ro && red_flag_ids.include?(ro.identifier)
       if is_rf && question.question_identifier == 'ltc12'
@@ -245,7 +245,8 @@ class Response < ApplicationRecord
   end
 
   def red_flag_descriptions(score_scheme)
-    red_flags.where(score_scheme_id: score_scheme.id).map(&:description).uniq.join(', ')
+    identifiers = red_flag_response_options(score_scheme).pluck(:identifier)
+    red_flags.where(score_scheme_id: score_scheme.id).where(option_identifier: identifiers).map(&:description).uniq.join(', ')
   end
 
   def red_flag_response(score_scheme)

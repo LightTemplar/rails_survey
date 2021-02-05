@@ -70,7 +70,7 @@ class Instrument < ApplicationRecord
   end
 
   def available_languages
-    [language] + question_translations.pluck(:language).uniq
+    [language] + question_translations.pluck(:language).uniq.compact
   end
 
   def self.create_translations

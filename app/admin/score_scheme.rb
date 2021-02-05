@@ -41,9 +41,6 @@ ActiveAdmin.register ScoreScheme do
     column :instrument
     column :title
     column :active
-    column 'Survey Scores', :survey_scores do |ss|
-      link_to ss.survey_scores.size.to_s, admin_score_scheme_survey_scores_path(ss.id)
-    end
     actions
   end
 
