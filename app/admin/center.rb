@@ -42,7 +42,7 @@ ActiveAdmin.register Center do
     column 'Red Flags' do |center|
       link_to 'Download', download_red_flags_admin_score_scheme_center_path(params[:score_scheme_id], center.id)
     end
-    column 'Scores' do |center|
+    column 'Score Reports' do |center|
       span { link_to 'English', download_scores_admin_score_scheme_center_path(params[:score_scheme_id], center.id, language: 'en') }
       span { link_to 'Spanish', download_scores_admin_score_scheme_center_path(params[:score_scheme_id], center.id, language: 'es') }
     end
