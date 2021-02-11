@@ -298,4 +298,8 @@ class Survey < ApplicationRecord
   def response_for_question(question)
     responses.where(question_identifier: question.question_identifier).try(:first)
   end
+
+  def skipped
+    skipped_questions.split(',')
+  end
 end

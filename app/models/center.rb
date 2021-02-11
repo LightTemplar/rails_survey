@@ -147,10 +147,31 @@ class Center < ApplicationRecord
     arr.empty? ? '' : arr.inject(0.0) { |sum, e| sum + e.score_sum } / arr.size
   end
 
-  def response_text(responses)
+  def response_text(suq, responses, skipped)
     arr = []
+    if !suq.instrument_question.select_one_variant? &&
+       !suq.instrument_question.select_multiple_variant? &&
+       !suq.instrument_question.list_of_boxes_variant?
+      responses.each do |r|
+        arr << r.text unless r.text.blank?
+      end
+    else
+      texts = responses.reject { |res| res.text.blank? }
+      return unless texts.empty?
+    end
+
     responses.each do |r|
-      arr << r.special_response if r.text.blank?
+      arr << r.special_response unless r.special_response.blank?
+    end
+    if arr.empty?
+      responses.each do |r|
+        arr << 'SK' if skipped.include?(r.question_identifier)
+      end
+    end
+    if arr.empty?
+      responses.each do |r|
+        arr << 'MI' if r.empty?
+      end
     end
     arr.uniq.join(' | ')
   end
@@ -191,6 +212,14 @@ class Center < ApplicationRecord
     end
   end
 
+  def skipped_questions(css)
+    list = []
+    css.each do |ss|
+      list << ss.survey.skipped
+    end
+    list = list.flatten.uniq
+  end
+
   def formatted_scores(score_scheme, language)
     translate = score_scheme.instrument.language != language
     file = Tempfile.new(score_scheme.title)
@@ -218,6 +247,7 @@ class Center < ApplicationRecord
       r_scores = raw_scores.where(survey_score_id: css.pluck(:id))
       responses = responses(css)
       c_score_data = score_data.where(survey_score_id: css.pluck(:id)).where(weight: nil).where(operator: nil)
+      skipped = skipped_questions(css)
       score_scheme.domains.sort_by { |domain| domain.title.to_i }.each do |domain|
         wb.add_worksheet(name: domain.title_name) do |sheet|
           tab_color = colors.sample
@@ -247,7 +277,7 @@ class Center < ApplicationRecord
                                full_sanitize(suq.instrument_question.translations.find_by_language(language)&.text) :
                                html_decode(full_sanitize(suq.instrument_question.text)),
                                unit.base_point_score == 0.0 ? '' : unit.base_point_score, '', unit.score_type,
-                               response_text(suq_responses),
+                               response_text(suq, suq_responses, skipped),
                                unit_raw_score(urs), '', red_flag_text(score_scheme, suq_responses),
                                html_decode(full_sanitize(unit.notes))], style: q_style
                 sheet.column_widths nil, nil, nil, nil, 50, nil, nil, nil, nil, nil, nil, 30, 50
