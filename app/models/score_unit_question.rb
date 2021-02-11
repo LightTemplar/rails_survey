@@ -51,4 +51,8 @@ class ScoreUnitQuestion < ApplicationRecord
   def option_index(option)
     instrument_question.all_non_special_options.index(option)
   end
+
+  def option_score(option)
+    option_scores.where(option_identifier: option.identifier).first
+  end
 end

@@ -35,8 +35,8 @@ class Center < ApplicationRecord
 
   default_scope { order :identifier }
 
-  def survey_count(score_scheme_id)
-    survey_scores.where(score_scheme_id: score_scheme_id).size
+  def ss_survey_scores(score_scheme_id)
+    survey_scores.where(score_scheme_id: score_scheme_id)
   end
 
   def self.download(score_scheme)
@@ -124,26 +124,9 @@ class Center < ApplicationRecord
     zip_file
   end
 
-  def red_flags(score_scheme)
-    file = Tempfile.new(identifier)
-    CSV.open(file, 'w') do |row|
-      row << %w[center_id survey_id question_id response description]
-      survey_scores.where(score_scheme_id: score_scheme.id).each do |survey_score|
-        survey_score.survey.responses.each do |response|
-          next unless response.is_red_flag?(score_scheme)
-
-          row << [identifier, survey_score.survey.id, response.question_identifier,
-                  full_sanitizer.sanitize(response.red_flag_response(score_scheme)).strip,
-                  full_sanitizer.sanitize(response.red_flag_descriptions(score_scheme)).strip]
-        end
-      end
-    end
-    file
-  end
-
-  def red_flag_text(score_scheme, responses, suq)
+  def red_flag_text(score_scheme, responses)
     red_flags = []
-    responses.where(question_identifier: suq.question_identifier).each do |response|
+    responses.each do |response|
       red_flags << full_sanitizer.sanitize(response.red_flag_descriptions(score_scheme)).strip if response.is_red_flag?(score_scheme)
     end
     red_flags.uniq.join('; ')
@@ -164,13 +147,47 @@ class Center < ApplicationRecord
     arr.empty? ? '' : arr.inject(0.0) { |sum, e| sum + e.score_sum } / arr.size
   end
 
-  def response_text(responses, suq)
+  def response_text(responses)
+    arr = []
+    responses.each do |r|
+      arr << r.special_response if r.text.blank?
+    end
+    arr.uniq.join(' | ')
+  end
+
+  def selection_set(responses, suq)
+    list = []
     arr = responses.reject { |e| e.text.blank? }
     arr = arr.map(&:text).uniq
-    if arr.size > 1 && suq.instrument_question.select_multiple_variant?
-      arr.map { |e| e.split(',') }.flatten.uniq.join(',')
+    if suq.instrument_question.select_one_variant? || suq.instrument_question.select_multiple_variant?
+      arr.each do |item|
+        item.split(',').each do |r|
+          list << r.to_i
+        end
+      end
+    end
+    list.uniq
+  end
+
+  def list_set(responses, suq)
+    list = []
+    arr = responses.reject { |e| e.text.blank? }
+    arr = arr.map(&:text).uniq
+    if suq.instrument_question.list_of_boxes_variant?
+      arr.each do |item|
+        item.split(',').each_with_index do |r, i|
+          list[i] = r
+        end
+      end
+    end
+    list
+  end
+
+  def choice_text(suq, selected_indices, list_indices, index)
+    if suq.instrument_question.list_of_boxes_variant?
+      list_indices[index]
     else
-      arr.join(' | ')
+      selected_indices.include?(index) ? '✔️' : ''
     end
   end
 
@@ -188,10 +205,12 @@ class Center < ApplicationRecord
       wrap_text = { wrap_text: true }
       border = wb.styles.add_style(border: b_style)
       wrap_style = wb.styles.add_style(alignment: wrap_text)
+      b_wrap_style = wb.styles.add_style(alignment: wrap_text, border: b_style)
       question_style = wb.styles.add_style(b: true, alignment: wrap_text)
       option_style = wb.styles.add_style(alignment: wrap_text)
       b_question_style = wb.styles.add_style(b: true, alignment: wrap_text, border: b_style)
       rf_style = wb.styles.add_style(b: true, alignment: wrap_text, fg_color: red)
+      b_rf_style = wb.styles.add_style(b: true, alignment: wrap_text, fg_color: red, border: b_style)
       b_option_style = wb.styles.add_style(alignment: wrap_text, border: b_style)
       c_style = wb.styles.add_style(alignment: { horizontal: :center })
       c_border = wb.styles.add_style(alignment: { horizontal: :center }, border: b_style)
@@ -206,7 +225,7 @@ class Center < ApplicationRecord
           sheet.add_row ['', '', '', '', domain.title_name, '', '', '', '', '', '', '', ''],
                         style: wb.styles.add_style(b: true, alignment: { horizontal: :center, vertical: :center },
                                                    border: b_style, bg_color: tab_color), height: row_height
-          sheet.add_row %w[Identifier Subdomain Weight Code Question Base Score Type Response ActualScore SubdomainScore RedFlags Notes],
+          sheet.add_row %w[Identifier Subdomain Weight Code Question Base Points Type Response Score SDScore RedFlags Notes],
                         style: wb.styles.add_style(alignment: { horizontal: :center, vertical: :center }, border: b_style),
                         height: row_height
 
@@ -216,9 +235,11 @@ class Center < ApplicationRecord
             subdomain.score_units.sort_by { |su| [su.str_title, su.int_title] }.each do |unit|
               urs = r_scores.where(score_unit_id: unit.id)
               unit.score_unit_questions.each_with_index do |suq, index|
-                q_style = index == unit.score_unit_questions.size - 1 && suq.option_scores.empty? ?
-                [c_border, wrap_style, c_border, c_border, b_question_style, c_border, c_border, border, border,
-                 b_question_style, b_question_style, rf_style, b_option_style] :
+                suq_responses = responses.where(question_identifier: suq.question_identifier)
+                options = suq.instrument_question.all_non_special_options
+                q_style = index == unit.score_unit_questions.size - 1 && options.empty? ?
+                [c_border, b_wrap_style, c_border, c_border, b_question_style, c_border, c_border, border, border,
+                 b_question_style, b_question_style, b_rf_style, b_option_style] :
                  [c_style, wrap_style, c_style, c_style, question_style, c_style, c_style, c_style, c_style,
                   question_style, question_style, rf_style, option_style]
                 sheet.add_row [unit.title, subdomain.title_name, unit.weight,
@@ -226,21 +247,22 @@ class Center < ApplicationRecord
                                full_sanitize(suq.instrument_question.translations.find_by_language(language)&.text) :
                                html_decode(full_sanitize(suq.instrument_question.text)),
                                unit.base_point_score == 0.0 ? '' : unit.base_point_score, '', unit.score_type,
-                               response_text(responses.where(question_identifier: suq.question_identifier), suq),
-                               unit_raw_score(urs), '', red_flag_text(score_scheme, responses, suq),
+                               response_text(suq_responses),
+                               unit_raw_score(urs), '', red_flag_text(score_scheme, suq_responses),
                                html_decode(full_sanitize(unit.notes))], style: q_style
-                sheet.column_widths nil, nil, nil, nil, 50, nil, nil, nil, 15, 15, 15, 30, 50
-                suq.option_scores.each_with_index do |score, index|
-                  o_style = index == suq.option_scores.size - 1 ?
-                  [border, border, border, c_border, b_option_style, border, c_border, c_border, c_border, c_border, c_border,
-                   b_option_style, b_option_style] : [nil, nil, nil, c_style, option_style, nil,
-                                                      c_style, c_style, c_style, c_style, c_style, option_style, option_style]
-                  sheet.add_row ['', '', '', suq.option_index(score.option), translate ? full_sanitize(
-                    score.option.translations.find_by_language(language)&.text
-                  ) : full_sanitizer.sanitize(score.option.text), '',
-                                 unit.score_type == 'SUM' ? "(#{format('%+0.1f', score.value)})" : score.value,
-                                 '', '', '', '', '', html_decode(full_sanitize(score.notes))], style: o_style
-                  sheet.column_widths nil, nil, nil, nil, 50, nil, nil, nil, 15, 15, 15, 30, 50
+                sheet.column_widths nil, nil, nil, nil, 50, nil, nil, nil, nil, nil, nil, 30, 50
+                selected_indices = selection_set(suq_responses, suq)
+                list_indices = list_set(suq_responses, suq)
+                options.each_with_index do |option, index|
+                  o_style = index == options.size - 1 ? [border, border, border, c_border, b_option_style, border, c_border,
+                                                         c_border, c_border, c_border, c_border, b_option_style, b_option_style] :
+                                                         [nil, nil, nil, c_style, option_style, nil, c_style, c_style, c_style,
+                                                          c_style, c_style, option_style, option_style]
+                  sheet.add_row ['', '', '', index, translate ? full_sanitize(option.translations.find_by_language(language)&.text) :
+                    full_sanitizer.sanitize(option.text), '', unit.score_type == 'SUM' && suq.option_score(option) ? "(#{format('%+0.1f', suq.option_score(option)&.value)})" :
+                     suq.option_score(option)&.value, '', choice_text(suq, selected_indices, list_indices, index), '', '', '',
+                                 html_decode(full_sanitize(suq.option_score(option)&.notes))], style: o_style
+                  sheet.column_widths nil, nil, nil, nil, 50, nil, nil, nil, nil, nil, nil, 30, 50
                 end
               end
             end

@@ -13,10 +13,6 @@ ActiveAdmin.register Center do
     redirect_to resource_path
   end
 
-  member_action :download_red_flags, method: :get do
-    redirect_to resource_path
-  end
-
   member_action :download_scores, method: :get do
     redirect_to resource_path
   end
@@ -31,20 +27,19 @@ ActiveAdmin.register Center do
     end
     column :identifier
     column :name
-    column :center_type
+    column 'Type', :center_type
     column :administration
     column :region
     column :department
     column :municipality
-    column 'Surveys' do |center|
-      center.survey_count(params[:score_scheme_id])
-    end
-    column 'Red Flags' do |center|
-      link_to 'Download', download_red_flags_admin_score_scheme_center_path(params[:score_scheme_id], center.id)
+    column 'Survey Scores' do |center|
+      center.ss_survey_scores(params[:score_scheme_id])
     end
     column 'Score Reports' do |center|
-      span { link_to 'English', download_scores_admin_score_scheme_center_path(params[:score_scheme_id], center.id, language: 'en') }
-      span { link_to 'Spanish', download_scores_admin_score_scheme_center_path(params[:score_scheme_id], center.id, language: 'es') }
+      unless center.ss_survey_scores(params[:score_scheme_id]).empty?
+        span { link_to 'English', download_scores_admin_score_scheme_center_path(params[:score_scheme_id], center.id, language: 'en') }
+        span { link_to 'Spanish', download_scores_admin_score_scheme_center_path(params[:score_scheme_id], center.id, language: 'es') }
+      end
     end
   end
 
@@ -53,13 +48,6 @@ ActiveAdmin.register Center do
       score_scheme = ScoreScheme.find(params[:score_scheme_id])
       send_file Center.download(score_scheme), type: 'application/zip',
                                                filename: "#{score_scheme.title.split.join('_')}_center_scores_#{Time.now.to_i}.zip"
-    end
-
-    def download_red_flags
-      score_scheme = ScoreScheme.find(params[:score_scheme_id])
-      center = Center.find params[:id]
-      send_file center.red_flags(score_scheme), type: 'text/csv',
-                                                filename: "#{center.identifier}_red_flags_#{Time.now.to_i}.csv"
     end
 
     def download_scores
