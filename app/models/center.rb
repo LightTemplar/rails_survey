@@ -220,14 +220,41 @@ class Center < ApplicationRecord
     list = list.flatten.uniq
   end
 
+  def add_center_sheet(wb, c_score_data, b_style)
+    wb.add_worksheet(name: 'Center') do |sheet|
+      tab_color = colors[0]
+      sheet.sheet_pr.tab_color = tab_color
+      sheet.add_row %w[Identifier Name Type Administration Region Department Municipality Score],
+                    style: wb.styles.add_style(b: true, border: b_style, alignment: { horizontal: :center }, bg_color: tab_color),
+                    height: row_height
+      sheet.add_row [identifier, name, center_type, administration, region, department, municipality, average_score(c_score_data)],
+                    style: wb.styles.add_style(alignment: { horizontal: :center }), height: row_height
+    end
+  end
+
+  def colors
+    %w[9C6ACB 6DD865 85B2C9 559F93 68D49A B39358 4DB2E9 5DC15E 7BC676 75AC77 B966E3 D0E0FC 85AFCA E8BA78]
+  end
+
+  def row_height
+    25
+  end
+
+  def add_title_rows(domain, wb, sheet, tab_color)
+    sheet.sheet_pr.tab_color = tab_color
+    sheet.add_row ['', '', '', '', domain.title_name, '', '', '', '', '', '', '', ''],
+                  style: wb.styles.add_style(b: true, alignment: { horizontal: :center, vertical: :center },
+                                             bg_color: tab_color), height: row_height
+    sheet.add_row %w[Identifier Subdomain Weight Code Question Base Points Operation Response Score SDScore RedFlags Notes],
+                  style: wb.styles.add_style(b: true, alignment: { horizontal: :center, vertical: :center },
+                                             bg_color: tab_color), height: row_height
+  end
+
   def formatted_scores(score_scheme, language)
     translate = score_scheme.instrument.language != language
     file = Tempfile.new(score_scheme.title)
     black = '000000'
     red = 'FF0000'
-    row_height = 30
-    colors = %w[9C6ACB 6DD865 75AC77 E8BA78 B966E3 D0E0FC 85B2C9
-                559F93 68D49A 85AFCA B39358 4DB2E9 5DC15E 7BC676]
     Axlsx::Package.new do |p|
       wb = p.workbook
       b_style = { style: :thin, color: black, edges: [:bottom] }
@@ -238,6 +265,7 @@ class Center < ApplicationRecord
       question_style = wb.styles.add_style(b: true, alignment: wrap_text)
       option_style = wb.styles.add_style(alignment: wrap_text)
       b_question_style = wb.styles.add_style(b: true, alignment: wrap_text, border: b_style)
+      score_style = wb.styles.add_style(b: true, alignment: { horizontal: :center, wrap_text: true })
       rf_style = wb.styles.add_style(b: true, alignment: wrap_text, fg_color: red)
       b_rf_style = wb.styles.add_style(b: true, alignment: wrap_text, fg_color: red, border: b_style)
       b_option_style = wb.styles.add_style(alignment: wrap_text, border: b_style)
@@ -248,17 +276,11 @@ class Center < ApplicationRecord
       responses = responses(css)
       c_score_data = score_data.where(survey_score_id: css.pluck(:id)).where(weight: nil).where(operator: nil)
       skipped = skipped_questions(css)
+      add_center_sheet(wb, c_score_data, b_style)
       score_scheme.domains.sort_by { |domain| domain.title.to_i }.each do |domain|
         wb.add_worksheet(name: domain.title_name) do |sheet|
-          tab_color = colors.sample
-          sheet.sheet_pr.tab_color = tab_color
-          sheet.add_row ['', '', '', '', domain.title_name, '', '', '', '', '', '', '', ''],
-                        style: wb.styles.add_style(b: true, alignment: { horizontal: :center, vertical: :center },
-                                                   border: b_style, bg_color: tab_color), height: row_height
-          sheet.add_row %w[Identifier Subdomain Weight Code Question Base Points Type Response Score SDScore RedFlags Notes],
-                        style: wb.styles.add_style(alignment: { horizontal: :center, vertical: :center }, border: b_style),
-                        height: row_height
-
+          tab_color = colors[domain.title.to_i]
+          add_title_rows(domain, wb, sheet, tab_color)
           ds = domain_scores.where(score_datum_id: c_score_data.pluck(:id)).where(domain_id: domain.id)
           domain.subdomains.each do |subdomain|
             sds = subdomain_scores.where(score_datum_id: c_score_data.pluck(:id)).where(subdomain_id: subdomain.id)
@@ -271,7 +293,7 @@ class Center < ApplicationRecord
                 [c_border, b_wrap_style, c_border, c_border, b_question_style, c_border, c_border, border, border,
                  b_question_style, b_question_style, b_rf_style, b_option_style] :
                  [c_style, wrap_style, c_style, c_style, question_style, c_style, c_style, c_style, c_style,
-                  question_style, question_style, rf_style, option_style]
+                  score_style, question_style, rf_style, option_style]
                 sheet.add_row [unit.title, subdomain.title_name, unit.weight,
                                suq.question_identifier, translate ?
                                full_sanitize(suq.instrument_question.translations.find_by_language(language)&.text) :
@@ -304,12 +326,6 @@ class Center < ApplicationRecord
           sheet.add_row ['Domain Score', average_score(ds)],
                         style: wb.styles.add_style(b: true, border: b_style), height: row_height
         end
-      end
-      wb.add_worksheet(name: 'Center Score') do |sheet|
-        tab_color = colors.sample
-        sheet.sheet_pr.tab_color = tab_color
-        sheet.add_row ['Center Score', average_score(c_score_data)],
-                      style: wb.styles.add_style(b: true, border: b_style), height: row_height
       end
       p.serialize(file.path)
     end
