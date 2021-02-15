@@ -27,6 +27,7 @@ class ScoreScheme < ApplicationRecord
   has_many :score_scheme_centers, dependent: :destroy
   has_many :centers, through: :score_scheme_centers
   has_many :red_flags
+  has_many :domain_translations, through: :domains, source: :translations
 
   delegate :project, to: :instrument
 

@@ -22,6 +22,8 @@ class Domain < ApplicationRecord
   has_many :score_units, through: :subdomains
   has_many :domain_scores, dependent: :destroy
   has_many :subdomain_scores, through: :subdomains
+  has_many :translations, foreign_key: 'domain_id', class_name: 'DomainTranslation', dependent: :destroy
+  has_many :subdomain_translations, through: :subdomains, source: :translations
 
   acts_as_paranoid
 
@@ -50,5 +52,12 @@ class Domain < ApplicationRecord
 
   def title_name
     "#{title} #{name}"
+  end
+
+  def translated_title_name(language)
+    translations.where(language: language)
+                .reject { |dt| dt.text.blank? }
+                .map { |dt| "#{title} #{dt.text}" }
+                .join(' | ')
   end
 end

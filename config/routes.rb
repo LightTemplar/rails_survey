@@ -36,7 +36,9 @@ Rails.application.routes.draw do
             end
           end
           resources :score_schemes do
-            resources :domains
+            resources :domains do
+              resources :subdomain_translations
+            end
             resources :subdomains do
               resources :score_units do
                 resources :option_scores
@@ -46,6 +48,7 @@ Rails.application.routes.draw do
               end
             end
             resources :red_flags
+            resources :domain_translations
             resources :score_units, controller: 'score_scheme_units', only: :index
             member do
               get :download, defaults: { format: 'xlsx' }

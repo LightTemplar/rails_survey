@@ -220,16 +220,21 @@ class Center < ApplicationRecord
     list = list.flatten.uniq
   end
 
-  def add_center_sheet(wb, c_score_data, b_style)
-    wb.add_worksheet(name: 'Center') do |sheet|
+  def add_center_sheet(wb, c_score_data, b_style, language)
+    wb.add_worksheet(name: I18n.t('center.center', locale: language)) do |sheet|
       tab_color = colors[0]
       sheet.sheet_pr.tab_color = tab_color
-      sheet.add_row %w[Identifier Name Type Administration Region Department Municipality Score],
+      sheet.add_row center_header(language),
                     style: wb.styles.add_style(b: true, border: b_style, alignment: { horizontal: :center }, bg_color: tab_color),
                     height: row_height
       sheet.add_row [identifier, name, center_type, administration, region, department, municipality, average_score(c_score_data)],
                     style: wb.styles.add_style(alignment: { horizontal: :center }), height: row_height
     end
+  end
+
+  def center_header(language)
+    %w[identifier name type administration region department municipality score]
+      .map { |item| I18n.t("center.#{item}", locale: language) }
   end
 
   def colors
@@ -240,14 +245,25 @@ class Center < ApplicationRecord
     25
   end
 
-  def add_title_rows(domain, wb, sheet, tab_color)
+  def add_title_rows(domain, wb, sheet, tab_color, translate, language)
     sheet.sheet_pr.tab_color = tab_color
-    sheet.add_row ['', '', '', '', domain.title_name, '', '', '', '', '', '', '', ''],
+    sheet.add_row ['', '', '', '', domain_label(translate, domain, language), '', '', '', '', '', '', '', ''],
                   style: wb.styles.add_style(b: true, alignment: { horizontal: :center, vertical: :center },
                                              bg_color: tab_color), height: row_height
-    sheet.add_row %w[Identifier Subdomain Weight Code Question Base Points Operation Response Score SDScore RedFlags Notes],
+    sheet.add_row %w[identifier subdomain weight code question base points operation response score subdomain_score red_flags notes]
+      .map { |item| I18n.t("center.#{item}", locale: language) },
                   style: wb.styles.add_style(b: true, alignment: { horizontal: :center, vertical: :center },
                                              bg_color: tab_color), height: row_height
+  end
+
+  def domain_label(translate, domain, language)
+    label = full_sanitize(domain.translated_title_name(language)) if translate
+    label.blank? ? domain.title_name : label
+  end
+
+  def subdomain_label(translate, subdomain, language)
+    label = full_sanitize(subdomain.translated_title_name(language)) if translate
+    label.blank? ? subdomain.title_name : label
   end
 
   def formatted_scores(score_scheme, language)
@@ -276,11 +292,11 @@ class Center < ApplicationRecord
       responses = responses(css)
       c_score_data = score_data.where(survey_score_id: css.pluck(:id)).where(weight: nil).where(operator: nil)
       skipped = skipped_questions(css)
-      add_center_sheet(wb, c_score_data, b_style)
+      add_center_sheet(wb, c_score_data, b_style, language)
       score_scheme.domains.sort_by { |domain| domain.title.to_i }.each do |domain|
-        wb.add_worksheet(name: domain.title_name) do |sheet|
+        wb.add_worksheet(name: domain_label(translate, domain, language).truncate(31)) do |sheet|
           tab_color = colors[domain.title.to_i]
-          add_title_rows(domain, wb, sheet, tab_color)
+          add_title_rows(domain, wb, sheet, tab_color, translate, language)
           ds = domain_scores.where(score_datum_id: c_score_data.pluck(:id)).where(domain_id: domain.id)
           domain.subdomains.each do |subdomain|
             sds = subdomain_scores.where(score_datum_id: c_score_data.pluck(:id)).where(subdomain_id: subdomain.id)
@@ -294,7 +310,7 @@ class Center < ApplicationRecord
                  b_question_style, b_question_style, b_rf_style, b_option_style] :
                  [c_style, wrap_style, c_style, c_style, question_style, c_style, c_style, c_style, c_style,
                   score_style, question_style, rf_style, option_style]
-                sheet.add_row [unit.title, subdomain.title_name, unit.weight,
+                sheet.add_row [unit.title, subdomain_label(translate, subdomain, language), unit.weight,
                                suq.question_identifier, translate ?
                                full_sanitize(suq.instrument_question.translations.find_by_language(language)&.text) :
                                html_decode(full_sanitize(suq.instrument_question.text)),

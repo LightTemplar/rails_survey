@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20210201162911) do
+ActiveRecord::Schema.define(version: 20210215143937) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -208,6 +208,15 @@ ActiveRecord::Schema.define(version: 20210201162911) do
     t.integer "score_datum_id"
     t.index ["domain_id"], name: "index_domain_scores_on_domain_id"
     t.index ["score_datum_id"], name: "index_domain_scores_on_score_datum_id"
+  end
+
+  create_table "domain_translations", force: :cascade do |t|
+    t.string "language"
+    t.string "text"
+    t.bigint "domain_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["domain_id"], name: "index_domain_translations_on_domain_id"
   end
 
   create_table "domains", id: :serial, force: :cascade do |t|
@@ -830,6 +839,15 @@ ActiveRecord::Schema.define(version: 20210201162911) do
     t.integer "score_datum_id"
     t.index ["score_datum_id"], name: "index_subdomain_scores_on_score_datum_id"
     t.index ["subdomain_id"], name: "index_subdomain_scores_on_subdomain_id"
+  end
+
+  create_table "subdomain_translations", force: :cascade do |t|
+    t.string "language"
+    t.string "text"
+    t.bigint "subdomain_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["subdomain_id"], name: "index_subdomain_translations_on_subdomain_id"
   end
 
   create_table "subdomains", id: :serial, force: :cascade do |t|

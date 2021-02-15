@@ -20,6 +20,7 @@ class Subdomain < ApplicationRecord
   has_many :score_units, -> { order 'score_units.title' }, dependent: :destroy
   has_many :raw_scores, through: :score_units
   has_many :subdomain_scores, dependent: :destroy
+  has_many :translations, foreign_key: 'subdomain_id', class_name: 'SubdomainTranslation', dependent: :destroy
   delegate :score_scheme, to: :domain
 
   acts_as_paranoid
@@ -30,6 +31,13 @@ class Subdomain < ApplicationRecord
 
   def title_name
     "#{title} #{name}"
+  end
+
+  def translated_title_name(language)
+    translations.where(language: language)
+                .reject { |dt| dt.text.blank? }
+                .map { |dt| "#{title} #{dt.text}" }
+                .join(' | ')
   end
 
   def default_subdomain_score(default_score_datum)
