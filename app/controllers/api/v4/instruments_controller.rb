@@ -17,14 +17,18 @@ class Api::V4::InstrumentsController < Api::V4::ApiController
   def create
     instrument = @project.instruments.new(instrument_params)
     if instrument.save
-      render json: instrument, status: :created
+      redirect_to action: 'show', id: instrument.id
     else
       render json: { errors: instrument.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   def update
-    respond_with @instrument.update_attributes(instrument_params)
+    if @instrument.update_attributes(instrument_params)
+      @instrument
+    else
+      render json: { errors: @instrument.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   def destroy
