@@ -30,6 +30,11 @@ module PdfUtils
       },
       'Noto Sans Ethiopic' => {
         normal: "#{Rails.root}/app/pdfs/fonts/NotoSansEthiopic-Regular.ttf"
+      },
+      'Source Code Pro' => {
+        normal: "#{Rails.root}/app/pdfs/fonts/SourceCodePro-Regular.ttf",
+        bold: "#{Rails.root}/app/pdfs/fonts/SourceCodePro-Bold.ttf",
+        italic: "#{Rails.root}/app/pdfs/fonts/SourceCodePro-Italic.ttf"
       }
     )
     font 'Noto Sans'

@@ -107,7 +107,7 @@ class SurveyPdf
         o_ins_text ||= o_ins.text
         pad(2) { text sanitize_text("<i>#{o_ins_text}</i>"), style: :italic, color: '808080', inline_format: true } if o_ins_text
       end
-      font('Courier') do
+      font('Source Code Pro') do
         if iq.question.option_set
           if iq.question.other? && response&.text&.blank? && !response&.other_response&.blank?
             text "#{@language == 'es' ? 'Otra ' : 'Other '}  #{response&.other_response}"
