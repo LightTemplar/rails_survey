@@ -13,12 +13,20 @@ ActiveAdmin.register Center do
     redirect_to resource_path
   end
 
+  collection_action :mail_merge, method: :get do
+    redirect_to resource_path
+  end
+
   member_action :download_scores, method: :get do
     redirect_to resource_path
   end
 
   action_item :download, only: :index do
     link_to 'Download', download_admin_score_scheme_centers_path(params[:score_scheme_id])
+  end
+
+  action_item :mail_merge, only: :index do
+    link_to 'Mail Merge', mail_merge_admin_score_scheme_centers_path(params[:score_scheme_id])
   end
 
   index do
@@ -55,6 +63,12 @@ ActiveAdmin.register Center do
       center = Center.find params[:id]
       send_file center.formatted_scores(score_scheme, params[:language]), type: 'text/xlsx',
                                                                           filename: "#{center.identifier}-#{params[:language]}-#{Time.now.to_i}.xlsx"
+    end
+
+    def mail_merge
+      ss = ScoreScheme.find(params[:score_scheme_id])
+      send_file Center.mail_merge(ss), type: 'text/xlsx',
+                                       filename: "#{ss.title.split.join('_')}_#{Time.now.to_i}.xlsx"
     end
   end
 end

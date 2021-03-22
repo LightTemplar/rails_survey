@@ -39,6 +39,122 @@ class Center < ApplicationRecord
     survey_scores.where(score_scheme_id: score_scheme_id)
   end
 
+  def self.write_sheet_data(workbook, sheet, score_scheme, centers)
+    rows, nat_avg_row = sheet_data(score_scheme, centers)
+    sheet.add_row nat_avg_row, style: workbook.styles.add_style(b: true, alignment: { horizontal: :center, vertical: :center })
+    rows.each do |row|
+      sheet.add_row row, style: workbook.styles.add_style(alignment: { horizontal: :center, vertical: :center })
+    end
+    nat_avg_row
+  end
+
+  def self.sheet_data(score_scheme, centers)
+    national = []
+    rows = []
+    scores = {}
+    centers.sort_by { |c| c.identifier.to_i }.each do |center|
+      css = center.survey_scores.where(score_scheme_id: score_scheme.id)
+      next if css.empty?
+
+      c_score_data = center.score_data.where(survey_score_id: css.pluck(:id)).where(weight: nil).where(operator: nil)
+      c_score = center.average_score(c_score_data)
+      national << c_score
+      row = [center.identifier, c_score]
+      score_scheme.domains.sort_by { |domain| domain.title.to_i }.each do |domain|
+        ds = center.domain_scores.where(score_datum_id: c_score_data.pluck(:id)).where(domain_id: domain.id)
+        d_score = center.average_score(ds)
+        row << d_score
+        d_arr = scores[domain.title]
+        d_arr ||= []
+        d_arr << d_score unless d_score.blank?
+        scores[domain.title] = d_arr
+        domain.subdomains.sort_by { |subdomain| subdomain.title.to_f }.each do |subdomain|
+          sds = center.subdomain_scores.where(score_datum_id: c_score_data.pluck(:id)).where(subdomain_id: subdomain.id)
+          sd_score = center.average_score(sds)
+          row << sd_score
+          sd_arr = scores[subdomain.title]
+          sd_arr ||= []
+          sd_arr << sd_score unless sd_score.blank?
+          scores[subdomain.title] = sd_arr
+        end
+      end
+      rows << row
+    end
+    nat_avg_row = ['Nacional', national.sum.fdiv(national.size).round(2)]
+    score_scheme.domains.sort_by { |domain| domain.title.to_i }.each do |domain|
+      d_scores = scores[domain.title]
+      d_avg = d_scores.sum.fdiv(d_scores.size).round(2)
+      d_avg = '' if d_avg.nan?
+      nat_avg_row << d_avg
+      domain.subdomains.sort_by { |subdomain| subdomain.title.to_f }.each do |subdomain|
+        sd_scores = scores[subdomain.title]
+        sd_avg = sd_scores.sum.fdiv(sd_scores.size).round(2)
+        sd_avg = '' if sd_avg.nan?
+        nat_avg_row << sd_avg
+      end
+    end
+    [rows, nat_avg_row]
+  end
+
+  def self.write_sheet_header(workbook, sheet, score_scheme)
+    row_height = 25
+    header = ['Identifier', 'Center Score']
+    widths = [15, 15]
+    score_scheme.domains.sort_by { |domain| domain.title.to_i }.each do |domain|
+      header << domain.title
+      widths << 10
+      domain.subdomains.sort_by { |subdomain| subdomain.title.to_f }.each do |subdomain|
+        header << subdomain.title
+        widths << 10
+      end
+    end
+    sheet.add_row header, style: workbook.styles.add_style(b: true, alignment: { horizontal: :center, vertical: :center }),
+                          height: row_height
+    sheet.column_widths *widths
+  end
+
+  def self.mail_merge(score_scheme)
+    file = Tempfile.new(score_scheme.title)
+    row_height = 25
+    type_averages = []
+    Axlsx::Package.new do |p|
+      wb = p.workbook
+      wb.add_worksheet(name: 'CBI') do |sheet|
+        centers = Center.where(center_type: 'CBI')
+        write_sheet_header(wb, sheet, score_scheme)
+        type_averages << write_sheet_data(wb, sheet, score_scheme, centers)
+      end
+      wb.add_worksheet(name: 'CDI') do |sheet|
+        centers = Center.where(center_type: 'CDI')
+        write_sheet_header(wb, sheet, score_scheme)
+        type_averages << write_sheet_data(wb, sheet, score_scheme, centers)
+      end
+      wb.add_worksheet(name: 'Pub. CDA') do |sheet|
+        centers = Center.where('center_type = ? and administration = ?', 'CDA', 'Publico')
+        write_sheet_header(wb, sheet, score_scheme)
+        type_averages << write_sheet_data(wb, sheet, score_scheme, centers)
+      end
+      wb.add_worksheet(name: 'Pri. CDA') do |sheet|
+        centers = Center.where('center_type = ? and administration = ?', 'CDA', 'Privado')
+        write_sheet_header(wb, sheet, score_scheme)
+        type_averages << write_sheet_data(wb, sheet, score_scheme, centers)
+      end
+      wb.add_worksheet(name: 'Summary') do |sheet|
+        write_sheet_header(wb, sheet, score_scheme)
+        centers = Center.where(center_type: 'CDA')
+        rows, nat_avg_row = sheet_data(score_scheme, centers)
+        type_averages << nat_avg_row
+        ['CBIs - Nacional', 'CDI - Nacional', 'CdAs Públicos', 'CdAs Privados', 'Ambos CdAs'].each_with_index do |type, index|
+          row = type_averages[index]
+          row[0] = type
+          sheet.add_row row, style: wb.styles.add_style(alignment: { horizontal: :center, vertical: :center })
+        end
+      end
+      p.serialize(file.path)
+    end
+    file
+  end
+
   def self.download(score_scheme)
     weights = score_scheme.score_data.pluck(:weight).uniq
     files = {}
