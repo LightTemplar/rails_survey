@@ -45,7 +45,7 @@ class Center < ApplicationRecord
     rows.each do |row|
       sheet.add_row row, style: workbook.styles.add_style(alignment: { horizontal: :center, vertical: :center })
     end
-    nat_avg_row
+    [rows, nat_avg_row]
   end
 
   def self.sheet_data(score_scheme, centers)
@@ -113,31 +113,98 @@ class Center < ApplicationRecord
     sheet.column_widths *widths
   end
 
+  def write_domain_graphs(sheet, score_scheme, domain_title, start_at, end_at, c_data, c_labels, n_data, type_of_center)
+    domain = score_scheme.domains.find_by title: domain_title
+    title = full_sanitize(domain.translated_title_name('es'))
+    colors1 = domain.subdomains.map { |_e| '3e6232' }
+    colors2 = domain.subdomains.map { |_e| '9ab77d' }
+    sheet.add_chart(Axlsx::Bar3DChart, start_at: start_at, end_at: end_at, title: title) do |chart|
+      chart.barDir = :col
+      chart.legend_position = :b
+      chart.cat_axis.gridlines = false
+      chart.val_axis.gridlines = false
+      chart.val_axis.scaling.min = 0.0
+      chart.val_axis.scaling.max = 7.0
+      chart.add_series data: sheet[c_data], labels: sheet[c_labels], title: identifier, colors: colors1
+      chart.add_series data: sheet[n_data], title: type_of_center, colors: colors2
+    end
+  end
+
+  def self.write_center_graphs(centers, rows, workbook, nat_avg_row, score_scheme, type_of_center)
+    rows.each do |crow|
+      center = centers.find_by identifier: crow[0]
+      workbook.add_worksheet(name: crow[0]) do |sheet|
+        index = 0
+        header = ['Subdomain', crow[index], type_of_center]
+        index += 1
+        sheet.add_row header, style: workbook.styles.add_style(b: true, alignment: { horizontal: :center, vertical: :center }),
+                              height: center.row_height
+        sheet.add_row ['center level score', crow[index], nat_avg_row[index]],
+                      style: workbook.styles.add_style(alignment: { horizontal: :center, vertical: :center })
+        score_scheme.domains.sort_by { |domain| domain.title.to_i }.each do |domain|
+          index += 1
+          domain.subdomains.sort_by { |subdomain| subdomain.title.to_f }.each do |subdomain|
+            sheet.add_row [subdomain.title, crow[index], nat_avg_row[index]],
+                          style: workbook.styles.add_style(alignment: { horizontal: :center, vertical: :center })
+            index += 1
+          end
+        end
+        # Center level
+        sheet.add_chart(Axlsx::Bar3DChart, start_at: 'E1', end_at: 'S15') do |chart|
+          chart.barDir = :col
+          chart.legend_position = :b
+          chart.cat_axis.gridlines = false
+          chart.val_axis.gridlines = false
+          chart.val_axis.scaling.min = 0.0
+          chart.val_axis.scaling.max = 7.0
+          chart.add_series data: sheet['B2:C2'], labels: sheet['B1:C1'], title: 'Puntuaciones de Nivel Central', colors: %w[3e6232 9ab77d]
+        end
+        # Domain level
+        center.write_domain_graphs(sheet, score_scheme, '1', 'E16', 'S35', 'B3:B7', 'A3:A7', 'C3:C7', type_of_center)
+        center.write_domain_graphs(sheet, score_scheme, '2', 'E36', 'S55', 'B8:B16', 'A8:A16', 'C8:C16', type_of_center)
+        center.write_domain_graphs(sheet, score_scheme, '3', 'E56', 'S75', 'B17:B22', 'A17:A22', 'C17:C22', type_of_center)
+        center.write_domain_graphs(sheet, score_scheme, '4', 'E76', 'S95', 'B23:B28', 'A23:A28', 'C23:C28', type_of_center)
+        center.write_domain_graphs(sheet, score_scheme, '5', 'E96', 'S115', 'B29:B37', 'A29:A37', 'C29:C37', type_of_center)
+        center.write_domain_graphs(sheet, score_scheme, '6', 'E116', 'S135', 'B38:B40', 'A38:A40', 'C38:C40', type_of_center)
+      end
+    end
+  end
+
   def self.mail_merge(score_scheme)
-    file = Tempfile.new(score_scheme.title)
-    row_height = 25
+    file = Tempfile.new("#{score_scheme.title}-summary")
+    file1 = Tempfile.new("#{score_scheme.title}-individual")
+    p1 = Axlsx::Package.new
+    wb1 = p1.workbook
     type_averages = []
     Axlsx::Package.new do |p|
       wb = p.workbook
       wb.add_worksheet(name: 'CBI') do |sheet|
         centers = Center.where(center_type: 'CBI')
         write_sheet_header(wb, sheet, score_scheme)
-        type_averages << write_sheet_data(wb, sheet, score_scheme, centers)
+        rows, nat_avg_row = write_sheet_data(wb, sheet, score_scheme, centers)
+        type_averages << nat_avg_row
+        write_center_graphs(centers, rows, wb1, nat_avg_row, score_scheme, 'CBI - Nacional')
       end
       wb.add_worksheet(name: 'CDI') do |sheet|
         centers = Center.where(center_type: 'CDI')
         write_sheet_header(wb, sheet, score_scheme)
-        type_averages << write_sheet_data(wb, sheet, score_scheme, centers)
+        rows, nat_avg_row = write_sheet_data(wb, sheet, score_scheme, centers)
+        type_averages << nat_avg_row
+        write_center_graphs(centers, rows, wb1, nat_avg_row, score_scheme, 'CDI - Nacional')
       end
       wb.add_worksheet(name: 'Pub. CDA') do |sheet|
         centers = Center.where('center_type = ? and administration = ?', 'CDA', 'Publico')
         write_sheet_header(wb, sheet, score_scheme)
-        type_averages << write_sheet_data(wb, sheet, score_scheme, centers)
+        rows, nat_avg_row = write_sheet_data(wb, sheet, score_scheme, centers)
+        type_averages << nat_avg_row
+        write_center_graphs(centers, rows, wb1, nat_avg_row, score_scheme, 'CDA Pub - Nacional')
       end
       wb.add_worksheet(name: 'Pri. CDA') do |sheet|
         centers = Center.where('center_type = ? and administration = ?', 'CDA', 'Privado')
         write_sheet_header(wb, sheet, score_scheme)
-        type_averages << write_sheet_data(wb, sheet, score_scheme, centers)
+        rows, nat_avg_row = write_sheet_data(wb, sheet, score_scheme, centers)
+        type_averages << nat_avg_row
+        write_center_graphs(centers, rows, wb1, nat_avg_row, score_scheme, 'CDA Pri - Nacional')
       end
       wb.add_worksheet(name: 'Summary') do |sheet|
         write_sheet_header(wb, sheet, score_scheme)
@@ -151,8 +218,15 @@ class Center < ApplicationRecord
         end
       end
       p.serialize(file.path)
+      p1.serialize(file1.path)
     end
-    file
+
+    zip_file = Tempfile.new("#{score_scheme.title.split.join('_')}_#{Time.now.to_i}.zip")
+    Zip::File.open(zip_file, Zip::File::CREATE) do |zipfile|
+      zipfile.add("summary-#{Time.now.to_i}.xlsx", file.path)
+      zipfile.add("individual-#{Time.now.to_i}.xlsx", file1.path)
+    end
+    zip_file
   end
 
   def self.download(score_scheme)

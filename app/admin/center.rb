@@ -67,8 +67,8 @@ ActiveAdmin.register Center do
 
     def mail_merge
       ss = ScoreScheme.find(params[:score_scheme_id])
-      send_file Center.mail_merge(ss), type: 'text/xlsx',
-                                       filename: "#{ss.title.split.join('_')}_#{Time.now.to_i}.xlsx"
+      send_file Center.mail_merge(ss), type: 'application/zip',
+                                       filename: "#{ss.title.split.join('_')}_mail_merge_#{Time.now.to_i}.zip"
     end
   end
 end
