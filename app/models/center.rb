@@ -118,11 +118,10 @@ class Center < ApplicationRecord
     title = full_sanitize(domain.translated_title_name('es'))
     colors1 = domain.subdomains.map { |_e| '3e6232' }
     colors2 = domain.subdomains.map { |_e| '9ab77d' }
-    sheet.add_chart(Axlsx::Bar3DChart, start_at: start_at, end_at: end_at, title: title) do |chart|
+    sheet.add_chart(Axlsx::BarChart, start_at: start_at, end_at: end_at, title: title) do |chart|
       chart.barDir = :col
       chart.legend_position = :b
       chart.cat_axis.gridlines = false
-      chart.val_axis.gridlines = false
       chart.val_axis.scaling.min = 0.0
       chart.val_axis.scaling.max = 7.0
       chart.add_series data: sheet[c_data], labels: sheet[c_labels], title: identifier, colors: colors1
@@ -150,22 +149,21 @@ class Center < ApplicationRecord
           end
         end
         # Center level
-        sheet.add_chart(Axlsx::Bar3DChart, start_at: 'E1', end_at: 'S15') do |chart|
+        sheet.add_chart(Axlsx::BarChart, start_at: 'E1', end_at: 'S20') do |chart|
           chart.barDir = :col
           chart.legend_position = :b
           chart.cat_axis.gridlines = false
-          chart.val_axis.gridlines = false
           chart.val_axis.scaling.min = 0.0
           chart.val_axis.scaling.max = 7.0
           chart.add_series data: sheet['B2:C2'], labels: sheet['B1:C1'], title: 'Puntuaciones de Nivel Central', colors: %w[3e6232 9ab77d]
         end
         # Domain level
-        center.write_domain_graphs(sheet, score_scheme, '1', 'E16', 'S35', 'B3:B7', 'A3:A7', 'C3:C7', type_of_center)
-        center.write_domain_graphs(sheet, score_scheme, '2', 'E36', 'S55', 'B8:B16', 'A8:A16', 'C8:C16', type_of_center)
-        center.write_domain_graphs(sheet, score_scheme, '3', 'E56', 'S75', 'B17:B22', 'A17:A22', 'C17:C22', type_of_center)
-        center.write_domain_graphs(sheet, score_scheme, '4', 'E76', 'S95', 'B23:B28', 'A23:A28', 'C23:C28', type_of_center)
-        center.write_domain_graphs(sheet, score_scheme, '5', 'E96', 'S115', 'B29:B37', 'A29:A37', 'C29:C37', type_of_center)
-        center.write_domain_graphs(sheet, score_scheme, '6', 'E116', 'S135', 'B38:B40', 'A38:A40', 'C38:C40', type_of_center)
+        center.write_domain_graphs(sheet, score_scheme, '1', 'E21', 'S40', 'B3:B7', 'A3:A7', 'C3:C7', type_of_center)
+        center.write_domain_graphs(sheet, score_scheme, '2', 'E41', 'S60', 'B8:B16', 'A8:A16', 'C8:C16', type_of_center)
+        center.write_domain_graphs(sheet, score_scheme, '3', 'E61', 'S80', 'B17:B22', 'A17:A22', 'C17:C22', type_of_center)
+        center.write_domain_graphs(sheet, score_scheme, '4', 'E81', 'S100', 'B23:B28', 'A23:A28', 'C23:C28', type_of_center)
+        center.write_domain_graphs(sheet, score_scheme, '5', 'E101', 'S120', 'B29:B37', 'A29:A37', 'C29:C37', type_of_center)
+        center.write_domain_graphs(sheet, score_scheme, '6', 'E121', 'S140', 'B38:B40', 'A38:A40', 'C38:C40', type_of_center)
       end
     end
   end
