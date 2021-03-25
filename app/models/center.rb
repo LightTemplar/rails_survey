@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+# frozen_string_literal: false
 
 # == Schema Information
 #
@@ -122,11 +122,19 @@ class Center < ApplicationRecord
       chart.barDir = :col
       chart.legend_position = :b
       chart.cat_axis.gridlines = false
+      chart.val_axis.gridlines = false
       chart.val_axis.scaling.min = 0.0
       chart.val_axis.scaling.max = 7.0
-      chart.add_series data: sheet[c_data], labels: sheet[c_labels], title: identifier, colors: colors1
-      chart.add_series data: sheet[n_data], title: type_of_center, colors: colors2
+      chart.add_series data: sheet[c_data], labels: sheet[c_labels], title: identifier, colors: colors1, color: '3e6232'
+      chart.add_series data: sheet[n_data], title: type_of_center, colors: colors2, color: '9ab77d'
     end
+    end_at[0] = 'T'
+    add_image_to_chart(sheet, start_at, end_at)
+  end
+
+  def add_image_to_chart(sheet, start_at, end_at)
+    image = File.expand_path('app/assets/images/levels.png')
+    sheet.add_image(image_src: image, start_at: start_at, end_at: end_at)
   end
 
   def self.write_center_graphs(centers, rows, workbook, nat_avg_row, score_scheme, type_of_center)
@@ -148,15 +156,19 @@ class Center < ApplicationRecord
             index += 1
           end
         end
+
         # Center level
         sheet.add_chart(Axlsx::BarChart, start_at: 'E1', end_at: 'S20') do |chart|
           chart.barDir = :col
           chart.legend_position = :b
           chart.cat_axis.gridlines = false
+          chart.val_axis.gridlines = false
           chart.val_axis.scaling.min = 0.0
           chart.val_axis.scaling.max = 7.0
           chart.add_series data: sheet['B2:C2'], labels: sheet['B1:C1'], title: 'Puntuaciones de Nivel Central', colors: %w[3e6232 9ab77d]
         end
+        center.add_image_to_chart(sheet, 'E1', 'T20')
+
         # Domain level
         center.write_domain_graphs(sheet, score_scheme, '1', 'E21', 'S40', 'B3:B7', 'A3:A7', 'C3:C7', type_of_center)
         center.write_domain_graphs(sheet, score_scheme, '2', 'E41', 'S60', 'B8:B16', 'A8:A16', 'C8:C16', type_of_center)
