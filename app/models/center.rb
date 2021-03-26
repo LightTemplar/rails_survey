@@ -128,8 +128,8 @@ class Center < ApplicationRecord
       chart.add_series data: sheet[c_data], labels: sheet[c_labels], title: identifier, colors: colors1, color: '3e6232'
       chart.add_series data: sheet[n_data], title: type_of_center, colors: colors2, color: '9ab77d'
     end
-    end_at[0] = 'T'
-    add_image_to_chart(sheet, start_at, end_at)
+    # end_at[0] = 'T'
+    # add_image_to_chart(sheet, start_at, end_at)
   end
 
   def add_image_to_chart(sheet, start_at, end_at)
@@ -167,7 +167,7 @@ class Center < ApplicationRecord
           chart.val_axis.scaling.max = 7.0
           chart.add_series data: sheet['B2:C2'], labels: sheet['B1:C1'], title: 'Puntuaciones de Nivel Central', colors: %w[3e6232 9ab77d]
         end
-        center.add_image_to_chart(sheet, 'E1', 'T20')
+        # center.add_image_to_chart(sheet, 'E1', 'T20')
 
         # Domain level
         center.write_domain_graphs(sheet, score_scheme, '1', 'E21', 'S40', 'B3:B7', 'A3:A7', 'C3:C7', type_of_center)
@@ -186,39 +186,52 @@ class Center < ApplicationRecord
     p1 = Axlsx::Package.new
     wb1 = p1.workbook
     type_averages = []
+    center_identifiers = []
     Axlsx::Package.new do |p|
       wb = p.workbook
       wb.add_worksheet(name: 'CBI') do |sheet|
-        centers = Center.where(center_type: 'CBI')
+        centers = score_scheme.centers.where(center_type: 'CBI')
         write_sheet_header(wb, sheet, score_scheme)
         rows, nat_avg_row = write_sheet_data(wb, sheet, score_scheme, centers)
         type_averages << nat_avg_row
+        rows.each do |crow|
+          center_identifiers << crow[0]
+        end
         write_center_graphs(centers, rows, wb1, nat_avg_row, score_scheme, 'CBI - Nacional')
       end
       wb.add_worksheet(name: 'CDI') do |sheet|
-        centers = Center.where(center_type: 'CDI')
+        centers = score_scheme.centers.where(center_type: 'CDI')
         write_sheet_header(wb, sheet, score_scheme)
         rows, nat_avg_row = write_sheet_data(wb, sheet, score_scheme, centers)
         type_averages << nat_avg_row
+        rows.each do |crow|
+          center_identifiers << crow[0]
+        end
         write_center_graphs(centers, rows, wb1, nat_avg_row, score_scheme, 'CDI - Nacional')
       end
       wb.add_worksheet(name: 'Pub. CDA') do |sheet|
-        centers = Center.where('center_type = ? and administration = ?', 'CDA', 'Publico')
+        centers = score_scheme.centers.where('center_type = ? and administration = ?', 'CDA', 'Publico')
         write_sheet_header(wb, sheet, score_scheme)
         rows, nat_avg_row = write_sheet_data(wb, sheet, score_scheme, centers)
         type_averages << nat_avg_row
+        rows.each do |crow|
+          center_identifiers << crow[0]
+        end
         write_center_graphs(centers, rows, wb1, nat_avg_row, score_scheme, 'CDA Pub - Nacional')
       end
       wb.add_worksheet(name: 'Pri. CDA') do |sheet|
-        centers = Center.where('center_type = ? and administration = ?', 'CDA', 'Privado')
+        centers = score_scheme.centers.where('center_type = ? and administration = ?', 'CDA', 'Privado')
         write_sheet_header(wb, sheet, score_scheme)
         rows, nat_avg_row = write_sheet_data(wb, sheet, score_scheme, centers)
         type_averages << nat_avg_row
+        rows.each do |crow|
+          center_identifiers << crow[0]
+        end
         write_center_graphs(centers, rows, wb1, nat_avg_row, score_scheme, 'CDA Pri - Nacional')
       end
       wb.add_worksheet(name: 'Summary') do |sheet|
         write_sheet_header(wb, sheet, score_scheme)
-        centers = Center.where(center_type: 'CDA')
+        centers = score_scheme.centers.where(center_type: 'CDA')
         rows, nat_avg_row = sheet_data(score_scheme, centers)
         type_averages << nat_avg_row
         ['CBIs - Nacional', 'CDI - Nacional', 'CdAs Públicos', 'CdAs Privados', 'Ambos CdAs'].each_with_index do |type, index|
@@ -231,10 +244,16 @@ class Center < ApplicationRecord
       p1.serialize(file1.path)
     end
 
+    file2 = Tempfile.new("#{score_scheme.title}-identifiers.csv")
+    CSV.open(file2, 'w') do |row|
+      row << center_identifiers
+    end
+
     zip_file = Tempfile.new("#{score_scheme.title.split.join('_')}_#{Time.now.to_i}.zip")
     Zip::File.open(zip_file, Zip::File::CREATE) do |zipfile|
       zipfile.add("summary-#{Time.now.to_i}.xlsx", file.path)
       zipfile.add("individual-#{Time.now.to_i}.xlsx", file1.path)
+      zipfile.add("identifiers-#{Time.now.to_i}.csv", file2.path)
     end
     zip_file
   end
