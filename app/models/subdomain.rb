@@ -40,6 +40,14 @@ class Subdomain < ApplicationRecord
                 .join(' | ')
   end
 
+  def translated_name(language)
+    tname = translations.where(language: language)
+                        .reject { |dt| dt.text.blank? }
+                        .map(&:text)
+                        .first
+    tname.blank? ? name : tname
+  end
+
   def default_subdomain_score(default_score_datum)
     subdomain_score = subdomain_scores.where(score_datum_id: default_score_datum.id).first
     subdomain_score ||= SubdomainScore.create(subdomain_id: id, score_datum_id: default_score_datum.id)

@@ -59,7 +59,7 @@ class Center < ApplicationRecord
       c_score_data = center.score_data.where(survey_score_id: css.pluck(:id)).where(weight: nil).where(operator: nil)
       c_score = center.average_score(c_score_data)
       national << c_score
-      row = [center.identifier, c_score]
+      row = [center.identifier, center.name, c_score]
       score_scheme.domains.sort_by { |domain| domain.title.to_i }.each do |domain|
         ds = center.domain_scores.where(score_datum_id: c_score_data.pluck(:id)).where(domain_id: domain.id)
         d_score = center.average_score(ds)
@@ -69,6 +69,8 @@ class Center < ApplicationRecord
         d_arr << d_score unless d_score.blank?
         scores[domain.title] = d_arr
         domain.subdomains.sort_by { |subdomain| subdomain.title.to_f }.each do |subdomain|
+          next if subdomain.title == '1.5' || subdomain.title == '5.9'
+
           sds = center.subdomain_scores.where(score_datum_id: c_score_data.pluck(:id)).where(subdomain_id: subdomain.id)
           sd_score = center.average_score(sds)
           row << sd_score
@@ -80,13 +82,15 @@ class Center < ApplicationRecord
       end
       rows << row
     end
-    nat_avg_row = ['Nacional', national.sum.fdiv(national.size).round(2)]
+    nat_avg_row = ['Nacional', 'Nacional', national.sum.fdiv(national.size).round(2)]
     score_scheme.domains.sort_by { |domain| domain.title.to_i }.each do |domain|
       d_scores = scores[domain.title]
       d_avg = d_scores.sum.fdiv(d_scores.size).round(2)
       d_avg = '' if d_avg.nan?
       nat_avg_row << d_avg
       domain.subdomains.sort_by { |subdomain| subdomain.title.to_f }.each do |subdomain|
+        next if subdomain.title == '1.5' || subdomain.title == '5.9'
+
         sd_scores = scores[subdomain.title]
         sd_avg = sd_scores.sum.fdiv(sd_scores.size).round(2)
         sd_avg = '' if sd_avg.nan?
@@ -96,14 +100,21 @@ class Center < ApplicationRecord
     [rows, nat_avg_row]
   end
 
-  def self.write_sheet_header(workbook, sheet, score_scheme)
+  def self.write_sheet_header(workbook, sheet, score_scheme, include_name = true)
     row_height = 25
-    header = ['Identifier', 'Center Score']
-    widths = [15, 15]
+    if include_name
+      header = %w[Identifier Name Score]
+      widths = [15, 15, 15]
+    else
+      header = %w[Identifier Score]
+      widths = [15, 15]
+    end
     score_scheme.domains.sort_by { |domain| domain.title.to_i }.each do |domain|
       header << domain.title
       widths << 10
       domain.subdomains.sort_by { |subdomain| subdomain.title.to_f }.each do |subdomain|
+        next if subdomain.title == '1.5' || subdomain.title == '5.9'
+
         header << subdomain.title
         widths << 10
       end
@@ -113,20 +124,24 @@ class Center < ApplicationRecord
     sheet.column_widths *widths
   end
 
-  def write_domain_graphs(sheet, score_scheme, domain_title, start_at, end_at, c_data, c_labels, n_data, type_of_center)
+  def write_domain_graphs(sheet, score_scheme, domain_title, start_at, end_at, c_data, c_labels, n_data, type_of_center, ambos = nil)
     domain = score_scheme.domains.find_by title: domain_title
     title = full_sanitize(domain.translated_title_name('es'))
     colors1 = domain.subdomains.map { |_e| '3e6232' }
     colors2 = domain.subdomains.map { |_e| '9ab77d' }
+    colors3 = domain.subdomains.map { |_e| '6c994f' } if ambos
     sheet.add_chart(Axlsx::BarChart, start_at: start_at, end_at: end_at, title: title) do |chart|
       chart.barDir = :col
       chart.legend_position = :b
       chart.cat_axis.gridlines = false
-      chart.val_axis.gridlines = false
+      # chart.cat_axis.label_rotation = 45 if domain_title == '2' || domain_title == '5'
+      chart.val_axis.gridlines = true
+      chart.val_axis.dash = true
       chart.val_axis.scaling.min = 0.0
       chart.val_axis.scaling.max = 7.0
-      chart.add_series data: sheet[c_data], labels: sheet[c_labels], title: identifier, colors: colors1, color: '3e6232'
+      chart.add_series data: sheet[c_data], labels: sheet[c_labels], title: name, colors: colors1, color: '3e6232'
       chart.add_series data: sheet[n_data], title: type_of_center, colors: colors2, color: '9ab77d'
+      chart.add_series data: sheet[ambos], title: 'Ambos CDAs', colors: colors3, color: '6c994f' if ambos
     end
     # end_at[0] = 'T'
     # add_image_to_chart(sheet, start_at, end_at)
@@ -137,45 +152,73 @@ class Center < ApplicationRecord
     sheet.add_image(image_src: image, start_at: start_at, end_at: end_at)
   end
 
-  def self.write_center_graphs(centers, rows, workbook, nat_avg_row, score_scheme, type_of_center)
+  def self.write_center_graphs(centers, rows, workbook, nat_avg_row, score_scheme, type_of_center, cda_nat_avg_row = nil)
     rows.each do |crow|
       center = centers.find_by identifier: crow[0]
       workbook.add_worksheet(name: crow[0]) do |sheet|
-        index = 0
-        header = ['Subdomain', crow[index], type_of_center]
+        index = 1
+        header = if cda_nat_avg_row
+                   ['Subdomain', crow[index], type_of_center, 'Ambos CDAs']
+                 else
+                   ['Subdomain', crow[index], type_of_center]
+                 end
         index += 1
         sheet.add_row header, style: workbook.styles.add_style(b: true, alignment: { horizontal: :center, vertical: :center }),
                               height: center.row_height
-        sheet.add_row ['center level score', crow[index], nat_avg_row[index]],
-                      style: workbook.styles.add_style(alignment: { horizontal: :center, vertical: :center })
+        first_row = if cda_nat_avg_row
+                      ['center level', crow[index], nat_avg_row[index], cda_nat_avg_row[index]]
+                    else
+                      ['center level', crow[index], nat_avg_row[index]]
+                    end
+        sheet.add_row first_row, style: workbook.styles.add_style(alignment: { horizontal: :center, vertical: :center })
         score_scheme.domains.sort_by { |domain| domain.title.to_i }.each do |domain|
           index += 1
           domain.subdomains.sort_by { |subdomain| subdomain.title.to_f }.each do |subdomain|
-            sheet.add_row [subdomain.title, crow[index], nat_avg_row[index]],
-                          style: workbook.styles.add_style(alignment: { horizontal: :center, vertical: :center })
+            next if subdomain.title == '1.5' || subdomain.title == '5.9'
+
+            next_row = if cda_nat_avg_row
+                         [center.full_sanitizer.sanitize(subdomain.translated_name('es')).truncate(25, omission: ''), crow[index], nat_avg_row[index], cda_nat_avg_row[index]]
+                       else
+                         [center.full_sanitizer.sanitize(subdomain.translated_name('es')).truncate(25, omission: ''), crow[index], nat_avg_row[index]]
+                       end
+            sheet.add_row next_row, style: workbook.styles.add_style(alignment: { horizontal: :center, vertical: :center })
             index += 1
           end
         end
 
         # Center level
-        sheet.add_chart(Axlsx::BarChart, start_at: 'E1', end_at: 'S20') do |chart|
+        sheet.add_chart(Axlsx::BarChart, start_at: 'E1', end_at: 'Q20') do |chart|
           chart.barDir = :col
           chart.legend_position = :b
           chart.cat_axis.gridlines = false
-          chart.val_axis.gridlines = false
+          chart.val_axis.gridlines = true
+          chart.val_axis.dash = true
           chart.val_axis.scaling.min = 0.0
           chart.val_axis.scaling.max = 7.0
-          chart.add_series data: sheet['B2:C2'], labels: sheet['B1:C1'], title: 'Puntuaciones de Nivel Central', colors: %w[3e6232 9ab77d]
+          if cda_nat_avg_row
+            chart.add_series data: sheet['B2:D2'], labels: sheet['B1:D1'], title: 'Puntuaciones de Nivel Central', colors: %w[3e6232 9ab77d 6c994f]
+          else
+            chart.add_series data: sheet['B2:C2'], labels: sheet['B1:C1'], title: 'Puntuaciones de Nivel Central', colors: %w[3e6232 9ab77d]
+          end
         end
         # center.add_image_to_chart(sheet, 'E1', 'T20')
 
         # Domain level
-        center.write_domain_graphs(sheet, score_scheme, '1', 'E21', 'S40', 'B3:B7', 'A3:A7', 'C3:C7', type_of_center)
-        center.write_domain_graphs(sheet, score_scheme, '2', 'E41', 'S60', 'B8:B16', 'A8:A16', 'C8:C16', type_of_center)
-        center.write_domain_graphs(sheet, score_scheme, '3', 'E61', 'S80', 'B17:B22', 'A17:A22', 'C17:C22', type_of_center)
-        center.write_domain_graphs(sheet, score_scheme, '4', 'E81', 'S100', 'B23:B28', 'A23:A28', 'C23:C28', type_of_center)
-        center.write_domain_graphs(sheet, score_scheme, '5', 'E101', 'S120', 'B29:B37', 'A29:A37', 'C29:C37', type_of_center)
-        center.write_domain_graphs(sheet, score_scheme, '6', 'E121', 'S140', 'B38:B40', 'A38:A40', 'C38:C40', type_of_center)
+        if cda_nat_avg_row
+          center.write_domain_graphs(sheet, score_scheme, '1', 'E21', 'Q40', 'B3:B6', 'A3:A6', 'C3:C6', type_of_center, 'D3:D6')
+          center.write_domain_graphs(sheet, score_scheme, '2', 'E41', 'Q60', 'B7:B15', 'A7:A15', 'C7:C15', type_of_center, 'D7:D15')
+          center.write_domain_graphs(sheet, score_scheme, '3', 'E61', 'Q80', 'B16:B21', 'A16:A21', 'C16:C21', type_of_center, 'D16:D21')
+          center.write_domain_graphs(sheet, score_scheme, '4', 'E81', 'Q100', 'B22:B27', 'A22:A27', 'C22:C27', type_of_center, 'D22:D27')
+          center.write_domain_graphs(sheet, score_scheme, '5', 'E101', 'Q120', 'B28:B35', 'A28:A35', 'C28:C35', type_of_center, 'D28:D35')
+          center.write_domain_graphs(sheet, score_scheme, '6', 'E121', 'Q140', 'B36:B38', 'A36:A38', 'C36:C38', type_of_center, 'D36:D38')
+        else
+          center.write_domain_graphs(sheet, score_scheme, '1', 'E21', 'Q40', 'B3:B6', 'A3:A6', 'C3:C6', type_of_center)
+          center.write_domain_graphs(sheet, score_scheme, '2', 'E41', 'Q60', 'B7:B15', 'A7:A15', 'C7:C15', type_of_center)
+          center.write_domain_graphs(sheet, score_scheme, '3', 'E61', 'Q80', 'B16:B21', 'A16:A21', 'C16:C21', type_of_center)
+          center.write_domain_graphs(sheet, score_scheme, '4', 'E81', 'Q100', 'B22:B27', 'A22:A27', 'C22:C27', type_of_center)
+          center.write_domain_graphs(sheet, score_scheme, '5', 'E101', 'Q120', 'B28:B35', 'A28:A35', 'C28:C35', type_of_center)
+          center.write_domain_graphs(sheet, score_scheme, '6', 'E121', 'Q140', 'B36:B38', 'A36:A38', 'C36:C38', type_of_center)
+      end
       end
     end
   end
@@ -209,6 +252,8 @@ class Center < ApplicationRecord
         end
         write_center_graphs(centers, rows, wb1, nat_avg_row, score_scheme, 'CDI - Nacional')
       end
+      cdas = score_scheme.centers.where(center_type: 'CDA')
+      c_rows, c_nat_avg_row = sheet_data(score_scheme, cdas)
       wb.add_worksheet(name: 'Pub. CDA') do |sheet|
         centers = score_scheme.centers.where('center_type = ? and administration = ?', 'CDA', 'Publico')
         write_sheet_header(wb, sheet, score_scheme)
@@ -217,7 +262,7 @@ class Center < ApplicationRecord
         rows.each do |crow|
           center_identifiers << crow[0]
         end
-        write_center_graphs(centers, rows, wb1, nat_avg_row, score_scheme, 'CDA Pub - Nacional')
+        write_center_graphs(centers, rows, wb1, nat_avg_row, score_scheme, 'CDA Publico - Nacional', c_nat_avg_row)
       end
       wb.add_worksheet(name: 'Pri. CDA') do |sheet|
         centers = score_scheme.centers.where('center_type = ? and administration = ?', 'CDA', 'Privado')
@@ -227,16 +272,17 @@ class Center < ApplicationRecord
         rows.each do |crow|
           center_identifiers << crow[0]
         end
-        write_center_graphs(centers, rows, wb1, nat_avg_row, score_scheme, 'CDA Pri - Nacional')
+        write_center_graphs(centers, rows, wb1, nat_avg_row, score_scheme, 'CDA Privado - Nacional', c_nat_avg_row)
       end
       wb.add_worksheet(name: 'Summary') do |sheet|
-        write_sheet_header(wb, sheet, score_scheme)
+        write_sheet_header(wb, sheet, score_scheme, false)
         centers = score_scheme.centers.where(center_type: 'CDA')
         rows, nat_avg_row = sheet_data(score_scheme, centers)
         type_averages << nat_avg_row
         ['CBIs - Nacional', 'CDI - Nacional', 'CdAs Públicos', 'CdAs Privados', 'Ambos CdAs'].each_with_index do |type, index|
           row = type_averages[index]
           row[0] = type
+          row.delete_at(1)
           sheet.add_row row, style: wb.styles.add_style(alignment: { horizontal: :center, vertical: :center })
         end
       end
