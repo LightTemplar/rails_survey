@@ -27,6 +27,17 @@ Axlsx::BarSeries.class_eval do
         str << '</c:spPr>'
       end
 
+      # Show Data Labels
+      str << '<c:dLbls><c:showLegendKey val="0"/><c:showVal val="1"/><c:showCatName val="0"/><c:showSerName val="0"/>'
+      # Ignore those with empty values
+      @data.data.pt.list.each_with_index do |datum, index|
+        next unless datum.v == ''
+
+        str << ('<c:dLbl><c:idx val="' << index.to_s << '">')
+        str << '<c:showLegendKey val="0"/><c:showVal val="0"/><c:showCatName val="0"/><c:showSerName val="0"/></c:idx></c:dLbl>'
+      end
+      str << '</c:dLbls>'
+
       @labels&.to_xml_string(str)
       @data&.to_xml_string(str)
       # this is actually only required for shapes other than box
