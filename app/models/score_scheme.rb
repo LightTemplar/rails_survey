@@ -207,4 +207,12 @@ class ScoreScheme < ApplicationRecord
     end
     zip_file
   end
+
+  def interview_identifiers
+    instrument.sections.find_by(title: '4. Interview').instrument_questions.pluck(:identifier)
+  end
+
+  def observation_identifiers
+    instrument.sections.find_by(title: '5. Observation').instrument_questions.pluck(:identifier)
+  end
 end

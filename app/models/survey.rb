@@ -152,6 +152,12 @@ class Survey < ApplicationRecord
     metadata['survey_label'] if metadata
   end
 
+  def done_on
+    timestamp = YAML.safe_load(metadata['location'])['timestamp'] if metadata
+    datetime = Time.at(timestamp / 1000).to_datetime if timestamp
+    datetime.nil? ? created_at : datetime
+  end
+
   def question_by_identifier(question_identifier)
     iq = instrument.instrument_questions.with_deleted.where(identifier: question_identifier).first
     if iq.nil?

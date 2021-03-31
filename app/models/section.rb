@@ -17,6 +17,7 @@ class Section < ApplicationRecord
   include Translatable
   belongs_to :instrument, touch: true
   has_many :displays, -> { order 'displays.position' }, dependent: :destroy
+  has_many :instrument_questions, through: :displays
   has_many :translations, foreign_key: 'section_id', class_name: 'SectionTranslation', dependent: :destroy
 
   acts_as_paranoid

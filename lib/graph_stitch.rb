@@ -20,7 +20,7 @@ def write_image(background, filename, identifier, number)
   result = background.composite(image, Magick::CenterGravity, Magick::OverCompositeOp)
   gc = Magick::Draw.new
   gc.stroke('black')
-  gc.stroke_width(2)
+  # gc.stroke_width(2)
   if number == 0
     gc.line(330, 172, 1610, 172)
     gc.line(330, 289, 1610, 289)

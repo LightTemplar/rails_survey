@@ -286,6 +286,19 @@ class Center < ApplicationRecord
           sheet.add_row row, style: wb.styles.add_style(alignment: { horizontal: :center, vertical: :center })
         end
       end
+      wb.add_worksheet(name: 'Centers') do |sheet|
+        centers = score_scheme.centers
+        sheet.add_row %w[Identifier Name Contact Date Interview Observation],
+                      style: wb.styles.add_style(b: true, alignment: { horizontal: :center, vertical: :center }), height: 25
+        centers.sort_by { |c| c.identifier.to_i }.each do |center|
+          css = center.survey_scores.where(score_scheme_id: score_scheme.id)
+          next if css.empty?
+
+          sheet.add_row [center.identifier, center.name, center.contact(css), center.interview_date(css),
+                         center.interview?(css, score_scheme), center.observation?(css, score_scheme)]
+          sheet.column_widths 20, 20, 20, 20
+        end
+      end
       p.serialize(file.path)
       p1.serialize(file1.path)
     end
@@ -302,6 +315,41 @@ class Center < ApplicationRecord
       zipfile.add("identifiers-#{Time.now.to_i}.csv", file2.path)
     end
     zip_file
+  end
+
+  def contact(css)
+    contacts = []
+    css.each do |ss|
+      ss.survey.responses.where(question_identifier: 'ctb2').each do |res|
+        d_name = res.text.split(',')[0]&.strip
+        contacts << d_name unless d_name.blank?
+      end
+    end
+    contacts.uniq.max_by(&:length)
+  end
+
+  def interview_date(css)
+    dates = []
+    css.each do |ss|
+      dates << ss.survey.done_on
+    end
+    dates.uniq.min.strftime('%m/%d/%Y')
+  end
+
+  def interview?(css, score_scheme)
+    responses = []
+    css.each do |ss|
+      responses << ss.survey.responses.where(question_identifier: score_scheme.interview_identifiers).pluck(:text).compact.uniq
+    end
+    responses.flatten.size > css.size ? 'Yes' : 'No'
+  end
+
+  def observation?(css, score_scheme)
+    responses = []
+    css.each do |ss|
+      responses << ss.survey.responses.where(question_identifier: score_scheme.observation_identifiers).pluck(:text).compact.uniq
+    end
+    responses.flatten.size > css.size ? 'Yes' : 'No'
   end
 
   def self.download(score_scheme)
