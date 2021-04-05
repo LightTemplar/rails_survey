@@ -19,13 +19,14 @@
 
 class Image < ApplicationRecord
   belongs_to :question, counter_cache: true
-  has_attached_file :photo, styles: { small: '200x200>', medium: '300x300>' }, url: '/:attachment/:id/:basename.:extension', path: 'files/:attachment/:id/:style/:basename.:extension'
+  has_one_attached :photo
   before_save :touch_question
   acts_as_paranoid
-  validates_attachment_content_type :photo, content_type: %r{\Aimage\/.*\Z}
-  validates_attachment_file_name :photo, matches: [/png\Z/, /jpe?g\Z/]
-  validates_with AttachmentSizeValidator, attributes: :photo, less_than: 1.megabytes
   validates :question_id, presence: true, allow_blank: false
+  validates :photo, file_content_type: {
+    allow: ["image/jpeg", "image/png"],
+    if: -> { photo.attached? },
+  }
 
   def photo_url
     photo.url(:medium)

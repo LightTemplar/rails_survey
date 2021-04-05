@@ -17,9 +17,11 @@
 
 class AndroidUpdate < ApplicationRecord
   default_scope { order('version DESC') }
-  has_attached_file :apk_update, url: '/:attachment/:id/:basename.:extension', path: 'updates/:attachment/:id/:basename.:extension'
-  # octet-stream validation is for a binary file.
-  validates_attachment_content_type :apk_update, content_type: ['application/octet-stream']
+  has_one_attached :apk_update
+  validates :apk_update, file_content_type: {
+    allow: ['application/octet-stream'],
+    if: -> { apk_update.attached? },
+  }
 
   def self.latest_version
     AndroidUpdate.first

@@ -15,13 +15,14 @@
 #
 
 class ResponseImage < ApplicationRecord
-  has_attached_file :picture, styles: { small: '150x150>', medium: '300x300>' }, url: '/:attachment/:id/:basename.:extension', path: 'files/:attachment/:id/:style/:basename.:extension', default_url: 'files/:attachment/missing_:style.png'
+  has_one_attached :picture
   belongs_to :response, foreign_key: :response_uuid, primary_key: :uuid
   delegate :project, to: :response
   validates :response_uuid, presence: true
-  validates_attachment_content_type :picture, content_type: %r{\Aimage/.*\Z}
-  validates_attachment_file_name :picture, matches: [/png\Z/, /jpe?g\Z/]
-  validates_with AttachmentSizeValidator, attributes: :picture, less_than: 7.megabytes
+  validates :picture, file_content_type: {
+    allow: ["image/jpeg", "image/png"],
+    if: -> { picture.attached? },
+  }
 
   def picture_data=(data_value)
     StringIO.open(Base64.decode64(data_value)) do |data|
