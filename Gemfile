@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
-ruby '2.6.3'
+ruby '2.7.3'
 gem 'activeadmin', '~> 2.4'
 gem 'activerecord-import', '~> 1.0', '>= 1.0.3'
 gem 'acts-as-taggable-on', '~> 6.5'
