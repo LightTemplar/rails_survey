@@ -1,6 +1,6 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :project do
-    name 'test project'
-    description 'this is a project'
+    name { 'test project' }
+    description { 'this is a project' }
   end
 end

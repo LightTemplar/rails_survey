@@ -67,9 +67,9 @@ end
 group :test do
   gem 'capybara', '2.10.1'
   gem 'database_cleaner', '~> 1.0'
-  gem 'factory_girl_rails', '~> 4.0', require: false
-  gem 'rspec-mocks', '~> 2.99.0'
-  gem 'rspec-rails', '~> 2.0'
+  gem 'factory_bot_rails', '~> 6.1'
+  gem 'rspec-mocks', '~> 3.10', '>= 3.10.2'
+  gem 'rspec-rails', '~> 5.0', '>= 5.0.1'
   gem 'selenium-webdriver', '~> 2.39'
 end
 

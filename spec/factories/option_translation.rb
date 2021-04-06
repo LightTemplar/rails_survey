@@ -1,7 +1,7 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :option_translation do
     option
-    language 'sw'
-    text 'translated text'
+    language { 'sw' }
+    text { 'translated text' }
   end
 end

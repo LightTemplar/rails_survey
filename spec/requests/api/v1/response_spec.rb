@@ -2,11 +2,11 @@ require 'spec_helper'
 
 describe 'Responses API' do
   before :each do
-    @question = FactoryGirl.create(:question)
-    @survey = FactoryGirl.create(:survey)
-    @response = FactoryGirl.build(:response)
-    @api_key = FactoryGirl.create(:api_key)
-    @device_user = FactoryGirl.create(:device_user)
+    @question = FactoryBot.create(:question)
+    @survey = FactoryBot.create(:survey)
+    @response = FactoryBot.build(:response)
+    @api_key = FactoryBot.create(:api_key)
+    @device_user = FactoryBot.create(:device_user)
   end
 
   it 'returns a successful response if response is valid' do

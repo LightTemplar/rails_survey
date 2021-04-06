@@ -1,9 +1,9 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :instrument do
-    sequence(:title) {|n| "instrument #{n}" }
-    language 'en'
-    alignment 'left'
+    sequence(:title) { |n| "instrument #{n}" }
+    language { 'en' }
+    alignment { 'left' }
     project
-    published true
+    published { true }
   end
 end
