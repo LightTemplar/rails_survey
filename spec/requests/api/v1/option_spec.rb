@@ -6,7 +6,7 @@ describe "Options API" do
     @project = create(:project)
     @instrument = create(:instrument, project: @project)
     @question = create(:question, instrument: @instrument)
-    @options = FactoryGirl.create_list(:option, 5, question: @question)
+    @options = FactoryBot.create_list(:option, 5, question: @question)
     get "/api/v1/projects/#{@project.id}/options?access_token=#{@api_key.access_token}"
     @json = JSON.parse(response.body)
   end

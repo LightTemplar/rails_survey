@@ -1,6 +1,6 @@
-FactoryGirl.define do 
+FactoryBot.define do
   factory :role do
-    id 1
-    name 'admin'
+    id { 1 }
+    name { 'admin' }
   end
 end

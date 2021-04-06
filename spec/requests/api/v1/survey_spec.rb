@@ -2,10 +2,10 @@ require 'spec_helper'
 
 describe "Surveys API" do
   before :each do
-    @instrument = FactoryGirl.create(:instrument)
-    @device = FactoryGirl.create(:device)
-    @survey = FactoryGirl.build(:survey)
-    @api_key = FactoryGirl.create(:api_key)
+    @instrument = FactoryBot.create(:instrument)
+    @device = FactoryBot.create(:device)
+    @survey = FactoryBot.build(:survey)
+    @api_key = FactoryBot.create(:api_key)
   end
 
   it 'returns a successful response if survey is valid' do

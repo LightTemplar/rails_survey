@@ -1,6 +1,6 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :option do
-    text 'a'
+    text { 'a' }
     question
   end
 end

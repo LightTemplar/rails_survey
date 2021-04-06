@@ -2,9 +2,9 @@ require 'spec_helper'
 
 describe "Instruments API" do
   before :each do
-    @project = FactoryGirl.create(:project)
-    @instruments = FactoryGirl.create_list(:instrument, 5, project: @project)
-    @api_key = FactoryGirl.create(:api_key)
+    @project = FactoryBot.create(:project)
+    @instruments = FactoryBot.create_list(:instrument, 5, project: @project)
+    @api_key = FactoryBot.create(:api_key)
     get "/api/v1/projects/#{@project.id}/instruments?access_token=#{@api_key.access_token}"
     @json = JSON.parse(response.body)
   end

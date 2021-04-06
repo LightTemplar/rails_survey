@@ -5,7 +5,7 @@ describe "Questions API" do
     @api_key = create(:api_key)
     @project = create(:project)
     @instrument = create(:instrument, project: @project)
-    @questions = FactoryGirl.create_list(:question, 5, instrument: @instrument)
+    @questions = FactoryBot.create_list(:question, 5, instrument: @instrument)
     get "/api/v1/projects/#{@questions.first.project.id}/questions?access_token=#{@api_key.access_token}"
     @json = JSON.parse(response.body)
   end
