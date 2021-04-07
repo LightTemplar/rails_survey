@@ -2,6 +2,7 @@
 
 source 'https://rubygems.org'
 ruby '2.7.3'
+gem 'active_storage_validations', '~> 0.9.2'
 gem 'activeadmin', '~> 2.4'
 gem 'activerecord-import', '~> 1.0', '>= 1.0.3'
 gem 'acts-as-taggable-on', '~> 6.5'
