@@ -11,7 +11,7 @@ set :linked_files, %w[config/database.yml config/local_env.yml config/secrets.ym
 set :linked_dirs, %w[log tmp/pids tmp/cache tmp/sockets vendor/bundle]
 set :linked_dirs, fetch(:linked_dirs) + %w[files updates]
 set :bundle_binstubs, nil
-set :rvm_ruby_version, '2.6.3'
+set :rvm_ruby_version, '2.7.3'
 
 # When using Phusion Passenger App Server
 namespace :deploy do

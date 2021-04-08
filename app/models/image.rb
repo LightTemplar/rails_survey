@@ -23,10 +23,7 @@ class Image < ApplicationRecord
   before_save :touch_question
   acts_as_paranoid
   validates :question_id, presence: true, allow_blank: false
-  validates :photo, file_content_type: {
-    allow: ["image/jpeg", "image/png"],
-    if: -> { photo.attached? },
-  }
+  validates :photo, attached: true, content_type: ['image/png', 'image/jpg', 'image/jpeg']
 
   def photo_url
     photo.url(:medium)

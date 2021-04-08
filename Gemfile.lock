@@ -24,6 +24,8 @@ GEM
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.0, >= 1.0.3)
+    active_storage_validations (0.9.2)
+      rails (>= 5.2.0)
     activeadmin (2.9.0)
       arbre (~> 1.2, >= 1.2.1)
       formtastic (>= 3.1, < 5.0)
@@ -446,6 +448,7 @@ PLATFORMS
   x86_64-darwin-15
 
 DEPENDENCIES
+  active_storage_validations (~> 0.9.2)
   activeadmin (~> 2.4)
   activerecord-import (~> 1.0, >= 1.0.3)
   acts-as-taggable-on (~> 6.5)

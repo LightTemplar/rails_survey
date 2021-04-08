@@ -18,10 +18,7 @@
 class AndroidUpdate < ApplicationRecord
   default_scope { order('version DESC') }
   has_one_attached :apk_update
-  validates :apk_update, file_content_type: {
-    allow: ['application/octet-stream'],
-    if: -> { apk_update.attached? },
-  }
+  validates :apk_update, attached: true, content_type: ['application/octet-stream']
 
   def self.latest_version
     AndroidUpdate.first

@@ -19,10 +19,7 @@ class ResponseImage < ApplicationRecord
   belongs_to :response, foreign_key: :response_uuid, primary_key: :uuid
   delegate :project, to: :response
   validates :response_uuid, presence: true
-  validates :picture, file_content_type: {
-    allow: ["image/jpeg", "image/png"],
-    if: -> { picture.attached? },
-  }
+  validates :picture, attached: true, content_type: ['image/png', 'image/jpg', 'image/jpeg']
 
   def picture_data=(data_value)
     StringIO.open(Base64.decode64(data_value)) do |data|
