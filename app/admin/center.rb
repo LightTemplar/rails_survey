@@ -3,8 +3,8 @@
 ActiveAdmin.register Center do
   belongs_to :score_scheme
   navigation_menu :score_scheme
-
-  actions :all, except: %i[destroy edit new]
+  permit_params :identifier, :name, :center_type, :administration, :region, :department, :municipality
+  actions :all, except: %i[destroy new]
   config.per_page = [50, 100]
   config.filters = false
   config.sort_order = 'id_asc'
