@@ -7,6 +7,7 @@ ActiveAdmin.register Survey do
   sidebar 'Survey Associations', only: :show do
     ul do
       li link_to 'Responses', admin_survey_responses_path(params[:id])
+      li link_to 'Survey Notes', admin_survey_survey_notes_path(params[:id])
     end
   end
 

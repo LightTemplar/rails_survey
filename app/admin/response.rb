@@ -40,6 +40,7 @@ ActiveAdmin.register Response do
 
   form do |f|
     f.inputs 'Response Details' do
+      f.input :question_identifier
       f.input :text
       f.input :other_text
       f.input :other_response

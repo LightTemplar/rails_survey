@@ -28,6 +28,7 @@ require 'sidekiq/api'
 
 class Response < ApplicationRecord
   include Sanitizer
+  attribute :uuid, :string, default: -> { SecureRandom.uuid }
   belongs_to :instrument_question, foreign_key: :question_identifier, primary_key: :identifier
   belongs_to :survey, foreign_key: :survey_uuid, primary_key: :uuid, touch: true
   belongs_to :device_user
