@@ -10,6 +10,7 @@
 #  subdomain_id :bigint
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#  alt_text     :string
 #
 
 class SubdomainTranslation < ApplicationRecord

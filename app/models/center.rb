@@ -121,7 +121,7 @@ class Center < ApplicationRecord
     end
     sheet.add_row header, style: workbook.styles.add_style(b: true, alignment: { horizontal: :center, vertical: :center }),
                           height: row_height
-    sheet.column_widths *widths
+    sheet.column_widths(*widths)
   end
 
   def write_domain_graphs(sheet, score_scheme, domain_title, start_at, end_at, c_data, c_labels, n_data, type_of_center, ambos = nil)
@@ -177,9 +177,9 @@ class Center < ApplicationRecord
             next if subdomain.title == '1.5' || subdomain.title == '5.9'
 
             next_row = if cda_nat_avg_row
-                         [center.full_sanitizer.sanitize(subdomain.translated_name('es')).truncate(25, omission: ''), crow[index], nat_avg_row[index], cda_nat_avg_row[index]]
+                         [center.full_sanitizer.sanitize(subdomain.alt_name('es')), crow[index], nat_avg_row[index], cda_nat_avg_row[index]]
                        else
-                         [center.full_sanitizer.sanitize(subdomain.translated_name('es')).truncate(25, omission: ''), crow[index], nat_avg_row[index]]
+                         [center.full_sanitizer.sanitize(subdomain.alt_name('es')), crow[index], nat_avg_row[index]]
                        end
             sheet.add_row next_row, style: workbook.styles.add_style(alignment: { horizontal: :center, vertical: :center })
             index += 1
@@ -218,7 +218,7 @@ class Center < ApplicationRecord
           center.write_domain_graphs(sheet, score_scheme, '4', 'E81', 'Q100', 'B22:B27', 'A22:A27', 'C22:C27', type_of_center)
           center.write_domain_graphs(sheet, score_scheme, '5', 'E101', 'Q120', 'B28:B35', 'A28:A35', 'C28:C35', type_of_center)
           center.write_domain_graphs(sheet, score_scheme, '6', 'E121', 'Q140', 'B36:B38', 'A36:A38', 'C36:C38', type_of_center)
-      end
+        end
       end
     end
   end
@@ -618,15 +618,19 @@ class Center < ApplicationRecord
               unit.score_unit_questions.each_with_index do |suq, index|
                 suq_responses = responses.where(question_identifier: suq.question_identifier)
                 options = suq.instrument_question.all_non_special_options
-                q_style = index == unit.score_unit_questions.size - 1 && options.empty? ?
-                [c_border, b_wrap_style, c_border, c_border, b_question_style, c_border, c_border, border, border,
-                 b_question_style, b_question_style, b_rf_style, b_option_style] :
-                 [c_style, wrap_style, c_style, c_style, question_style, c_style, c_style, c_style, c_style,
-                  score_style, question_style, rf_style, option_style]
+                q_style = if index == unit.score_unit_questions.size - 1 && options.empty?
+                            [c_border, b_wrap_style, c_border, c_border, b_question_style, c_border, c_border, border, border,
+                             b_question_style, b_question_style, b_rf_style, b_option_style]
+                          else
+                            [c_style, wrap_style, c_style, c_style, question_style, c_style, c_style, c_style, c_style,
+                             score_style, question_style, rf_style, option_style]
+                          end
                 sheet.add_row [unit.title, subdomain_label(translate, subdomain, language), unit.weight,
-                               suq.question_identifier, translate ?
-                               full_sanitize(suq.instrument_question.translations.find_by_language(language)&.text) :
-                               html_decode(full_sanitize(suq.instrument_question.text)),
+                               suq.question_identifier, if translate
+                                                          full_sanitize(suq.instrument_question.translations.find_by_language(language)&.text)
+                                                        else
+                                                          html_decode(full_sanitize(suq.instrument_question.text))
+                                                        end,
                                unit.base_point_score == 0.0 ? '' : unit.base_point_score, '', unit.score_type,
                                response_text(suq, suq_responses, skipped),
                                unit_raw_score(urs), '', red_flag_text(score_scheme, suq_responses),
@@ -635,13 +639,22 @@ class Center < ApplicationRecord
                 selected_indices = selection_set(suq_responses, suq)
                 list_indices = list_set(suq_responses, suq)
                 options.each_with_index do |option, index|
-                  o_style = index == options.size - 1 ? [border, border, border, c_border, b_option_style, border, c_border,
-                                                         c_border, c_border, c_border, c_border, b_option_style, b_option_style] :
-                                                         [nil, nil, nil, c_style, option_style, nil, c_style, c_style, c_style,
-                                                          c_style, c_style, option_style, option_style]
-                  sheet.add_row ['', '', '', index, translate ? full_sanitize(option.translations.find_by_language(language)&.text) :
-                    full_sanitizer.sanitize(option.text), '', unit.score_type == 'SUM' && suq.option_score(option) ? "(#{format('%+0.1f', suq.option_score(option)&.value)})" :
-                     suq.option_score(option)&.value, '', choice_text(suq, selected_indices, list_indices, index), '', '', '',
+                  o_style = if index == options.size - 1
+                              [border, border, border, c_border, b_option_style, border, c_border,
+                               c_border, c_border, c_border, c_border, b_option_style, b_option_style]
+                            else
+                              [nil, nil, nil, c_style, option_style, nil, c_style, c_style, c_style,
+                               c_style, c_style, option_style, option_style]
+                            end
+                  sheet.add_row ['', '', '', index, if translate
+                                                      full_sanitize(option.translations.find_by_language(language)&.text)
+                                                    else
+                                                      full_sanitizer.sanitize(option.text)
+                                                    end, '', if unit.score_type == 'SUM' && suq.option_score(option)
+                                                               "(#{format('%+0.1f', suq.option_score(option)&.value)})"
+                                                             else
+                                                               suq.option_score(option)&.value
+                                                             end, '', choice_text(suq, selected_indices, list_indices, index), '', '', '',
                                  html_decode(full_sanitize(suq.option_score(option)&.notes))], style: o_style
                   sheet.column_widths nil, nil, nil, nil, 50, nil, nil, nil, nil, nil, nil, 30, 50
                 end

@@ -34,11 +34,11 @@ def write_image(background, filename, identifier, number)
     gc.line(330, 178, 1610, 178)
     gc.line(330, 275, 1610, 275)
   elsif number == 4
-    gc.line(330, 180, 1610, 180)
-    gc.line(330, 277, 1610, 277)
+    gc.line(330, 186, 1610, 186)
+    gc.line(330, 291, 1610, 291)
   elsif number == 5
-    gc.line(330, 176, 1610, 176)
-    gc.line(330, 275, 1610, 275)
+    gc.line(330, 185, 1610, 185)
+    gc.line(330, 290, 1610, 290)
   elsif number == 6
     gc.line(330, 185, 1610, 185)
     gc.line(330, 290, 1610, 290)

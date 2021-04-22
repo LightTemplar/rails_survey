@@ -15,6 +15,7 @@
 #
 
 class SurveyNote < ApplicationRecord
+  attribute :uuid, :string, default: -> { SecureRandom.uuid }
   belongs_to :survey, foreign_key: :survey_uuid, primary_key: :uuid
   belongs_to :device_user
 end

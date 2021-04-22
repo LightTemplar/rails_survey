@@ -1,3 +1,18 @@
+# == Schema Information
+#
+# Table name: centers
+#
+#  id             :bigint           not null, primary key
+#  identifier     :string
+#  name           :string
+#  center_type    :string
+#  administration :string
+#  region         :string
+#  department     :string
+#  municipality   :string
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#
 require 'rails_helper'
 
 RSpec.describe Center, type: :model do
