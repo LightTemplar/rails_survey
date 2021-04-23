@@ -21,6 +21,10 @@ ActiveAdmin.register Center do
     redirect_to resource_path
   end
 
+  member_action :pdf_report, method: :get do
+    redirect_to resource_path
+  end
+
   action_item :download, only: :index do
     link_to 'Download', download_admin_score_scheme_centers_path(params[:score_scheme_id])
   end
@@ -43,10 +47,16 @@ ActiveAdmin.register Center do
     column 'Survey Scores' do |center|
       center.ss_survey_scores(params[:score_scheme_id])
     end
-    column 'Score Reports' do |center|
+    column 'Excel Reports' do |center|
       unless center.ss_survey_scores(params[:score_scheme_id]).empty?
         span { link_to 'English', download_scores_admin_score_scheme_center_path(params[:score_scheme_id], center.id, language: 'en') }
         span { link_to 'Spanish', download_scores_admin_score_scheme_center_path(params[:score_scheme_id], center.id, language: 'es') }
+      end
+    end
+    column 'PDF Reports' do |center|
+      unless center.ss_survey_scores(params[:score_scheme_id]).empty?
+        span { link_to 'English', pdf_report_admin_score_scheme_center_path(params[:score_scheme_id], center.id, language: 'en') }
+        # span { link_to 'Spanish', download_scores_admin_score_scheme_center_path(params[:score_scheme_id], center.id, language: 'es') }
       end
     end
   end
@@ -69,6 +79,17 @@ ActiveAdmin.register Center do
       ss = ScoreScheme.find(params[:score_scheme_id])
       send_file Center.mail_merge(ss), type: 'application/zip',
                                        filename: "#{ss.title.split.join('_')}_mail_merge_#{Time.now.to_i}.zip"
+    end
+
+    def pdf_report
+      score_scheme = ScoreScheme.find(params[:score_scheme_id])
+      center = Center.find params[:id]
+      language = params[:language]
+      pdf = ReportPdf.new(center, score_scheme, language)
+      name = "#{center.identifier}-#{score_scheme.title.split.join('-')}.pdf"
+      file = Tempfile.new(name)
+      pdf.save_as(file.path)
+      send_file file, type: 'application/pdf', filename: name
     end
   end
 end

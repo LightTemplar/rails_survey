@@ -19,6 +19,7 @@ module PdfUtils
   LETTERS = ('a'..'z').to_a
 
   def register_fonts
+    avenir = "#{Rails.root}/app/pdfs/fonts/Avenir-Next-Condensed.ttc"
     font_families.update(
       'Noto Sans' => {
         normal: "#{Rails.root}/app/pdfs/fonts/NotoSans-Regular.ttf",
@@ -35,6 +36,14 @@ module PdfUtils
         normal: "#{Rails.root}/app/pdfs/fonts/SourceCodePro-Regular.ttf",
         bold: "#{Rails.root}/app/pdfs/fonts/SourceCodePro-Bold.ttf",
         italic: "#{Rails.root}/app/pdfs/fonts/SourceCodePro-Italic.ttf"
+      },
+      'PT Sans' => {
+        normal: "#{Rails.root}/app/pdfs/fonts/PTSans-Regular.ttf",
+        bold: "#{Rails.root}/app/pdfs/fonts/PTSans-Bold.ttf"
+      },
+      'Avenir Next Condensed' => {
+        normal: { file: avenir, font: 0 },
+        bold: { file: avenir, font: 5 }
       }
     )
     font 'Noto Sans'

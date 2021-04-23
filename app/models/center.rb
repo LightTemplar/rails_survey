@@ -100,28 +100,27 @@ class Center < ApplicationRecord
     [rows, nat_avg_row]
   end
 
-  def self.write_sheet_header(workbook, sheet, score_scheme, include_name = true)
-    row_height = 25
+  def self.sheet_header(score_scheme, include_name = true)
     if include_name
       header = %w[Identifier Name Score]
-      widths = [15, 15, 15]
     else
       header = %w[Identifier Score]
-      widths = [15, 15]
     end
     score_scheme.domains.sort_by { |domain| domain.title.to_i }.each do |domain|
       header << domain.title
-      widths << 10
       domain.subdomains.sort_by { |subdomain| subdomain.title.to_f }.each do |subdomain|
         next if subdomain.title == '1.5' || subdomain.title == '5.9'
 
         header << subdomain.title
-        widths << 10
       end
     end
+    header
+  end
+
+  def self.write_sheet_header(workbook, sheet, score_scheme, include_name = true)
+    header = self.sheet_header(score_scheme, include_name)
     sheet.add_row header, style: workbook.styles.add_style(b: true, alignment: { horizontal: :center, vertical: :center }),
-                          height: row_height
-    sheet.column_widths(*widths)
+                          height: 25
   end
 
   def write_domain_graphs(sheet, score_scheme, domain_title, start_at, end_at, c_data, c_labels, n_data, type_of_center, ambos = nil)
