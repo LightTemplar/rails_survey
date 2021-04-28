@@ -29,10 +29,15 @@ class ReportPdf
     start_new_page
     domain_data
     domain_one
+    start_new_page
     domain_two
+    start_new_page
     domain_three
+    start_new_page
     domain_four
+    start_new_page
     domain_five
+    start_new_page
     domain_six
     start_new_page
     domain_level_feedback

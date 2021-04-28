@@ -101,11 +101,11 @@ class Center < ApplicationRecord
   end
 
   def self.sheet_header(score_scheme, include_name = true)
-    if include_name
-      header = %w[Identifier Name Score]
-    else
-      header = %w[Identifier Score]
-    end
+    header = if include_name
+               %w[Identifier Name Score]
+             else
+               %w[Identifier Score]
+             end
     score_scheme.domains.sort_by { |domain| domain.title.to_i }.each do |domain|
       header << domain.title
       domain.subdomains.sort_by { |subdomain| subdomain.title.to_f }.each do |subdomain|
@@ -118,7 +118,7 @@ class Center < ApplicationRecord
   end
 
   def self.write_sheet_header(workbook, sheet, score_scheme, include_name = true)
-    header = self.sheet_header(score_scheme, include_name)
+    header = sheet_header(score_scheme, include_name)
     sheet.add_row header, style: workbook.styles.add_style(b: true, alignment: { horizontal: :center, vertical: :center }),
                           height: 25
   end
@@ -155,21 +155,20 @@ class Center < ApplicationRecord
     rows.each do |crow|
       center = centers.find_by identifier: crow[0]
       workbook.add_worksheet(name: crow[0]) do |sheet|
-        index = 1
         header = if cda_nat_avg_row
-                   ['Subdomain', crow[index], type_of_center, 'Ambos CDAs']
+                   ['Subdomain', crow[1], type_of_center, 'Ambos CDAs']
                  else
-                   ['Subdomain', crow[index], type_of_center]
+                   ['Subdomain', crow[1], type_of_center]
                  end
-        index += 1
         sheet.add_row header, style: workbook.styles.add_style(b: true, alignment: { horizontal: :center, vertical: :center }),
                               height: center.row_height
         first_row = if cda_nat_avg_row
-                      ['center level', crow[index], nat_avg_row[index], cda_nat_avg_row[index]]
+                      ['center level', crow[2], nat_avg_row[2], cda_nat_avg_row[2]]
                     else
-                      ['center level', crow[index], nat_avg_row[index]]
+                      ['center level', crow[2], nat_avg_row[2]]
                     end
         sheet.add_row first_row, style: workbook.styles.add_style(alignment: { horizontal: :center, vertical: :center })
+        index = 3
         score_scheme.domains.sort_by { |domain| domain.title.to_i }.each do |domain|
           index += 1
           domain.subdomains.sort_by { |subdomain| subdomain.title.to_f }.each do |subdomain|
