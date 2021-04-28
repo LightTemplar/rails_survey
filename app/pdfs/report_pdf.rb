@@ -47,73 +47,82 @@ class ReportPdf
     comparison_chart
   end
 
+  def localize_text(key)
+    I18n.t("report.#{key}", locale: @language)
+  end
+
   def page_one
     text "<font size='14'><b>#{@center.name}</b></font>", inline_format: true, align: :right
     date = DateTime.now
     text "<font size='14'><b>#{date.strftime('%B %Y')}</b></font>", inline_format: true, align: :right
     font('Avenir Next Condensed') do
-      text "<font size='36'><b>NATIONAL EVALUATION ON THE</b></font>", inline_format: true, color: '2F642F', align: :right
-      text "<font size='36'><b>QUALITY OF CARE</b></font>", inline_format: true, color: '2F642F', align: :right
+      text "<font size='36'><b>#{localize_text('p1_national')}</b></font>", inline_format: true, color: '2F642F', align: :right
+      text "<font size='36'><b>#{localize_text('p1_quality')}</b></font>", inline_format: true, color: '2F642F', align: :right
     end
     move_down 10
-    image "#{Rails.root}/app/pdfs/images/holding_hands.jpg", width: 400, height: 250, position: :center
+    image "#{Rails.root}/app/pdfs/images/mother_child_holding_hands.jpg", fit: [512, 288], position: :center
     move_down 100
-    image "#{Rails.root}/app/pdfs/images/sponsors.png", width: 400, position: :center
+    image "#{Rails.root}/app/pdfs/images/sponsors.png", fit: [500, 200], position: :center
   end
 
   def page_two
     font('Avenir Next Condensed') do
-      text "<font size='36'><b>2020 NATIONAL EVALUATION ON </b></font>", inline_format: true, color: '2F642F', align: :left
-      text "<font size='36'><b>THE QUALITY OF CARE: El Salvador</b></font>", inline_format: true, color: '2F642F', align: :left
+      text "<font size='36'><b>#{localize_text('p2_national')}</b></font>", inline_format: true, color: '2F642F', align: :left
+      text "<font size='36'><b>#{localize_text('p2_quality')}</b></font>", inline_format: true, color: '2F642F', align: :left
     end
-    text 'Thank you for participating in the 2020 National Evaluation on the Quality of Care. This effort was carried out as a way to measure the quality of care being provided to boys, girls, and adolescents in residential and non-residential centers throughout El Salvador.'
+    text localize_text('p2_thanks')
     move_down 10
-    text 'In partnership with Duke University, CONNA, and ISNA, Whole Child International created a comprehensive tool to measure care under 6 domains: <b>administration and governance; basic needs; child protection; child-caregiver relationships; child experience; and environment.</b> With this report, we hope to provide guidance on ways to improve the quality of care given to children around the country.', inline_format: true
+    text localize_text('p2_partnerships'), inline_format: true
     move_down 10
-    text 'This report contains center-specific scores and recommendations. Our goal is to provide each center with the opportunity to review the areas in which they might already be excelling and which require more attention. We hope this is a useful tool as you consider how to best serve the children under your care.'
+    text localize_text('p2_report')
     move_down 10
-    text 'Please remember that any low scores should be interpreted as opportunities for improvement and that we will work together to strategize next steps and goals for your center. Also keep in mind that high scores may still require maintenance and we will work with you to help in that area as well.'
+    text localize_text('p2_interpretation')
     move_down 10
-    text "Once again, thank you for taking part in the efforts to learn about the quality of care provided to the children in El Salvador. We will be reaching out to you soon to discuss your center's scores in more detail."
+    text localize_text('p2_appreciation')
+  end
+
+  def page_header_36(key)
+    font('Avenir Next Condensed') do
+      text "<font size='36'><b>#{localize_text(key)}</b></font>", inline_format: true, color: '2F642F'
+    end
   end
 
   def page_three
-    font('Avenir Next Condensed') do
-      text "<font size='36'><b>How to use this report</b></font>", inline_format: true, color: '2F642F'
-    end
-    text 'This report will provide you with feedback on areas that your center is already providing good or high-quality care as well as those that may benefit from additional attention.'
+    page_header_36('p3_usage')
+    text localize_text('p3_report')
     move_down 10
-    text 'The “Center Report” page contains an overview of some basic information about your center, including the center’s name, director, person who completed the interview, the date data collection was completed, and whether both elements of this process – the interview and observation – were completed. This page also contains a chart that will allow you to quickly compare your center’s scores to the national averages.'
+    text localize_text('p3_overview')
     move_down 10
-    text 'The report then provides feedback by domain. Each domain and subdomain receives a score of 1 to 7, with scores of 1-3 indicating <b>low quality care</b>, scores of 3.01-5 indicating <b>good care</b>, and scores of 5.01-7 indicating <b>high-quality care</b>. These scores were obtained through a combination of interviews with center leaders and an observation carried out by a trained data collector. You will see your center’s domain-level score, the national average, and a description of the factors that were considered under each domain (which we refer to as subdomains).', inline_format: true
+    text localize_text('p3_feedback'), inline_format: true
     move_down 10
-    text 'You will receive scores for every subdomain and feedback for the area your center is providing the highest level of care. Additionally, centers that had <b>low</b> scores in a subdomain will receive additional feedback on that specific topic. This feedback provides a brief definition of the subdomain, an explanation of its importance, and basic recommendations on how to improve care in this area.', inline_format: true
+    text localize_text('p3_additional'), inline_format: true
     move_down 10
-    text 'This report also provides you with feedback on “red flags” that arose on specific questions that were answered or items that our enumerators observed during their visits that are fundamental to high-quality care. They are flagged here to ensure that your center is aware of any potentially significant issues and to help guide conversations about improvements to your center. These issues should be addressed to the best of your ability to increase the level of care your center is providing. You will see a summary of the question and answer or observation note that triggered a “red flag”. We provide a brief explanation on why a particular “red flag” is important followed by recommendations on ways to address it.'
+    text localize_text('p3_red_flags')
     move_down 10
-    text 'Please note that you may not receive red flag feedback under every domain.'
+    text localize_text('p3_note')
     move_down 10
-    text 'Every center will receive domain-level recommendations based on score. These domain-level recommendations are located in the final section of the report. The recommendations focus primarily on the most important aspects of care. Not all potential methods of improvement are included. Further specific recommendations and strategies to improve care in your center can be discussed in collaboration with your ISNA representative. Feel free to use the checkboxes to mark which points you would like to focus on in your discussions.'
+    text localize_text('p3_recommendations')
     move_down 10
-    text 'We recommend that you thoroughly review the recommendations below to identify potential areas for improvement. Some recommendations touch on areas that may not be under your immediate control. We encourage you to consult with ISNA, Whole Child, or other organizations, as appropriate, with any questions and to find ways to best support your ongoing efforts to serve the children of El Salvador.'
+    text localize_text('p3_review')
+  end
+
+  def center_details(label, response)
+    [{ text: localize_text(label), styles: [:bold], color: '2F642F' }, { text: response }]
   end
 
   def center_report
-    font('Avenir Next Condensed') do
-      text "<font size='36'><b>Center Report</b></font>", inline_format: true, color: '2F642F'
-    end
+    page_header_36('p4_report')
     css = @center.survey_scores.where(score_scheme_id: @score_scheme.id)
     contact = @center.contact(css)
-    formatted_text [{ text: 'Center: ', styles: [:bold], color: '2F642F' }, { text: @center.name }]
+    formatted_text center_details('p4_center', @center.name)
     move_down 10
-    formatted_text [{ text: 'Director: ', styles: [:bold], color: '2F642F' }, { text: contact }]
+    formatted_text center_details('p4_director', contact)
     move_down 10
-    formatted_text [{ text: 'Center Representative/Interviewee: ', styles: [:bold], color: '2F642F' }, { text: contact }]
+    formatted_text center_details('p4_representative', contact)
     move_down 10
-    formatted_text [{ text: 'Data Collection Completed: ', styles: [:bold], color: '2F642F' }, { text: @center.interview_date(css) }]
+    formatted_text center_details('p4_date', @center.interview_date(css))
     move_down 10
-    formatted_text [{ text: 'Interview: ', styles: [:bold], color: '2F642F' }, { text: @center.interview?(css, @score_scheme) },
-                    { text: ' Observation: ', styles: [:bold], color: '2F642F' }, { text: @center.observation?(css, @score_scheme) }]
+    formatted_text center_details('p4_interview', @center.interview?(css, @score_scheme, @language)) + center_details('p4_observation', @center.observation?(css, @score_scheme, @language))
     move_down 10
     lw = line_width
     sc = stroke_color
@@ -126,11 +135,10 @@ class ReportPdf
     stroke_color(sc)
     move_down 10
 
-    font('Avenir Next Condensed') do
-      text "<font size='20'><b>Center Snapshot</b></font>", inline_format: true, color: '2F642F'
-    end
-    image "#{Rails.root}/files/reports/#{@center.identifier}-0.png", width: 400, height: 250, position: :center
-    text "<font size='10'>*National average is among CDAs only.</font>", inline_format: true if is_cda?
+    domain_title(localize_text('p4_snapshot'))
+    image "#{Rails.root}/files/reports/#{@center.identifier}-0.png", fit: [564, 200], position: :center
+    move_down 10
+    text "<font size='10'>#{localize_text("p4_#{@center.center_type}")}</font>", inline_format: true
   end
 
   def domain_data
@@ -179,13 +187,14 @@ class ReportPdf
   def domain_table(title)
     if is_cda?
       table [
-        ['', "<b>#{@center.name}</b>", '<b>CdAs Públicos</b>', '<b>CdAs Privados</b>', '<b>Ambos CdAs</b>'],
-        ['<b>Puntuación de Dominio</b>', @scores[@center.identifier][title], @public_scores[title], @private_scores[title], @nat_avg_scores[title]]
+        ['', "<b>#{@center.name}</b>", "<b>#{@center.center_type} #{localize_text('public')}</b>",
+         "<b>#{@center.center_type} #{localize_text('private')}</b>", "<b>#{@center.center_type} #{localize_text('both')}</b>"],
+        ["<b>#{localize_text('domain_scores')}</b>", @scores[@center.identifier][title], @public_scores[title], @private_scores[title], @nat_avg_scores[title]]
       ], position: :center, cell_style: { align: :center, inline_format: true }
     else
       table [
-        ['', "<b>#{@center.name}</b>", "<b>#{@center.center_type}s</b>"],
-        ['<b>Puntuación de Dominio</b>', @scores[@center.identifier][title], @nat_avg_scores[title]]
+        ['', "<b>#{@center.name}</b>", "<b>#{@center.center_type} #{localize_text('national')}</b>"],
+        ["<b>#{localize_text('domain_scores')}</b>", @scores[@center.identifier][title], @nat_avg_scores[title]]
       ], position: :center, cell_style: { align: :center, inline_format: true }
     end
     move_down 10
@@ -195,13 +204,13 @@ class ReportPdf
     move_down 10
     ds = @scores[@center.identifier][title]
     ds = ds.round(2) if ds != ''
-    text "Your center received a score of <b>#{ds}</b> for this domain. This score is in the <b>XXth</b> percentile. Please see the section below titled “Domain-level Feedback” for more details on how to maintain or improve care in this domain.", inline_format: true
+    text I18n.t('report.d1_score', score: ds, locale: @language), inline_format: true
     move_down 20
     font('Avenir Next Condensed') do
       text "<font size='16'><b>#{feedback}</b></font>", inline_format: true, color: '767171'
     end
     move_down 10
-    image "#{Rails.root}/files/reports/#{@center.identifier}-#{title}.png", width: 400, height: 250, position: :center
+    image "#{Rails.root}/files/reports/#{@center.identifier}-#{title}.png", fit: [564, 200], position: :center
     move_down 10
   end
 
@@ -215,7 +224,8 @@ class ReportPdf
   def highest_scoring_subdomain(title, d_scores, highest, name)
     sd_title = "#{title}.#{d_scores.index(highest) + 1}"
     sd = @score_scheme.subdomains.find_by(title: sd_title)
-    text "Your center’s highest scoring subdomain under #{name} was <b>#{sd_title}</b>, with a score of <b>#{highest}</b>. [#{sd.name} – high score]", inline_format: true
+    tsd_title = @score_scheme.instrument.language == @language ? sd.name : full_sanitizer.sanitize(sd.translated_name(@language))
+    text I18n.t('report.d1_highest', name: name, title: tsd_title, highest: highest, locale: @language), inline_format: true
   end
 
   def low_scoring_subdomains(lowest, d_scores, title)
@@ -248,19 +258,19 @@ class ReportPdf
   end
 
   def domain_one
-    domain_title('Domain 1: Administration & Governance')
+    domain_title(localize_text('d1_title'))
     domain_table('1')
-    text 'The <b>Administration & Governance</b> domain measures the way in which a childcare center is managed at the administrative level. This domain considers Oversight & Leadership, Professional Practices, Caregiver Well-being, and Staff Training & Development. Ideally, leadership is able to use the resources they have to create and maintain a healthy organizational culture, which in turn affects the quality of care provided within a childcare center.', inline_format: true
-    domain_score_graph('1', 'Domain 1: Administration & Governance Subdomain Feedback')
+    text localize_text('d1_admin'), inline_format: true
+    domain_score_graph('1', localize_text('d1_feedback'))
     d_scores = [
       @scores[@center.identifier]['1.1'], @scores[@center.identifier]['1.2'],
       @scores[@center.identifier]['1.3'], @scores[@center.identifier]['1.4']
     ]
     d_scores_clean = d_scores.reject { |e| e == '' }
     lowest = d_scores_clean.min
-    doing_well(lowest, 'In your center, all domain 1 subdomains received scores higher than 3.01. This indicates that your center is meeting many of the requirements needed to provide good support for Oversight & Leadership, Professional Practices, Caregiver Well-being, and Staff Training & Development.')
+    doing_well(lowest, localize_text('d1_all_well'))
     highest = d_scores_clean.max
-    highest_scoring_subdomain('1', d_scores, highest, 'Administration & Governance')
+    highest_scoring_subdomain('1', d_scores, highest, localize_text('d1_name'))
     low_scoring_subdomains(lowest, d_scores, '1')
     red_flags('Domain 1: Administration & Governance Red Flags')
   end

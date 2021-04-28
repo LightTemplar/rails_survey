@@ -334,20 +334,24 @@ class Center < ApplicationRecord
     dates.uniq.min.strftime('%m/%d/%Y')
   end
 
-  def interview?(css, score_scheme)
+  def interview?(css, score_scheme, language = 'en')
     responses = []
     css.each do |ss|
       responses << ss.survey.responses.where(question_identifier: score_scheme.interview_identifiers).pluck(:text).compact.uniq
     end
-    responses.flatten.size > css.size ? 'Yes' : 'No'
+    responses.flatten.size > css.size ? localize_text('p4_yes', language) : localize_text('p4_no', language)
   end
 
-  def observation?(css, score_scheme)
+  def localize_text(key, language)
+    I18n.t("report.#{key}", locale: language)
+  end
+
+  def observation?(css, score_scheme, language = 'en')
     responses = []
     css.each do |ss|
       responses << ss.survey.responses.where(question_identifier: score_scheme.observation_identifiers).pluck(:text).compact.uniq
     end
-    responses.flatten.size > css.size ? 'Yes' : 'No'
+    responses.flatten.size > css.size ? localize_text('p4_yes', language) : localize_text('p4_no', language)
   end
 
   def self.download(score_scheme)
