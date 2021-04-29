@@ -11,10 +11,11 @@ class InstrumentsController < ApplicationController
   def show
     project = current_user.projects.find(params[:project_id])
     @language = params[:language]
-    @instrument = project.instruments.includes(displays: [:instrument, instrument_questions:
+    @country = params[:country]
+    @instrument = project.instruments.includes(displays: [:instrument, { instrument_questions:
       [:instrument, :next_questions, :multiple_skips, :loop_questions, :critical_responses,
-       :taggings, display_instructions: %i[display instruction taggings],
-                  question: [:instruction, :special_option_set, option_set: %i[instruction]]]]).find(params[:id])
+       :taggings, { display_instructions: %i[display instruction taggings],
+                    question: [:instruction, :special_option_set, { option_set: %i[instruction] }] }] }]).find(params[:id])
     authorize @instrument
     respond_to do |format|
       format.html { render layout: 'pdf.html' }

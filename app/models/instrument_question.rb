@@ -45,12 +45,21 @@ class InstrumentQuestion < ActiveRecord::Base
   after_update :update_display_instructions, if: :number_in_instrument_changed?
   after_destroy :renumber_questions
 
-  def country_specific(language)
+  def country_specific(language, code)
     return false if language == 'en' || country_list.blank?
 
     return !country_list.include?('cambodia') if language == 'km'
     return !country_list.include?('ethiopia') if language == 'am'
-    return !country_list.include?('kenya') if language == 'sw'
+
+    if language == 'sw'
+      if code == 'ke'
+        !country_list.include?('kenya')
+      elsif code == 'tz'
+        !country_list.include?('tanzania')
+      else
+        !country_list.include?('kenya') && !country_list.include?('tanzania')
+      end
+    end
   end
 
   def letters

@@ -5,8 +5,14 @@
       <h4 class="text-center">PDF Downloads</h4>
       <div class="row">
         <span ng-repeat="language in languages">
-          <a class="col-sm" href="/projects/{{project_id}}/instruments/{{instrument_id}}?language={{language[1]}}"
-          target="_blank"> {{language[0]}}</a>
+          <a ng-if="language[1] == 'sw'" class="col-sm" href="/projects/{{project_id}}/instruments/{{instrument_id}}?language={{language[1]}}&country=ke" target="_blank">
+            {{language[0]}}
+            Kenya</a>
+          <a ng-if="language[1] == 'sw'" class="col-sm" href="/projects/{{project_id}}/instruments/{{instrument_id}}?language={{language[1]}}&country=tz" target="_blank">
+            {{language[0]}}
+            Tanzania</a>
+          <a class="col-sm" href="/projects/{{project_id}}/instruments/{{instrument_id}}?language={{language[1]}}" target="_blank">
+            {{language[0]}}</a>
         </span>
       </div>
     </div>
