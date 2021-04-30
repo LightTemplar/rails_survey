@@ -136,9 +136,9 @@ class ReportPdf
     move_down 10
 
     domain_title(localize_text('p4_snapshot'))
-    image "#{Rails.root}/files/reports/#{@center.identifier}-0.png", fit: [564, 200], position: :center
+    image "#{Rails.root}/files/reports/#{@center.identifier}-0.png", fit: [536, 190], position: :center
     move_down 10
-    text "<font size='10'>#{localize_text("p4_#{@center.center_type}")}</font>", inline_format: true
+    text "<font size='9'>#{localize_text("p4_#{@center.center_type}")}</font>", inline_format: true
   end
 
   def domain_data
@@ -185,16 +185,19 @@ class ReportPdf
   end
 
   def domain_table(title)
+    ds = @scores[@center.identifier][title]
+    ds = ds.round(2) if ds != ''
     if is_cda?
       table [
-        ['', "<b>#{@center.name}</b>", "<b>#{@center.center_type} #{localize_text('public')}</b>",
-         "<b>#{@center.center_type} #{localize_text('private')}</b>", "<b>#{@center.center_type} #{localize_text('both')}</b>"],
-        ["<b>#{localize_text('domain_scores')}</b>", @scores[@center.identifier][title], @public_scores[title], @private_scores[title], @nat_avg_scores[title]]
+        ['', "<b>#{@center.name}</b>", "<b>#{I18n.t('report.public', type: @center.center_type, locale: @language)}</b>",
+         "<b>#{I18n.t('report.private', type: @center.center_type, locale: @language)}</b>",
+         "<b>#{I18n.t('report.both', type: @center.center_type, locale: @language)}</b>"],
+        ["<b>#{localize_text('domain_scores')}</b>", ds, @public_scores[title], @private_scores[title], @nat_avg_scores[title]]
       ], position: :center, cell_style: { align: :center, inline_format: true }
     else
       table [
-        ['', "<b>#{@center.name}</b>", "<b>#{@center.center_type} #{localize_text('national')}</b>"],
-        ["<b>#{localize_text('domain_scores')}</b>", @scores[@center.identifier][title], @nat_avg_scores[title]]
+        ['', "<b>#{@center.name}</b>", "<b>#{I18n.t('report.national', type: @center.center_type, locale: @language)}</b>"],
+        ["<b>#{localize_text('domain_scores')}</b>", ds, @nat_avg_scores[title]]
       ], position: :center, cell_style: { align: :center, inline_format: true }
     end
     move_down 10
@@ -210,7 +213,9 @@ class ReportPdf
       text "<font size='16'><b>#{feedback}</b></font>", inline_format: true, color: '767171'
     end
     move_down 10
-    image "#{Rails.root}/files/reports/#{@center.identifier}-#{title}.png", fit: [564, 200], position: :center
+    image "#{Rails.root}/files/reports/#{@center.identifier}-#{title}.png", fit: [536, 190], position: :center
+    move_down 5
+    text "<font size='9'>#{localize_text('null_score')}</font>", inline_format: true
     move_down 10
   end
 
@@ -239,14 +244,15 @@ class ReportPdf
 
   def low_quality
     move_down 10
-    text 'Within this domain, this center is providing <b>low quality</b> care in the following subdomains, and improvement is necessary.', inline_format: true
+    text localize_text('d1_low_quality'), inline_format: true
     move_down 10
   end
 
   def low_score(title, index, score)
     sd_title = "#{title}.#{index + 1}"
     sd = @score_scheme.subdomains.find_by(title: sd_title)
-    text "Your center scored <b>#{score}</b> in the <b>#{sd_title}</b> subdomain. [#{sd.name} – low score]", inline_format: true
+    name = @score_scheme.instrument.language == @language ? sd.name : full_sanitizer.sanitize(sd.translated_name(@language))
+    text I18n.t('report.d1_low_score', name: name, score: score, locale: @language), inline_format: true
   end
 
   def red_flags(name)
@@ -272,14 +278,14 @@ class ReportPdf
     highest = d_scores_clean.max
     highest_scoring_subdomain('1', d_scores, highest, localize_text('d1_name'))
     low_scoring_subdomains(lowest, d_scores, '1')
-    red_flags('Domain 1: Administration & Governance Red Flags')
+    red_flags(localize_text('d1_red_flags'))
   end
 
   def domain_two
-    domain_title('Domain 2: Basic Needs')
+    domain_title(localize_text('d2_title'))
     domain_table('2')
-    text 'The <b>Basic Needs</b> domain measures the availability and accessibility of resources, and the ability of the center to meet the children’s basic needs. This domain considers Food Security & Nutrition, Safety & Security, Disaster Preparedness, Hygiene, Sleep Hygiene, Health Care, Educational Opportunities, Social/Emotional Care, and Disability Services. Ideally, the center is able to provide for the basic needs of the children in care, providing a healthy foundation for each child to grow.', inline_format: true
-    domain_score_graph('2', 'Domain 2: Basic Needs Subdomain Feedback')
+    text localize_text('d2_admin'), inline_format: true
+    domain_score_graph('2', localize_text('d2_feedback'))
     d_scores = [
       @scores[@center.identifier]['2.1'], @scores[@center.identifier]['2.2'],
       @scores[@center.identifier]['2.3'], @scores[@center.identifier]['2.4'],
@@ -289,18 +295,18 @@ class ReportPdf
     ]
     d_scores_clean = d_scores.reject { |e| e == '' }
     lowest = d_scores_clean.min
-    doing_well(lowest, 'In your center, all domain 2 subdomains received scores higher than 3.01. This indicates that your center is meeting many of the requirements needed to provide good care in Food Security & Nutrition, Safety & Security, Disaster Preparedness, Hygiene, Sleep Hygiene, Health Care, Educational Opportunities, Social/Emotional Care, and Disability Services.')
+    doing_well(lowest, localize_text('d2_all_well'))
     highest = d_scores_clean.max
-    highest_scoring_subdomain('2', d_scores, highest, 'Basic Needs')
+    highest_scoring_subdomain('2', d_scores, highest, localize_text('d2_name'))
     low_scoring_subdomains(lowest, d_scores, '2')
-    red_flags('Domain 2: Basic Needs Red Flags')
+    red_flags(localize_text('d2_red_flags'))
   end
 
   def domain_three
-    domain_title('Domain 3: Child Protection')
+    domain_title(localize_text('d3_title'))
     domain_table('3')
-    text 'The <b>Child Protection</b> domain is a measure of the center’s efforts to keep children safe from harm, including violence, exploitation, abuse, and neglect. This domain considers Codes of Conduct, Reporting Process, Children’s Privacy, Prevention of Abuse and Neglect, Gatekeeping, and Case Management. Ideally, leadership are aware of the vulnerabilities of the children in care, and take all possible measures to prevent or address any further harm.', inline_format: true
-    domain_score_graph('3', 'Domain 3: Child Protection Subdomain Feedback')
+    text localize_text('d3_admin'), inline_format: true
+    domain_score_graph('3', localize_text('d3_feedback'))
     d_scores = [
       @scores[@center.identifier]['3.1'], @scores[@center.identifier]['3.2'],
       @scores[@center.identifier]['3.3'], @scores[@center.identifier]['3.4'],
@@ -308,18 +314,18 @@ class ReportPdf
     ]
     d_scores_clean = d_scores.reject { |e| e == '' }
     lowest = d_scores_clean.min
-    doing_well(lowest, 'In your center, all domain 3 subdomains received scores higher than 3.01. This indicates that your center is meeting many of the requirements needed to protect children through Codes of Conduct, Reporting Process, Children’s Privacy, Prevention of Abuse and Neglect, Gatekeeping, and Case Management.')
+    doing_well(lowest, localize_text('d3_all_well'))
     highest = d_scores_clean.max
-    highest_scoring_subdomain('3', d_scores, highest, 'Child Protection')
+    highest_scoring_subdomain('3', d_scores, highest, localize_text('d3_name'))
     low_scoring_subdomains(lowest, d_scores, '3')
-    red_flags('Domain 3: Child Protection Red Flags')
+    red_flags(localize_text('d3_red_flags'))
   end
 
   def domain_four
-    domain_title('Domain 4: Child-Caregiver Relationships')
+    domain_title(localize_text('d4_title'))
     domain_table('4')
-    text 'The <b>Child-Caregiver Relationships</b> domain measures the quality of the relationship between the children and their caregivers. This domain considers Continuity of Care, Attachment Behaviors, Trauma Informed Caregiving, Caregiving Activities/Routines, Communication, and Shared Control. Ideally, the center fosters healthy positive relationships between children and their caregivers, enabling each child to form a stable and secure attachment with at least one consistent, supportive adult.', inline_format: true
-    domain_score_graph('4', 'Domain 4: Child-Caregiver Relationships Subdomain Feedback')
+    text localize_text('d4_admin'), inline_format: true
+    domain_score_graph('4', localize_text('d4_feedback'))
     d_scores = [
       @scores[@center.identifier]['4.1'], @scores[@center.identifier]['4.2'],
       @scores[@center.identifier]['4.3'], @scores[@center.identifier]['4.4'],
@@ -327,18 +333,18 @@ class ReportPdf
     ]
     d_scores_clean = d_scores.reject { |e| e == '' }
     lowest = d_scores_clean.min
-    doing_well(lowest, 'In your center, all domain 4 subdomains received scores higher than 3.01. This indicates that your center is meeting many of the requirements needed to foster healthy child-caregiver relationships through Continuity of Care, Attachment Behaviors, Trauma Informed Caregiving, Caregiving Activities/Routines, Communication, and Shared Control.')
+    doing_well(lowest, localize_text('d4_all_well'))
     highest = d_scores_clean.max
-    highest_scoring_subdomain('4', d_scores, highest, 'Child-Caregiver Relationships')
+    highest_scoring_subdomain('4', d_scores, highest, localize_text('d4_name'))
     low_scoring_subdomains(lowest, d_scores, '4')
-    red_flags('Domain 4: Child-Caregiver Relationships Red Flags')
+    red_flags(localize_text('d4_red_flags'))
   end
 
   def domain_five
-    domain_title('Domain 5: Child Experience')
+    domain_title(localize_text('d5_title'))
     domain_table('5')
-    text 'The <b>Child Experience</b> domain measures the extent to which care at the center is focused on the best interests of the children in care. This domain considers Child Identity, Documentation Journals, Individually Assigned Materials, Supporting Child Development, Family-Like Setting, Lifeskills, Community Interactions, and Transitional Support. Ideally, every decision made, from the policy level to the caregiving level, is focused on providing optimal experiences for the children in care. This can be achieved by considering the best interest of the child in any given decision, rather than the best interest of the caregiver or center.', inline_format: true
-    domain_score_graph('5', 'Domain 5: Child Experience Subdomain Feedback')
+    text localize_text('d5_admin'), inline_format: true
+    domain_score_graph('5', localize_text('d5_feedback'))
     d_scores = [
       @scores[@center.identifier]['5.1'], @scores[@center.identifier]['5.2'],
       @scores[@center.identifier]['5.3'], @scores[@center.identifier]['5.4'],
@@ -347,29 +353,29 @@ class ReportPdf
     ]
     d_scores_clean = d_scores.reject { |e| e == '' }
     lowest = d_scores_clean.min
-    doing_well(lowest, 'In your center, all domain 5 subdomains received scores higher than 3.01. This indicates that your center is meeting many of the requirements needed to provide children a supportive environment by considering factors related to Child Identity, Documentation Journals, Individually Assigned Materials, Supporting Child Development, Family-Like Setting, Lifeskills, Community Interactions, and Transitional Support.')
+    doing_well(lowest, localize_text('d5_all_well'))
     highest = d_scores_clean.max
-    highest_scoring_subdomain('5', d_scores, highest, 'Child Experience')
+    highest_scoring_subdomain('5', d_scores, highest, localize_text('d5_name'))
     low_scoring_subdomains(lowest, d_scores, '5')
-    red_flags('Domain 5: Child Experience Red Flags')
+    red_flags(localize_text('d5_red_flags'))
   end
 
   def domain_six
-    domain_title('Domain 6: Environment')
+    domain_title(localize_text('d6_title'))
     domain_table('6')
-    text "The <b>Environment</b> domain measures a center's ability to provide a safe and nurturing environment for children and staff. This domain considers Spaces, Materials, and Environmental Safety. Ideally, a center will contain multiple spaces that children and staff can enjoy safely for a variety of purposes, with access to a range of materials that can enhance a child's development.", inline_format: true
-    domain_score_graph('6', 'Domain 6: Environment Subdomain Feedback')
+    text localize_text('d6_admin'), inline_format: true
+    domain_score_graph('6', localize_text('d6_feedback'))
     d_scores = [
       @scores[@center.identifier]['6.1'], @scores[@center.identifier]['6.2'],
       @scores[@center.identifier]['6.3']
     ]
     d_scores_clean = d_scores.reject { |e| e == '' }
     lowest = d_scores_clean.min
-    doing_well(lowest, 'In your center, all domain 6 subdomains received scores higher than 3.01. This indicates that your center is meeting many of the requirements needed to provide a safe and supportive environment through Spaces, Materials, and Environmental Safety.')
+    doing_well(lowest, localize_text('d6_all_well'))
     highest = d_scores_clean.max
-    highest_scoring_subdomain('6', d_scores, highest, 'Environment')
+    highest_scoring_subdomain('6', d_scores, highest, localize_text('d6_name'))
     low_scoring_subdomains(lowest, d_scores, '6')
-    red_flags('Domain 6: Environment Red Flags')
+    red_flags(localize_text('d6_red_flags'))
   end
 
   def domain_level_feedback
@@ -377,44 +383,47 @@ class ReportPdf
   end
 
   def additional_feedback
-    domain_title('Additional Feedback')
-    text '[This section will contain more feedback from a Whole Child or ISNA representative who is knowledgeable about the center. The personalized feedback may contain additional notes about the center’s level of care and recommendations.]'
+    domain_title(localize_text('additional_feedback'))
+    text localize_text('additional_comments')
   end
 
   def comparison_chart
-    domain_title('Score Comparison Chart')
-    text 'Please refer to the chart below to compare your center’s scores to the average scores for public CDAs, private CDAs, and the national average for all CDAs.'
+    domain_title(localize_text('comparison_chart'))
+    text localize_text("#{@center.center_type}_comparison")
     move_down 10
     data = if is_cda?
              [
-               ['', @center.name, 'CdAs Públicos', 'CdAs Privados', 'Ambos CdAs'],
-               ['Puntuación central', @scores[@center.identifier]['Score'], @public_scores['Score'], @private_scores['Score'], @nat_avg_scores['Score']]
+               ['', @center.name, I18n.t('report.public', type: @center.center_type, locale: @language),
+                I18n.t('report.private', type: @center.center_type, locale: @language),
+                I18n.t('report.both', type: @center.center_type, locale: @language)],
+               [localize_text('center_score'), @scores[@center.identifier]['Score'], @public_scores['Score'], @private_scores['Score'], @nat_avg_scores['Score']]
              ]
            else
              [
-               ['', @center.name, "#{@center.center_type}s"],
-               ['Puntuación central', @scores[@center.identifier]['Score'], @nat_avg_scores['Score']]
+               ['', @center.name, I18n.t('report.national', type: @center.center_type, locale: @language)],
+               [localize_text('center_score'), @scores[@center.identifier]['Score'], @nat_avg_scores['Score']]
              ]
            end
     @score_scheme.domains.sort_by { |domain| domain.title.to_i }.each do |domain|
       ds = @scores[@center.identifier][domain.title]
       ds = ds.round(2) if ds != ''
       if is_cda?
-        data << ["Domain #{domain.title}: #{domain.name}", '', '', '', '']
-        data << ['Puntuación de dominio', ds, @public_scores[domain.title], @private_scores[domain.title], @nat_avg_scores[domain.title]]
+        data << [localize_text("d#{domain.title}_title"), '', '', '', '']
+        data << [localize_text('domain_score'), ds, @public_scores[domain.title], @private_scores[domain.title], @nat_avg_scores[domain.title]]
       else
-        data << ["Domain #{domain.title}: #{domain.name}", '', '']
-        data << ['Puntuación de dominio', ds, @nat_avg_scores[domain.title]]
+        data << [localize_text("d#{domain.title}_title"), '', '']
+        data << [localize_text('domain_score'), ds, @nat_avg_scores[domain.title]]
       end
       domain.subdomains.sort_by { |subdomain| subdomain.title.to_f }.each do |subdomain|
         next if subdomain.title == '1.5' || subdomain.title == '5.9'
 
         sds = @scores[@center.identifier][subdomain.title]
         sds = sds.round(2) if sds != ''
+        name = @score_scheme.instrument.language == @language ? subdomain.title_name : full_sanitizer.sanitize(subdomain.translated_title_name(@language))
         data << if is_cda?
-                  [full_sanitizer.sanitize(subdomain.translated_title_name('es')), sds, @public_scores[subdomain.title], @private_scores[subdomain.title], @nat_avg_scores[subdomain.title]]
+                  [name, sds, @public_scores[subdomain.title], @private_scores[subdomain.title], @nat_avg_scores[subdomain.title]]
                 else
-                  [full_sanitizer.sanitize(subdomain.translated_title_name('es')), sds, @nat_avg_scores[subdomain.title]]
+                  [name, sds, @nat_avg_scores[subdomain.title]]
                 end
       end
     end
@@ -475,8 +484,8 @@ class ReportPdf
       end
     end
     move_down 20
-    text 'Cells with no color indicate scores in the “high quality” range.'
-    text 'Cells highlighted in <color rgb="FEC15D">orange</color> indicate scores in the “good quality” range.', inline_format: true
-    text 'Cells highlighted in <color rgb="F06A78">red</color> indicate scores in the “low quality” range.', inline_format: true
+    text localize_text('no_color')
+    text localize_text('orange_color'), inline_format: true
+    text localize_text('red_color'), inline_format: true
   end
 end
