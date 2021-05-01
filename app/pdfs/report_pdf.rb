@@ -180,6 +180,7 @@ class ReportPdf
     move_down 10
   end
 
+  # CDA is residential
   def is_cda?
     @center.center_type == 'CDA'
   end
@@ -230,7 +231,21 @@ class ReportPdf
     sd_title = "#{title}.#{d_scores.index(highest) + 1}"
     sd = @score_scheme.subdomains.find_by(title: sd_title)
     tsd_title = @score_scheme.instrument.language == @language ? sd.name : full_sanitizer.sanitize(sd.translated_name(@language))
-    text I18n.t('report.d1_highest', name: name, title: tsd_title, highest: highest, locale: @language), inline_format: true
+    text I18n.t('report.d1_highest', name: name, title: tsd_title, highest: highest.round(2), locale: @language), inline_format: true
+    move_down 10
+    text localize_text(high_low_score_key(sd_title, 'high'))
+  end
+
+  def high_low_score_key(sd_title, high_low)
+    prefix = 'h'
+    prefix = 'l' if high_low == 'low'
+    if ['2.6', '3.5', '4.1', '4.6', '5.1', '5.2', '5.3', '5.4', '5.5'].include?(sd_title)
+      sd_title[1] = '_'
+      is_cda? ? "#{prefix}_#{sd_title}_r" : "#{prefix}_#{sd_title}_n"
+    else
+      sd_title[1] = '_'
+      "#{prefix}_#{sd_title}"
+    end
   end
 
   def low_scoring_subdomains(lowest, d_scores, title)
@@ -253,6 +268,9 @@ class ReportPdf
     sd = @score_scheme.subdomains.find_by(title: sd_title)
     name = @score_scheme.instrument.language == @language ? sd.name : full_sanitizer.sanitize(sd.translated_name(@language))
     text I18n.t('report.d1_low_score', name: name, score: score, locale: @language), inline_format: true
+    move_down 10
+    text localize_text(high_low_score_key(sd_title, 'low'))
+    move_down 10
   end
 
   def red_flags(name)
@@ -379,7 +397,189 @@ class ReportPdf
   end
 
   def domain_level_feedback
-    domain_title('Domain-level Feedback')
+    domain_title(localize_text('dl_feedback'))
+    domain_one_feedback
+    move_down 10
+    domain_two_feedback
+    move_down 10
+    domain_three_feedback
+    move_down 10
+    domain_four_feedback
+    move_down 10
+    domain_five_feedback
+    move_down 10
+    domain_six_feedback
+  end
+
+  def domain_header(name)
+    font('Avenir Next Condensed') do
+      text "<font size='18'><b>#{name}</b></font>", inline_format: true, color: '767171'
+    end
+    move_down 5
+  end
+
+  def domain_one_feedback
+    domain_header(localize_text('d1_name'))
+    text localize_text('d1_overview')
+    domain_feedback('1')
+  end
+
+  def domain_two_feedback
+    domain_header(localize_text('d2_name'))
+    text localize_text('d2_overview')
+    domain_feedback('2')
+  end
+
+  def domain_three_feedback
+    domain_header(localize_text('d3_name'))
+    text localize_text('d3_overview')
+    domain_feedback('3')
+  end
+
+  def domain_four_feedback
+    domain_header(localize_text('d4_name'))
+    text localize_text('d4_overview')
+    domain_feedback('4')
+  end
+
+  def domain_five_feedback
+    domain_header(localize_text('d5_name'))
+    text localize_text('d5_overview')
+    domain_feedback('5')
+  end
+
+  def domain_six_feedback
+    domain_header(localize_text('d6_name'))
+    text localize_text('d6_overview')
+    domain_feedback('6')
+  end
+
+  def domain_feedback(title)
+    ds = @scores[@center.identifier][title]
+    ds = ds.round(2) if ds != ''
+    move_down 10
+    case ds
+    when 1.0..3.0
+      overview('low', title)
+      inferior_quality(title)
+    when 3.01..5.0
+      overview('mid', title)
+      mid_quality(title)
+    when 5.01..7.0
+      overview('high', title)
+      high_quality(title)
+    else
+      text 'NO SCORE'
+    end
+  end
+
+  def overview(key, title)
+    text I18n.t("report.#{key}", name: localize_text("d#{title}_name"), locale: @language)
+  end
+
+  def bullet_points(range, prefix)
+    move_down 10
+    indent(20) do
+      range.each do |index|
+        stroke_rectangle [bounds.left, cursor - 5], 8, 8
+        indent(23) do
+          pad(1) { text localize_text("#{prefix}_#{index}") }
+        end
+      end
+    end
+  end
+
+  def high_quality(title)
+    case title
+    when '1'
+      bullet_points(1..5, 'd1_high')
+    when '2'
+      if is_cda?
+        bullet_points(1..17, 'd2_high_res')
+      else
+        bullet_points(1..15, 'd2_high_non')
+      end
+    when '3'
+      if is_cda?
+        bullet_points(1..8, 'd3_high_res')
+      else
+        bullet_points(1..7, 'd3_high_non')
+      end
+    when '4'
+      bullet_points(1..12, 'd4_high')
+    when '5'
+      if is_cda?
+        bullet_points(1..17, 'd5_high_res')
+      else
+        bullet_points(1..6, 'd5_high_non')
+      end
+    when '6'
+      bullet_points(1..8, 'd6_high')
+    else
+      text 'OUT OF RANGE'
+    end
+  end
+
+  def mid_quality(title)
+    case title
+    when '1'
+      bullet_points(1..7, 'd1_mid')
+    when '2'
+      if is_cda?
+        bullet_points(1..14, 'd2_mid_res')
+      else
+        bullet_points(1..13, 'd2_mid_non')
+      end
+    when '3'
+      if is_cda?
+        bullet_points(1..7, 'd3_mid_res')
+      else
+        bullet_points(1..6, 'd3_mid_non')
+      end
+    when '4'
+      bullet_points(1..14, 'd4_mid')
+    when '5'
+      if is_cda?
+        bullet_points(1..15, 'd5_mid_res')
+      else
+        bullet_points(1..6, 'd5_mid_non')
+      end
+    when '6'
+      bullet_points(1..11, 'd6_mid')
+    else
+      text 'OUT OF RANGE'
+    end
+  end
+
+  def inferior_quality(title)
+    case title
+    when '1'
+      bullet_points(1..7, 'd1_low')
+    when '2'
+      if is_cda?
+        bullet_points(1..10, 'd2_low_res')
+      else
+        bullet_points(1..9, 'd2_low_non')
+      end
+    when '3'
+      if is_cda?
+        bullet_points(1..7, 'd3_low_res')
+      else
+        bullet_points(1..6, 'd3_low_non')
+      end
+    when '4'
+      bullet_points(1..11, 'd4_low')
+    when '5'
+      if is_cda?
+        bullet_points(1..12, 'd5_low_res')
+      else
+        bullet_points(1..6, 'd5_low_non')
+      end
+    when '6'
+      bullet_points(1..11, 'd6_low')
+    else
+      text 'OUT OF RANGE'
+    end
   end
 
   def additional_feedback
