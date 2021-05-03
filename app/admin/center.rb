@@ -56,7 +56,7 @@ ActiveAdmin.register Center do
     column 'PDF Reports' do |center|
       unless center.ss_survey_scores(params[:score_scheme_id]).empty?
         span { link_to 'English', pdf_report_admin_score_scheme_center_path(params[:score_scheme_id], center.id, language: 'en') }
-        # span { link_to 'Spanish', download_scores_admin_score_scheme_center_path(params[:score_scheme_id], center.id, language: 'es') }
+        span { link_to 'Spanish', pdf_report_admin_score_scheme_center_path(params[:score_scheme_id], center.id, language: 'es') }
       end
     end
   end
