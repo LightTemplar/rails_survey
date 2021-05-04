@@ -28,6 +28,7 @@ class ReportPdf
     center_report
     start_new_page
     domain_data
+    red_flag_data
     domain_one
     start_new_page
     domain_two
@@ -173,6 +174,26 @@ class ReportPdf
     end
   end
 
+  def red_flag_data
+    css = @center.survey_scores.where(score_scheme_id: @score_scheme.id)
+    responses = @center.responses(css)
+    @red_flag_responses = {}
+    @score_scheme.domains.each do |domain|
+      domain_red_flags = {}
+      domain.subdomains.each do |subdomain|
+        subdomain.score_units.each do |unit|
+          unit.score_unit_questions.each do |suq|
+            suq_responses = responses.where(question_identifier: suq.question_identifier)
+            suq_responses.each do |response|
+              domain_red_flags[response.question_identifier] = response if response.is_red_flag?(@score_scheme)
+            end
+          end
+        end
+      end
+      @red_flag_responses[domain.title] = domain_red_flags.values
+    end
+  end
+
   def domain_title(title)
     font('Avenir Next Condensed') do
       text "<font size='20'><b>#{title}</b></font>", inline_format: true, color: '2F642F'
@@ -204,11 +225,51 @@ class ReportPdf
     move_down 10
   end
 
+  def ordinal(n)
+    return 'th' if [11, 12, 13].include?(n)
+
+    case n % 10
+    when 1
+      'st'
+    when 2
+      'nd'
+    when 3
+      'rd'
+    else
+      'th'
+    end
+  end
+
+  def score_rank(title)
+    ds = @scores[@center.identifier][title]
+    domain_scores = []
+    array = @scores
+    if is_cda?
+      if @center.administration == 'Privado'
+        @scores.each do |identifier, _sc|
+          ctr = @score_scheme.centers.find_by(identifier: identifier)
+          array.delete(identifier) if ctr.administration != 'Privado'
+        end
+      else
+        @scores.each do |identifier, _sc|
+          ctr = @score_scheme.centers.find_by(identifier: identifier)
+          array.delete(identifier) if ctr.administration != 'Publico'
+        end
+      end
+    end
+    array.each do |_identifier, sc|
+      domain_scores << sc[title]
+    end
+    less = domain_scores.select { |score| score <= ds }
+    rank = ((less.size.to_f / domain_scores.size.to_f) * 100).round
+  end
+
   def domain_score_graph(title, feedback)
     move_down 10
     ds = @scores[@center.identifier][title]
     ds = ds.round(2) if ds != ''
-    text I18n.t('report.d1_score', score: ds, locale: @language), inline_format: true
+    rank = score_rank(title)
+    text I18n.t('report.d1_score', score: ds, percentile: rank, sup: ordinal(rank), locale: @language), inline_format: true
     move_down 20
     font('Avenir Next Condensed') do
       text "<font size='16'><b>#{feedback}</b></font>", inline_format: true, color: '767171'
@@ -267,17 +328,81 @@ class ReportPdf
     sd_title = "#{title}.#{index + 1}"
     sd = @score_scheme.subdomains.find_by(title: sd_title)
     name = @score_scheme.instrument.language == @language ? sd.name : full_sanitizer.sanitize(sd.translated_name(@language))
-    text I18n.t('report.d1_low_score', name: name, score: score, locale: @language), inline_format: true
+    text I18n.t('report.d1_low_score', name: name, score: score.round(2), locale: @language), inline_format: true
     move_down 10
     text localize_text(high_low_score_key(sd_title, 'low'))
     move_down 10
   end
 
-  def red_flags(name)
+  def rn
+    is_cda? ? 'r' : 'n'
+  end
+
+  def residential_only
+    %w[aac7 cap2 cap3 csm1 csm3 cts2 cts3 cts4 cts5 els5 els6 hlt1 ide5 ide8 sts2]
+  end
+
+  def non_residential_only
+    %w[cts4 cts6]
+  end
+
+  def red_flag_domain
+    { 'aac4': '4', 'aac7': '5', 'bcu5': '2', 'bra1': '5', 'bra2': '6', 'cab2': '4', 'cab3': '4', 'cap2': '1', 'cap3': '1',
+      'cga5': '4', 'cmc3': '6', 'csm1': '3', 'csm3': '3', 'css1': '3', 'css3': '3', 'css5': '3', 'css6': '1', 'css7': '2',
+      'css10': '2', 'css11': '2', 'cta3': '3', 'cts2': '3', 'cts3': '3', 'cts4': '3', 'cts5': '3', 'cts6': '3', 'cts7': '4',
+      'cts8': '4', 'ctu3': '2', 'ctu4': '2', 'dca2': '6', 'els5': '2',
+      'els6': '2', 'els7': '2', 'eta2': '6', 'fom3': '3', 'fom6': '3', 'fom8': '3', 'fom10': '3', 'fpa3': '6', 'fpa4': '6',
+      'hlt1': '2', 'hlt7': '2', 'hlt9': '2', 'hlt10': '2', 'ide5': '2', 'ide8': '2', 'ide15': '3', 'ide18': '2', 'idp1': '2',
+      'ltc12': '3', 'nut2': '2', 'nut10': '2', 'ogh1': '2', 'ogh2': '2', 'rbi7': '3', 'rbi10': '3', 'rbi19': '3', 'rbo1': '4',
+      'rbo4': '3', 'rbo5': '4', 'rbo6': '4', 'rcd9': '2', 'sap1': '2', 'sdm1': '4', 'sdm6': '1', 'sia8': '2', 'sla6': '6',
+      'sot3': '1', 'sts2': '1', 'sts3': '1', 'vin6': '3', 'vis2_1': '3', 'vis2_2': '3', 'vnc3': '4', 'vol6': '3' }
+  end
+
+  def red_flags(name, title)
     move_down 10
     font('Avenir Next Condensed') do
       text "<font size='16'><b>#{name}</b></font>", inline_format: true, color: '767171'
     end
+    domain = @score_scheme.domains.find_by(title: title)
+    drf = @red_flag_responses[domain.title]
+    drf.each do |response|
+      # text "==> #{response.question_identifier}"
+      next if red_flag_domain[response.question_identifier.to_sym] != title
+
+      iq = response.instrument_question
+      identifiers = response.red_flag_response_options(@score_scheme).pluck(:identifier)
+      flags = response.red_flags.where(score_scheme_id: @score_scheme.id).where(option_identifier: identifiers)
+      flags.each do |flag|
+        if %w[aac4 css5 css7 cts2 cts5 els7 fom8 ltc12 rbi7 rbi19 rbo5 sdm1 sla6 vin6 vis2_1 vis2_2 vnc3 vol6].include?(response.question_identifier)
+          option = iq.hashed_options[flag.option_identifier]
+          index = iq.non_special_options.index(option)
+          letter = iq.letters[index]
+          if %w[aac4 els7 rbi7 rbi19 sdm1 vis2_1 vis2_2].include?(response.question_identifier)
+            text localize_text("#{response.question_identifier}_#{letter}_d")
+            move_down 5
+            text localize_text("#{rn}_#{response.question_identifier}_#{letter}")
+            move_down 5
+          else
+            text localize_text("#{response.question_identifier}_#{letter}_d")
+            move_down 5
+            text localize_text("#{response.question_identifier}_#{letter}")
+            move_down 5
+          end
+        elsif %w[bcu5 bra2 els7 ide15 ide18 nut2 nut10].include?(response.question_identifier)
+          text localize_text("#{response.question_identifier}_d")
+          move_down 5
+          text localize_text("#{rn}_#{response.question_identifier}")
+          move_down 5
+        else
+          text localize_text("#{response.question_identifier}_d")
+          move_down 5
+          text localize_text(response.question_identifier)
+          move_down 5
+        end
+      end
+      # text "Flags missing for response #{response.question_identifier}." if flags.empty?
+    end
+    # text 'There are no red flags in this domain.' if drf.empty?
     move_down 20
   end
 
@@ -296,7 +421,7 @@ class ReportPdf
     highest = d_scores_clean.max
     highest_scoring_subdomain('1', d_scores, highest, localize_text('d1_name'))
     low_scoring_subdomains(lowest, d_scores, '1')
-    red_flags(localize_text('d1_red_flags'))
+    red_flags(localize_text('d1_red_flags'), '1')
   end
 
   def domain_two
@@ -317,7 +442,7 @@ class ReportPdf
     highest = d_scores_clean.max
     highest_scoring_subdomain('2', d_scores, highest, localize_text('d2_name'))
     low_scoring_subdomains(lowest, d_scores, '2')
-    red_flags(localize_text('d2_red_flags'))
+    red_flags(localize_text('d2_red_flags'), '2')
   end
 
   def domain_three
@@ -336,7 +461,7 @@ class ReportPdf
     highest = d_scores_clean.max
     highest_scoring_subdomain('3', d_scores, highest, localize_text('d3_name'))
     low_scoring_subdomains(lowest, d_scores, '3')
-    red_flags(localize_text('d3_red_flags'))
+    red_flags(localize_text('d3_red_flags'), '3')
   end
 
   def domain_four
@@ -355,7 +480,7 @@ class ReportPdf
     highest = d_scores_clean.max
     highest_scoring_subdomain('4', d_scores, highest, localize_text('d4_name'))
     low_scoring_subdomains(lowest, d_scores, '4')
-    red_flags(localize_text('d4_red_flags'))
+    red_flags(localize_text('d4_red_flags'), '4')
   end
 
   def domain_five
@@ -375,7 +500,7 @@ class ReportPdf
     highest = d_scores_clean.max
     highest_scoring_subdomain('5', d_scores, highest, localize_text('d5_name'))
     low_scoring_subdomains(lowest, d_scores, '5')
-    red_flags(localize_text('d5_red_flags'))
+    red_flags(localize_text('d5_red_flags'), '5')
   end
 
   def domain_six
@@ -393,7 +518,7 @@ class ReportPdf
     highest = d_scores_clean.max
     highest_scoring_subdomain('6', d_scores, highest, localize_text('d6_name'))
     low_scoring_subdomains(lowest, d_scores, '6')
-    red_flags(localize_text('d6_red_flags'))
+    red_flags(localize_text('d6_red_flags'), '6')
   end
 
   def domain_level_feedback

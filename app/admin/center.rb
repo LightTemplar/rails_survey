@@ -86,7 +86,7 @@ ActiveAdmin.register Center do
       center = Center.find params[:id]
       language = params[:language]
       pdf = ReportPdf.new(center, score_scheme, language)
-      name = "#{center.identifier}-#{score_scheme.title.split.join('-')}.pdf"
+      name = "#{center.identifier}-#{score_scheme.title.split.join('-')}-#{language}.pdf"
       file = Tempfile.new(name)
       pdf.save_as(file.path)
       send_file file, type: 'application/pdf', filename: name
