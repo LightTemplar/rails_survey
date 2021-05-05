@@ -53,17 +53,24 @@ class ReportPdf
   end
 
   def page_one
-    text "<font size='14'><b>#{@center.name}</b></font>", inline_format: true, align: :right
-    date = DateTime.now
-    text "<font size='14'><b>#{date.strftime('%B %Y')}</b></font>", inline_format: true, align: :right
-    font('Avenir Next Condensed') do
-      text "<font size='36'><b>#{localize_text('p1_national')}</b></font>", inline_format: true, color: '2F642F', align: :right
-      text "<font size='36'><b>#{localize_text('p1_quality')}</b></font>", inline_format: true, color: '2F642F', align: :right
+    fill_color '2F642F'
+    fill_rectangle [0, 715], 20, 715
+    fill_rectangle [515, 715], 20, 715
+    fill_color '000000'
+
+    bounding_box([0, 715], width: 500, height: 715) do
+      text "<font size='14'><b>#{@center.name}</b></font>", inline_format: true, align: :right
+      date = DateTime.now
+      text "<font size='14'><b>#{date.strftime('%B %Y')}</b></font>", inline_format: true, align: :right
+      font('Avenir Next Condensed') do
+        text "<font size='36'><b>#{localize_text('p1_national')}</b></font>", inline_format: true, color: '2F642F', align: :right
+        text "<font size='36'><b>#{localize_text('p1_quality')}</b></font>", inline_format: true, color: '2F642F', align: :right
+      end
+      move_down 25
+      image "#{Rails.root}/app/pdfs/images/mother_child_holding_hands.jpg", at: [bounds.left + 30, cursor], fit: [474, 267], position: :center
+      move_down 400
+      image "#{Rails.root}/app/pdfs/images/sponsors.png", at: [bounds.left + 30, cursor], fit: [476, 95], position: :center
     end
-    move_down 10
-    image "#{Rails.root}/app/pdfs/images/mother_child_holding_hands.jpg", fit: [512, 288], position: :center
-    move_down 100
-    image "#{Rails.root}/app/pdfs/images/sponsors.png", fit: [500, 200], position: :center
   end
 
   def page_two
@@ -283,8 +290,8 @@ class ReportPdf
 
   def doing_well(lowest, message)
     if lowest >= 3.01
-      text message
       move_down 10
+      text message
     end
   end
 
@@ -292,9 +299,11 @@ class ReportPdf
     sd_title = "#{title}.#{d_scores.index(highest) + 1}"
     sd = @score_scheme.subdomains.find_by(title: sd_title)
     tsd_title = @score_scheme.instrument.language == @language ? sd.name : full_sanitizer.sanitize(sd.translated_name(@language))
-    text I18n.t('report.d1_highest', name: name, title: tsd_title, highest: highest.round(2), locale: @language), inline_format: true
-    move_down 10
-    text localize_text(high_low_score_key(sd_title, 'high'))
+    text I18n.t('report.d_highest', name: name, title: tsd_title, highest: highest.round(2), locale: @language), inline_format: true
+    move_down 5
+    indent(15) do
+      text localize_text(high_low_score_key(sd_title, 'high'))
+    end
   end
 
   def high_low_score_key(sd_title, high_low)
@@ -313,6 +322,7 @@ class ReportPdf
     if lowest < 3.01
       low_quality
       d_scores.each_with_index do |score, index|
+        bounds.move_past_bottom if y < 75
         low_score(title, index, score) if score != '' && score < 3.01
       end
     end
@@ -328,9 +338,11 @@ class ReportPdf
     sd_title = "#{title}.#{index + 1}"
     sd = @score_scheme.subdomains.find_by(title: sd_title)
     name = @score_scheme.instrument.language == @language ? sd.name : full_sanitizer.sanitize(sd.translated_name(@language))
-    text I18n.t('report.d1_low_score', name: name, score: score.round(2), locale: @language), inline_format: true
-    move_down 10
-    text localize_text(high_low_score_key(sd_title, 'low'))
+    text I18n.t('report.d_low_score', name: name, score: score.round(2), locale: @language), inline_format: true
+    move_down 5
+    indent(15) do
+      text localize_text(high_low_score_key(sd_title, 'low'))
+    end
     move_down 10
   end
 
@@ -358,51 +370,62 @@ class ReportPdf
       'sot3': '1', 'sts2': '1', 'sts3': '1', 'vin6': '3', 'vis2_1': '3', 'vis2_2': '3', 'vnc3': '4', 'vol6': '3' }
   end
 
+  def red_flag_description(str)
+    bounds.move_past_bottom if y < 60
+    fill_color 'F06A78'
+    fill_circle [bounds.left, cursor - 9], 2
+    fill_color '000000'
+    indent(7) do
+      text "<b>#{str}</b>", inline_format: true
+    end
+    move_down 5
+  end
+
+  def red_flag_recommendation(rec)
+    text rec
+    move_down 5
+  end
+
   def red_flags(name, title)
     move_down 10
+    bounds.move_past_bottom if y < 60
     font('Avenir Next Condensed') do
       text "<font size='16'><b>#{name}</b></font>", inline_format: true, color: '767171'
     end
     domain = @score_scheme.domains.find_by(title: title)
     drf = @red_flag_responses[domain.title]
+    no_red_flags = drf.empty? ? true : false
     drf.each do |response|
-      # text "==> #{response.question_identifier}"
-      next if red_flag_domain[response.question_identifier.to_sym] != title
-
+      if red_flag_domain[response.question_identifier.to_sym] != title
+        no_red_flags = true
+        next
+      end
+      no_red_flags = false
       iq = response.instrument_question
       identifiers = response.red_flag_response_options(@score_scheme).pluck(:identifier)
       flags = response.red_flags.where(score_scheme_id: @score_scheme.id).where(option_identifier: identifiers)
       flags.each do |flag|
-        if %w[aac4 css5 css7 cts2 cts5 els7 fom8 ltc12 rbi7 rbi19 rbo5 sdm1 sla6 vin6 vis2_1 vis2_2 vnc3 vol6].include?(response.question_identifier)
+        if %w[aac4 css5 css7 cts2 cts5 els5 els6 els7 fom8 ltc12 rbi7 rbi19 rbo5 sdm1 sla6 vin6 vis2_1 vis2_2 vnc3 vol6].include?(response.question_identifier)
           option = iq.hashed_options[flag.option_identifier]
           index = iq.non_special_options.index(option)
           letter = iq.letters[index]
           if %w[aac4 els7 rbi7 rbi19 sdm1 vis2_1 vis2_2].include?(response.question_identifier)
-            text localize_text("#{response.question_identifier}_#{letter}_d")
-            move_down 5
-            text localize_text("#{rn}_#{response.question_identifier}_#{letter}")
-            move_down 5
+            red_flag_description(localize_text("#{response.question_identifier}_#{letter}_d"))
+            red_flag_recommendation(localize_text("#{rn}_#{response.question_identifier}_#{letter}"))
           else
-            text localize_text("#{response.question_identifier}_#{letter}_d")
-            move_down 5
-            text localize_text("#{response.question_identifier}_#{letter}")
-            move_down 5
+            red_flag_description(localize_text("#{response.question_identifier}_#{letter}_d"))
+            red_flag_recommendation(localize_text("#{response.question_identifier}_#{letter}"))
           end
         elsif %w[bcu5 bra2 els7 ide15 ide18 nut2 nut10].include?(response.question_identifier)
-          text localize_text("#{response.question_identifier}_d")
-          move_down 5
-          text localize_text("#{rn}_#{response.question_identifier}")
-          move_down 5
+          red_flag_description(localize_text("#{response.question_identifier}_d"))
+          red_flag_recommendation(localize_text("#{rn}_#{response.question_identifier}"))
         else
-          text localize_text("#{response.question_identifier}_d")
-          move_down 5
-          text localize_text(response.question_identifier)
-          move_down 5
+          red_flag_description(localize_text("#{response.question_identifier}_d"))
+          red_flag_recommendation(localize_text(response.question_identifier))
         end
       end
-      # text "Flags missing for response #{response.question_identifier}." if flags.empty?
     end
-    # text 'There are no red flags in this domain.' if drf.empty?
+    text localize_text('no_red_flags') if no_red_flags
     move_down 20
   end
 
@@ -417,9 +440,9 @@ class ReportPdf
     ]
     d_scores_clean = d_scores.reject { |e| e == '' }
     lowest = d_scores_clean.min
-    doing_well(lowest, localize_text('d1_all_well'))
     highest = d_scores_clean.max
     highest_scoring_subdomain('1', d_scores, highest, localize_text('d1_name'))
+    doing_well(lowest, localize_text('d1_all_well'))
     low_scoring_subdomains(lowest, d_scores, '1')
     red_flags(localize_text('d1_red_flags'), '1')
   end
@@ -438,9 +461,9 @@ class ReportPdf
     ]
     d_scores_clean = d_scores.reject { |e| e == '' }
     lowest = d_scores_clean.min
-    doing_well(lowest, localize_text('d2_all_well'))
     highest = d_scores_clean.max
     highest_scoring_subdomain('2', d_scores, highest, localize_text('d2_name'))
+    doing_well(lowest, localize_text('d2_all_well'))
     low_scoring_subdomains(lowest, d_scores, '2')
     red_flags(localize_text('d2_red_flags'), '2')
   end
@@ -457,9 +480,9 @@ class ReportPdf
     ]
     d_scores_clean = d_scores.reject { |e| e == '' }
     lowest = d_scores_clean.min
-    doing_well(lowest, localize_text('d3_all_well'))
     highest = d_scores_clean.max
     highest_scoring_subdomain('3', d_scores, highest, localize_text('d3_name'))
+    doing_well(lowest, localize_text('d3_all_well'))
     low_scoring_subdomains(lowest, d_scores, '3')
     red_flags(localize_text('d3_red_flags'), '3')
   end
@@ -476,9 +499,9 @@ class ReportPdf
     ]
     d_scores_clean = d_scores.reject { |e| e == '' }
     lowest = d_scores_clean.min
-    doing_well(lowest, localize_text('d4_all_well'))
     highest = d_scores_clean.max
     highest_scoring_subdomain('4', d_scores, highest, localize_text('d4_name'))
+    doing_well(lowest, localize_text('d4_all_well'))
     low_scoring_subdomains(lowest, d_scores, '4')
     red_flags(localize_text('d4_red_flags'), '4')
   end
@@ -496,9 +519,9 @@ class ReportPdf
     ]
     d_scores_clean = d_scores.reject { |e| e == '' }
     lowest = d_scores_clean.min
-    doing_well(lowest, localize_text('d5_all_well'))
     highest = d_scores_clean.max
     highest_scoring_subdomain('5', d_scores, highest, localize_text('d5_name'))
+    doing_well(lowest, localize_text('d5_all_well'))
     low_scoring_subdomains(lowest, d_scores, '5')
     red_flags(localize_text('d5_red_flags'), '5')
   end
@@ -514,9 +537,9 @@ class ReportPdf
     ]
     d_scores_clean = d_scores.reject { |e| e == '' }
     lowest = d_scores_clean.min
-    doing_well(lowest, localize_text('d6_all_well'))
     highest = d_scores_clean.max
     highest_scoring_subdomain('6', d_scores, highest, localize_text('d6_name'))
+    doing_well(lowest, localize_text('d6_all_well'))
     low_scoring_subdomains(lowest, d_scores, '6')
     red_flags(localize_text('d6_red_flags'), '6')
   end
@@ -544,37 +567,37 @@ class ReportPdf
   end
 
   def domain_one_feedback
-    domain_header(localize_text('d1_name'))
+    domain_header(localize_text('d1_title'))
     text localize_text('d1_overview')
     domain_feedback('1')
   end
 
   def domain_two_feedback
-    domain_header(localize_text('d2_name'))
+    domain_header(localize_text('d2_title'))
     text localize_text('d2_overview')
     domain_feedback('2')
   end
 
   def domain_three_feedback
-    domain_header(localize_text('d3_name'))
+    domain_header(localize_text('d3_title'))
     text localize_text('d3_overview')
     domain_feedback('3')
   end
 
   def domain_four_feedback
-    domain_header(localize_text('d4_name'))
+    domain_header(localize_text('d4_title'))
     text localize_text('d4_overview')
     domain_feedback('4')
   end
 
   def domain_five_feedback
-    domain_header(localize_text('d5_name'))
+    domain_header(localize_text('d5_title'))
     text localize_text('d5_overview')
     domain_feedback('5')
   end
 
   def domain_six_feedback
-    domain_header(localize_text('d6_name'))
+    domain_header(localize_text('d6_title'))
     text localize_text('d6_overview')
     domain_feedback('6')
   end
@@ -606,6 +629,7 @@ class ReportPdf
     move_down 10
     indent(20) do
       range.each do |index|
+        bounds.move_past_bottom if y < 60
         stroke_rectangle [bounds.left, cursor - 5], 8, 8
         indent(23) do
           pad(1) { text localize_text("#{prefix}_#{index}") }
@@ -753,64 +777,65 @@ class ReportPdf
       end
     end
 
-    font('Courier', size: 10) do
-      table(data) do
-        cells.borders = []
-        cells.align = :center
-        columns(0..4).borders = %i[left right]
+    table(data) do
+      cells.borders = []
+      cells.align = :center
+      columns(0..4).borders = %i[left right]
 
-        row(0..3).borders = %i[left top right bottom]
-        row(0..3).font_style = :bold
-        row(2).background_color = 'D9D9D9'
-        row(3).columns(0).font_style = :bold_italic
+      row(0..3).borders = %i[left top right bottom]
+      row(0..3).font_style = :bold
+      row(2).background_color = 'D9D9D9'
+      row(3).columns(0).font_style = :bold_italic
 
-        row(8).borders = %i[left top right]
-        row(8).font_style = :bold
-        row(8).background_color = 'D9D9D9'
-        row(9).borders = %i[left right bottom]
-        row(9).columns(0).font_style = :bold_italic
+      row(8).borders = %i[left top right]
+      row(8).font_style = :bold
+      row(8).background_color = 'D9D9D9'
+      row(9).borders = %i[left right bottom]
+      row(9).columns(0).font_style = :bold_italic
 
-        row(19).borders = %i[left top right]
-        row(19).font_style = :bold
-        row(19).background_color = 'D9D9D9'
-        row(20).borders = %i[left right bottom]
-        row(20).columns(0).font_style = :bold_italic
+      row(19).borders = %i[left top right]
+      row(19).font_style = :bold
+      row(19).background_color = 'D9D9D9'
+      row(20).borders = %i[left right bottom]
+      row(20).columns(0).font_style = :bold_italic
 
-        row(27).borders = %i[left top right]
-        row(27).font_style = :bold
-        row(27).background_color = 'D9D9D9'
-        row(28).borders = %i[left right bottom]
-        row(28).columns(0).font_style = :bold_italic
+      row(27).borders = %i[left top right]
+      row(27).font_style = :bold
+      row(27).background_color = 'D9D9D9'
+      row(28).borders = %i[left right bottom]
+      row(28).columns(0).font_style = :bold_italic
 
-        row(35).borders = %i[left top right]
-        row(35).font_style = :bold
-        row(35).background_color = 'D9D9D9'
-        row(36).borders = %i[left right bottom]
-        row(36).columns(0).font_style = :bold_italic
+      row(35).borders = %i[left top right]
+      row(35).font_style = :bold
+      row(35).background_color = 'D9D9D9'
+      row(36).borders = %i[left right bottom]
+      row(36).columns(0).font_style = :bold_italic
 
-        row(45).borders = %i[left top right]
-        row(45).font_style = :bold
-        row(45).background_color = 'D9D9D9'
-        row(46).borders = %i[left right bottom]
-        row(46).columns(0).font_style = :bold_italic
+      row(45).borders = %i[left top right]
+      row(45).font_style = :bold
+      row(45).background_color = 'D9D9D9'
+      row(46).borders = %i[left right bottom]
+      row(46).columns(0).font_style = :bold_italic
 
-        row(49).borders = %i[left right bottom]
+      row(49).borders = %i[left right bottom]
 
-        data.each_with_index do |datum, index|
-          next if index == 0 || (datum[1] == '' && datum[2] == '')
+      data.each_with_index do |datum, index|
+        next if index == 0
 
-          datum.each_with_index do |score, ind|
-            next if ind == 0 || score == ''
+        datum.each_with_index do |score, ind|
+          next if ind == 0
 
-            row(index).columns(ind).background_color = 'FEC15D' if score > 3.0 && score < 5.01
-            row(index).columns(ind).background_color = 'F06A78' if score < 3.01
-          end
+          row(index).columns(ind).background_color = '5E716A' if score == '' && !datum[0].include?(':')
+          row(index).columns(ind).background_color = 'FEC15D' if score != '' && score > 3.0 && score < 5.01
+          row(index).columns(ind).background_color = 'F06A78' if score != '' && score < 3.01
         end
       end
     end
-    move_down 20
+
+    move_down 5
     text localize_text('no_color')
     text localize_text('orange_color'), inline_format: true
     text localize_text('red_color'), inline_format: true
+    text localize_text('gray_color'), inline_format: true
   end
 end

@@ -94,11 +94,12 @@ en:
     d1_feedback: "Domain 1: Administration & Governance Subdomain Feedback"
     d1_score: "Your center received a score of <b>%{score}</b> for this domain. This score is in the <b>%{percentile}<sup>%{sup}</sup></b> percentile. Please see the section below titled 'Domain-level Feedback' for more details on how to maintain or improve care in this domain."
     null_score: "*A null score in the charts indicates that no data was collected for that subdomain."
+    no_red_flags: "There are no red flags in this domain."
     d1_all_well: "In your center, all domain 1 subdomains received scores higher than 3.01. This indicates that your center is meeting many of the requirements needed to provide good support for Oversight & Leadership, Professional Practices, Caregiver Well-being, and Staff Training & Development."
     d1_name: "Administration & Governance"
-    d1_highest: "Your center's highest scoring subdomain under %{name} was <b>%{title}</b>, with a score of <b>%{highest}</b>."
+    d_highest: "Your center's <b>highest scoring</b> subdomain under %{name} was <b>%{title}</b>, with a score of <b>%{highest}</b>."
     d1_low_quality: "Within this domain, this center is providing <b>low quality</b> care in the following subdomains, and improvement is necessary."
-    d1_low_score: "Your center scored <b>%{score}</b> in the <b>%{name}</b> subdomain."
+    d_low_score: "Your center scored <b>%{score}</b> in the <b>%{name}</b> subdomain."
     d1_red_flags: "Domain 1: Administration & Governance Red Flags"
     d2_title: "Domain 2: Basic Needs"
     d2_admin: "The <b>Basic Needs</b> domain measures the availability and accessibility of resources, and the ability of the center to meet the children’s basic needs. This domain considers Food Security & Nutrition, Safety & Security, Disaster Preparedness, Hygiene, Sleep Hygiene, Health Care, Educational Opportunities, Social/Emotional Care, and Disability Services. Ideally, the center is able to provide for the basic needs of the children in care, providing a healthy foundation for each child to grow."
@@ -141,6 +142,7 @@ en:
     no_color: 'Cells with no color indicate scores in the “high quality” range.'
     orange_color: 'Cells highlighted in <color rgb="FEC15D">orange</color> indicate scores in the “good quality” range.'
     red_color: 'Cells highlighted in <color rgb="F06A78">red</color> indicate scores in the “low quality” range.'
+    gray_color: 'Cells highlighted in <color rgb="5E716A">gray-green</color> indicate "missing" scores.'
 
     dl_feedback: "Domain-level Feedback"
     high: "This center is providing high quality care in the area of %{name}, though some improvement is always possible. In order to maintain a high quality of care in this area, the center should strive to achieve or continue the following:"
@@ -624,6 +626,14 @@ en:
 
     dca2_d: "The observer noted that diaper changing areas are unsanitary with evident health concerns"
     dca2: "Noticeably unsanitary diaper changing areas are not only a health risk due to the potential for germs and illness, but they can also discourage caregivers from using them. It is important that these areas are kept clean to allow caregivers to hygienically change children into clean diapers. If keeping up with cleaning is a challenge, set up a log to track who has cleaned each area, when it happened, and which tasks were completed."
+
+    els5_c_d: "The interviewee noted that a few of the children ages 7-16 years attend basic education"
+    els5_c: "School attendance is required by law for most of the children in this age group, and basic education provides proven benefits to lifetime health, wellbeing, employment, and financial status. Discuss each child’s particular situation and reasons for not attending school with the child and center leadership, and develop a plan to improve the child’s school attendance. Where required by law, ensure that children are attending school. When appropriate, consider using alternative modes of education, including remote learning, adult education, vocational training programs, and other educational opportunities that will enhance their ability to gain independence after they leave the center."
+    els5_d_d: "The interviewee noted that none of the children ages 7-16 years attend basic education"
+    els5_d: "School attendance is required by law for most of the children in this age group, and basic education provides proven benefits to lifetime health, wellbeing, employment, and financial status. Discuss each child’s particular situation and reasons for not attending school with the child and center leadership, and develop a plan to improve the child’s school attendance.  Where required by law, ensure that children are attending school. When appropriate, consider using alternative modes of education, including remote learning, adult education, vocational training programs, and other educational opportunities that will enhance their ability to gain independence after they leave the center."
+
+    els6_d_d: "The interviewee noted that none of the children ages 16-19 years attend high school."
+    els6_d: "School attendance is highly encouraged for this age group, and basic education provides proven benefits to lifetime health, wellbeing, employment, and financial status. Discuss each child’s particular situation and reasons for not attending school with the child and center leadership, and develop a plan to improve the child’s school attendance. Encourage these children to use alternative modes of education, including remote learning, adult education, vocational training programs, and other educational opportunities that will enhance their ability to gain independence after they leave the center."
 
     els7_d_d: "The interviewee noted that school-aged children are not attending school because they exhibit extremely challenging behaviors that the school cannot manage."
     r_els7_d: "Behavioral issues should not prevent or deny a child the opportunity to attend school. Include the center’s technical staff and educators in the creation of an individualized plan that can address these challenging behaviors and coordinate these efforts with the school. If no available school can manage the behavior, involve the expertise of a social worker or counselor to find other options or work on improving the behavior. Additionally, use alternative modes of education, such as remote learning, as necessary."
