@@ -226,6 +226,8 @@ class Center < ApplicationRecord
     file1 = Tempfile.new("#{score_scheme.title}-individual")
     p1 = Axlsx::Package.new
     wb1 = p1.workbook
+    s = wb1.styles
+    s.fonts.first.name = 'PT Sans'
     type_averages = []
     center_identifiers = []
     Axlsx::Package.new do |p|

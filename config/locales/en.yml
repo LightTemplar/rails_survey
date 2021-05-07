@@ -143,6 +143,18 @@ en:
     orange_color: 'Cells highlighted in <color rgb="FEC15D">orange</color> indicate scores in the “good quality” range.'
     red_color: 'Cells highlighted in <color rgb="F06A78">red</color> indicate scores in the “low quality” range.'
     gray_color: 'Cells highlighted in <color rgb="5E716A">gray-green</color> indicate "missing" scores.'
+    month_1: "January"
+    month_2: "February"
+    month_3: "March"
+    month_4: "April"
+    month_5: "May"
+    month_6: "June"
+    month_7: "July"
+    month_8: "August"
+    month_9: "September"
+    month_10: "October"
+    month_11: "November"
+    month_12: "December"
 
     dl_feedback: "Domain-level Feedback"
     high: "This center is providing high quality care in the area of %{name}, though some improvement is always possible. In order to maintain a high quality of care in this area, the center should strive to achieve or continue the following:"

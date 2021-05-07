@@ -111,6 +111,18 @@ es:
     orange_color: 'Las celdas resaltadas en <color rgb="FEC15D">naranja</color> indican puntuaciones en el rango de "buena calidad".'
     red_color: 'Las celdas resaltadas en <color rgb="F06A78">rojo</color> indican puntuaciones en el rango de "baja calidad".'
     gray_color: 'Las celdas resaltadas en <color rgb="5E716A">verde gris</color> indican puntuaciones "faltantes".'
+    month_1: "enero"
+    month_2: "febrero"
+    month_3: "marzo"
+    month_4: "abril"
+    month_5: "mayo"
+    month_6: "junio"
+    month_7: "julio"
+    month_8: "agosto"
+    month_9: "septiembre"
+    month_10: "octubre"
+    month_11: "noviembre"
+    month_12: "diciembre"
 
     dl_feedback: "Retroalimentación a nivel de Dominio"
     high: "Este centro está brindando una atención de alta calidad en el área de %{name}, aunque siempre es posible alguna mejora. Para mantener una alta calidad de atención en esta área, el centro debe esforzarse por lograr o continuar lo siguiente:"

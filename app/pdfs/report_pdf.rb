@@ -61,7 +61,8 @@ class ReportPdf
     bounding_box([0, 715], width: 500, height: 715) do
       text "<font size='14'><b>#{@center.name}</b></font>", inline_format: true, align: :right
       date = DateTime.now
-      text "<font size='14'><b>#{date.strftime('%B %Y')}</b></font>", inline_format: true, align: :right
+      month = "month_#{date.month}"
+      text "<font size='14'><b>#{localize_text(month)} #{date.year}</b></font>", inline_format: true, align: :right
       font('Avenir Next Condensed') do
         text "<font size='36'><b>#{localize_text('p1_national')}</b></font>", inline_format: true, color: '2F642F', align: :right
         text "<font size='36'><b>#{localize_text('p1_quality')}</b></font>", inline_format: true, color: '2F642F', align: :right
