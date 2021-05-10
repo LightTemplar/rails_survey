@@ -34,10 +34,11 @@ class Subdomain < ApplicationRecord
   end
 
   def translated_title_name(language)
-    translations.where(language: language)
-                .reject { |dt| dt.text.blank? }
-                .map { |dt| "#{title} #{dt.text}" }
-                .join(' | ')
+    ttn = translations.where(language: language)
+                      .reject { |dt| dt.text.blank? }
+                      .map { |dt| "#{title} #{dt.text}" }
+                      .join(' | ')
+    ttn.blank? ? title_name : ttn
   end
 
   def translated_name(language)

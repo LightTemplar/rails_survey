@@ -55,9 +55,10 @@ class Domain < ApplicationRecord
   end
 
   def translated_title_name(language)
-    translations.where(language: language)
-                .reject { |dt| dt.text.blank? }
-                .map { |dt| "#{title} #{dt.text}" }
-                .join(' | ')
+    t_name = translations.where(language: language)
+                         .reject { |dt| dt.text.blank? }
+                         .map { |dt| "#{title} #{dt.text}" }
+                         .join(' | ')
+    t_name.blank? ? title_name : t_name
   end
 end

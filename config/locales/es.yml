@@ -62,10 +62,14 @@ es:
     d1_feedback: "Dominio 1: Retroalimentación a nivel de Sub-dominios de Administración y Gobernanza"
     d1_score: "Su centro recibió un puntaje de <b>%{score}</b> para este dominio. Esta puntuación está dentro del percentil <b>%{percentile}</b>. Por favor vea la sección a continuación denominada 'Retroalimentación a nivel del Dominio' para mayores detalles sobre cómo mantener o mejorar la atención en este dominio."
     null_score: "*Una puntuación nula en los gráficos indica que no se recopilaron datos sobre ese subdominio."
-    no_red_flags: "No hay banderas rojas en este dominio."
+    no_red_flags: "No hay señales de alerta en este dominio."
+    some_red_flags: "Hay algunas señales de alerta en este dominio, pero se enumeran en otros lugares."
+    other_domains: "<i>Esta retroalimentación también es relevante en los siguientes dominios: <b>%{domains}</b></i>"
     d1_all_well: "En su centro, todos los sub-dominios del dominio 1 recibieron puntajes mayores a 3.01. Esto indica que su centro cumple muchos de los requisitos necesarios para brindar un buen apoyo a la Supervisión y Liderazgo, Prácticas Profesionales, Bienestar de los/as Cuidadores/as, y Desarrollo del Personal."
     d1_name: "Administración y Gobernanza"
-    d_highest: "El sub-dominio con la <b>puntuación más alta</b> de su centro en %{name} fue <b>%{title}</b>, con un puntaje de <b>%{highest}</b>."
+    d_highest:
+      one: "El sub-dominio con la <b>puntuación más alta</b> de su centro en %{name} fue <b>%{title}</b>, con un puntaje de <b>%{highest}</b>."
+      other: "El sub-dominio con la <b>puntuación más alta</b> de su centro en %{name} fue <b>%{title}</b>, con un puntaje de <b>%{highest}</b>."
     d1_low_quality: "Dentro de este dominio, este centro está brindando atención de <b>baja calidad</b> en los siguientes sub-dominios, y es necesario una mejora."
     d_low_score: "Su centro obtuvo una puntuación de <b>%{score}</b> en el sub-dominio <b>%{name}</b>."
     d1_red_flags: "Dominio 1: Señales de Alerta en Administración y Gobernanza"
@@ -110,7 +114,7 @@ es:
     no_color: 'Las celdas sin color indican puntuaciones en el rango de "alta calidad".'
     orange_color: 'Las celdas resaltadas en <color rgb="FEC15D">naranja</color> indican puntuaciones en el rango de "buena calidad".'
     red_color: 'Las celdas resaltadas en <color rgb="F06A78">rojo</color> indican puntuaciones en el rango de "baja calidad".'
-    gray_color: 'Las celdas resaltadas en <color rgb="5E716A">verde gris</color> indican puntuaciones "faltantes".'
+    gray_color: 'Las celdas resaltadas en <color rgb="DCDCDC">gris</color> indican puntuaciones "faltantes".'
     month_1: "enero"
     month_2: "febrero"
     month_3: "marzo"

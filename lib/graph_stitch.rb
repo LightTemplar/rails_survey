@@ -17,31 +17,31 @@ background = img.composite(levels, Magick::CenterGravity, Magick::OverCompositeO
 
 def write_image(background, filename, identifier, number)
   image = Magick::Image.read(filename).first
-  img = image.crop(5, 5, image.columns - 10, image.rows - 10)
+  img = image.crop(5, 5, image.columns - 10, image.rows - 5)
   result = background.composite(img, Magick::CenterGravity, Magick::OverCompositeOp)
   gc = Magick::Draw.new
   gc.stroke('black')
   if number == 0
-    gc.line(330, 172, 1610, 172)
-    gc.line(330, 289, 1610, 289)
+    gc.line(330, 175, 1610, 175)
+    gc.line(330, 294, 1610, 294)
   elsif number == 1
-    gc.line(330, 185, 1610, 185)
-    gc.line(330, 291, 1610, 291)
+    gc.line(330, 175, 1610, 175)
+    gc.line(330, 294, 1610, 294)
   elsif number == 2
-    gc.line(330, 178, 1610, 178)
-    gc.line(330, 275, 1610, 275)
+    gc.line(330, 168, 1610, 168)
+    gc.line(330, 279, 1610, 279)
   elsif number == 3
-    gc.line(330, 178, 1610, 178)
-    gc.line(330, 275, 1610, 275)
+    gc.line(330, 175, 1610, 175)
+    gc.line(330, 294, 1610, 294)
   elsif number == 4
-    gc.line(330, 186, 1610, 186)
-    gc.line(330, 291, 1610, 291)
+    gc.line(330, 175, 1610, 175)
+    gc.line(330, 294, 1610, 294)
   elsif number == 5
-    gc.line(330, 185, 1610, 185)
-    gc.line(330, 290, 1610, 290)
+    gc.line(330, 175, 1610, 175)
+    gc.line(330, 294, 1610, 294)
   elsif number == 6
-    gc.line(330, 185, 1610, 185)
-    gc.line(330, 290, 1610, 290)
+    gc.line(330, 175, 1610, 175)
+    gc.line(330, 294, 1610, 294)
   end
   gc.draw(result)
   result = result.crop(290, 0, 1550, 550)

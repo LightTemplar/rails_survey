@@ -290,20 +290,34 @@ class ReportPdf
   end
 
   def doing_well(lowest, message)
-    if lowest >= 3.01
+    if lowest[1] >= 3.01
       move_down 10
       text message
     end
   end
 
-  def highest_scoring_subdomain(title, d_scores, highest, name)
-    sd_title = "#{title}.#{d_scores.index(highest) + 1}"
-    sd = @score_scheme.subdomains.find_by(title: sd_title)
-    tsd_title = @score_scheme.instrument.language == @language ? sd.name : full_sanitizer.sanitize(sd.translated_name(@language))
-    text I18n.t('report.d_highest', name: name, title: tsd_title, highest: highest.round(2), locale: @language), inline_format: true
+  def highest_scoring_subdomain(highest, d_scores, name)
+    max_array = Hash[d_scores.select { |_k, v| v == highest[1] }]
+    if max_array.size == 1
+      sd = @score_scheme.subdomains.find_by(title: highest[0].to_s)
+      tsd_title = @score_scheme.instrument.language == @language ? sd.name : full_sanitizer.sanitize(sd.translated_name(@language))
+      title = "#{highest[0]} #{tsd_title}"
+    else
+      sds = []
+      max_array.each do |k, _v|
+        sd = @score_scheme.subdomains.find_by(title: k.to_s)
+        tsd_title = @score_scheme.instrument.language == @language ? sd.name : full_sanitizer.sanitize(sd.translated_name(@language))
+        sds << "#{k} #{tsd_title}"
+      end
+      title = sds.join(', ')
+    end
+    text I18n.t('report.d_highest', name: name, title: title, count: max_array.size, highest: highest[1].round(2), locale: @language), inline_format: true
     move_down 5
     indent(15) do
-      text localize_text(high_low_score_key(sd_title, 'high'))
+      max_array.each do |k, _v|
+        text localize_text(high_low_score_key(k.to_s, 'high'))
+        move_down 5
+      end
     end
   end
 
@@ -319,12 +333,12 @@ class ReportPdf
     end
   end
 
-  def low_scoring_subdomains(lowest, d_scores, title)
-    if lowest < 3.01
+  def low_scoring_subdomains(lowest, d_scores)
+    if lowest[1] < 3.01
       low_quality
-      d_scores.each_with_index do |score, index|
+      d_scores.each do |title, score|
         bounds.move_past_bottom if y < 75
-        low_score(title, index, score) if score != '' && score < 3.01
+        low_score(title.to_s, score) if score != '' && score < 3.01
       end
     end
   end
@@ -335,14 +349,13 @@ class ReportPdf
     move_down 10
   end
 
-  def low_score(title, index, score)
-    sd_title = "#{title}.#{index + 1}"
-    sd = @score_scheme.subdomains.find_by(title: sd_title)
+  def low_score(title, score)
+    sd = @score_scheme.subdomains.find_by(title: title)
     name = @score_scheme.instrument.language == @language ? sd.name : full_sanitizer.sanitize(sd.translated_name(@language))
-    text I18n.t('report.d_low_score', name: name, score: score.round(2), locale: @language), inline_format: true
+    text I18n.t('report.d_low_score', name: "#{title} #{name}", score: score.round(2), locale: @language), inline_format: true
     move_down 5
     indent(15) do
-      text localize_text(high_low_score_key(sd_title, 'low'))
+      text localize_text(high_low_score_key(title, 'low'))
     end
     move_down 10
   end
@@ -383,7 +396,22 @@ class ReportPdf
   end
 
   def red_flag_recommendation(rec)
-    text rec
+    indent(15) do
+      text rec
+    end
+    move_down 5
+  end
+
+  def red_flag_other_domains(response, domain)
+    set = Set[]
+    score_units = @score_scheme.score_units.where(title: response.question_identifier)
+    score_units.each do |unit|
+      set << localize_text("d#{unit.subdomain.domain.title}_title")
+    end
+    set.delete(localize_text("d#{domain.title}_title"))
+    indent(15) do
+      text I18n.t('report.other_domains', domains: set.to_a.join(', '), locale: @language), inline_format: true unless set.empty?
+    end
     move_down 5
   end
 
@@ -396,12 +424,12 @@ class ReportPdf
     domain = @score_scheme.domains.find_by(title: title)
     drf = @red_flag_responses[domain.title]
     no_red_flags = drf.empty? ? true : false
+    some_red_flags = false
     drf.each do |response|
       if red_flag_domain[response.question_identifier.to_sym] != title
-        no_red_flags = true
+        some_red_flags = true
         next
       end
-      no_red_flags = false
       iq = response.instrument_question
       identifiers = response.red_flag_response_options(@score_scheme).pluck(:identifier)
       flags = response.red_flags.where(score_scheme_id: @score_scheme.id).where(option_identifier: identifiers)
@@ -425,9 +453,18 @@ class ReportPdf
           red_flag_recommendation(localize_text(response.question_identifier))
         end
       end
+      red_flag_other_domains(response, domain)
     end
     text localize_text('no_red_flags') if no_red_flags
+    text localize_text('some_red_flags') if some_red_flags
     move_down 20
+  end
+
+  def cleaned_scores(d_scores)
+    d_scores_clean = d_scores.reject { |_k, v| v == '' }
+    lowest = d_scores_clean.min_by { |_k, v| v }
+    highest = d_scores_clean.max_by { |_k, v| v }
+    [lowest, highest]
   end
 
   def domain_one
@@ -435,16 +472,14 @@ class ReportPdf
     domain_table('1')
     text localize_text('d1_admin'), inline_format: true
     domain_score_graph('1', localize_text('d1_feedback'))
-    d_scores = [
-      @scores[@center.identifier]['1.1'], @scores[@center.identifier]['1.2'],
-      @scores[@center.identifier]['1.3'], @scores[@center.identifier]['1.4']
-    ]
-    d_scores_clean = d_scores.reject { |e| e == '' }
-    lowest = d_scores_clean.min
-    highest = d_scores_clean.max
-    highest_scoring_subdomain('1', d_scores, highest, localize_text('d1_name'))
+    d_scores = {
+      '1.1': @scores[@center.identifier]['1.1'], '1.2': @scores[@center.identifier]['1.2'],
+      '1.3': @scores[@center.identifier]['1.3'], '1.4': @scores[@center.identifier]['1.4']
+    }
+    lowest, highest = cleaned_scores(d_scores)
+    highest_scoring_subdomain(highest, d_scores, localize_text('d1_name'))
     doing_well(lowest, localize_text('d1_all_well'))
-    low_scoring_subdomains(lowest, d_scores, '1')
+    low_scoring_subdomains(lowest, d_scores)
     red_flags(localize_text('d1_red_flags'), '1')
   end
 
@@ -453,19 +488,26 @@ class ReportPdf
     domain_table('2')
     text localize_text('d2_admin'), inline_format: true
     domain_score_graph('2', localize_text('d2_feedback'))
-    d_scores = [
-      @scores[@center.identifier]['2.1'], @scores[@center.identifier]['2.2'],
-      @scores[@center.identifier]['2.3'], @scores[@center.identifier]['2.4'],
-      @scores[@center.identifier]['2.5'], @scores[@center.identifier]['2.6'],
-      @scores[@center.identifier]['2.7'], @scores[@center.identifier]['2.8'],
-      @scores[@center.identifier]['2.9']
-    ]
-    d_scores_clean = d_scores.reject { |e| e == '' }
-    lowest = d_scores_clean.min
-    highest = d_scores_clean.max
-    highest_scoring_subdomain('2', d_scores, highest, localize_text('d2_name'))
+    d_scores = if is_cda?
+                 {
+                   '2.1': @scores[@center.identifier]['2.1'], '2.2': @scores[@center.identifier]['2.2'],
+                   '2.3': @scores[@center.identifier]['2.3'], '2.4': @scores[@center.identifier]['2.4'],
+                   '2.5': @scores[@center.identifier]['2.5'], '2.6': @scores[@center.identifier]['2.6'],
+                   '2.7': @scores[@center.identifier]['2.7'], '2.8': @scores[@center.identifier]['2.8'],
+                   '2.9': @scores[@center.identifier]['2.9']
+                 }
+               else
+                 {
+                   '2.1': @scores[@center.identifier]['2.1'], '2.2': @scores[@center.identifier]['2.2'],
+                   '2.3': @scores[@center.identifier]['2.3'], '2.4': @scores[@center.identifier]['2.4'],
+                   '2.5': @scores[@center.identifier]['2.5'], '2.6': @scores[@center.identifier]['2.6'],
+                   '2.8': @scores[@center.identifier]['2.8'], '2.9': @scores[@center.identifier]['2.9']
+                 }
+               end
+    lowest, highest = cleaned_scores(d_scores)
+    highest_scoring_subdomain(highest, d_scores, localize_text('d2_name'))
     doing_well(lowest, localize_text('d2_all_well'))
-    low_scoring_subdomains(lowest, d_scores, '2')
+    low_scoring_subdomains(lowest, d_scores)
     red_flags(localize_text('d2_red_flags'), '2')
   end
 
@@ -474,17 +516,23 @@ class ReportPdf
     domain_table('3')
     text localize_text('d3_admin'), inline_format: true
     domain_score_graph('3', localize_text('d3_feedback'))
-    d_scores = [
-      @scores[@center.identifier]['3.1'], @scores[@center.identifier]['3.2'],
-      @scores[@center.identifier]['3.3'], @scores[@center.identifier]['3.4'],
-      @scores[@center.identifier]['3.5'], @scores[@center.identifier]['3.6']
-    ]
-    d_scores_clean = d_scores.reject { |e| e == '' }
-    lowest = d_scores_clean.min
-    highest = d_scores_clean.max
-    highest_scoring_subdomain('3', d_scores, highest, localize_text('d3_name'))
+    d_scores = if is_cda?
+                 {
+                   '3.1': @scores[@center.identifier]['3.1'], '3.2': @scores[@center.identifier]['3.2'],
+                   '3.3': @scores[@center.identifier]['3.3'], '3.4': @scores[@center.identifier]['3.4'],
+                   '3.5': @scores[@center.identifier]['3.5'], '3.6': @scores[@center.identifier]['3.6']
+                 }
+               else
+                 {
+                   '3.1': @scores[@center.identifier]['3.1'], '3.2': @scores[@center.identifier]['3.2'],
+                   '3.3': @scores[@center.identifier]['3.3'], '3.4': @scores[@center.identifier]['3.4'],
+                   '3.5': @scores[@center.identifier]['3.5']
+                 }
+               end
+    lowest, highest = cleaned_scores(d_scores)
+    highest_scoring_subdomain(highest, d_scores, localize_text('d3_name'))
     doing_well(lowest, localize_text('d3_all_well'))
-    low_scoring_subdomains(lowest, d_scores, '3')
+    low_scoring_subdomains(lowest, d_scores)
     red_flags(localize_text('d3_red_flags'), '3')
   end
 
@@ -493,17 +541,15 @@ class ReportPdf
     domain_table('4')
     text localize_text('d4_admin'), inline_format: true
     domain_score_graph('4', localize_text('d4_feedback'))
-    d_scores = [
-      @scores[@center.identifier]['4.1'], @scores[@center.identifier]['4.2'],
-      @scores[@center.identifier]['4.3'], @scores[@center.identifier]['4.4'],
-      @scores[@center.identifier]['4.5'], @scores[@center.identifier]['4.6']
-    ]
-    d_scores_clean = d_scores.reject { |e| e == '' }
-    lowest = d_scores_clean.min
-    highest = d_scores_clean.max
-    highest_scoring_subdomain('4', d_scores, highest, localize_text('d4_name'))
+    d_scores = {
+      '4.1': @scores[@center.identifier]['4.1'], '4.2': @scores[@center.identifier]['4.2'],
+      '4.3': @scores[@center.identifier]['4.3'], '4.4': @scores[@center.identifier]['4.4'],
+      '4.5': @scores[@center.identifier]['4.5'], '4.6': @scores[@center.identifier]['4.6']
+    }
+    lowest, highest = cleaned_scores(d_scores)
+    highest_scoring_subdomain(highest, d_scores, localize_text('d4_name'))
     doing_well(lowest, localize_text('d4_all_well'))
-    low_scoring_subdomains(lowest, d_scores, '4')
+    low_scoring_subdomains(lowest, d_scores)
     red_flags(localize_text('d4_red_flags'), '4')
   end
 
@@ -512,18 +558,23 @@ class ReportPdf
     domain_table('5')
     text localize_text('d5_admin'), inline_format: true
     domain_score_graph('5', localize_text('d5_feedback'))
-    d_scores = [
-      @scores[@center.identifier]['5.1'], @scores[@center.identifier]['5.2'],
-      @scores[@center.identifier]['5.3'], @scores[@center.identifier]['5.4'],
-      @scores[@center.identifier]['5.5'], @scores[@center.identifier]['5.6'],
-      @scores[@center.identifier]['5.7'], @scores[@center.identifier]['5.8']
-    ]
-    d_scores_clean = d_scores.reject { |e| e == '' }
-    lowest = d_scores_clean.min
-    highest = d_scores_clean.max
-    highest_scoring_subdomain('5', d_scores, highest, localize_text('d5_name'))
+    d_scores = if is_cda?
+                 {
+                   '5.1': @scores[@center.identifier]['5.1'], '5.2': @scores[@center.identifier]['5.2'],
+                   '5.3': @scores[@center.identifier]['5.3'], '5.4': @scores[@center.identifier]['5.4'],
+                   '5.5': @scores[@center.identifier]['5.5'], '5.6': @scores[@center.identifier]['5.6'],
+                   '5.7': @scores[@center.identifier]['5.7'], '5.8': @scores[@center.identifier]['5.8']
+                 }
+               else
+                 {
+                   '5.1': @scores[@center.identifier]['5.1'], '5.3': @scores[@center.identifier]['5.3'],
+                   '5.4': @scores[@center.identifier]['5.4'], '5.5': @scores[@center.identifier]['5.5']
+                 }
+               end
+    lowest, highest = cleaned_scores(d_scores)
+    highest_scoring_subdomain(highest, d_scores, localize_text('d5_name'))
     doing_well(lowest, localize_text('d5_all_well'))
-    low_scoring_subdomains(lowest, d_scores, '5')
+    low_scoring_subdomains(lowest, d_scores)
     red_flags(localize_text('d5_red_flags'), '5')
   end
 
@@ -532,16 +583,14 @@ class ReportPdf
     domain_table('6')
     text localize_text('d6_admin'), inline_format: true
     domain_score_graph('6', localize_text('d6_feedback'))
-    d_scores = [
-      @scores[@center.identifier]['6.1'], @scores[@center.identifier]['6.2'],
-      @scores[@center.identifier]['6.3']
-    ]
-    d_scores_clean = d_scores.reject { |e| e == '' }
-    lowest = d_scores_clean.min
-    highest = d_scores_clean.max
-    highest_scoring_subdomain('6', d_scores, highest, localize_text('d6_name'))
+    d_scores = {
+      '6.1': @scores[@center.identifier]['6.1'], '6.2': @scores[@center.identifier]['6.2'],
+      '6.3': @scores[@center.identifier]['6.3']
+    }
+    lowest, highest = cleaned_scores(d_scores)
+    highest_scoring_subdomain(highest, d_scores, localize_text('d6_name'))
     doing_well(lowest, localize_text('d6_all_well'))
-    low_scoring_subdomains(lowest, d_scores, '6')
+    low_scoring_subdomains(lowest, d_scores)
     red_flags(localize_text('d6_red_flags'), '6')
   end
 
@@ -783,38 +832,39 @@ class ReportPdf
       cells.align = :center
       columns(0..4).borders = %i[left right]
 
-      row(0..3).borders = %i[left top right bottom]
+      row(0..1).borders = %i[left top right bottom]
+      row(3).borders = %i[left right bottom]
       row(0..3).font_style = :bold
-      row(2).background_color = 'D9D9D9'
+      row(2).background_color = '808080'
       row(3).columns(0).font_style = :bold_italic
 
       row(8).borders = %i[left top right]
       row(8).font_style = :bold
-      row(8).background_color = 'D9D9D9'
+      row(8).background_color = '808080'
       row(9).borders = %i[left right bottom]
       row(9).columns(0).font_style = :bold_italic
 
       row(19).borders = %i[left top right]
       row(19).font_style = :bold
-      row(19).background_color = 'D9D9D9'
+      row(19).background_color = '808080'
       row(20).borders = %i[left right bottom]
       row(20).columns(0).font_style = :bold_italic
 
       row(27).borders = %i[left top right]
       row(27).font_style = :bold
-      row(27).background_color = 'D9D9D9'
+      row(27).background_color = '808080'
       row(28).borders = %i[left right bottom]
       row(28).columns(0).font_style = :bold_italic
 
       row(35).borders = %i[left top right]
       row(35).font_style = :bold
-      row(35).background_color = 'D9D9D9'
+      row(35).background_color = '808080'
       row(36).borders = %i[left right bottom]
       row(36).columns(0).font_style = :bold_italic
 
       row(45).borders = %i[left top right]
       row(45).font_style = :bold
-      row(45).background_color = 'D9D9D9'
+      row(45).background_color = '808080'
       row(46).borders = %i[left right bottom]
       row(46).columns(0).font_style = :bold_italic
 
@@ -826,7 +876,7 @@ class ReportPdf
         datum.each_with_index do |score, ind|
           next if ind == 0
 
-          row(index).columns(ind).background_color = '5E716A' if score == '' && !datum[0].include?(':')
+          row(index).columns(ind).background_color = 'DCDCDC' if score == '' && !datum[0].include?(':')
           row(index).columns(ind).background_color = 'FEC15D' if score != '' && score > 3.0 && score < 5.01
           row(index).columns(ind).background_color = 'F06A78' if score != '' && score < 3.01
         end
