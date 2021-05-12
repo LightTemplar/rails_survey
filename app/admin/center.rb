@@ -29,8 +29,12 @@ ActiveAdmin.register Center do
     link_to 'Download', download_admin_score_scheme_centers_path(params[:score_scheme_id])
   end
 
-  action_item :mail_merge, only: :index do
-    link_to 'Mail Merge', mail_merge_admin_score_scheme_centers_path(params[:score_scheme_id])
+  action_item :es_mail_merge, only: :index do
+    link_to 'Spanish MM', mail_merge_admin_score_scheme_centers_path(params[:score_scheme_id], language: 'es')
+  end
+
+  action_item :en_mail_merge, only: :index do
+    link_to 'English MM', mail_merge_admin_score_scheme_centers_path(params[:score_scheme_id], language: 'en')
   end
 
   index do
@@ -77,8 +81,8 @@ ActiveAdmin.register Center do
 
     def mail_merge
       ss = ScoreScheme.find(params[:score_scheme_id])
-      send_file Center.mail_merge(ss), type: 'application/zip',
-                                       filename: "#{ss.title.split.join('_')}_mail_merge_#{Time.now.to_i}.zip"
+      send_file Center.mail_merge(ss, params[:language]), type: 'application/zip',
+                                                          filename: "#{ss.title.split.join('_')}_mail_merge_#{params[:language]}_#{Time.now.to_i}.zip"
     end
 
     def pdf_report

@@ -3,6 +3,13 @@
 require 'csv'
 require 'rmagick'
 
+language = nil
+ARGV.each do |a|
+  language = a
+  puts "LANGUGAGE: #{language}"
+end
+exit(false) if language.nil?
+
 identifiers = []
 CSV.foreach('data/identifiers.csv') do |row|
   identifiers << row
@@ -11,11 +18,11 @@ identifiers.flatten!
 
 images = Dir['data/input/*.png'].sort
 
-levels = Magick::Image.read('data/levels.png').first
+levels = Magick::Image.read("data/levels-#{language}.png").first
 img = Magick::Image.new(1897, 554)
 background = img.composite(levels, Magick::CenterGravity, Magick::OverCompositeOp)
 
-def write_image(background, filename, identifier, number)
+def write_image(background, filename, identifier, number, language)
   image = Magick::Image.read(filename).first
   img = image.crop(5, 5, image.columns - 10, image.rows - 5)
   result = background.composite(img, Magick::CenterGravity, Magick::OverCompositeOp)
@@ -45,14 +52,14 @@ def write_image(background, filename, identifier, number)
   end
   gc.draw(result)
   result = result.crop(290, 0, 1550, 550)
-  result.write("data/output/#{identifier}-#{number}.png")
+  result.write("data/output/#{identifier}-#{number}-#{language}.png")
 end
 
 index = 0
 images.each_slice(7) do |slice|
   puts "id: #{identifiers[index]} names: #{slice}"
   [0, 1, 2, 3, 4, 5, 6].each do |number|
-    write_image(background, slice[number], identifiers[index], number)
+    write_image(background, slice[number], identifiers[index], number, language)
   end
   index += 1
 end

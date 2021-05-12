@@ -131,9 +131,9 @@ class Center < ApplicationRecord
                           height: 25
   end
 
-  def write_domain_graphs(sheet, score_scheme, domain_title, start_at, end_at, c_data, c_labels, n_data, type_of_center, ambos = nil)
+  def write_domain_graphs(language, sheet, score_scheme, domain_title, start_at, end_at, c_data, c_labels, n_data, type_of_center, ambos = nil)
     domain = score_scheme.domains.find_by title: domain_title
-    title = full_sanitize(domain.translated_title_name('es'))
+    title = html_decode(full_sanitize(domain.translated_title_name(language)))
     colors1 = domain.subdomains.map { |_e| '3e6232' }
     colors2 = domain.subdomains.map { |_e| '9ab77d' }
     colors3 = domain.subdomains.map { |_e| '6c994f' } if ambos
@@ -148,7 +148,8 @@ class Center < ApplicationRecord
       chart.val_axis.scaling.max = 7.0
       chart.add_series data: sheet[c_data], labels: sheet[c_labels], title: name, colors: colors1, color: '3e6232'
       chart.add_series data: sheet[n_data], title: type_of_center, colors: colors2, color: '9ab77d'
-      chart.add_series data: sheet[ambos], title: 'Ambos CDAs', colors: colors3, color: '6c994f' if ambos
+      both = language == score_scheme.instrument.language ? 'Both CDAs' : 'Ambos CDAs'
+      chart.add_series data: sheet[ambos], title: both, colors: colors3, color: '6c994f' if ambos
     end
     # end_at[0] = 'T'
     # add_image_to_chart(sheet, start_at, end_at)
@@ -159,12 +160,13 @@ class Center < ApplicationRecord
     sheet.add_image(image_src: image, start_at: start_at, end_at: end_at)
   end
 
-  def self.write_center_graphs(centers, rows, workbook, nat_avg_row, score_scheme, type_of_center, cda_nat_avg_row = nil)
+  def self.write_center_graphs(language, centers, rows, workbook, nat_avg_row, score_scheme, type_of_center, cda_nat_avg_row = nil)
     rows.each do |crow|
       center = centers.find_by identifier: crow[0]
       workbook.add_worksheet(name: crow[0]) do |sheet|
+        both = language == score_scheme.instrument.language ? 'Both CDAs' : 'Ambos CDAs'
         header = if cda_nat_avg_row
-                   ['Subdomain', crow[1], type_of_center, 'Ambos CDAs']
+                   ['Subdomain', crow[1], type_of_center, both]
                  else
                    ['Subdomain', crow[1], type_of_center]
                  end
@@ -189,17 +191,18 @@ class Center < ApplicationRecord
             end
 
             next_row = if cda_nat_avg_row
-                         [center.full_sanitizer.sanitize(subdomain.alt_name('es')), crow[index], nat_avg_row[index], cda_nat_avg_row[index]]
+                         [center.html_decode(center.full_sanitize(subdomain.alt_name(language))), crow[index], nat_avg_row[index], cda_nat_avg_row[index]]
                        else
-                         [center.full_sanitizer.sanitize(subdomain.alt_name('es')), crow[index], nat_avg_row[index]]
+                         [center.html_decode(center.full_sanitize(subdomain.alt_name(language))), crow[index], nat_avg_row[index]]
                        end
             sheet.add_row next_row, style: workbook.styles.add_style(alignment: { horizontal: :center, vertical: :center })
             index += 1
           end
         end
 
+        cc_title = language == score_scheme.instrument.language ? 'Centre Level Scores' : 'Puntuaciones de Nivel Central'
         # Center level
-        sheet.add_chart(Axlsx::BarChart, start_at: 'E2', end_at: 'Q21', title: 'Puntuaciones de Nivel Central') do |chart|
+        sheet.add_chart(Axlsx::BarChart, start_at: 'E2', end_at: 'Q21', title: cc_title) do |chart|
           chart.barDir = :col
           chart.legend_position = :b
           chart.cat_axis.gridlines = false
@@ -217,25 +220,25 @@ class Center < ApplicationRecord
 
         # Domain level
         if cda_nat_avg_row
-          center.write_domain_graphs(sheet, score_scheme, '1', 'E22', 'Q41', 'B3:B6', 'A3:A6', 'C3:C6', type_of_center, 'D3:D6')
-          center.write_domain_graphs(sheet, score_scheme, '2', 'E42', 'Q61', 'B7:B15', 'A7:A15', 'C7:C15', type_of_center, 'D7:D15')
-          center.write_domain_graphs(sheet, score_scheme, '3', 'E62', 'Q81', 'B16:B21', 'A16:A21', 'C16:C21', type_of_center, 'D16:D21')
-          center.write_domain_graphs(sheet, score_scheme, '4', 'E82', 'Q101', 'B22:B27', 'A22:A27', 'C22:C27', type_of_center, 'D22:D27')
-          center.write_domain_graphs(sheet, score_scheme, '5', 'E102', 'Q121', 'B28:B35', 'A28:A35', 'C28:C35', type_of_center, 'D28:D35')
-          center.write_domain_graphs(sheet, score_scheme, '6', 'E122', 'Q141', 'B36:B38', 'A36:A38', 'C36:C38', type_of_center, 'D36:D38')
+          center.write_domain_graphs(language, sheet, score_scheme, '1', 'E22', 'Q41', 'B3:B6', 'A3:A6', 'C3:C6', type_of_center, 'D3:D6')
+          center.write_domain_graphs(language, sheet, score_scheme, '2', 'E42', 'Q61', 'B7:B15', 'A7:A15', 'C7:C15', type_of_center, 'D7:D15')
+          center.write_domain_graphs(language, sheet, score_scheme, '3', 'E62', 'Q81', 'B16:B21', 'A16:A21', 'C16:C21', type_of_center, 'D16:D21')
+          center.write_domain_graphs(language, sheet, score_scheme, '4', 'E82', 'Q101', 'B22:B27', 'A22:A27', 'C22:C27', type_of_center, 'D22:D27')
+          center.write_domain_graphs(language, sheet, score_scheme, '5', 'E102', 'Q121', 'B28:B35', 'A28:A35', 'C28:C35', type_of_center, 'D28:D35')
+          center.write_domain_graphs(language, sheet, score_scheme, '6', 'E122', 'Q141', 'B36:B38', 'A36:A38', 'C36:C38', type_of_center, 'D36:D38')
         else
-          center.write_domain_graphs(sheet, score_scheme, '1', 'E22', 'Q41', 'B3:B6', 'A3:A6', 'C3:C6', type_of_center)
-          center.write_domain_graphs(sheet, score_scheme, '2', 'E42', 'Q61', 'B7:B14', 'A7:A14', 'C7:C14', type_of_center)
-          center.write_domain_graphs(sheet, score_scheme, '3', 'E62', 'Q81', 'B15:B19', 'A15:A19', 'C15:C19', type_of_center)
-          center.write_domain_graphs(sheet, score_scheme, '4', 'E82', 'Q101', 'B20:B25', 'A20:A25', 'C20:C25', type_of_center)
-          center.write_domain_graphs(sheet, score_scheme, '5', 'E102', 'Q121', 'B26:B29', 'A26:A29', 'C26:C29', type_of_center)
-          center.write_domain_graphs(sheet, score_scheme, '6', 'E122', 'Q141', 'B30:B32', 'A30:A32', 'C30:C32', type_of_center)
+          center.write_domain_graphs(language, sheet, score_scheme, '1', 'E22', 'Q41', 'B3:B6', 'A3:A6', 'C3:C6', type_of_center)
+          center.write_domain_graphs(language, sheet, score_scheme, '2', 'E42', 'Q61', 'B7:B14', 'A7:A14', 'C7:C14', type_of_center)
+          center.write_domain_graphs(language, sheet, score_scheme, '3', 'E62', 'Q81', 'B15:B19', 'A15:A19', 'C15:C19', type_of_center)
+          center.write_domain_graphs(language, sheet, score_scheme, '4', 'E82', 'Q101', 'B20:B25', 'A20:A25', 'C20:C25', type_of_center)
+          center.write_domain_graphs(language, sheet, score_scheme, '5', 'E102', 'Q121', 'B26:B29', 'A26:A29', 'C26:C29', type_of_center)
+          center.write_domain_graphs(language, sheet, score_scheme, '6', 'E122', 'Q141', 'B30:B32', 'A30:A32', 'C30:C32', type_of_center)
         end
       end
     end
   end
 
-  def self.mail_merge(score_scheme)
+  def self.mail_merge(score_scheme, language)
     file = Tempfile.new("#{score_scheme.title}-summary")
     file1 = Tempfile.new("#{score_scheme.title}-individual")
     p1 = Axlsx::Package.new
@@ -254,7 +257,8 @@ class Center < ApplicationRecord
         rows.each do |crow|
           center_identifiers << crow[0]
         end
-        write_center_graphs(centers, rows, wb1, nat_avg_row, score_scheme, 'CBI - Nacional')
+        cc_type = language == score_scheme.instrument.language ? 'National CBI' : 'CBI - Nacional'
+        write_center_graphs(language, centers, rows, wb1, nat_avg_row, score_scheme, cc_type)
       end
       wb.add_worksheet(name: 'CDI') do |sheet|
         centers = score_scheme.centers.where(center_type: 'CDI')
@@ -264,7 +268,8 @@ class Center < ApplicationRecord
         rows.each do |crow|
           center_identifiers << crow[0]
         end
-        write_center_graphs(centers, rows, wb1, nat_avg_row, score_scheme, 'CDI - Nacional')
+        cc_type = language == score_scheme.instrument.language ? 'National CDI' : 'CDI - Nacional'
+        write_center_graphs(language, centers, rows, wb1, nat_avg_row, score_scheme, cc_type)
       end
       cdas = score_scheme.centers.where(center_type: 'CDA')
       c_rows, c_nat_avg_row = sheet_data(score_scheme, cdas)
@@ -276,7 +281,8 @@ class Center < ApplicationRecord
         rows.each do |crow|
           center_identifiers << crow[0]
         end
-        write_center_graphs(centers, rows, wb1, nat_avg_row, score_scheme, 'CDA Publico - Nacional', c_nat_avg_row)
+        cc_type = language == score_scheme.instrument.language ? 'Public National CDA' : 'CDA Publico - Nacional'
+        write_center_graphs(language, centers, rows, wb1, nat_avg_row, score_scheme, cc_type, c_nat_avg_row)
       end
       wb.add_worksheet(name: 'Pri. CDA') do |sheet|
         centers = score_scheme.centers.where('center_type = ? and administration = ?', 'CDA', 'Privado')
@@ -286,7 +292,8 @@ class Center < ApplicationRecord
         rows.each do |crow|
           center_identifiers << crow[0]
         end
-        write_center_graphs(centers, rows, wb1, nat_avg_row, score_scheme, 'CDA Privado - Nacional', c_nat_avg_row)
+        cc_type = language == score_scheme.instrument.language ? 'Private National CDA' : 'CDA Privado - Nacional'
+        write_center_graphs(language, centers, rows, wb1, nat_avg_row, score_scheme, cc_type, c_nat_avg_row)
       end
       wb.add_worksheet(name: 'Summary') do |sheet|
         write_sheet_header(wb, sheet, score_scheme, false)
@@ -322,7 +329,7 @@ class Center < ApplicationRecord
       row << center_identifiers
     end
 
-    zip_file = Tempfile.new("#{score_scheme.title.split.join('_')}_#{Time.now.to_i}.zip")
+    zip_file = Tempfile.new("#{score_scheme.title.split.join('_')}_#{language}_#{Time.now.to_i}.zip")
     Zip::File.open(zip_file, Zip::File::CREATE) do |zipfile|
       zipfile.add("summary-#{Time.now.to_i}.xlsx", file.path)
       zipfile.add("individual-#{Time.now.to_i}.xlsx", file1.path)

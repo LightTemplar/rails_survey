@@ -55,6 +55,8 @@ class Domain < ApplicationRecord
   end
 
   def translated_title_name(language)
+    return title_name if language == score_scheme.instrument.language
+
     t_name = translations.where(language: language)
                          .reject { |dt| dt.text.blank? }
                          .map { |dt| "#{title} #{dt.text}" }

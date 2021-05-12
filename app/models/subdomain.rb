@@ -12,6 +12,7 @@
 #  updated_at :datetime         not null
 #  weight     :float
 #  name       :string
+#  alt_text   :string
 #
 
 class Subdomain < ApplicationRecord
@@ -50,11 +51,13 @@ class Subdomain < ApplicationRecord
   end
 
   def alt_name(language)
+    return alt_text if language == score_scheme.instrument.language && !alt_text.blank?
+
     alt = translations.where(language: language)
                       .reject { |dt| dt.alt_text.blank? }
                       .map(&:alt_text)
                       .first
-    alt.blank? ? translated_name(language) : alt
+    alt.blank? ? translated_title_name(language) : alt
   end
 
   def default_subdomain_score(default_score_datum)

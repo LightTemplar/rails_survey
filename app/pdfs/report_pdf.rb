@@ -145,7 +145,7 @@ class ReportPdf
     move_down 10
 
     domain_title(localize_text('p4_snapshot'))
-    image "#{Rails.root}/files/reports/#{@center.identifier}-0.png", fit: [536, 190], position: :center
+    image "#{Rails.root}/files/reports/#{@center.identifier}-0-#{@language}.png", fit: [536, 190], position: :center
     move_down 10
     text "<font size='9'>#{localize_text("p4_#{@center.center_type}")}</font>", inline_format: true
   end
@@ -283,7 +283,7 @@ class ReportPdf
       text "<font size='16'><b>#{feedback}</b></font>", inline_format: true, color: '767171'
     end
     move_down 10
-    image "#{Rails.root}/files/reports/#{@center.identifier}-#{title}.png", fit: [536, 190], position: :center
+    image "#{Rails.root}/files/reports/#{@center.identifier}-#{title}-#{@language}.png", fit: [536, 190], position: :center
     move_down 5
     text "<font size='9'>#{localize_text('null_score')}</font>", inline_format: true
     move_down 10
