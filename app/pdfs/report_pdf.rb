@@ -422,18 +422,27 @@ class ReportPdf
       text "<font size='16'><b>#{name}</b></font>", inline_format: true, color: '767171'
     end
     domain = @score_scheme.domains.find_by(title: title)
-    drf = @red_flag_responses[domain.title]
-    no_red_flags = drf.empty? ? true : false
+    domain_red_flag_responses = @red_flag_responses[domain.title]
+    no_red_flags = true
     some_red_flags = false
-    drf.each do |response|
+    domain_red_flag_responses.each do |response|
+      iq = response.instrument_question
+      identifiers = response.red_flag_response_options(@score_scheme).pluck(:identifier)
+      all_flags = response.red_flags.where(score_scheme_id: @score_scheme.id).where(option_identifier: identifiers).group_by(&:instruction_id)
+      flags = []
+      all_flags.values.each do |duplicates|
+        flags << duplicates.shift
+      end
+      if flags.empty?
+        no_red_flags = true
+        next
+      end
       if red_flag_domain[response.question_identifier.to_sym] != title
         some_red_flags = true
         next
       end
-      iq = response.instrument_question
-      identifiers = response.red_flag_response_options(@score_scheme).pluck(:identifier)
-      flags = response.red_flags.where(score_scheme_id: @score_scheme.id).where(option_identifier: identifiers)
       flags.each do |flag|
+        no_red_flags = false
         if %w[aac4 css5 css7 cts2 cts5 els5 els6 els7 fom8 ltc12 rbi7 rbi19 rbo5 sdm1 sla6 vin6 vis2_1 vis2_2 vnc3 vol6].include?(response.question_identifier)
           option = iq.hashed_options[flag.option_identifier]
           index = iq.non_special_options.index(option)
@@ -455,7 +464,7 @@ class ReportPdf
       end
       red_flag_other_domains(response, domain)
     end
-    text localize_text('no_red_flags') if no_red_flags
+    text localize_text('no_red_flags') if no_red_flags && !some_red_flags
     text localize_text('some_red_flags') if some_red_flags
     move_down 20
   end
