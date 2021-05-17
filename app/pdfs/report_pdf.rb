@@ -11,6 +11,7 @@ class ReportPdf
     register_fonts
     font 'PT Sans'
     font_size 12
+    default_leading 5
     content
     number_odd_pages
     number_even_pages
@@ -53,24 +54,24 @@ class ReportPdf
   end
 
   def page_one
-    fill_color '2F642F'
-    fill_rectangle [0, 715], 20, 715
-    fill_rectangle [515, 715], 20, 715
-    fill_color '000000'
-
-    bounding_box([0, 715], width: 500, height: 715) do
-      text "<font size='14'><b>#{@center.name}</b></font>", inline_format: true, align: :right
-      date = DateTime.now
-      month = "month_#{date.month}"
-      text "<font size='14'><b>#{localize_text(month)} #{date.year}</b></font>", inline_format: true, align: :right
-      font('Avenir Next Condensed') do
-        text "<font size='36'><b>#{localize_text('p1_national')}</b></font>", inline_format: true, color: '2F642F', align: :right
-        text "<font size='36'><b>#{localize_text('p1_quality')}</b></font>", inline_format: true, color: '2F642F', align: :right
-      end
-      move_down 25
-      image "#{Rails.root}/app/pdfs/images/mother_child_holding_hands.jpg", at: [bounds.left + 30, cursor], fit: [474, 267], position: :center
-      move_down 400
-      image "#{Rails.root}/app/pdfs/images/sponsors.png", at: [bounds.left + 30, cursor], fit: [476, 95], position: :center
+    image "#{Rails.root}/app/pdfs/images/mother_holding_child.png", fit: [535, 620], position: :center, at: [0, 730]
+    image "#{Rails.root}/app/pdfs/images/sponsors.png", fit: [535, 100], position: :center, at: [100, 150]
+    center_name_box = Prawn::Text::Box.new("<font size='14'><b><color rgb='FFFFFF'>#{@center.name}</color></b></font>",
+                                           at: [bounds.width - (bounds.width * 0.85), bounds.top - 20],
+                                           width: (bounds.width * 0.85) - 20, inline_format: true, align: :right, document: self)
+    center_name_box.render(dry_run: true)
+    height = center_name_box.height
+    text_box "<font size='14'><b><color rgb='FFFFFF'>#{@center.name}</color></b></font>",
+             at: [bounds.width - (bounds.width * 0.85), bounds.top - 20], width: (bounds.width * 0.85) - 20, inline_format: true, align: :right
+    date = DateTime.now
+    month = "month_#{date.month}"
+    text_box "<font size='14'><b><color rgb='FFFFFF'>#{localize_text(month)} #{date.year}</color></b></font>",
+             at: [bounds.width - (bounds.width * 0.85), bounds.top - 25 - height], width: (bounds.width * 0.85) - 20, inline_format: true, align: :right
+    font('Avenir Next Condensed') do
+      text_box "<font size='36'><b><color rgb='FFFFFF'>#{localize_text('p1_national')}</color></b></font>",
+               at: [bounds.width - (bounds.width * 0.85), cursor - 370], width: (bounds.width * 0.85) - 20, inline_format: true, align: :right
+      text_box "<font size='36'><b><color rgb='FFFFFF'>#{localize_text('p1_quality')}</color></b></font>",
+               at: [bounds.width - (bounds.width * 0.85), cursor - 405], width: (bounds.width * 0.85) - 20, inline_format: true, align: :right
     end
   end
 
@@ -433,6 +434,7 @@ class ReportPdf
     domain_red_flag_responses = @red_flag_responses[domain.title]
     no_red_flags = true
     some_red_flags = false
+    set = Set[]
     domain_red_flag_responses.each do |response|
       iq = response.instrument_question
       identifiers = response.red_flag_response_options(@score_scheme).pluck(:identifier)
@@ -441,11 +443,11 @@ class ReportPdf
       all_flags.values.each do |duplicates|
         flags << duplicates.shift
       end
-      if flags.empty?
-        no_red_flags = true
-        next
-      end
-      if red_flag_domain[response.question_identifier.to_sym] != title
+      next if flags.empty?
+
+      other_title = red_flag_domain[response.question_identifier.to_sym]
+      if other_title != title
+        set << other_title
         some_red_flags = true
         next
       end
@@ -473,7 +475,14 @@ class ReportPdf
       red_flag_other_domains(response, domain)
     end
     text localize_text('no_red_flags') if no_red_flags && !some_red_flags
-    text localize_text('some_red_flags') if some_red_flags
+    if some_red_flags
+      other_domains = @score_scheme.domains.where(title: set.to_a)
+      titles = []
+      other_domains.each do |dom|
+        titles << localize_text("d#{dom.title}_title")
+      end
+      text I18n.t('report.some_red_flags', domains: titles.join(', '), locale: @language), inline_format: true
+    end
     move_down 20
   end
 
