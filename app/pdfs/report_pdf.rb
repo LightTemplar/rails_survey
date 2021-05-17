@@ -25,9 +25,9 @@ class ReportPdf
     start_new_page
     page_three
     start_new_page
+    domain_data
     center_report
     start_new_page
-    domain_data
     red_flag_data
     domain_one
     start_new_page
@@ -145,7 +145,15 @@ class ReportPdf
     move_down 10
 
     domain_title(localize_text('p4_snapshot'))
-    image "#{Rails.root}/files/reports/#{@center.identifier}-0-#{@language}.png", fit: [536, 190], position: :center
+
+    d_scores = [@scores[@center.identifier]['Score']]
+    labels = { 0 => localize_text('p4_label') }
+    nat_scores = [@nat_avg_scores['Score']]
+    cda = []
+    cda = [[@private_scores['Score']], [@public_scores['Score']]] if is_cda?
+    gruff_graph('0', d_scores.map { |v| v == '' ? 0 : v }, nat_scores.map { |v| v == '' ? 0 : v }, labels, cda)
+
+    image "#{Rails.root}/files/reports/#{@center.identifier}-0-#{@language}.png", position: :center, fit: [550, 350]
     move_down 10
     text "<font size='9'>#{localize_text("p4_#{@center.center_type}")}</font>", inline_format: true
   end
@@ -283,7 +291,7 @@ class ReportPdf
       text "<font size='16'><b>#{feedback}</b></font>", inline_format: true, color: '767171'
     end
     move_down 10
-    image "#{Rails.root}/files/reports/#{@center.identifier}-#{title}-#{@language}.png", fit: [536, 190], position: :center
+    image "#{Rails.root}/files/reports/#{@center.identifier}-#{title}-#{@language}.png", position: :center, fit: [550, 350]
     move_down 5
     text "<font size='9'>#{localize_text('null_score')}</font>", inline_format: true
     move_down 10
@@ -476,15 +484,77 @@ class ReportPdf
     [lowest, highest]
   end
 
+  def gruff_graph(title, d_scores, nat_scores, labels, cdas)
+    g = Gruff::Bar.new('1600x800')
+    g.title = localize_text("d#{title}_name") if title != '0'
+    g.title = localize_text('p4_title') if title == '0'
+    g.font = "#{Rails.root}/app/pdfs/fonts/PTSans-Regular.ttf"
+    g.title_font_size = 14
+    g.legend_font_size = 12
+    g.marker_font_size = 10
+    g.theme = {
+      colors: ['#3e6232', '#9ab77d', '#6c994f'],
+      marker_color: 'black',
+      font_color: 'black',
+      background_colors: %w[#ffffff #ffffff]
+    }
+    g.labels = labels
+    g.data(@center.name.to_sym, d_scores)
+    if is_cda?
+      if @center.administration == 'Privado'
+        g.data(I18n.t('report.private', type: @center.center_type, locale: @language).to_sym, cdas[0])
+      else
+        g.data(I18n.t('report.public', type: @center.center_type, locale: @language).to_sym, cdas[1])
+      end
+    end
+    g.data(I18n.t('report.nationals', type: @center.center_type, locale: @language).to_sym, nat_scores)
+    g.show_labels_for_bar_values = true
+    g.minimum_value = 0
+    g.maximum_value = 7
+    g.legend_at_bottom = true
+    img = "#{Rails.root}/files/reports/#{@center.identifier}-#{title}-#{@language}"
+    g.write("#{img}.png")
+    graph = Magick::Image.read("#{img}.png").first
+    cropped = graph.crop(50, 45, 1520, 720)
+    background = Magick::Image.new(1850, 720)
+    result = background.composite(cropped, Magick::NorthWestGravity, Magick::OverCompositeOp)
+    draw = Magick::Draw.new
+    low_text = @language == 'en' ? '1-3: low-quality care' : '1-3: baja calidad'
+    good_text = @language == 'en' ? '3-5: good-quality care' : '3-5: mediana calidad'
+    high_text = @language == 'en' ? '5-7: high-quality care' : '5-7: alta calidad'
+    draw.annotate(result, 330, 40, 1520, 460, low_text) do |options|
+      options.pointsize = 25
+      options.font = 'PT Sans'
+    end
+    draw.annotate(result, 330, 40, 1520, 325, good_text) do |options|
+      options.pointsize = 25
+      options.font = 'PT Sans'
+    end
+    draw.annotate(result, 330, 40, 1520, 185, high_text) do |options|
+      options.pointsize = 25
+      options.font = 'PT Sans'
+    end
+    result.write("#{img}.png")
+  end
+
   def domain_one
     domain_title(localize_text('d1_title'))
     domain_table('1')
     text localize_text('d1_admin'), inline_format: true
-    domain_score_graph('1', localize_text('d1_feedback'))
     d_scores = {
       '1.1': @scores[@center.identifier]['1.1'], '1.2': @scores[@center.identifier]['1.2'],
       '1.3': @scores[@center.identifier]['1.3'], '1.4': @scores[@center.identifier]['1.4']
     }
+    nat_scores = [@nat_avg_scores['1.1'], @nat_avg_scores['1.2'], @nat_avg_scores['1.3'], @nat_avg_scores['1.4']]
+    sd_alt_names = @score_scheme.domains.find_by(title: '1').subdomains.map { |sd| full_sanitizer.sanitize(sd.alt_name(@language)) }
+    labels = { 0 => sd_alt_names[0], 1 => sd_alt_names[1], 2 => sd_alt_names[2], 3 => sd_alt_names[3] }
+    cda = []
+    if is_cda?
+      cda = [[@private_scores['1.1'], @private_scores['1.2'], @private_scores['1.3'], @private_scores['1.4']],
+             [@public_scores['1.1'], @public_scores['1.2'], @public_scores['1.3'], @public_scores['1.4']]]
+    end
+    gruff_graph('1', d_scores.values.map { |v| v == '' ? 0 : v }, nat_scores.map { |v| v == '' ? 0 : v }, labels, cda)
+    domain_score_graph('1', localize_text('d1_feedback'))
     lowest, highest = cleaned_scores(d_scores)
     highest_scoring_subdomain(highest, d_scores, localize_text('d1_name'))
     doing_well(lowest, localize_text('d1_all_well'))
@@ -496,7 +566,6 @@ class ReportPdf
     domain_title(localize_text('d2_title'))
     domain_table('2')
     text localize_text('d2_admin'), inline_format: true
-    domain_score_graph('2', localize_text('d2_feedback'))
     d_scores = if is_cda?
                  {
                    '2.1': @scores[@center.identifier]['2.1'], '2.2': @scores[@center.identifier]['2.2'],
@@ -513,6 +582,33 @@ class ReportPdf
                    '2.8': @scores[@center.identifier]['2.8'], '2.9': @scores[@center.identifier]['2.9']
                  }
                end
+    nat_scores = if is_cda?
+                   [@nat_avg_scores['2.1'], @nat_avg_scores['2.2'], @nat_avg_scores['2.3'], @nat_avg_scores['2.4'],
+                    @nat_avg_scores['2.5'], @nat_avg_scores['2.6'], @nat_avg_scores['2.7'], @nat_avg_scores['2.8'],
+                    @nat_avg_scores['2.9']]
+                 else
+                   [@nat_avg_scores['2.1'], @nat_avg_scores['2.2'], @nat_avg_scores['2.3'], @nat_avg_scores['2.4'],
+                    @nat_avg_scores['2.5'], @nat_avg_scores['2.6'], @nat_avg_scores['2.8'], @nat_avg_scores['2.9']]
+                 end
+    sd_alt_names = @score_scheme.domains.find_by(title: '2').subdomains.map { |sd| full_sanitizer.sanitize(sd.alt_name(@language)) }
+    labels = if is_cda?
+               { 0 => sd_alt_names[0], 1 => sd_alt_names[1], 2 => sd_alt_names[2], 3 => sd_alt_names[3],
+                 4 => sd_alt_names[4], 5 => sd_alt_names[5], 6 => sd_alt_names[6], 7 => sd_alt_names[7], 8 => sd_alt_names[8] }
+             else
+               { 0 => sd_alt_names[0], 1 => sd_alt_names[1], 2 => sd_alt_names[2], 3 => sd_alt_names[3],
+                 4 => sd_alt_names[4], 5 => sd_alt_names[5], 6 => sd_alt_names[7], 7 => sd_alt_names[8] }
+             end
+    cda = []
+    if is_cda?
+      cda = [[@private_scores['2.1'], @private_scores['2.2'], @private_scores['2.3'], @private_scores['2.4'],
+              @private_scores['2.5'], @private_scores['2.6'], @private_scores['2.7'], @private_scores['2.8'],
+              @private_scores['2.9']],
+             [@public_scores['2.1'], @public_scores['2.2'], @public_scores['2.3'], @public_scores['2.4'],
+              @public_scores['2.5'], @public_scores['2.6'], @public_scores['2.7'], @public_scores['2.8'],
+              @public_scores['2.9']]]
+    end
+    gruff_graph('2', d_scores.values.map { |v| v == '' ? 0 : v }, nat_scores.map { |v| v == '' ? 0 : v }, labels, cda)
+    domain_score_graph('2', localize_text('d2_feedback'))
     lowest, highest = cleaned_scores(d_scores)
     highest_scoring_subdomain(highest, d_scores, localize_text('d2_name'))
     doing_well(lowest, localize_text('d2_all_well'))
@@ -524,7 +620,6 @@ class ReportPdf
     domain_title(localize_text('d3_title'))
     domain_table('3')
     text localize_text('d3_admin'), inline_format: true
-    domain_score_graph('3', localize_text('d3_feedback'))
     d_scores = if is_cda?
                  {
                    '3.1': @scores[@center.identifier]['3.1'], '3.2': @scores[@center.identifier]['3.2'],
@@ -538,6 +633,30 @@ class ReportPdf
                    '3.5': @scores[@center.identifier]['3.5']
                  }
                end
+    nat_scores = if is_cda?
+                   [@nat_avg_scores['3.1'], @nat_avg_scores['3.2'], @nat_avg_scores['3.3'], @nat_avg_scores['3.4'],
+                    @nat_avg_scores['3.5'], @nat_avg_scores['3.6']]
+                 else
+                   [@nat_avg_scores['3.1'], @nat_avg_scores['3.2'], @nat_avg_scores['3.3'], @nat_avg_scores['3.4'],
+                    @nat_avg_scores['3.5']]
+                 end
+    sd_alt_names = @score_scheme.domains.find_by(title: '3').subdomains.map { |sd| full_sanitizer.sanitize(sd.alt_name(@language)) }
+    labels = if is_cda?
+               { 0 => sd_alt_names[0], 1 => sd_alt_names[1], 2 => sd_alt_names[2], 3 => sd_alt_names[3],
+                 4 => sd_alt_names[4], 5 => sd_alt_names[5] }
+             else
+               { 0 => sd_alt_names[0], 1 => sd_alt_names[1], 2 => sd_alt_names[2], 3 => sd_alt_names[3],
+                 4 => sd_alt_names[4] }
+             end
+    cda = []
+    if is_cda?
+      cda = [[@private_scores['3.1'], @private_scores['3.2'], @private_scores['3.3'], @private_scores['3.4'],
+              @private_scores['3.5'], @private_scores['3.6']],
+             [@public_scores['3.1'], @public_scores['3.2'], @public_scores['3.3'], @public_scores['3.4'],
+              @public_scores['3.5']]]
+    end
+    gruff_graph('3', d_scores.values.map { |v| v == '' ? 0 : v }, nat_scores.map { |v| v == '' ? 0 : v }, labels, cda)
+    domain_score_graph('3', localize_text('d3_feedback'))
     lowest, highest = cleaned_scores(d_scores)
     highest_scoring_subdomain(highest, d_scores, localize_text('d3_name'))
     doing_well(lowest, localize_text('d3_all_well'))
@@ -549,12 +668,25 @@ class ReportPdf
     domain_title(localize_text('d4_title'))
     domain_table('4')
     text localize_text('d4_admin'), inline_format: true
-    domain_score_graph('4', localize_text('d4_feedback'))
     d_scores = {
       '4.1': @scores[@center.identifier]['4.1'], '4.2': @scores[@center.identifier]['4.2'],
       '4.3': @scores[@center.identifier]['4.3'], '4.4': @scores[@center.identifier]['4.4'],
       '4.5': @scores[@center.identifier]['4.5'], '4.6': @scores[@center.identifier]['4.6']
     }
+    nat_scores = [@nat_avg_scores['4.1'], @nat_avg_scores['4.2'], @nat_avg_scores['4.3'], @nat_avg_scores['4.4'],
+                  @nat_avg_scores['4.5'], @nat_avg_scores['4.6']]
+    sd_alt_names = @score_scheme.domains.find_by(title: '4').subdomains.map { |sd| full_sanitizer.sanitize(sd.alt_name(@language)) }
+    labels = { 0 => sd_alt_names[0], 1 => sd_alt_names[1], 2 => sd_alt_names[2], 3 => sd_alt_names[3],
+               4 => sd_alt_names[4], 5 => sd_alt_names[5] }
+    cda = []
+    if is_cda?
+      cda = [[@private_scores['4.1'], @private_scores['4.2'], @private_scores['4.3'], @private_scores['4.4'],
+              @private_scores['4.5'], @private_scores['4.6']],
+             [@public_scores['4.1'], @public_scores['4.2'], @public_scores['4.3'], @public_scores['4.4'],
+              @public_scores['4.5'], @public_scores['4.6']]]
+    end
+    gruff_graph('4', d_scores.values.map { |v| v == '' ? 0 : v }, nat_scores.map { |v| v == '' ? 0 : v }, labels, cda)
+    domain_score_graph('4', localize_text('d4_feedback'))
     lowest, highest = cleaned_scores(d_scores)
     highest_scoring_subdomain(highest, d_scores, localize_text('d4_name'))
     doing_well(lowest, localize_text('d4_all_well'))
@@ -566,7 +698,6 @@ class ReportPdf
     domain_title(localize_text('d5_title'))
     domain_table('5')
     text localize_text('d5_admin'), inline_format: true
-    domain_score_graph('5', localize_text('d5_feedback'))
     d_scores = if is_cda?
                  {
                    '5.1': @scores[@center.identifier]['5.1'], '5.2': @scores[@center.identifier]['5.2'],
@@ -580,6 +711,28 @@ class ReportPdf
                    '5.4': @scores[@center.identifier]['5.4'], '5.5': @scores[@center.identifier]['5.5']
                  }
                end
+    nat_scores = if is_cda?
+                   [@nat_avg_scores['5.1'], @nat_avg_scores['5.2'], @nat_avg_scores['5.3'], @nat_avg_scores['5.4'],
+                    @nat_avg_scores['5.5'], @nat_avg_scores['5.6'], @nat_avg_scores['5.7'], @nat_avg_scores['5.8']]
+                 else
+                   [@nat_avg_scores['5.1'], @nat_avg_scores['5.3'], @nat_avg_scores['5.4'], @nat_avg_scores['5.5']]
+                 end
+    sd_alt_names = @score_scheme.domains.find_by(title: '5').subdomains.map { |sd| full_sanitizer.sanitize(sd.alt_name(@language)) }
+    labels = if is_cda?
+               { 0 => sd_alt_names[0], 1 => sd_alt_names[1], 2 => sd_alt_names[2], 3 => sd_alt_names[3],
+                 4 => sd_alt_names[4], 5 => sd_alt_names[5], 6 => sd_alt_names[6], 7 => sd_alt_names[7] }
+             else
+               { 0 => sd_alt_names[0], 1 => sd_alt_names[2], 2 => sd_alt_names[3], 3 => sd_alt_names[4] }
+             end
+    cda = []
+    if is_cda?
+      cda = [[@private_scores['5.1'], @private_scores['5.2'], @private_scores['5.3'], @private_scores['5.4'],
+              @private_scores['5.5'], @private_scores['5.6'], @private_scores['5.7'], @private_scores['5.8']],
+             [@public_scores['5.1'], @public_scores['5.2'], @public_scores['5.3'], @public_scores['5.4'],
+              @public_scores['5.5'], @public_scores['5.6'], @public_scores['5.7'], @public_scores['5.8']]]
+    end
+    gruff_graph('5', d_scores.values.map { |v| v == '' ? 0 : v }, nat_scores.map { |v| v == '' ? 0 : v }, labels, cda)
+    domain_score_graph('5', localize_text('d5_feedback'))
     lowest, highest = cleaned_scores(d_scores)
     highest_scoring_subdomain(highest, d_scores, localize_text('d5_name'))
     doing_well(lowest, localize_text('d5_all_well'))
@@ -591,11 +744,20 @@ class ReportPdf
     domain_title(localize_text('d6_title'))
     domain_table('6')
     text localize_text('d6_admin'), inline_format: true
-    domain_score_graph('6', localize_text('d6_feedback'))
     d_scores = {
       '6.1': @scores[@center.identifier]['6.1'], '6.2': @scores[@center.identifier]['6.2'],
       '6.3': @scores[@center.identifier]['6.3']
     }
+    nat_scores = [@nat_avg_scores['6.1'], @nat_avg_scores['6.2'], @nat_avg_scores['6.3']]
+    sd_alt_names = @score_scheme.domains.find_by(title: '6').subdomains.map { |sd| full_sanitizer.sanitize(sd.alt_name(@language)) }
+    labels = { 0 => sd_alt_names[0], 1 => sd_alt_names[1], 2 => sd_alt_names[2] }
+    cda = []
+    if is_cda?
+      cda = [[@private_scores['6.1'], @private_scores['6.2'], @private_scores['6.3']],
+             [@public_scores['6.1'], @public_scores['6.2'], @public_scores['6.3']]]
+    end
+    gruff_graph('6', d_scores.values.map { |v| v == '' ? 0 : v }, nat_scores.map { |v| v == '' ? 0 : v }, labels, cda)
+    domain_score_graph('6', localize_text('d6_feedback'))
     lowest, highest = cleaned_scores(d_scores)
     highest_scoring_subdomain(highest, d_scores, localize_text('d6_name'))
     doing_well(lowest, localize_text('d6_all_well'))

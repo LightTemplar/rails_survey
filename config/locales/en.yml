@@ -1,34 +1,3 @@
-# Files in the config/locales directory are used for internationalization
-# and are automatically loaded by Rails. If you want to use locales other
-# than English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t 'hello'
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t('hello') %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# The following keys must be escaped otherwise they will not be retrieved by
-# the default I18n backend:
-#
-# true, false, on, off, yes, no
-#
-# Instead, surround them with single quotes.
-#
-# en:
-#   'true': 'foo'
-#
-# To learn more, please read the Rails Internationalization guide
-# available at http://guides.rubyonrails.org/i18n.html.
-
 en:
   hello: "Hello world"
   center:
@@ -81,6 +50,8 @@ en:
     p4_yes: " Yes "
     p4_no: " No "
     p4_snapshot: "Center Snapshot"
+    p4_label: "Center Level Score"
+    p4_title: "Center Level Averages"
     p4_CDA: "*National average is among CDAs only."
     p4_CBI: "*National average is among CBIs only."
     p4_CDI: "*National average is among CDIs only."
@@ -90,6 +61,7 @@ en:
     public: "Public %{type}s"
     private: "Private %{type}s"
     both: "Both %{type}s"
+    nationals: "National %{type}s"
     d1_admin: "The <b>Administration & Governance</b> domain measures the way in which a childcare center is managed at the administrative level. This domain considers Oversight & Leadership, Professional Practices, Caregiver Well-being, and Staff Training & Development. Ideally, leadership is able to use the resources they have to create and maintain a healthy organizational culture, which in turn affects the quality of care provided within a childcare center."
     d1_feedback: "Domain 1: Administration & Governance Subdomain Feedback"
     d1_score: "Your center received a score of <b>%{score}</b> for this domain. This score is in the <b>%{percentile}<sup>%{sup}</sup></b> percentile. Please see the section below titled 'Domain-level Feedback' for more details on how to maintain or improve care in this domain."
