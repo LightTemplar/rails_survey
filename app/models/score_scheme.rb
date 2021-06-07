@@ -28,6 +28,7 @@ class ScoreScheme < ApplicationRecord
   has_many :centers, through: :score_scheme_centers
   has_many :red_flags
   has_many :domain_translations, through: :domains, source: :translations
+  has_many :subdomain_translations, through: :subdomains, source: :translations
 
   delegate :project, to: :instrument
 
@@ -106,10 +107,13 @@ class ScoreScheme < ApplicationRecord
           domain.subdomains.each do |subdomain|
             subdomain.score_units.sort_by { |su| [su.str_title, su.int_title] }.each do |unit|
               unit.score_unit_questions.each_with_index do |suq, index|
-                q_style = index == unit.score_unit_questions.size - 1 && suq.option_scores.empty? ?
-                [c_border, c_border, c_border, c_border, b_question_style, c_border, c_border, border,
-                 b_question_style, b_option_style] : [c_style, c_style, c_style, c_style, question_style, c_style,
-                                                      c_style, c_style, question_style, option_style]
+                q_style = if index == unit.score_unit_questions.size - 1 && suq.option_scores.empty?
+                            [c_border, c_border, c_border, c_border, b_question_style, c_border, c_border, border,
+                             b_question_style, b_option_style]
+                          else
+                            [c_style, c_style, c_style, c_style, question_style, c_style,
+                             c_style, c_style, question_style, option_style]
+                          end
                 sheet.add_row [unit.title, subdomain.title_name, unit.weight,
                                suq.question_identifier, html_decode(full_sanitize(suq.instrument_question.text)),
                                unit.base_point_score == 0.0 ? '' : unit.base_point_score, '', unit.score_type,
@@ -117,10 +121,13 @@ class ScoreScheme < ApplicationRecord
                                html_decode(full_sanitize(unit.notes))], style: q_style
                 sheet.column_widths nil, nil, nil, nil, 50, nil, nil, nil, 50, 50
                 suq.option_scores.each_with_index do |score, index|
-                  o_style = index == suq.option_scores.size - 1 ?
-                  [border, border, border, c_border, b_option_style, border, c_border, c_border,
-                   b_option_style, b_option_style] : [nil, nil, nil, c_style, option_style, nil,
-                                                      c_style, c_style, option_style, option_style]
+                  o_style = if index == suq.option_scores.size - 1
+                              [border, border, border, c_border, b_option_style, border, c_border, c_border,
+                               b_option_style, b_option_style]
+                            else
+                              [nil, nil, nil, c_style, option_style, nil,
+                               c_style, c_style, option_style, option_style]
+                            end
                   sheet.add_row ['', '', '', suq.option_index(score.option), full_sanitizer.sanitize(score.option.text),
                                  '', unit.score_type == 'SUM' ? "(#{format('%+0.1f', score.value)})" : score.value, '',
                                  full_sanitize(score.option.translations.find_by_language('es')&.text),

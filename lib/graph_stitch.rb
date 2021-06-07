@@ -3,6 +3,13 @@
 require 'csv'
 require 'rmagick'
 
+language = nil
+ARGV.each do |a|
+  language = a
+  puts "LANGUGAGE: #{language}"
+end
+exit(false) if language.nil?
+
 identifiers = []
 CSV.foreach('data/identifiers.csv') do |row|
   identifiers << row
@@ -11,48 +18,48 @@ identifiers.flatten!
 
 images = Dir['data/input/*.png'].sort
 
-levels = Magick::Image.read('data/levels.png').first
+levels = Magick::Image.read("data/levels-#{language}.png").first
 img = Magick::Image.new(1897, 554)
 background = img.composite(levels, Magick::CenterGravity, Magick::OverCompositeOp)
 
-def write_image(background, filename, identifier, number)
+def write_image(background, filename, identifier, number, language)
   image = Magick::Image.read(filename).first
-  result = background.composite(image, Magick::CenterGravity, Magick::OverCompositeOp)
+  img = image.crop(5, 5, image.columns - 10, image.rows - 5)
+  result = background.composite(img, Magick::CenterGravity, Magick::OverCompositeOp)
   gc = Magick::Draw.new
   gc.stroke('black')
-  # gc.stroke_width(2)
   if number == 0
-    gc.line(330, 172, 1610, 172)
-    gc.line(330, 289, 1610, 289)
+    gc.line(330, 175, 1610, 175)
+    gc.line(330, 294, 1610, 294)
   elsif number == 1
-    gc.line(330, 185, 1610, 185)
-    gc.line(330, 291, 1610, 291)
+    gc.line(330, 175, 1610, 175)
+    gc.line(330, 294, 1610, 294)
   elsif number == 2
-    gc.line(330, 178, 1610, 178)
-    gc.line(330, 275, 1610, 275)
+    gc.line(330, 168, 1610, 168)
+    gc.line(330, 279, 1610, 279)
   elsif number == 3
-    gc.line(330, 178, 1610, 178)
-    gc.line(330, 275, 1610, 275)
+    gc.line(330, 175, 1610, 175)
+    gc.line(330, 294, 1610, 294)
   elsif number == 4
-    gc.line(330, 186, 1610, 186)
-    gc.line(330, 291, 1610, 291)
+    gc.line(330, 175, 1610, 175)
+    gc.line(330, 294, 1610, 294)
   elsif number == 5
-    gc.line(330, 185, 1610, 185)
-    gc.line(330, 290, 1610, 290)
+    gc.line(330, 175, 1610, 175)
+    gc.line(330, 294, 1610, 294)
   elsif number == 6
-    gc.line(330, 185, 1610, 185)
-    gc.line(330, 290, 1610, 290)
+    gc.line(330, 175, 1610, 175)
+    gc.line(330, 294, 1610, 294)
   end
   gc.draw(result)
   result = result.crop(290, 0, 1550, 550)
-  result.write("data/output/#{identifier}-#{number}.png")
+  result.write("data/output/#{identifier}-#{number}-#{language}.png")
 end
 
 index = 0
 images.each_slice(7) do |slice|
   puts "id: #{identifiers[index]} names: #{slice}"
   [0, 1, 2, 3, 4, 5, 6].each do |number|
-    write_image(background, slice[number], identifiers[index], number)
+    write_image(background, slice[number], identifiers[index], number, language)
   end
   index += 1
 end

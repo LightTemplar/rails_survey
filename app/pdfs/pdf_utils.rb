@@ -39,7 +39,9 @@ module PdfUtils
       },
       'PT Sans' => {
         normal: "#{Rails.root}/app/pdfs/fonts/PTSans-Regular.ttf",
-        bold: "#{Rails.root}/app/pdfs/fonts/PTSans-Bold.ttf"
+        bold: "#{Rails.root}/app/pdfs/fonts/PTSans-Bold.ttf",
+        italic: "#{Rails.root}/app/pdfs/fonts/PTSans-Italic.ttf",
+        bold_italic: "#{Rails.root}/app/pdfs/fonts/PTSans-BoldItalic.ttf"
       },
       'Avenir Next Condensed' => {
         normal: { file: avenir, font: 0 },
@@ -78,8 +80,7 @@ module PdfUtils
 
   def remove_tags(text)
     text = text.gsub('<p>', '')
-    text = text.gsub('</p>', '')
-    text
+    text.gsub('</p>', '')
   end
 
   def sanitize_text(text)
@@ -146,12 +147,11 @@ module PdfUtils
     end
     skipped = skipped.sort
     prev = skipped[0]
-    arr = skipped.slice_before do |e|
+    skipped.slice_before do |e|
       prev2 = prev
       prev = e
       prev2 + 1 != e
     end.map { |b, *, c| c ? (b..c) : b }
-    arr
   end
 
   def format_skip_patterns(question)
