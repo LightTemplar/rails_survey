@@ -30,11 +30,11 @@ ActiveAdmin.register ResponseExport do
 
   index do
     column :id do |export|
-      link_to export.id, admin_project_response_export_path(export.instrument_id, export.id) if export.instrument_id
+      link_to export.id, admin_project_response_export_path(export.instrument.project_id, export.id) if export.instrument_id
     end
     column 'Instrument', sortable: :instrument_title do |export|
       instrument = Instrument.find_by_id(export.instrument_id) if export.instrument_id
-      instrument ? (link_to instrument.title, admin_project_instrument_path(instrument.project_id, instrument)) : ''
+      instrument ? (link_to instrument.title, admin_project_instrument_path(instrument.project_id, instrument.id)) : ''
     end
     column :instrument_versions do |export|
       export.instrument_versions.join(',') if export.instrument_versions

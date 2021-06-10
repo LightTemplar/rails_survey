@@ -53,7 +53,7 @@ class ResponseExport < ActiveRecord::Base
     elsif extension == 'xlsx'
       Axlsx::Package.new do |p|
         wb = p.workbook
-        wb.add_worksheet(name: instrument.title) do |sheet|
+        wb.add_worksheet(name: instrument.title.truncate(31)) do |sheet|
           sheet.add_row headers(format)
           data.each do |row|
             sheet.add_row row
