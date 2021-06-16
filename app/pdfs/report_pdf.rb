@@ -124,6 +124,7 @@ class ReportPdf
     page_header_36('p4_report')
     css = @center.survey_scores.where(score_scheme_id: @score_scheme.id)
     contact = @center.contact(css)
+    contact.gsub! /"/, ''
     formatted_text center_details('p4_center', @center.name)
     move_down 10
     formatted_text center_details('p4_director', contact)
@@ -453,11 +454,11 @@ class ReportPdf
       end
       flags.each do |flag|
         no_red_flags = false
-        if %w[aac4 css5 css7 cts2 cts5 els5 els6 els7 fom8 ltc12 rbi7 rbi19 rbo5 sdm1 sla6 vin6 vis2_1 vis2_2 vnc3 vol6].include?(response.question_identifier)
+        if %w[aac4 css5 css7 cts2 cts5 els5 els6 els7 fom8 ltc12 rbi7 rbi19 rbo4 rbo5 sdm1 sla6 vin6 vis2_1 vis2_2 vnc3 vol6].include?(response.question_identifier)
           option = iq.hashed_options[flag.option_identifier]
           index = iq.non_special_options.index(option)
           letter = iq.letters[index]
-          if %w[aac4 els7 rbi7 rbi19 sdm1 vis2_1 vis2_2].include?(response.question_identifier)
+          if %w[aac4 els7 rbi7 rbi19 rbo4 sdm1 vis2_1 vis2_2].include?(response.question_identifier)
             red_flag_description(localize_text("#{response.question_identifier}_#{letter}_d"))
             red_flag_recommendation(localize_text("#{rn}_#{response.question_identifier}_#{letter}"))
           else
@@ -474,15 +475,16 @@ class ReportPdf
       end
       red_flag_other_domains(response, domain)
     end
-    text localize_text('no_red_flags') if no_red_flags && !some_red_flags
     if some_red_flags
       other_domains = @score_scheme.domains.where(title: set.to_a)
       titles = []
       other_domains.each do |dom|
         titles << localize_text("d#{dom.title}_title")
       end
-      text I18n.t('report.some_red_flags', domains: titles.join(', '), locale: @language), inline_format: true
+      text I18n.t('report.some_red_flags', domains: titles.join(', '), locale: @language), inline_format: true unless titles.empty?
+      some_red_flags = false if titles.empty?
     end
+    text localize_text('no_red_flags') if no_red_flags && !some_red_flags
     move_down 20
   end
 
