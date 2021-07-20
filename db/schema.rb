@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_11_204600) do
+ActiveRecord::Schema.define(version: 2021_07_20_164241) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -771,6 +771,7 @@ ActiveRecord::Schema.define(version: 2021_05_11_204600) do
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.boolean "active"
+    t.integer "progress", default: 0
     t.index ["deleted_at"], name: "index_score_schemes_on_deleted_at"
   end
 

@@ -8,6 +8,14 @@ ActiveAdmin.register ScoreScheme do
 
   actions :all, except: %i[destroy edit new]
 
+  member_action :generate, method: :get do
+    redirect_to resource_path
+  end
+
+  member_action :download, method: :get do
+    redirect_to resource_path
+  end
+
   member_action :score, method: :get do
     redirect_to resource_path
   end
@@ -18,6 +26,14 @@ ActiveAdmin.register ScoreScheme do
 
   member_action :filter_scores, method: :post do
     redirect_to resource_path
+  end
+
+  action_item :generate, only: :show do
+    link_to 'Generate PDF Reports', generate_admin_project_score_scheme_path(params[:project_id], params[:id])
+  end
+
+  action_item :download, only: :show do
+    link_to 'Download PDF Reports', download_admin_project_score_scheme_path(params[:project_id], params[:id])
   end
 
   action_item :score, only: :show do
@@ -44,7 +60,32 @@ ActiveAdmin.register ScoreScheme do
     actions
   end
 
+  show do |score_scheme|
+    attributes_table do
+      row :instrument
+      row :title
+      row :active
+      row :created_at
+      row :updated_at
+      row 'PDF Reports Progress' do
+        "#{score_scheme.progress} of #{score_scheme.centers.size}"
+      end
+    end
+  end
+
   controller do
+    def generate
+      score_scheme = ScoreScheme.find(params[:id])
+      score_scheme.generate_pdf_reports
+      redirect_to admin_project_score_scheme_path(params[:project_id], params[:id])
+    end
+
+    def download
+      score_scheme = ScoreScheme.find(params[:id])
+      send_file score_scheme.zip_pdf_reports, type: 'application/zip',
+        filename: "#{score_scheme.title.split.join('-')}-#{Time.now.to_i}.zip"
+    end
+
     def score
       score_scheme = ScoreScheme.find(params[:id])
       score_scheme.score

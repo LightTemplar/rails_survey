@@ -11,6 +11,7 @@
 #  updated_at    :datetime
 #  deleted_at    :datetime
 #  active        :boolean
+#  progress      :integer          default(0)
 #
 
 class ScoreScheme < ApplicationRecord
@@ -222,4 +223,27 @@ class ScoreScheme < ApplicationRecord
   def observation_identifiers
     instrument.sections.find_by(title: '5. Observation').instrument_questions.pluck(:identifier)
   end
+
+  def generate_pdf_reports
+    update_attributes(progress: 0)
+    centers.each do |center|
+      PdfReportWorker.perform_async(center.id, id)
+    end
+  end
+
+  def zip_pdf_reports
+    zip_file = Tempfile.new("#{Time.now.to_i}.zip")
+    Zip::File.open(zip_file, Zip::File::CREATE) do |zipfile|
+      centers.each do |center|
+        ['en', 'es'].each do |lang|
+          filename = "#{Rails.root}/files/pdfs/#{center.identifier}-#{id}-#{lang}.pdf"
+          if File.file?(filename)
+            zipfile.add("#{center.identifier}-#{id}-#{lang}.pdf", filename)
+          end
+        end
+      end
+    end
+    zip_file
+  end
+
 end
