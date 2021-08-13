@@ -54,24 +54,32 @@ class ReportPdf
   end
 
   def page_one
-    image "#{Rails.root}/app/pdfs/images/mother_holding_child.png", fit: [535, 620], position: :center, at: [0, 730]
-    image "#{Rails.root}/app/pdfs/images/sponsors.png", fit: [535, 100], position: :center, at: [100, 150]
+    image "#{Rails.root}/app/pdfs/images/sponsors.png", fit: [535, 100], position: :center
+    move_down 8
+    image "#{Rails.root}/app/pdfs/images/mother_holding_child.png", width: 535, height: 633
     center_name_box = Prawn::Text::Box.new("<font size='14'><b><color rgb='FFFFFF'>#{@center.name}</color></b></font>",
-                                           at: [bounds.width - (bounds.width * 0.85), bounds.top - 20],
-                                           width: (bounds.width * 0.85) - 20, inline_format: true, align: :right, document: self)
+                                           at: [bounds.width - (bounds.width * 0.85), bounds.top - 100],
+                                           width: (bounds.width * 0.85) - 20, inline_format: true,
+                                           align: :right, document: self)
     center_name_box.render(dry_run: true)
     height = center_name_box.height
     text_box "<font size='14'><b><color rgb='FFFFFF'>#{@center.name}</color></b></font>",
-             at: [bounds.width - (bounds.width * 0.85), bounds.top - 20], width: (bounds.width * 0.85) - 20, inline_format: true, align: :right
+             at: [bounds.width - (bounds.width * 0.85), bounds.top - 100],
+             width: (bounds.width * 0.85) - 20,
+             inline_format: true,
+             align: :right
     date = DateTime.now
     month = "month_#{date.month}"
     text_box "<font size='14'><b><color rgb='FFFFFF'>#{localize_text(month)} #{date.year}</color></b></font>",
-             at: [bounds.width - (bounds.width * 0.85), bounds.top - 25 - height], width: (bounds.width * 0.85) - 20, inline_format: true, align: :right
+             at: [bounds.width - (bounds.width * 0.85), bounds.top - 105 - height],
+             width: (bounds.width * 0.85) - 20,
+             inline_format: true,
+             align: :right
     font('Avenir Next Condensed') do
       text_box "<font size='36'><b><color rgb='FFFFFF'>#{localize_text('p1_national')}</color></b></font>",
-               at: [bounds.width - (bounds.width * 0.85), cursor - 370], width: (bounds.width * 0.85) - 20, inline_format: true, align: :right
+               at: [150, 150], width: 350, inline_format: true, align: :right
       text_box "<font size='36'><b><color rgb='FFFFFF'>#{localize_text('p1_quality')}</color></b></font>",
-               at: [bounds.width - (bounds.width * 0.85), cursor - 405], width: (bounds.width * 0.85) - 20, inline_format: true, align: :right
+               at: [150, 110], width: 350, inline_format: true, align: :right
     end
   end
 

@@ -15,6 +15,7 @@
 
 class DeviceUser < ApplicationRecord
   has_secure_password
+  has_one :api_key
   has_many :device_device_users
   has_many :devices, through: :device_device_users
   has_many :project_device_users
