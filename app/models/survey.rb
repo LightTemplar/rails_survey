@@ -132,9 +132,9 @@ class Survey < ApplicationRecord
     "https://www.google.com/maps/place/#{latitude}+#{longitude}" if latitude && longitude
   end
 
-  def metadata
-    JSON.parse(read_attribute(:metadata)) unless read_attribute(:metadata).blank?
-  end
+  # def metadata
+  #   JSON.parse(read_attribute(:metadata)) unless read_attribute(:metadata).blank?
+  # end
 
   def center_id
     metadata['Center ID'] if metadata
