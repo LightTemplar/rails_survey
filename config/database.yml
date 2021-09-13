@@ -26,7 +26,8 @@ development:
   # database: wci_development
   # database: pofo_development
   # database: isee
-  database: isee_dev
+  # database: isee_dev
+  database: lengo
   pool: 30
   # timeout: 5000
 

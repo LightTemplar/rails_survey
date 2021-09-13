@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
-ruby '2.7.3'
+ruby '2.7.4'
 gem 'activeadmin', '~> 2.4'
 gem 'activerecord-import', '~> 1.0', '>= 1.0.3'
 gem 'active_storage_validations', '~> 0.9.2'
@@ -22,7 +22,7 @@ gem 'gruff', '~> 0.13.0'
 gem 'hiredis', '~> 0.6.1'
 gem 'kaminari', '~> 1.1', '>= 1.1.1'
 gem 'knock', '~> 2.1', '>= 2.1.1'
-gem 'mini_racer', '~> 0.3.1'
+# gem 'mini_racer', '~> 0.4.0'
 gem 'paper_trail', '~> 9.2.0'
 gem 'paper_trail-association_tracking', '~> 1.0.0'
 gem 'paranoia', '~> 2.4.1'
