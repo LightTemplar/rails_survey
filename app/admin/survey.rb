@@ -85,7 +85,7 @@ ActiveAdmin.register Survey do
     column :uuid
     column 'Identifier', &:identifier
     column 'Instrument', sortable: :instrument_title do |survey|
-      link_to survey.instrument_title, "/projects/#{survey.instrument.project_id}/instruments/#{survey.instrument_id}/displays"
+      link_to survey.instrument.title, "/projects/#{survey.instrument.project_id}/instruments/#{survey.instrument_id}/displays"
     end
     column 'Versions', sortable: :instrument_version_number, &:instrument_version_number
     column :language
