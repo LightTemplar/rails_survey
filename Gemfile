@@ -44,7 +44,7 @@ gem 'responders', '~> 2.0'
 gem 'rubyzip', '~> 1.3'
 gem 'sass-rails', '~> 5.0.0'
 gem 'seed_dump', '3.2.4'
-gem 'sidekiq', '~> 4.2', '>= 4.2.10'
+gem 'sidekiq', '~> 5.2', '>= 5.2.8'
 gem 'sidekiq-client-cli', '0.1.7'
 gem 'sinatra', '~> 1.4.5', require: nil
 gem 'sprockets', '~> 3.7', '>= 3.7.1'
@@ -58,7 +58,7 @@ group :production do
 end
 
 group :development do
-  gem 'better_errors', '2.1.1'
+  gem 'better_errors', '2.9.1'
   gem 'binding_of_caller', '0.7.2'
   gem 'bullet', '5.4.2'
   gem 'byebug', '~> 9.0', '>= 9.0.6'
@@ -82,5 +82,5 @@ group :test do
 end
 
 group :doc do
-  gem 'sdoc', '0.4.2', require: false
+  gem 'sdoc', '1.0.0', require: false
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201208185338) do
+ActiveRecord::Schema.define(version: 20211119171201) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -49,6 +49,8 @@ ActiveRecord::Schema.define(version: 20201208185338) do
     t.integer  "device_user_id"
   end
 
+  add_index "api_keys", ["access_token"], name: "index_api_keys_on_access_token", using: :btree
+
   create_table "back_translations", force: :cascade do |t|
     t.text     "text"
     t.string   "language"
@@ -74,6 +76,10 @@ ActiveRecord::Schema.define(version: 20201208185338) do
     t.datetime "updated_at",                    null: false
   end
 
+  add_index "condition_skips", ["deleted_at"], name: "index_condition_skips_on_deleted_at", using: :btree
+  add_index "condition_skips", ["instrument_question_id"], name: "index_condition_skips_on_instrument_question_id", using: :btree
+  add_index "condition_skips", ["updated_at"], name: "index_condition_skips_on_updated_at", using: :btree
+
   create_table "critical_responses", force: :cascade do |t|
     t.string   "question_identifier"
     t.string   "option_identifier"
@@ -83,9 +89,11 @@ ActiveRecord::Schema.define(version: 20201208185338) do
     t.datetime "updated_at",          null: false
   end
 
+  add_index "critical_responses", ["deleted_at"], name: "index_critical_responses_on_deleted_at", using: :btree
   add_index "critical_responses", ["instruction_id"], name: "index_critical_responses_on_instruction_id", using: :btree
   add_index "critical_responses", ["option_identifier"], name: "index_critical_responses_on_option_identifier", using: :btree
   add_index "critical_responses", ["question_identifier"], name: "index_critical_responses_on_question_identifier", using: :btree
+  add_index "critical_responses", ["updated_at"], name: "index_critical_responses_on_updated_at", using: :btree
 
   create_table "device_device_users", force: :cascade do |t|
     t.integer  "device_id"
@@ -141,6 +149,12 @@ ActiveRecord::Schema.define(version: 20201208185338) do
     t.integer  "instrument_question_id"
   end
 
+  add_index "display_instructions", ["deleted_at"], name: "index_display_instructions_on_deleted_at", using: :btree
+  add_index "display_instructions", ["display_id"], name: "index_display_instructions_on_display_id", using: :btree
+  add_index "display_instructions", ["instruction_id"], name: "index_display_instructions_on_instruction_id", using: :btree
+  add_index "display_instructions", ["instrument_question_id"], name: "index_display_instructions_on_instrument_question_id", using: :btree
+  add_index "display_instructions", ["updated_at"], name: "index_display_instructions_on_updated_at", using: :btree
+
   create_table "display_translations", force: :cascade do |t|
     t.integer  "display_id"
     t.text     "text"
@@ -148,6 +162,8 @@ ActiveRecord::Schema.define(version: 20201208185338) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  add_index "display_translations", ["display_id"], name: "index_display_translations_on_display_id", using: :btree
 
   create_table "displays", force: :cascade do |t|
     t.string   "mode"
@@ -165,6 +181,7 @@ ActiveRecord::Schema.define(version: 20201208185338) do
   add_index "displays", ["instrument_id"], name: "index_displays_on_instrument_id", using: :btree
   add_index "displays", ["position"], name: "index_displays_on_position", using: :btree
   add_index "displays", ["section_id"], name: "index_displays_on_section_id", using: :btree
+  add_index "displays", ["updated_at"], name: "index_displays_on_updated_at", using: :btree
 
   create_table "folders", force: :cascade do |t|
     t.integer  "question_set_id"
@@ -184,6 +201,10 @@ ActiveRecord::Schema.define(version: 20201208185338) do
     t.datetime "created_at",                       null: false
     t.datetime "updated_at",                       null: false
   end
+
+  add_index "follow_up_questions", ["deleted_at"], name: "index_follow_up_questions_on_deleted_at", using: :btree
+  add_index "follow_up_questions", ["instrument_question_id"], name: "index_follow_up_questions_on_instrument_question_id", using: :btree
+  add_index "follow_up_questions", ["updated_at"], name: "index_follow_up_questions_on_updated_at", using: :btree
 
   create_table "grid_label_translations", force: :cascade do |t|
     t.integer  "grid_label_id"
@@ -257,6 +278,7 @@ ActiveRecord::Schema.define(version: 20201208185338) do
 
   add_index "instructions", ["deleted_at"], name: "index_instructions_on_deleted_at", using: :btree
   add_index "instructions", ["title"], name: "index_instructions_on_title", using: :btree
+  add_index "instructions", ["updated_at"], name: "index_instructions_on_updated_at", using: :btree
 
   create_table "instrument_questions", force: :cascade do |t|
     t.integer  "question_id"
@@ -277,6 +299,7 @@ ActiveRecord::Schema.define(version: 20201208185338) do
   add_index "instrument_questions", ["instrument_id"], name: "index_instrument_questions_on_instrument_id", using: :btree
   add_index "instrument_questions", ["number_in_instrument"], name: "index_instrument_questions_on_number_in_instrument", using: :btree
   add_index "instrument_questions", ["question_id"], name: "index_instrument_questions_on_question_id", using: :btree
+  add_index "instrument_questions", ["updated_at"], name: "index_instrument_questions_on_updated_at", using: :btree
 
   create_table "instrument_rules", force: :cascade do |t|
     t.integer  "instrument_id"
@@ -295,6 +318,8 @@ ActiveRecord::Schema.define(version: 20201208185338) do
     t.datetime "updated_at"
     t.boolean  "active",        default: false
   end
+
+  add_index "instrument_translations", ["instrument_id"], name: "index_instrument_translations_on_instrument_id", using: :btree
 
   create_table "instruments", force: :cascade do |t|
     t.string   "title"
@@ -317,6 +342,10 @@ ActiveRecord::Schema.define(version: 20201208185338) do
     t.boolean  "auto_export_responses",   default: true
   end
 
+  add_index "instruments", ["deleted_at"], name: "index_instruments_on_deleted_at", using: :btree
+  add_index "instruments", ["project_id"], name: "index_instruments_on_project_id", using: :btree
+  add_index "instruments", ["updated_at"], name: "index_instruments_on_updated_at", using: :btree
+
   create_table "loop_questions", force: :cascade do |t|
     t.integer  "instrument_question_id"
     t.string   "parent"
@@ -329,7 +358,9 @@ ActiveRecord::Schema.define(version: 20201208185338) do
     t.text     "replacement_text"
   end
 
+  add_index "loop_questions", ["deleted_at"], name: "index_loop_questions_on_deleted_at", using: :btree
   add_index "loop_questions", ["instrument_question_id"], name: "index_loop_questions_on_instrument_question_id", using: :btree
+  add_index "loop_questions", ["updated_at"], name: "index_loop_questions_on_updated_at", using: :btree
 
   create_table "metrics", force: :cascade do |t|
     t.integer  "instrument_id"
@@ -351,8 +382,10 @@ ActiveRecord::Schema.define(version: 20201208185338) do
     t.string   "value"
   end
 
+  add_index "multiple_skips", ["deleted_at"], name: "index_multiple_skips_on_deleted_at", using: :btree
   add_index "multiple_skips", ["instrument_question_id"], name: "index_multiple_skips_on_instrument_question_id", using: :btree
   add_index "multiple_skips", ["option_identifier"], name: "index_multiple_skips_on_option_identifier", using: :btree
+  add_index "multiple_skips", ["updated_at"], name: "index_multiple_skips_on_updated_at", using: :btree
 
   create_table "next_questions", force: :cascade do |t|
     t.string   "question_identifier"
@@ -366,8 +399,10 @@ ActiveRecord::Schema.define(version: 20201208185338) do
     t.boolean  "complete_survey"
   end
 
+  add_index "next_questions", ["deleted_at"], name: "index_next_questions_on_deleted_at", using: :btree
   add_index "next_questions", ["instrument_question_id"], name: "index_next_questions_on_instrument_question_id", using: :btree
   add_index "next_questions", ["option_identifier"], name: "index_next_questions_on_option_identifier", using: :btree
+  add_index "next_questions", ["updated_at"], name: "index_next_questions_on_updated_at", using: :btree
 
   create_table "option_in_option_sets", force: :cascade do |t|
     t.integer  "option_id",                          null: false
@@ -380,9 +415,11 @@ ActiveRecord::Schema.define(version: 20201208185338) do
     t.boolean  "is_exclusive",       default: false
   end
 
+  add_index "option_in_option_sets", ["deleted_at"], name: "index_option_in_option_sets_on_deleted_at", using: :btree
   add_index "option_in_option_sets", ["number_in_question"], name: "index_option_in_option_sets_on_number_in_question", using: :btree
   add_index "option_in_option_sets", ["option_id"], name: "index_option_in_option_sets_on_option_id", using: :btree
   add_index "option_in_option_sets", ["option_set_id"], name: "index_option_in_option_sets_on_option_set_id", using: :btree
+  add_index "option_in_option_sets", ["updated_at"], name: "index_option_in_option_sets_on_updated_at", using: :btree
 
   create_table "option_scores", force: :cascade do |t|
     t.integer  "score_unit_id"
@@ -418,7 +455,9 @@ ActiveRecord::Schema.define(version: 20201208185338) do
     t.integer  "option_in_option_sets_count", default: 0
   end
 
+  add_index "option_sets", ["deleted_at"], name: "index_option_sets_on_deleted_at", using: :btree
   add_index "option_sets", ["instruction_id"], name: "index_option_sets_on_instruction_id", using: :btree
+  add_index "option_sets", ["updated_at"], name: "index_option_sets_on_updated_at", using: :btree
 
   create_table "option_translations", force: :cascade do |t|
     t.integer  "option_id"
@@ -441,6 +480,10 @@ ActiveRecord::Schema.define(version: 20201208185338) do
     t.integer  "instrument_version_number", default: -1
     t.string   "identifier"
   end
+
+  add_index "options", ["deleted_at"], name: "index_options_on_deleted_at", using: :btree
+  add_index "options", ["identifier"], name: "index_options_on_identifier", using: :btree
+  add_index "options", ["updated_at"], name: "index_options_on_updated_at", using: :btree
 
   create_table "project_device_users", force: :cascade do |t|
     t.integer  "project_id"
@@ -515,11 +558,13 @@ ActiveRecord::Schema.define(version: 20201208185338) do
     t.integer  "images_count",          default: 0
   end
 
+  add_index "questions", ["deleted_at"], name: "index_questions_on_deleted_at", using: :btree
   add_index "questions", ["instruction_id"], name: "index_questions_on_instruction_id", using: :btree
   add_index "questions", ["option_set_id"], name: "index_questions_on_option_set_id", using: :btree
   add_index "questions", ["question_identifier"], name: "index_questions_on_question_identifier", unique: true, using: :btree
   add_index "questions", ["question_set_id"], name: "index_questions_on_question_set_id", using: :btree
   add_index "questions", ["special_option_set_id"], name: "index_questions_on_special_option_set_id", using: :btree
+  add_index "questions", ["updated_at"], name: "index_questions_on_updated_at", using: :btree
 
   create_table "randomized_factors", force: :cascade do |t|
     t.integer  "instrument_id"
@@ -692,6 +737,7 @@ ActiveRecord::Schema.define(version: 20201208185338) do
 
   add_index "sections", ["deleted_at"], name: "index_sections_on_deleted_at", using: :btree
   add_index "sections", ["instrument_id"], name: "index_sections_on_instrument_id", using: :btree
+  add_index "sections", ["updated_at"], name: "index_sections_on_updated_at", using: :btree
 
   create_table "skip_patterns", force: :cascade do |t|
     t.string   "option_identifier"
