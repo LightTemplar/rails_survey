@@ -27,6 +27,7 @@ config/deploy/production.rb
 config/*.pem
 config/secrets.yml
 config/centers.csv
+config/*.key
 
 # Ignore Rubymine files
 scopes/scope_settings.xml

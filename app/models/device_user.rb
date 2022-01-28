@@ -24,6 +24,7 @@ class DeviceUser < ApplicationRecord
   has_many :ongoing_surveys, -> { ongoing }, class_name: 'Survey'
   has_many :completed_surveys, -> { finished }, class_name: 'Survey'
   has_many :survey_scores, through: :completed_surveys
+  has_one :api_key, dependent: :destroy
 
   validates :username, presence: true, uniqueness: true, allow_blank: false
   validates :name, presence: true
