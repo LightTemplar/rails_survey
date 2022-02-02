@@ -12,6 +12,7 @@
 #  deleted_at                  :datetime
 #  instruction_id              :integer
 #  option_in_option_sets_count :integer          default(0)
+#  align_image_vertical        :boolean          default(TRUE)
 #
 
 class OptionSet < ApplicationRecord
@@ -55,6 +56,10 @@ class OptionSet < ApplicationRecord
                                                 .on(option_set_primary_key.eq option_set_foreign_key)
                                                 .join_sources
     joins(option_in_option_sets_left_join).where(option_in_option_sets.table_name => { option_in_option_sets.klass.primary_key => nil })
+  end
+
+  def has_images?
+    option_in_option_sets.pluck(:has_image).include?(true)
   end
 
   private

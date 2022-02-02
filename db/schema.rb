@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_20_164241) do
+ActiveRecord::Schema.define(version: 2022_02_02_182821) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -465,6 +465,7 @@ ActiveRecord::Schema.define(version: 2021_07_20_164241) do
     t.integer "instruction_id"
     t.boolean "allow_text_entry", default: false
     t.text "exclusion_ids"
+    t.boolean "has_image", default: false
     t.index ["instruction_id"], name: "index_option_in_option_sets_on_instruction_id"
     t.index ["number_in_question"], name: "index_option_in_option_sets_on_number_in_question"
     t.index ["option_id"], name: "index_option_in_option_sets_on_option_id"
@@ -501,6 +502,7 @@ ActiveRecord::Schema.define(version: 2021_07_20_164241) do
     t.datetime "deleted_at"
     t.integer "instruction_id"
     t.integer "option_in_option_sets_count", default: 0
+    t.boolean "align_image_vertical", default: true
     t.index ["instruction_id"], name: "index_option_sets_on_instruction_id"
     t.index ["title"], name: "index_option_sets_on_title", unique: true
   end

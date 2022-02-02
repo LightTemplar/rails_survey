@@ -17,6 +17,8 @@ end
 
 node :question_identifier, &:identifier
 
+node :has_images, &:has_images?
+
 node :instruction_id do |iq|
   iq.question&.instruction_id
 end
