@@ -26,6 +26,8 @@
 #  position                  :integer
 #  pop_up_instruction_id     :integer
 #  after_text_instruction_id :integer
+#  has_question_image        :boolean          default(FALSE)
+#  question_image_height     :integer          default(500)
 #
 
 require "spec_helper"

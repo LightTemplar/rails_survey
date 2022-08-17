@@ -100,12 +100,18 @@ class Instrument < ApplicationRecord
   end
 
   def order_instrument_questions
+    s_position = 1
+    d_position = 1
     position = 1
     ActiveRecord::Base.transaction do
       sections.each do |section|
+        section.update_columns(position: s_position)
+        s_position += 1
         section.displays.each do |display|
+          display.update_columns(instrument_id: id, position: d_position)
+          d_position += 1
           display.instrument_questions.each do |instrument_question|
-            instrument_question.update_columns(number_in_instrument: position)
+            instrument_question.update_columns(number_in_instrument: position, instrument_id: id)
             position += 1
           end
         end
@@ -372,15 +378,13 @@ class Instrument < ApplicationRecord
             (1..12).each do |n|
               create_loop_question(lq, variable_identifiers, question_identifier_variables, n)
             end
+          elsif !lq.option_indices.blank?
+            lq.option_indices.split(',').each do |ind|
+              create_loop_question(lq, variable_identifiers, question_identifier_variables, ind)
+            end
           else
-            if !lq.option_indices.blank?
-              lq.option_indices.split(',').each do |ind|
-                create_loop_question(lq, variable_identifiers, question_identifier_variables, ind)
-              end
-            else
-              iq.question.options.each_with_index do |_option, idx|
-                create_loop_question(lq, variable_identifiers, question_identifier_variables, idx)
-              end
+            iq.question.options.each_with_index do |_option, idx|
+              create_loop_question(lq, variable_identifiers, question_identifier_variables, idx)
             end
           end
         end

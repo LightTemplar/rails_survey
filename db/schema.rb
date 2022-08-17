@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_02_182821) do
+ActiveRecord::Schema.define(version: 2022_05_24_191526) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -603,6 +603,8 @@ ActiveRecord::Schema.define(version: 2022_02_02_182821) do
     t.integer "position"
     t.integer "pop_up_instruction_id"
     t.integer "after_text_instruction_id"
+    t.boolean "has_question_image", default: false
+    t.integer "question_image_height", default: 500
     t.index ["after_text_instruction_id"], name: "index_questions_on_after_text_instruction_id"
     t.index ["instruction_id"], name: "index_questions_on_instruction_id"
     t.index ["option_set_id"], name: "index_questions_on_option_set_id"
