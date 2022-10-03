@@ -79,6 +79,8 @@ Rails.application.routes.draw do
       end
       resources :instructions
       resources :options
+      resources :tasks
+      resources :task_option_sets
       resources :questions, only: %i[index show copy] do
         member do
           get :copy
@@ -94,7 +96,9 @@ Rails.application.routes.draw do
 
     namespace :v3 do
       resources :projects, only: :index do
-        resources :instruments, only: :index
+        resources :instruments, only: :index do
+          resources :images, only: %i[index show]
+        end
         resources :sections, only: :index
         resources :instructions, only: :index
         resources :questions, only: :index
@@ -104,7 +108,8 @@ Rails.application.routes.draw do
         resources :randomized_options, only: :index
         resources :question_randomized_factors, only: :index
         resources :device_users, only: %i[index create]
-        resources :images, only: %i[index show]
+        resources :diagrams, only: :index
+        resources :tasks, only: :index
         resources :rules, only: :index
         resources :score_schemes, only: :index
         resources :score_units, only: :index

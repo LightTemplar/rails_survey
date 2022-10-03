@@ -47,6 +47,10 @@ node :special_option_set_id do |iq|
   iq.question&.special_option_set_id
 end
 
+node :task_id do |iq|
+  iq.question&.task_id
+end
+
 node :identifies_survey do |iq|
   iq.question&.identifies_survey
 end

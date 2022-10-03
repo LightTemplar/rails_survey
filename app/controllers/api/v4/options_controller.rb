@@ -39,7 +39,7 @@ class Api::V4::OptionsController < Api::V4::ApiController
   private
 
   def option_params
-    params.require(:option).permit(:text, :identifier)
+    params.require(:option).permit(:text, :identifier, :text_one, :text_two)
   end
 
   def set_option

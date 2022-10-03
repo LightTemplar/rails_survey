@@ -4,13 +4,14 @@
 #
 # Table name: options
 #
-#  id                        :integer          not null, primary key
-#  text                      :text
-#  created_at                :datetime
-#  updated_at                :datetime
-#  deleted_at                :datetime
-#  instrument_version_number :integer          default(-1)
-#  identifier                :string
+#  id         :integer          not null, primary key
+#  text       :text
+#  created_at :datetime
+#  updated_at :datetime
+#  deleted_at :datetime
+#  identifier :string
+#  text_one   :string
+#  text_two   :string
 #
 
 class Option < ApplicationRecord
@@ -72,25 +73,9 @@ class Option < ApplicationRecord
     text
   end
 
-  # TODO: Doesn't work anymore
-  def instrument_version
-    if instrument && (read_attribute(:instrument_version_number) == -1)
-      instrument.current_version_number
-    else
-      read_attribute(:instrument_version_number)
-    end
-  end
-
   def update_option_translation(status = true)
     translations.each do |translation|
       translation.update_attribute(:option_changed, status)
     end
-  end
-
-  private
-
-  def record_instrument_version_number
-    update_column(:instrument_version_number, instrument.current_version_number)
-    question.update_column(:instrument_version_number, instrument.current_version_number)
   end
 end

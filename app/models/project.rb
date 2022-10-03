@@ -57,6 +57,9 @@ class Project < ApplicationRecord
   has_many :critical_responses, through: :instruments
   has_many :loop_questions, through: :instruments
   has_many :published_instruments, -> { published }, class_name: 'Instrument'
+  has_many :tasks, through: :instruments
+  has_many :task_option_sets, through: :tasks
+  has_many :diagrams, through: :questions
 
   validates :name, presence: true, allow_blank: false
   validates :description, presence: true, allow_blank: true
@@ -67,7 +70,8 @@ class Project < ApplicationRecord
   end
 
   def api_options
-    Option.includes(:translations).where(id: api_option_in_option_sets.pluck(:option_id).uniq)
+    option_ids = api_option_in_option_sets.pluck(:option_id).uniq + diagrams.pluck(:option_id).uniq
+    Option.includes(:translations).where(id: option_ids)
   end
 
   def api_instrument_questions

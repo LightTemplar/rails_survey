@@ -2,11 +2,7 @@
 
 collection @options
 
-attributes :id, :identifier, :text, :deleted_at
-
-node :instrument_version_number do |_o|
-  -1
-end
+attributes :id, :identifier, :text, :text_one, :text_two, :deleted_at
 
 child :translations do
   attributes :id, :option_id, :text, :language

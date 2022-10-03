@@ -2,13 +2,14 @@
 #
 # Table name: options
 #
-#  id                        :integer          not null, primary key
-#  text                      :text
-#  created_at                :datetime
-#  updated_at                :datetime
-#  deleted_at                :datetime
-#  instrument_version_number :integer          default(-1)
-#  identifier                :string
+#  id         :integer          not null, primary key
+#  text       :text
+#  created_at :datetime
+#  updated_at :datetime
+#  deleted_at :datetime
+#  identifier :string
+#  text_one   :string
+#  text_two   :string
 #
 
 require "spec_helper"

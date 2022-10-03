@@ -78,6 +78,7 @@ namespace :instrument do
       grid.questions.each do |question|
         q = Question.find_by_question_identifier("#{question.question_identifier}_#{project_id}")
         next unless q.nil?
+
         del_q = Question.only_deleted.where(question_identifier: "#{question.question_identifier}_#{project_id}").try(:first)
         del_q.really_destroy! if del_q
         q = question.dup
@@ -109,6 +110,7 @@ namespace :instrument do
       section.questions.each do |question|
         q = Question.find_by_question_identifier("#{question.question_identifier}_#{project_id}")
         next unless q.nil?
+
         del_q = Question.only_deleted.where(question_identifier: "#{question.question_identifier}_#{project_id}").try(:first)
         del_q.really_destroy! if del_q
         q = question.dup
@@ -154,10 +156,10 @@ namespace :instrument do
       Option.skip_callback(:save, :before, :update_instrument_version)
       Option.skip_callback(:save, :before, :update_option_translation)
       Option.skip_callback(:destroy, :before, :update_instrument_version)
-      Option.skip_callback(:save, :after, :record_instrument_version_number)
       Option.skip_callback(:save, :after, :sanitize_next_question)
       question.options.each do |option|
         next if option.special
+
         o = option.dup
         o.next_question = "#{option.next_question}_#{project_id}" unless option.next_question.blank?
         o.question_id = q.id
@@ -182,7 +184,6 @@ namespace :instrument do
       Option.set_callback(:save, :before, :update_instrument_version)
       Option.set_callback(:save, :before, :update_option_translation)
       Option.set_callback(:destroy, :before, :update_instrument_version)
-      Option.set_callback(:save, :after, :record_instrument_version_number)
       Option.set_callback(:save, :after, :sanitize_next_question)
     end
     Question.set_callback(:save, :before, :update_instrument_version)
