@@ -1,4 +1,4 @@
-class ChangeResponseStringToResponseTextForResponses < ActiveRecord::Migration
+class ChangeResponseStringToResponseTextForResponses < ActiveRecord::Migration[4.2]
   def up
     change_column :responses, :text, :text, limit: nil
   end

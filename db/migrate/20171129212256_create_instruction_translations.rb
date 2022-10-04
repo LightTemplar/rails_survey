@@ -1,4 +1,4 @@
-class CreateInstructionTranslations < ActiveRecord::Migration
+class CreateInstructionTranslations < ActiveRecord::Migration[4.2]
   def change
     create_table :instruction_translations do |t|
       t.integer :instruction_id

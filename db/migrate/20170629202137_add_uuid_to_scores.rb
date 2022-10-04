@@ -1,4 +1,4 @@
-class AddUuidToScores < ActiveRecord::Migration
+class AddUuidToScores < ActiveRecord::Migration[4.2]
   def change
     add_column :scores, :uuid, :string
     add_column :scores, :survey_uuid, :string

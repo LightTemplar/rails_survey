@@ -1,4 +1,4 @@
-class CreateQuestionTranslations < ActiveRecord::Migration
+class CreateQuestionTranslations < ActiveRecord::Migration[4.2]
   def change
     create_table :question_translations do |t|
       t.integer :question_id

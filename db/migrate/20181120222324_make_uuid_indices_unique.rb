@@ -1,4 +1,4 @@
-class MakeUuidIndicesUnique < ActiveRecord::Migration
+class MakeUuidIndicesUnique < ActiveRecord::Migration[4.2]
   def change
     remove_index :responses, column: :uuid
     remove_index :surveys, column: :uuid

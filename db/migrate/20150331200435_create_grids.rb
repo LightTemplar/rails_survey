@@ -1,8 +1,6 @@
-class CreateGrids < ActiveRecord::Migration
+class CreateGrids < ActiveRecord::Migration[4.2]
   def change
-    if table_exists?(:grids)
-      drop_table :grids
-    end
+    drop_table :grids if table_exists?(:grids)
     create_table :grids do |t|
       t.integer :instrument_id
       t.string :question_type
@@ -11,8 +9,6 @@ class CreateGrids < ActiveRecord::Migration
 
       t.timestamps
     end
-    unless column_exists?(:questions, :grid_id)
-      add_column :questions, :grid_id, :integer
-    end
+    add_column :questions, :grid_id, :integer unless column_exists?(:questions, :grid_id)
   end
 end

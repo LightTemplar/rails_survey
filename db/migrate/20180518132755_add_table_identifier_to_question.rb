@@ -1,4 +1,4 @@
-class AddTableIdentifierToQuestion < ActiveRecord::Migration
+class AddTableIdentifierToQuestion < ActiveRecord::Migration[4.2]
   def change
     add_column :instrument_questions, :table_identifier, :string
     create_table :folders do |t|

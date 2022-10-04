@@ -1,4 +1,4 @@
-class CreateQuestionAssociations < ActiveRecord::Migration
+class CreateQuestionAssociations < ActiveRecord::Migration[4.2]
   def change
     create_table :question_associations do |t|
       t.integer :instrument_version

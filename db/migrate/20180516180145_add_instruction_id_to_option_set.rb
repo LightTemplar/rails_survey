@@ -1,4 +1,4 @@
-class AddInstructionIdToOptionSet < ActiveRecord::Migration
+class AddInstructionIdToOptionSet < ActiveRecord::Migration[4.2]
   def change
     add_column :option_sets, :instruction_id, :integer
     create_table :display_instructions do |t|

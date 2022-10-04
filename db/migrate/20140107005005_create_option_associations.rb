@@ -1,4 +1,4 @@
-class CreateOptionAssociations < ActiveRecord::Migration
+class CreateOptionAssociations < ActiveRecord::Migration[4.2]
   def change
     create_table :option_associations do |t|
       t.integer :option_version

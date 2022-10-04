@@ -1,4 +1,4 @@
-class AddProjectIdToDeviceSyncEntry < ActiveRecord::Migration
+class AddProjectIdToDeviceSyncEntry < ActiveRecord::Migration[4.2]
   def change
     add_column :device_sync_entries, :os_build_number, :string
     add_column :device_sync_entries, :project_id, :integer

@@ -1,4 +1,4 @@
-class CreateOptionInOptionSets < ActiveRecord::Migration
+class CreateOptionInOptionSets < ActiveRecord::Migration[4.2]
   def change
     create_table :option_in_option_sets do |t|
       t.integer :option_id, null: false

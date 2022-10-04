@@ -1,4 +1,4 @@
-class CreateDisplayTranslations < ActiveRecord::Migration
+class CreateDisplayTranslations < ActiveRecord::Migration[4.2]
   def change
     create_table :display_translations do |t|
       t.integer :display_id

@@ -1,5 +1,5 @@
-class AddImageToQuestion < ActiveRecord::Migration
+class AddImageToQuestion < ActiveRecord::Migration[4.2]
   def change
-    add_column :images, :question_id, :integer 
+    add_column :images, :question_id, :integer
   end
 end

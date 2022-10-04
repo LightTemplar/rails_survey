@@ -1,8 +1,8 @@
-class AddJobIdsToResponseExports < ActiveRecord::Migration
+class AddJobIdsToResponseExports < ActiveRecord::Migration[4.2]
   def change
     add_column :response_exports, :long_job_id, :string
     add_column :response_exports, :wide_job_id, :string
     add_column :response_exports, :wide_done, :boolean, default: :false
-    rename_column :response_exports, :done, :long_done 
+    rename_column :response_exports, :done, :long_done
   end
 end

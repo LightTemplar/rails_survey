@@ -1,4 +1,4 @@
-class CreateCriticalResponses < ActiveRecord::Migration
+class CreateCriticalResponses < ActiveRecord::Migration[4.2]
   def change
     create_table :critical_responses do |t|
       t.string :question_identifier

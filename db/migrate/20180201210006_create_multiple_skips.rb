@@ -1,4 +1,4 @@
-class CreateMultipleSkips < ActiveRecord::Migration
+class CreateMultipleSkips < ActiveRecord::Migration[4.2]
   def change
     create_table :multiple_skips do |t|
       t.string :question_identifier

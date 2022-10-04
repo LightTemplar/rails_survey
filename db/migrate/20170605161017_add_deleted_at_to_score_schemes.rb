@@ -1,4 +1,4 @@
-class AddDeletedAtToScoreSchemes < ActiveRecord::Migration
+class AddDeletedAtToScoreSchemes < ActiveRecord::Migration[4.2]
   def change
     add_column :score_schemes, :deleted_at, :datetime
     add_index :score_schemes, :deleted_at

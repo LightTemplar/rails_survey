@@ -1,4 +1,4 @@
-class CreateSkipConditions < ActiveRecord::Migration
+class CreateSkipConditions < ActiveRecord::Migration[4.2]
   def change
     create_table :condition_skips do |t|
       t.integer :instrument_question_id

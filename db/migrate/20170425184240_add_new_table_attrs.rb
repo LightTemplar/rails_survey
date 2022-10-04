@@ -1,4 +1,4 @@
-class AddNewTableAttrs < ActiveRecord::Migration
+class AddNewTableAttrs < ActiveRecord::Migration[4.2]
   def change
     remove_column :grid_labels, :option_id, :integer
     remove_column :questions, :first_in_grid, :boolean

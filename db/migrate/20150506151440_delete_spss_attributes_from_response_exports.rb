@@ -1,4 +1,4 @@
-class DeleteSpssAttributesFromResponseExports < ActiveRecord::Migration
+class DeleteSpssAttributesFromResponseExports < ActiveRecord::Migration[4.2]
   def change
     remove_column :response_exports, :spss_syntax_file_url, :string
     remove_column :response_exports, :spss_friendly_csv_url, :string

@@ -1,4 +1,4 @@
-class CreateDeviceUsers < ActiveRecord::Migration
+class CreateDeviceUsers < ActiveRecord::Migration[4.2]
   def change
     create_table :device_users do |t|
       t.string :username

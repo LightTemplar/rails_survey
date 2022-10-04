@@ -1,4 +1,4 @@
-class AddDeletedAtToSurveys < ActiveRecord::Migration
+class AddDeletedAtToSurveys < ActiveRecord::Migration[4.2]
   def change
     add_column :surveys, :deleted_at, :datetime
     add_index :surveys, :deleted_at

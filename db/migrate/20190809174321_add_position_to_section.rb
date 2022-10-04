@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class AddPositionToSection < ActiveRecord::Migration
+class AddPositionToSection < ActiveRecord::Migration[4.2]
   def change
     add_column :sections, :position, :integer
     add_index :sections, %i[instrument_id title]

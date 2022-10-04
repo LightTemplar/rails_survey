@@ -1,4 +1,4 @@
-class CreateScoreUnits < ActiveRecord::Migration
+class CreateScoreUnits < ActiveRecord::Migration[4.2]
   def change
     create_table :score_units do |t|
       t.integer :score_scheme_id

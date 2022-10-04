@@ -1,4 +1,4 @@
-class CreateGridTranslations < ActiveRecord::Migration
+class CreateGridTranslations < ActiveRecord::Migration[4.2]
   def change
     create_table :grid_translations do |t|
       t.integer :grid_id

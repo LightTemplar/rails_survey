@@ -1,4 +1,4 @@
-class CreateDeviceSyncEntries < ActiveRecord::Migration
+class CreateDeviceSyncEntries < ActiveRecord::Migration[4.2]
   def change
     create_table :device_sync_entries do |t|
       t.string :latitude

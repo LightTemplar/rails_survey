@@ -1,4 +1,4 @@
-class CreateOptionTranslations < ActiveRecord::Migration
+class CreateOptionTranslations < ActiveRecord::Migration[4.2]
   def change
     create_table :option_translations do |t|
       t.integer :option_id

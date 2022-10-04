@@ -1,4 +1,4 @@
-class AddParentIdentifierToQuestion < ActiveRecord::Migration
+class AddParentIdentifierToQuestion < ActiveRecord::Migration[4.2]
   def change
     add_column :questions, :parent_identifier, :string
     remove_column :questions, :instrument_id

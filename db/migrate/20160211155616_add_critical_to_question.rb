@@ -1,4 +1,4 @@
-class AddCriticalToQuestion < ActiveRecord::Migration
+class AddCriticalToQuestion < ActiveRecord::Migration[4.2]
   def change
     add_column :questions, :critical, :boolean
     add_column :options, :critical, :boolean

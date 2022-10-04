@@ -1,4 +1,4 @@
-class AddFollowUp < ActiveRecord::Migration
+class AddFollowUp < ActiveRecord::Migration[4.2]
   def change
     remove_column :questions, :following_up_question_identifier, :string
     remove_column :questions, :follow_up_position, :integer

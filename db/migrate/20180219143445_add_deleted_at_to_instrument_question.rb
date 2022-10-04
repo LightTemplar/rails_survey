@@ -1,4 +1,4 @@
-class AddDeletedAtToInstrumentQuestion < ActiveRecord::Migration
+class AddDeletedAtToInstrumentQuestion < ActiveRecord::Migration[4.2]
   def change
     add_column :instrument_questions, :deleted_at, :datetime
     add_index :instrument_questions, :deleted_at

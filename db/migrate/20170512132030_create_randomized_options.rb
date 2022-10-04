@@ -1,4 +1,4 @@
-class CreateRandomizedOptions < ActiveRecord::Migration
+class CreateRandomizedOptions < ActiveRecord::Migration[4.2]
   def change
     create_table :randomized_factors do |t|
       t.integer :instrument_id

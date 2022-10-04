@@ -1,4 +1,4 @@
-class AddSets < ActiveRecord::Migration
+class AddSets < ActiveRecord::Migration[4.2]
   def change
     create_table :question_sets do |t|
       t.string :title

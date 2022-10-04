@@ -1,4 +1,4 @@
-class AddSpecialTo < ActiveRecord::Migration
+class AddSpecialTo < ActiveRecord::Migration[4.2]
   def change
     remove_column :options, :special, :boolean
     remove_column :options, :question_id, :integer

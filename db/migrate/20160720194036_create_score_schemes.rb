@@ -1,4 +1,4 @@
-class CreateScoreSchemes < ActiveRecord::Migration
+class CreateScoreSchemes < ActiveRecord::Migration[4.2]
   def change
     create_table :score_schemes do |t|
       t.string :instrument_id

@@ -1,4 +1,4 @@
-class CreateRandomizedOptionTranslations < ActiveRecord::Migration
+class CreateRandomizedOptionTranslations < ActiveRecord::Migration[4.2]
   def change
     create_table :randomized_option_translations do |t|
       t.integer :instrument_translation_id

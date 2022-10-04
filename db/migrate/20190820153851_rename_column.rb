@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class RenameColumn < ActiveRecord::Migration
+class RenameColumn < ActiveRecord::Migration[4.2]
   def change
     rename_column :option_scores, :score_unit_id, :score_unit_question_id
     add_index :options, :identifier

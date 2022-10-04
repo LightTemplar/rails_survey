@@ -1,4 +1,4 @@
-class CreateSkipPatterns < ActiveRecord::Migration
+class CreateSkipPatterns < ActiveRecord::Migration[4.2]
   def change
     create_table :skip_patterns do |t|
       t.string :option_identifier

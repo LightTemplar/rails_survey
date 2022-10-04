@@ -1,4 +1,4 @@
-class AddValidationTypes < ActiveRecord::Migration
+class AddValidationTypes < ActiveRecord::Migration[4.2]
   def change
     rename_column :validations, :reg_ex_validation, :validation_text
     rename_column :validations, :reg_ex_validation_message, :validation_message
