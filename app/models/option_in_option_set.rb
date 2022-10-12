@@ -15,7 +15,7 @@
 #  instruction_id     :integer
 #  allow_text_entry   :boolean          default(FALSE)
 #  exclusion_ids      :text
-#  has_image          :boolean          default(FALSE)
+#  collage_id         :integer
 #
 
 class OptionInOptionSet < ApplicationRecord

@@ -2,4 +2,4 @@
 
 collection @diagrams
 
-attributes :id, :option_id, :question_id, :position, :deleted_at
+attributes :id, :option_id, :collage_id, :position, :deleted_at

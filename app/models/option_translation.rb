@@ -12,8 +12,6 @@
 #  updated_at                :datetime
 #  option_changed            :boolean          default(FALSE)
 #  instrument_translation_id :integer
-#  text_one                  :string
-#  text_two                  :string
 #
 
 class OptionTranslation < ApplicationRecord

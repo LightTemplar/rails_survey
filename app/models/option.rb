@@ -10,8 +10,6 @@
 #  updated_at :datetime
 #  deleted_at :datetime
 #  identifier :string
-#  text_one   :string
-#  text_two   :string
 #
 
 class Option < ApplicationRecord

@@ -81,6 +81,7 @@ Rails.application.routes.draw do
       resources :options
       resources :tasks
       resources :task_option_sets
+      resources :collages
       resources :questions, only: %i[index show copy] do
         member do
           get :copy
@@ -109,6 +110,7 @@ Rails.application.routes.draw do
         resources :question_randomized_factors, only: :index
         resources :device_users, only: %i[index create]
         resources :diagrams, only: :index
+        resources :collages, only: :index
         resources :tasks, only: :index
         resources :rules, only: :index
         resources :score_schemes, only: :index

@@ -59,6 +59,7 @@ class Project < ApplicationRecord
   has_many :published_instruments, -> { published }, class_name: 'Instrument'
   has_many :tasks, through: :instruments
   has_many :task_option_sets, through: :tasks
+  has_many :collages, through: :questions
   has_many :diagrams, through: :questions
 
   validates :name, presence: true, allow_blank: false
@@ -70,7 +71,7 @@ class Project < ApplicationRecord
   end
 
   def api_options
-    option_ids = api_option_in_option_sets.pluck(:option_id).uniq + diagrams.pluck(:option_id).uniq
+    option_ids = api_option_in_option_sets.pluck(:option_id).uniq + api_diagrams.pluck(:option_id).uniq
     Option.includes(:translations).where(id: option_ids)
   end
 
@@ -107,6 +108,15 @@ class Project < ApplicationRecord
                           critical_responses.with_deleted.pluck(:instruction_id).compact +
                           api_option_in_option_sets.pluck(:instruction_id).compact
     Instruction.includes(:instruction_translations).where(id: api_instruction_ids.uniq)
+  end
+
+  def api_collages
+    option_set_collage_ids = api_option_in_option_sets.pluck(:collage_id) + collages.pluck(:id)
+    Collage.where(id: option_set_collage_ids.uniq)
+  end
+
+  def api_diagrams
+    Diagram.where(collage_id: api_collages.pluck(:id).uniq)
   end
 
   def special_option_sets

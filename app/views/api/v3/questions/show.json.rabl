@@ -17,8 +17,6 @@ end
 
 node :question_identifier, &:identifier
 
-node :has_option_images, &:has_option_images?
-
 node :instruction_id do |iq|
   iq.question&.instruction_id
 end
@@ -81,14 +79,6 @@ end
 
 node :default_response do |iq|
   iq.question&.default_response
-end
-
-node :has_question_image do |iq|
-  iq.question&.has_question_image
-end
-
-node :question_image_height do |iq|
-  iq.question&.question_image_height
 end
 
 child :translations do |_t|

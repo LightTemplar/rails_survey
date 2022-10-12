@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_09_07_155042) do
+ActiveRecord::Schema.define(version: 2022_10_06_200151) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -117,6 +117,15 @@ ActiveRecord::Schema.define(version: 2022_09_07_155042) do
     t.index ["identifier"], name: "index_centers_on_identifier"
   end
 
+  create_table "collages", force: :cascade do |t|
+    t.integer "question_id"
+    t.string "name"
+    t.integer "position"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "condition_skips", id: :serial, force: :cascade do |t|
     t.integer "instrument_question_id"
     t.string "question_identifier"
@@ -189,11 +198,11 @@ ActiveRecord::Schema.define(version: 2022_09_07_155042) do
 
   create_table "diagrams", force: :cascade do |t|
     t.integer "option_id"
-    t.integer "question_id"
     t.integer "position"
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "collage_id"
   end
 
   create_table "display_instructions", id: :serial, force: :cascade do |t|
@@ -474,7 +483,7 @@ ActiveRecord::Schema.define(version: 2022_09_07_155042) do
     t.integer "instruction_id"
     t.boolean "allow_text_entry", default: false
     t.text "exclusion_ids"
-    t.boolean "has_image", default: false
+    t.integer "collage_id"
     t.index ["instruction_id"], name: "index_option_in_option_sets_on_instruction_id"
     t.index ["number_in_question"], name: "index_option_in_option_sets_on_number_in_question"
     t.index ["option_id"], name: "index_option_in_option_sets_on_option_id"
@@ -524,8 +533,6 @@ ActiveRecord::Schema.define(version: 2022_09_07_155042) do
     t.datetime "updated_at"
     t.boolean "option_changed", default: false
     t.integer "instrument_translation_id"
-    t.string "text_one"
-    t.string "text_two"
     t.index ["language"], name: "index_option_translations_on_language"
     t.index ["option_id"], name: "index_option_translations_on_option_id"
   end
@@ -536,8 +543,6 @@ ActiveRecord::Schema.define(version: 2022_09_07_155042) do
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.string "identifier"
-    t.string "text_one"
-    t.string "text_two"
     t.index ["identifier"], name: "index_options_on_identifier"
   end
 
@@ -615,8 +620,6 @@ ActiveRecord::Schema.define(version: 2022_09_07_155042) do
     t.integer "position"
     t.integer "pop_up_instruction_id"
     t.integer "after_text_instruction_id"
-    t.boolean "has_question_image", default: false
-    t.integer "question_image_height", default: 500
     t.integer "task_id"
     t.index ["after_text_instruction_id"], name: "index_questions_on_after_text_instruction_id"
     t.index ["instruction_id"], name: "index_questions_on_instruction_id"

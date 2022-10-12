@@ -28,8 +28,6 @@
 #  position                  :integer
 #  pop_up_instruction_id     :integer
 #  after_text_instruction_id :integer
-#  has_question_image        :boolean          default(FALSE)
-#  question_image_height     :integer          default(500)
 #  task_id                   :integer
 #
 
@@ -59,7 +57,8 @@ class Question < ApplicationRecord
   has_many :instruments, -> { distinct }, through: :instrument_questions
   has_many :skip_patterns, foreign_key: 'question_identifier', primary_key: 'question_identifier', dependent: :destroy
   has_many :task_option_sets, through: :task
-  has_many :diagrams, dependent: :destroy
+  has_many :collages, dependent: :destroy
+  has_many :diagrams, through: :collages
 
   before_save :update_question_translation, if: proc { |question| question.saved_change_to_text? }
   after_touch :touch_instrument_questions

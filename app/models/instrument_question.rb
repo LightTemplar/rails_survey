@@ -268,10 +268,6 @@ class InstrumentQuestion < ApplicationRecord
     end
   end
 
-  def has_option_images?
-    question.option_set&.has_images?
-  end
-
   private
 
   def update_display_instructions

@@ -58,10 +58,6 @@ class OptionSet < ApplicationRecord
     joins(option_in_option_sets_left_join).where(option_in_option_sets.table_name => { option_in_option_sets.klass.primary_key => nil })
   end
 
-  def has_images?
-    option_in_option_sets.pluck(:has_image).include?(true)
-  end
-
   private
 
   def set_option_specialty
