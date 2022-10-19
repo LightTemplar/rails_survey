@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_10_06_200151) do
+ActiveRecord::Schema.define(version: 2022_10_13_161304) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -118,9 +118,7 @@ ActiveRecord::Schema.define(version: 2022_10_06_200151) do
   end
 
   create_table "collages", force: :cascade do |t|
-    t.integer "question_id"
     t.string "name"
-    t.integer "position"
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -203,6 +201,8 @@ ActiveRecord::Schema.define(version: 2022_10_06_200151) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "collage_id"
+    t.index ["collage_id"], name: "index_diagrams_on_collage_id"
+    t.index ["option_id"], name: "index_diagrams_on_option_id"
   end
 
   create_table "display_instructions", id: :serial, force: :cascade do |t|
@@ -472,6 +472,17 @@ ActiveRecord::Schema.define(version: 2022_10_06_200151) do
     t.index ["option_identifier"], name: "index_next_questions_on_option_identifier"
   end
 
+  create_table "option_collages", force: :cascade do |t|
+    t.integer "option_in_option_set_id"
+    t.integer "collage_id"
+    t.integer "position"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collage_id"], name: "index_option_collages_on_collage_id"
+    t.index ["option_in_option_set_id"], name: "index_option_collages_on_option_in_option_set_id"
+  end
+
   create_table "option_in_option_sets", id: :serial, force: :cascade do |t|
     t.integer "option_id", null: false
     t.integer "option_set_id", null: false
@@ -483,7 +494,6 @@ ActiveRecord::Schema.define(version: 2022_10_06_200151) do
     t.integer "instruction_id"
     t.boolean "allow_text_entry", default: false
     t.text "exclusion_ids"
-    t.integer "collage_id"
     t.index ["instruction_id"], name: "index_option_in_option_sets_on_instruction_id"
     t.index ["number_in_question"], name: "index_option_in_option_sets_on_number_in_question"
     t.index ["option_id"], name: "index_option_in_option_sets_on_option_id"
@@ -566,6 +576,17 @@ ActiveRecord::Schema.define(version: 2022_10_06_200151) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string "survey_aggregator"
+  end
+
+  create_table "question_collages", force: :cascade do |t|
+    t.integer "question_id"
+    t.integer "collage_id"
+    t.integer "position"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collage_id"], name: "index_question_collages_on_collage_id"
+    t.index ["question_id"], name: "index_question_collages_on_question_id"
   end
 
   create_table "question_randomized_factors", id: :serial, force: :cascade do |t|

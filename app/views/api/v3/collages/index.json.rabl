@@ -2,4 +2,4 @@
 
 collection @collages
 
-attributes :id, :name, :question_id, :position, :deleted_at
+attributes :id, :name, :deleted_at

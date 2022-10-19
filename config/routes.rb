@@ -111,6 +111,8 @@ Rails.application.routes.draw do
         resources :device_users, only: %i[index create]
         resources :diagrams, only: :index
         resources :collages, only: :index
+        resources :option_collages, only: :index
+        resources :question_collages, only: :index
         resources :tasks, only: :index
         resources :rules, only: :index
         resources :score_schemes, only: :index

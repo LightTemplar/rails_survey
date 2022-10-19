@@ -20,6 +20,9 @@ class OptionSet < ApplicationRecord
 
   has_many :option_in_option_sets, -> { order 'number_in_question' }, dependent: :destroy
   has_many :options, through: :option_in_option_sets
+  has_many :option_collages, through: :option_in_option_sets
+  has_many :collages, through: :option_in_option_sets
+  has_many :diagrams, through: :collages
   has_many :translations, through: :options
   has_many :questions, dependent: :nullify
   has_many :option_set_translations

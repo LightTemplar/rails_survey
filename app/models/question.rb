@@ -57,7 +57,8 @@ class Question < ApplicationRecord
   has_many :instruments, -> { distinct }, through: :instrument_questions
   has_many :skip_patterns, foreign_key: 'question_identifier', primary_key: 'question_identifier', dependent: :destroy
   has_many :task_option_sets, through: :task
-  has_many :collages, dependent: :destroy
+  has_many :question_collages, dependent: :destroy
+  has_many :collages, through: :question_collages
   has_many :diagrams, through: :collages
 
   before_save :update_question_translation, if: proc { |question| question.saved_change_to_text? }

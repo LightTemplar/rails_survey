@@ -59,8 +59,6 @@ class Project < ApplicationRecord
   has_many :published_instruments, -> { published }, class_name: 'Instrument'
   has_many :tasks, through: :instruments
   has_many :task_option_sets, through: :tasks
-  has_many :collages, through: :questions
-  has_many :diagrams, through: :questions
 
   validates :name, presence: true, allow_blank: false
   validates :description, presence: true, allow_blank: true
@@ -75,6 +73,11 @@ class Project < ApplicationRecord
     Option.includes(:translations).where(id: option_ids)
   end
 
+  def api_option_collages
+    ids = api_option_in_option_sets.pluck(:id).uniq
+    OptionCollage.where(option_in_option_set_id: ids)
+  end
+
   def api_instrument_questions
     InstrumentQuestion.includes(:instrument, question: %i[instruction option_set], translations: [:question]).where(instrument_id: published_instruments.pluck(:id))
   end
@@ -85,6 +88,11 @@ class Project < ApplicationRecord
 
   def api_questions
     Question.where(id: api_instrument_questions.pluck(:question_id).uniq)
+  end
+
+  def api_question_collages
+    ids = api_questions.pluck(:id).uniq
+    QuestionCollage.where(question_id: ids)
   end
 
   def api_displays
@@ -111,8 +119,8 @@ class Project < ApplicationRecord
   end
 
   def api_collages
-    option_set_collage_ids = api_option_in_option_sets.pluck(:collage_id) + collages.pluck(:id)
-    Collage.where(id: option_set_collage_ids.uniq)
+    collage_ids = api_option_collages.pluck(:collage_id) + api_question_collages.pluck(:collage_id)
+    Collage.where(id: collage_ids.uniq)
   end
 
   def api_diagrams

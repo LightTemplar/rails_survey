@@ -14,9 +14,6 @@ class Api::V4::FolderQuestionsController < Api::V4::ApiController
   def create
     question = @folder.questions.new(question_params)
     if question.save
-      params[:question][:diagrams].each_with_index do |option_id, index|
-        Diagram.create(question_id: question.id, option_id: option_id, position: index)
-      end
       render json: question, status: :created
     else
       render json: { errors: question.errors.full_messages }, status: :unprocessable_entity
@@ -53,6 +50,6 @@ class Api::V4::FolderQuestionsController < Api::V4::ApiController
                                      :instruction_id, :critical, :special_option_set_id, :folder_id,
                                      :validation_id, :rank_responses, :pdf_response_height,
                                      :pdf_print_options, :pop_up_instruction_id, :after_text_instruction_id,
-                                     :default_response, :position, :task_id, :diagrams)
+                                     :default_response, :position, :task_id)
   end
 end

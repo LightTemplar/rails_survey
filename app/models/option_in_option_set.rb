@@ -15,7 +15,6 @@
 #  instruction_id     :integer
 #  allow_text_entry   :boolean          default(FALSE)
 #  exclusion_ids      :text
-#  collage_id         :integer
 #
 
 class OptionInOptionSet < ApplicationRecord
@@ -23,7 +22,8 @@ class OptionInOptionSet < ApplicationRecord
   belongs_to :option
   belongs_to :option_set, touch: true, counter_cache: true
   belongs_to :instruction
-
+  has_many :option_collages, dependent: :destroy
+  has_many :collages, through: :option_collages
   after_save :set_special
 
   has_paper_trail

@@ -14,6 +14,5 @@
 class Diagram < ApplicationRecord
   belongs_to :option
   belongs_to :collage
-  delegate :question, to: :collage
   acts_as_paranoid
 end

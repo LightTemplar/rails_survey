@@ -35,7 +35,6 @@ class DeviceUser < ApplicationRecord
   end
 
   def self.from_token_request(request)
-    puts request.params
     user_name = request.params['auth'] && request.params['auth']['username']
     find_by username: user_name
   end
