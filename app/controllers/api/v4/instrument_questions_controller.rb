@@ -49,7 +49,7 @@ class Api::V4::InstrumentQuestionsController < Api::V4::ApiController
   def instrument_question_params
     params.require(:instrument_question).permit(:instrument_id, :question_id, :position,
                                                 :display_id, :identifier, :table_identifier,
-                                                :carry_forward_identifier,
+                                                :carry_forward_identifier, :show_number,
                                                 :next_question_operator, :multiple_skip_operator,
                                                 :next_question_neutral_ids, :multiple_skip_neutral_ids)
   end

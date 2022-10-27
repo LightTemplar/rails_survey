@@ -5,7 +5,8 @@ object @instrument_question
 attributes :id, :instrument_id, :question_id, :number_in_instrument, :display_id,
            :identifier, :following_up_question_identifier, :table_identifier,
            :carry_forward_identifier, :position, :next_question_operator,
-           :multiple_skip_operator, :next_question_neutral_ids, :multiple_skip_neutral_ids
+           :multiple_skip_operator, :next_question_neutral_ids, :show_number,
+           :multiple_skip_neutral_ids
 
 node :country_list, &:country_list
 

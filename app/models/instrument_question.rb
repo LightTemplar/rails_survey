@@ -21,6 +21,7 @@
 #  multiple_skip_operator    :string
 #  next_question_neutral_ids :text
 #  multiple_skip_neutral_ids :text
+#  show_number               :boolean          default(TRUE)
 #
 
 class InstrumentQuestion < ApplicationRecord

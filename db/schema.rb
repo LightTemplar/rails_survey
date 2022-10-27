@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_10_13_161304) do
+ActiveRecord::Schema.define(version: 2022_10_27_144146) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -377,6 +377,7 @@ ActiveRecord::Schema.define(version: 2022_10_13_161304) do
     t.string "multiple_skip_operator"
     t.text "next_question_neutral_ids"
     t.text "multiple_skip_neutral_ids"
+    t.boolean "show_number", default: true
     t.index ["deleted_at"], name: "index_instrument_questions_on_deleted_at"
     t.index ["display_id"], name: "index_instrument_questions_on_display_id"
     t.index ["identifier"], name: "index_instrument_questions_on_identifier"
@@ -642,6 +643,7 @@ ActiveRecord::Schema.define(version: 2022_10_13_161304) do
     t.integer "pop_up_instruction_id"
     t.integer "after_text_instruction_id"
     t.integer "task_id"
+    t.boolean "record_audio", default: false
     t.index ["after_text_instruction_id"], name: "index_questions_on_after_text_instruction_id"
     t.index ["instruction_id"], name: "index_questions_on_instruction_id"
     t.index ["option_set_id"], name: "index_questions_on_option_set_id"

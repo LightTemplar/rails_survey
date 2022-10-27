@@ -29,6 +29,7 @@
 #  pop_up_instruction_id     :integer
 #  after_text_instruction_id :integer
 #  task_id                   :integer
+#  record_audio              :boolean          default(FALSE)
 #
 
 class Question < ApplicationRecord
