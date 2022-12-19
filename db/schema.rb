@@ -20,8 +20,8 @@ ActiveRecord::Schema.define(version: 2022_10_27_144146) do
     t.text "body"
     t.string "resource_id", null: false
     t.string "resource_type", null: false
-    t.integer "author_id"
     t.string "author_type"
+    t.integer "author_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.index ["author_type", "author_id"], name: "index_active_admin_comments_on_author_type_and_author_id"
@@ -78,10 +78,6 @@ ActiveRecord::Schema.define(version: 2022_10_27_144146) do
     t.integer "version"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string "apk_update_file_name"
-    t.string "apk_update_content_type"
-    t.integer "apk_update_file_size"
-    t.datetime "apk_update_updated_at"
     t.string "name"
   end
 
@@ -183,7 +179,7 @@ ActiveRecord::Schema.define(version: 2022_10_27_144146) do
     t.boolean "active", default: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.index ["username"], name: "index_device_users_on_username"
+    t.index ["username"], name: "index_device_users_on_username", unique: true
   end
 
   create_table "devices", id: :serial, force: :cascade do |t|
@@ -329,10 +325,6 @@ ActiveRecord::Schema.define(version: 2022_10_27_144146) do
   create_table "images", id: :serial, force: :cascade do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string "photo_file_name"
-    t.string "photo_content_type"
-    t.integer "photo_file_size"
-    t.datetime "photo_updated_at"
     t.integer "question_id"
     t.string "description"
     t.integer "number"
@@ -719,10 +711,6 @@ ActiveRecord::Schema.define(version: 2022_10_27_144146) do
     t.string "response_uuid"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string "picture_file_name"
-    t.string "picture_content_type"
-    t.integer "picture_file_size"
-    t.datetime "picture_updated_at"
   end
 
   create_table "response_images_exports", id: :serial, force: :cascade do |t|
@@ -993,10 +981,10 @@ ActiveRecord::Schema.define(version: 2022_10_27_144146) do
 
   create_table "taggings", id: :serial, force: :cascade do |t|
     t.integer "tag_id"
-    t.integer "taggable_id"
     t.string "taggable_type"
-    t.integer "tagger_id"
+    t.integer "taggable_id"
     t.string "tagger_type"
+    t.integer "tagger_id"
     t.string "context", limit: 128
     t.datetime "created_at"
     t.index ["context"], name: "index_taggings_on_context"
@@ -1076,8 +1064,8 @@ ActiveRecord::Schema.define(version: 2022_10_27_144146) do
     t.datetime "invitation_sent_at"
     t.datetime "invitation_accepted_at"
     t.integer "invitation_limit"
-    t.integer "invited_by_id"
     t.string "invited_by_type"
+    t.integer "invited_by_id"
     t.integer "invitations_count", default: 0
     t.string "password_digest"
     t.index ["authentication_token"], name: "index_users_on_authentication_token", unique: true

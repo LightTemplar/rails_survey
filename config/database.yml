@@ -25,6 +25,7 @@ development:
   # database: from_instruments2_development
   # database: wci_development
   # database: pofo_development
+  # database: pofo_production
   # database: isee
   database: isee_dev
   pool: 30
