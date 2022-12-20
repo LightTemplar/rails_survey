@@ -27,7 +27,8 @@ development:
   # database: pofo_development
   # database: pofo_production
   # database: isee
-  database: isee_dev
+  # database: isee_dev
+  database: dce_development
   pool: 30
   # timeout: 5000
 
@@ -36,7 +37,8 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: isee_test
+  # database: isee_test
+  database: dce_test
 
 production:
   adapter: postgresql
