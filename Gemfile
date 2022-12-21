@@ -34,7 +34,7 @@ gem 'puma', '~> 5.6', '>= 5.6.5'
 gem 'pundit', '1.1.0'
 gem 'rabl', '~> 0.14.2'
 gem 'rack-cors', '~> 1.0', '>= 1.0.3'
-gem 'rails', '5.2.8'
+gem 'rails', '~> 5.2', '>= 5.2.8.1'
 gem 'rails-html-sanitizer', '~> 1.3'
 gem 'redis', '3.3.5'
 gem 'redis-rails', '5.0.2'
@@ -80,5 +80,5 @@ group :test do
 end
 
 group :doc do
-  gem 'sdoc', '1.1.0', require: false
+  # gem 'sdoc', '1.1.0', require: false
 end
