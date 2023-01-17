@@ -1,3 +1,8 @@
+require: rubocop-rails
+
+AllCops:
+  NewCops: enable
+
 Layout/LineLength:
   Enabled: false
   
