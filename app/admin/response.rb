@@ -27,7 +27,7 @@ ActiveAdmin.register Response do
     column 'Special', :special_response
     column 'Other', :other_response
     column 'Entry', :other_text
-    column :rank_order
+    column :randomized_data
     column 'Images', :response_image do |response|
       image_tag(response.response_image.picture.url(:medium)) if response.response_image&.picture
     end
