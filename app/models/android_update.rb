@@ -4,15 +4,11 @@
 #
 # Table name: android_updates
 #
-#  id                      :integer          not null, primary key
-#  version                 :integer
-#  created_at              :datetime
-#  updated_at              :datetime
-#  apk_update_file_name    :string
-#  apk_update_content_type :string
-#  apk_update_file_size    :integer
-#  apk_update_updated_at   :datetime
-#  name                    :string
+#  id         :integer          not null, primary key
+#  version    :integer
+#  created_at :datetime
+#  updated_at :datetime
+#  name       :string
 #
 
 class AndroidUpdate < ApplicationRecord

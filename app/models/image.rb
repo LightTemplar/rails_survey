@@ -4,17 +4,13 @@
 #
 # Table name: images
 #
-#  id                 :integer          not null, primary key
-#  created_at         :datetime
-#  updated_at         :datetime
-#  photo_file_name    :string
-#  photo_content_type :string
-#  photo_file_size    :integer
-#  photo_updated_at   :datetime
-#  question_id        :integer
-#  description        :string
-#  number             :integer
-#  deleted_at         :datetime
+#  id          :integer          not null, primary key
+#  created_at  :datetime
+#  updated_at  :datetime
+#  question_id :integer
+#  description :string
+#  number      :integer
+#  deleted_at  :datetime
 #
 
 class Image < ApplicationRecord

@@ -4,14 +4,10 @@
 #
 # Table name: response_images
 #
-#  id                   :integer          not null, primary key
-#  response_uuid        :string
-#  created_at           :datetime
-#  updated_at           :datetime
-#  picture_file_name    :string
-#  picture_content_type :string
-#  picture_file_size    :integer
-#  picture_updated_at   :datetime
+#  id            :integer          not null, primary key
+#  response_uuid :string
+#  created_at    :datetime
+#  updated_at    :datetime
 #
 
 class ResponseImage < ApplicationRecord

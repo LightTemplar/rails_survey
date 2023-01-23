@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_10_27_144146) do
+ActiveRecord::Schema.define(version: 2023_01_20_192347) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -852,6 +852,7 @@ ActiveRecord::Schema.define(version: 2022_10_27_144146) do
     t.integer "instrument_id"
     t.datetime "deleted_at"
     t.integer "position"
+    t.boolean "randomize_displays", default: false
     t.index ["deleted_at"], name: "index_sections_on_deleted_at"
     t.index ["instrument_id", "title"], name: "index_sections_on_instrument_id_and_title"
     t.index ["instrument_id"], name: "index_sections_on_instrument_id"

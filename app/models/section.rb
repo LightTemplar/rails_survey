@@ -4,13 +4,14 @@
 #
 # Table name: sections
 #
-#  id            :integer          not null, primary key
-#  title         :string
-#  created_at    :datetime
-#  updated_at    :datetime
-#  instrument_id :integer
-#  deleted_at    :datetime
-#  position      :integer
+#  id                 :integer          not null, primary key
+#  title              :string
+#  created_at         :datetime
+#  updated_at         :datetime
+#  instrument_id      :integer
+#  deleted_at         :datetime
+#  position           :integer
+#  randomize_displays :boolean          default(FALSE)
 #
 
 class Section < ApplicationRecord
