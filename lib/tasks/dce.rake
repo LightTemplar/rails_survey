@@ -68,13 +68,13 @@ task :dce, [:project_id] => :environment do |_t, args|
       question.translations.find_or_create_by(language: language)
               .update(text: 'Tafadhali zingatia chaguo tatu zifuatazo.')
 
+      iq = display.instrument_questions.find_or_create_by(identifier: "#{row[3]}-#{prefix}#{row[4]}")
       display.reload
       instrument.reload
-      iq = display.instrument_questions.find_or_create_by(identifier: "#{row[3]}-#{prefix}#{row[4]}")
       iq.update(instrument_id: instrument.id,
                 question_id: question.id,
-                position: display.instrument_questions.size + 1,
-                number_in_instrument: instrument.instrument_questions.size + 1)
+                position: display.instrument_questions.size,
+                number_in_instrument: instrument.instrument_questions.size)
 
       %w[A B C].each do |letter|
         Option.find_or_create_by(identifier: "#{row[3]}-#{prefix}#{row[4]}-#{letter}") do |option|
@@ -141,14 +141,14 @@ task :dce, [:project_id] => :environment do |_t, args|
       fol_qst.translations.find_or_create_by(language: language)
              .update(text: '<p>Ulichagua [followup] kama chaguo unalopendelea zaidi.</p>')
 
+      fd_iq = fol_dis.instrument_questions.find_or_create_by(identifier: "#{row[3]}-#{prefix}#{row[4]}-Followup")
       fol_dis.reload
       instrument.reload
-      fol_dis.instrument_questions.find_or_create_by(identifier: "#{row[3]}-#{prefix}#{row[4]}-Followup")
-             .update(instrument_id: instrument.id,
-                     question_id: fol_qst.id,
-                     position: fol_dis.instrument_questions.size + 1,
-                     number_in_instrument: instrument.instrument_questions.size + 1,
-                     carry_forward_identifier: iq.identifier)
+      fd_iq.update(instrument_id: instrument.id,
+                   question_id: fol_qst.id,
+                   position: fol_dis.instrument_questions.size,
+                   number_in_instrument: instrument.instrument_questions.size,
+                   carry_forward_identifier: iq.identifier)
     end
   end
 end

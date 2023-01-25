@@ -33,6 +33,7 @@ class Instrument < ApplicationRecord
   has_many :option_sets, -> { distinct }, through: :questions
   has_many :option_translations, through: :options, source: :translations
   has_many :option_in_option_sets, -> { distinct }, through: :option_sets
+  has_many :option_in_option_sets, through: :option_sets
   has_many :options, through: :option_in_option_sets
   has_many :displays, -> { order(position: :asc) }, dependent: :destroy
   has_many :display_translations, through: :displays
