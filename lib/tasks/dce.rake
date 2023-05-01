@@ -1,48 +1,37 @@
 # frozen_string_literal: true
 
-# Run using the command rake 'dce[:project_id]'
+require 'dce/project_setup'
+
+# Run using the command `rake 'dce[:project_id]'`
 desc 'Create DCE tasks from CSV files'
 task :dce, [:project_id] => :environment do |_t, args|
-  project = Project.find_by(id: args[:project_id].to_i)
-  if project.nil?
-    Rake::Task['setup'].reenable
-    Rake::Task['setup'].invoke
-    project = Project.first
-  end
-  instrument = project.instruments.find_or_create_by(title: 'DCE Choice Tasks')
-  instrument.update(published: true, language: 'en')
-  language = 'sw'
-  instrument.translations.find_or_create_by(language: language)
-            .update(title: 'DCE Kazi Za Kuchagua', active: true)
+  ps = ProjectSetup.new(args[:project_id])
+  ps.setup_instrument
+  instrument = ps.instrument
+  language = ps.translation_language
   puts instrument.inspect
-  files = ["#{Rails.root}/files/dce/DCEMergeMen.csv",
-           "#{Rails.root}/files/dce/DCEMergeWomen.csv"]
-  files.each do |filename|
+  ps.setup_demographics
+
+  ps.files.each do |filename|
     puts "name = #{filename}"
     CSV.foreach(filename, headers: true) do |row|
       break if row[0].blank?
 
-      qs = QuestionSet.find_or_create_by(title: filename.split('/').last.split('.').first)
-      puts qs.inspect
-
-      prefix = qs.title == 'DCEMergeWomen' ? 'F' : 'M'
-      instrument.reload
-      section = instrument.sections.find_or_create_by(title: "#{prefix}#{row[4]}")
-      randomize = row[4] != '0'
-      section.update(position: instrument.sections.size + 1, randomize_displays: randomize)
+      ps.setup_qs(filename, row)
+      prefix = ps.prefix
+      folder = ps.folder
+      ps.setup_section
+      section = ps.section
       puts section.inspect
-
-      qs.reload
-      folder = qs.folders.find_or_create_by(title: "#{prefix}#{row[4]}")
-      folder.update(position: qs.folders.size)
       puts folder.inspect
-
-      section.reload
-      instrument.reload
-      display = section.displays.find_or_create_by(title: "#{prefix}#{row[4]}-#{row[6]}")
-      display.update(instrument_id: instrument.id, position: section.displays.size + 1,
-                     instrument_position: instrument.displays.size + 1)
-      puts display.inspect
+      ps.setup_display
+      display = ps.display
+      # section.reload
+      # instrument.reload
+      # display = section.displays.find_or_create_by(title: "#{prefix}#{row[4]}-#{row[6]}")
+      # display.update(instrument_id: instrument.id, position: section.displays.size + 1,
+      #                instrument_position: instrument.displays.size + 1)
+      # puts display.inspect
 
       first_text = 'If these options were available to you right now, which option would you prefer: A, B or C?'
       first_text_sw = 'Kama chaguo hizi zingepatikana kwako sasa, bila gharama, ni chaguo gani ungependelea: A, B au C?'

@@ -110,15 +110,19 @@ class Instrument < ApplicationRecord
       sections.each do |section|
         section.update_columns(position: s_position)
         s_position += 1
+        pos = 1
         section.displays.each do |display|
-          display.update_columns(instrument_id: id, position: d_position)
+          display.update_columns(instrument_id: id, instrument_position: d_position, position: pos)
+          Display.reset_counters(display.id, :instrument_questions)
           d_position += 1
+          pos += 1
           display.instrument_questions.each do |instrument_question|
             instrument_question.update_columns(number_in_instrument: position, instrument_id: id)
             position += 1
           end
         end
       end
+      Instrument.reset_counters(id, :instrument_questions)
     end
     reload
   end

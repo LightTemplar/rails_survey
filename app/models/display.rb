@@ -57,11 +57,14 @@ class Display < ApplicationRecord
     OptionTranslation.where(option_id: option_ids.uniq)
   end
 
-  def copy(instrument, display_type)
+  def copy(instrument, section_title, display_type = 'AS_IT_IS')
+    section = instrument.sections.where(title: section_title).first
+    section = instrument.sections.last if section.blank?
     if display_type == 'AS_IT_IS'
       copy = dup
       copy.instrument_id = instrument.id
-      copy.position = instrument.displays.size + 1
+      copy.section_id = section.id
+      copy.position = section.displays.size + 1
       copy.save!
       instrument_questions.each do |iq|
         iq.copy(copy.id, instrument.id)
@@ -72,6 +75,7 @@ class Display < ApplicationRecord
         iq.copy(display_copy.id, instrument.id)
       end
     end
+    instrument.order_instrument_questions
   end
 
   def move(destination_display_id, moved)

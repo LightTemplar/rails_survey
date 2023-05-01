@@ -25,7 +25,7 @@
 #
 
 class InstrumentQuestion < ApplicationRecord
-  belongs_to :instrument, touch: true
+  belongs_to :instrument, touch: true, counter_cache: true
   belongs_to :question
   belongs_to :display, touch: true, counter_cache: true
   belongs_to :forward_instrument_question, class_name: 'InstrumentQuestion', foreign_key: :carry_forward_identifier, primary_key: :identifier
