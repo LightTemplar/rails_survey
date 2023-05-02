@@ -2,7 +2,7 @@
 
 class ProjectSetup
   attr_accessor :row, :project, :instrument, :translation_language, :prefix, :folder,
-                :section, :display
+                :section, :display, :gender_iq
 
   def initialize(id)
     self.project = Project.find_by(id: id.to_i)
@@ -92,6 +92,47 @@ class ProjectSetup
     instrument.reload
     giq.update(instrument_id: instrument.id, question_id: qg.id,
                position: 2, number_in_instrument: 2)
+    self.gender_iq = giq
   end
 
+  def setup_gender_skips(instrument_question)
+    option = Option.find_by(identifier: 'Female') if prefix == 'M'
+    option = Option.find_by(identifier: 'Male') if prefix == 'F'
+    ms = giq_multiple_skip(instrument_question, option)
+    return if ms.present?
+
+    create_multiple_skip(instrument_question, option)
+  end
+
+  def create_multiple_skip(instrument_question, option)
+    gender_iq.multiple_skips.create(skip_question_identifier: instrument_question.identifier,
+                                    option_identifier: option.identifier,
+                                    question_identifier: gender_iq.identifier)
+  end
+
+  def giq_multiple_skip(instrument_question, option)
+    gender_iq.multiple_skips
+             .where(skip_question_identifier: instrument_question.identifier)
+             .where(option_identifier: option.identifier)
+  end
+
+  def setup_other_skips
+    female_sections = instrument.sections.where('title LIKE ?', '% Women Only')
+    option = Option.find_by(identifier: 'Male')
+    setup_section_skips(female_sections, option)
+    male_sections = instrument.sections.where('title LIKE ?', '% Men Only')
+    option = Option.find_by(identifier: 'Female')
+    setup_section_skips(male_sections, option)
+  end
+
+  def setup_section_skips(sections, option)
+    sections.each do |section|
+      section.instrument_questions.each do |iq|
+        ms = giq_multiple_skip(iq, option)
+        next if ms.present?
+
+        create_multiple_skip(iq, option)
+      end
+    end
+  end
 end

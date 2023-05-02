@@ -23,15 +23,9 @@ task :dce, [:project_id] => :environment do |_t, args|
       ps.setup_section
       section = ps.section
       puts section.inspect
-      puts folder.inspect
       ps.setup_display
       display = ps.display
-      # section.reload
-      # instrument.reload
-      # display = section.displays.find_or_create_by(title: "#{prefix}#{row[4]}-#{row[6]}")
-      # display.update(instrument_id: instrument.id, position: section.displays.size + 1,
-      #                instrument_position: instrument.displays.size + 1)
-      # puts display.inspect
+      puts display.inspect
 
       first_text = 'If these options were available to you right now, which option would you prefer: A, B or C?'
       first_text_sw = 'Kama chaguo hizi zingepatikana kwako sasa, bila gharama, ni chaguo gani ungependelea: A, B au C?'
@@ -64,6 +58,7 @@ task :dce, [:project_id] => :environment do |_t, args|
                 question_id: question.id,
                 position: display.instrument_questions.size,
                 number_in_instrument: instrument.instrument_questions.size)
+      ps.setup_gender_skips(iq)
 
       %w[A B C].each do |letter|
         Option.find_or_create_by(identifier: "#{row[3]}-#{prefix}#{row[4]}-#{letter}") do |option|
@@ -138,6 +133,8 @@ task :dce, [:project_id] => :environment do |_t, args|
                    position: fol_dis.instrument_questions.size,
                    number_in_instrument: instrument.instrument_questions.size,
                    carry_forward_identifier: iq.identifier)
+      ps.setup_gender_skips(fd_iq)
     end
   end
+  ps.setup_other_skips
 end

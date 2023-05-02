@@ -28,7 +28,8 @@ development:
   # database: pofo_production
   # database: isee
   # database: isee_dev
-  database: dce_development
+  # database: dce_development
+  database: dce
   pool: 30
   # timeout: 5000
 
