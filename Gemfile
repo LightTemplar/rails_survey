@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
-ruby '2.6.3'
+ruby '2.6.10'
 gem 'activeadmin', '~> 1.1.0'
 gem 'activerecord-import', '~> 0.25.0'
 gem 'acts-as-taggable-on', '~> 5.0'
@@ -27,7 +27,6 @@ gem 'jbuilder', '~> 1.2'
 gem 'jquery-rails', '~> 4.3', '>= 4.3.3'
 gem 'jquery-ui-rails', '6.0.1'
 gem 'mini_racer', '~> 0.6.3'
-gem 'newrelic_rpm', '~> 6.0', '>= 6.0.0.351'
 gem 'paperclip', '~> 5.2.1'
 gem 'paper_trail', '~> 9.2.0'
 gem 'paper_trail-association_tracking', '~> 1.0.0'
