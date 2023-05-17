@@ -224,9 +224,6 @@ GEM
       activerecord
       kaminari-core (= 1.2.2)
     kaminari-core (1.2.2)
-    libv8-node (16.10.0.0)
-    libv8-node (16.10.0.0-x86_64-darwin)
-    libv8-node (16.10.0.0-x86_64-linux)
     little-plugger (1.1.4)
     logging (2.3.1)
       little-plugger (~> 1.1)
@@ -249,8 +246,6 @@ GEM
       rake
     mini_mime (1.1.2)
     mini_portile2 (2.8.2)
-    mini_racer (0.6.3)
-      libv8-node (~> 16.10.0.0)
     minitest (5.18.0)
     multi_json (1.15.0)
     multipart-post (2.3.0)
@@ -533,7 +528,6 @@ DEPENDENCIES
   jbuilder (~> 1.2)
   jquery-rails (~> 4.3, >= 4.3.3)
   jquery-ui-rails (= 6.0.1)
-  mini_racer (~> 0.6.3)
   paper_trail (~> 9.2.0)
   paper_trail-association_tracking (~> 1.0.0)
   paperclip (~> 5.2.1)
