@@ -15,7 +15,7 @@ set :bundle_binstubs, nil
 # Wheneverize
 set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }
 # Set Ruby version when using RVM
-set :rvm_ruby_version, '2.6.10'
+set :rvm_ruby_version, '2.5.1'
 
 # When using Phusion Passenger App Server
 # namespace :deploy do
