@@ -269,6 +269,26 @@ class InstrumentQuestion < ApplicationRecord
     end
   end
 
+  def option_set_instructions
+    question.option_set&.instruction&.text
+  end
+
+  def diagram_images(option)
+    oios = question.option_in_option_sets.where(option_id: option.id).first
+    return if oios.nil?
+
+    diagrams = oios.diagrams.map { |d| d.option.text }
+    diagrams.join(', ')
+  end
+
+  def question_text
+    str = before_text_instruction.present? ? "#{before_text_instruction} \n" : ''
+    str += text
+    str = "#{str} \n #{after_text_instruction}" if after_text_instruction.present?
+    str = "#{str} \n #{option_set_instructions}" if option_set_instructions.present?
+    str
+  end
+
   private
 
   def update_display_instructions

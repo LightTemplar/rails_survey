@@ -9,8 +9,8 @@
 #  updated_at :datetime         not null
 #
 class Collage < ApplicationRecord
-  has_many :diagrams
-  has_many :question_collages, dependent: :destroy
-  has_many :option_collages, dependent: :destroy
+  has_many :diagrams, dependent: :destroy, inverse_of: :collage
+  has_many :question_collages, dependent: :destroy, inverse_of: :collage
+  has_many :option_collages, dependent: :destroy, inverse_of: :collage
   acts_as_paranoid
 end

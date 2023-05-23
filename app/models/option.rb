@@ -19,6 +19,8 @@ class Option < ApplicationRecord
   has_many :option_sets, through: :option_in_option_sets
   has_many :translations, foreign_key: 'option_id', class_name: 'OptionTranslation', dependent: :destroy
   has_many :skip_patterns, foreign_key: 'option_identifier', dependent: :destroy
+  has_many :diagrams, dependent: :destroy, inverse_of: :option
+
   has_paper_trail
   acts_as_paranoid
 

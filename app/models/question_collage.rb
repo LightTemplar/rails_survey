@@ -11,7 +11,7 @@
 #  updated_at  :datetime         not null
 #
 class QuestionCollage < ApplicationRecord
-  belongs_to :question
-  belongs_to :collage
+  belongs_to :question, inverse_of: :question_collages
+  belongs_to :collage, inverse_of: :question_collages
   acts_as_paranoid
 end

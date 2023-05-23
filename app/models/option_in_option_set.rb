@@ -22,8 +22,10 @@ class OptionInOptionSet < ApplicationRecord
   belongs_to :option
   belongs_to :option_set, touch: true, counter_cache: true
   belongs_to :instruction
-  has_many :option_collages, dependent: :destroy
+  has_many :option_collages, -> { order 'option_collages.position' }, dependent: :destroy, inverse_of: :option_in_option_set
   has_many :collages, through: :option_collages
+  has_many :diagrams, through: :collages
+
   after_save :set_special
 
   has_paper_trail

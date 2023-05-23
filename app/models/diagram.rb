@@ -12,7 +12,7 @@
 #
 
 class Diagram < ApplicationRecord
-  belongs_to :option
-  belongs_to :collage
+  belongs_to :option, inverse_of: :diagrams
+  belongs_to :collage, inverse_of: :diagrams
   acts_as_paranoid
 end

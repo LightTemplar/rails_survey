@@ -10,6 +10,7 @@ ActiveAdmin.register Project do
       li link_to 'Exports', admin_project_response_exports_path(params[:id])
       li link_to 'Questions', admin_project_questions_path(params[:id])
       li link_to 'Schemes', admin_project_score_schemes_path(params[:id])
+      li link_to 'Instruments', admin_project_instruments_path(params[:id])
     end
   end
 

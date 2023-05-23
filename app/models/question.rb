@@ -58,7 +58,7 @@ class Question < ApplicationRecord
   has_many :instruments, -> { distinct }, through: :instrument_questions
   has_many :skip_patterns, foreign_key: 'question_identifier', primary_key: 'question_identifier', dependent: :destroy
   has_many :task_option_sets, through: :task
-  has_many :question_collages, dependent: :destroy
+  has_many :question_collages, dependent: :destroy, inverse_of: :question
   has_many :collages, through: :question_collages
   has_many :diagrams, through: :collages
 

@@ -238,23 +238,21 @@ class Instrument < ApplicationRecord
     format << ['Version number:', current_version_number]
     format << ['Language:', language]
     format << ["\n"]
-    format << %w[number_in_instrument question_identifier question_type question_instructions question_text] + instrument_translation_languages
-    questions.each do |question|
-      format << [question.number_in_instrument, question.question_identifier, question.question_type,
-                 full_sanitize(question.instructions), full_sanitize(question.text)] + translations_for_object(question)
-      question.options.each do |option|
-        format << ['', '', '', "Option for question #{question.question_identifier}", option.text] + translations_for_object(option)
-        next unless option.skips
-
-        option.skips.each do |skip|
-          format << ['', '', '', "For option #{option.text}, SKIP question", skip.question_identifier]
+    format << (%w[section display number identifier type text images] + instrument_translation_languages)
+    sections.each do |section|
+      section.displays.each_with_index do |display, index|
+        format << (index.zero? ? [section.title, display.title] : ['', display.title])
+        display.instrument_questions.each do |iq|
+          format << (['', '', iq.number_in_instrument, iq.identifier,
+                      iq.question_type, full_sanitize(iq.question_text)] +
+                    translations_for_object(iq))
+          iq.non_special_options.each do |option|
+            format << (['', '', '', '', '', full_sanitize(option.text),
+                        full_sanitize(iq.diagram_images(option))] +
+                      translations_for_object(option))
+          end
         end
       end
-      if question.reg_ex_validation_message
-        format << ['', '', '', "Regular expression failure message for #{question.question_identifier}",
-                   question.reg_ex_validation_message]
-      end
-      format << ['', '', '', 'Question identifies survey', 'YES'] if question.identifies_survey
     end
   end
 
@@ -266,10 +264,34 @@ class Instrument < ApplicationRecord
     translation_languages
   end
 
+  def question_text_translation(obj)
+    str = ''
+    obj.question.instruction.try(:instruction_translations).try(:each) do |translation|
+      str += full_sanitize(translation.text) if instrument_translation_languages.include? translation.language
+    end
+    obj.translations.each do |translation|
+      str += "\n" if str.present?
+      str += full_sanitize(translation.text) if instrument_translation_languages.include? translation.language
+    end
+    obj.question.after_text_instruction.try(:instruction_translations).try(:each) do |translation|
+      str += "\n"
+      str += full_sanitize(translation.text) if instrument_translation_languages.include? translation.language
+    end
+    obj.question.option_set.try(:instruction).try(:instruction_translations).try(:each) do |translation|
+      str += "\n"
+      str += full_sanitize(translation.text) if instrument_translation_languages.include? translation.language
+    end
+    str
+  end
+
   def translations_for_object(obj)
     text_translations = []
-    obj.translations.each do |translation|
-      text_translations << full_sanitize(translation.text) if instrument_translation_languages.include? translation.language
+    if obj.instance_of?(::InstrumentQuestion)
+      text_translations << question_text_translation(obj)
+    else
+      obj.translations.each do |translation|
+        text_translations << full_sanitize(translation.text) if instrument_translation_languages.include? translation.language
+      end
     end
     text_translations
   end

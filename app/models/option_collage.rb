@@ -11,7 +11,7 @@
 #  updated_at              :datetime         not null
 #
 class OptionCollage < ApplicationRecord
-  belongs_to :option_in_option_set
-  belongs_to :collage
+  belongs_to :option_in_option_set, inverse_of: :option_collages
+  belongs_to :collage, inverse_of: :option_collages
   acts_as_paranoid
 end
