@@ -244,7 +244,8 @@ class Instrument < ApplicationRecord
         format << (index.zero? ? [section.title, display.title] : ['', display.title])
         display.instrument_questions.each do |iq|
           format << (['', '', iq.number_in_instrument, iq.identifier,
-                      iq.question_type, full_sanitize(iq.question_text)] +
+                      iq.question_type, full_sanitize(iq.question_text),
+                      full_sanitize(iq.question_diagram_images)] +
                     translations_for_object(iq))
           iq.non_special_options.each do |option|
             format << (['', '', '', '', '', full_sanitize(option.text),

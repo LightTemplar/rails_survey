@@ -277,8 +277,11 @@ class InstrumentQuestion < ApplicationRecord
     oios = question.option_in_option_sets.where(option_id: option.id).first
     return if oios.nil?
 
-    diagrams = oios.diagrams.map { |d| d.option.text }
-    diagrams.join(', ')
+    diagrams = []
+    oios.collages.each do |collage|
+      diagrams << collage.diagrams.map { |d| d.option.text }.join(', ')
+    end
+    diagrams.join(' | ')
   end
 
   def question_text
@@ -287,6 +290,14 @@ class InstrumentQuestion < ApplicationRecord
     str = "#{str} \n #{after_text_instruction}" if after_text_instruction.present?
     str = "#{str} \n #{option_set_instructions}" if option_set_instructions.present?
     str
+  end
+
+  def question_diagram_images
+    diagrams = []
+    question.collages.each do |collage|
+      diagrams << collage.diagrams.map { |d| d.option.text }.join(', ')
+    end
+    diagrams.join(' | ')
   end
 
   private
