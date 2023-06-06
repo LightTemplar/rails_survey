@@ -1,0 +1,11 @@
+sw:
+  dce:
+    first_text: "Kama chaguo hizi zingepatikana kwako sasa, bila gharama, ni chaguo gani ungependelea: A, B au C?"
+    second_text: "Kwa chaguo mbili zilizobaki, ni gani ungependelea?"
+    third_text: "Tafadhali zingatia chaguo tatu zifuatazo."
+    fourth_text: "Chaguo"
+    fifth_text: "Kama ungeweza kuanza kutumia chaguo hili leo, sasa hivi, ama kuendelea kufanya kile unachofanya kwa kawaida, ungependelea kipi?"
+    sixth_text: "Anza kutumia chaguo hili leo"
+    seventh_text: "Endelea kufanya kile unacho kifanya kwa kawaida"
+    eighth_text: "Sina uhakika"
+    ninth_text: "Ulichagua [followup] kama chaguo unalopendelea zaidi."

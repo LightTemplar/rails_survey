@@ -9,7 +9,7 @@ set :format, :pretty
 set :keep_releases, 5
 set :linked_files, %w[config/database.yml config/local_env.yml config/secrets.yml config/centers.csv]
 set :linked_dirs, %w[log tmp/pids tmp/cache tmp/sockets vendor/bundle]
-set :linked_dirs, fetch(:linked_dirs) + %w[files updates]
+set :linked_dirs, fetch(:linked_dirs) + %w[files updates lib/data]
 set :bundle_binstubs, nil
 set :rvm_ruby_version, '2.7.3'
 set :bundle_flags, '--deployment'

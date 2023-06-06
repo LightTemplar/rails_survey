@@ -8,9 +8,10 @@ task :dce, [:project_id] => :environment do |_t, args|
   ps = ProjectSetup.new(args[:project_id])
   ps.setup_instrument
   instrument = ps.instrument
-  language = ps.translation_language
+  ps.translation_language
   puts instrument.inspect
   ps.setup_demographics
+  languages = %w[sw km]
 
   ps.files.each do |filename|
     puts "name = #{filename}"
@@ -27,30 +28,37 @@ task :dce, [:project_id] => :environment do |_t, args|
       display = ps.display
       puts display.inspect
 
-      first_text = 'If these options were available to you right now, which option would you prefer: A, B or C?'
-      first_text_sw = 'Kama chaguo hizi zingepatikana kwako sasa, bila gharama, ni chaguo gani ungependelea: A, B au C?'
-      second_text = 'Of the two remaining options, which option would you prefer?'
-      second_text_sw = 'Kwa chaguo mbili zilizobaki, ni gani ungependelea?'
+      first_text = I18n.t('dce.first_text', locale: 'en')
+      second_text = I18n.t('dce.second_text', locale: 'en')
       ins_one = Instruction.find_or_create_by(title: first_text)
       ins_one.update(text: first_text)
-      ins_one.instruction_translations.find_or_create_by(language: language).update(text: first_text_sw)
       ins_two = Instruction.find_or_create_by(title: second_text)
       ins_two.update(text: second_text)
-      ins_two.instruction_translations.find_or_create_by(language: language).update(text: second_text_sw)
+
+      languages.each do |lang|
+        first_text_tr = I18n.t('dce.first_text', locale: lang)
+        ins_one.instruction_translations.find_or_create_by(language: lang)
+               .update(text: first_text_tr)
+        second_text_tr = I18n.t('dce.second_text', locale: lang)
+        ins_two.instruction_translations.find_or_create_by(language: lang)
+               .update(text: second_text_tr)
+      end
 
       folder.reload
       option_set = OptionSet.find_or_create_by(title: "#{row[3]}-#{prefix}#{row[4]}")
       option_set.update(instruction_id: ins_two.id)
       question = folder.questions.find_or_create_by(question_identifier: "#{row[3]}-#{prefix}#{row[4]}")
-      question.update(text: 'Please consider the following three options.',
+      question.update(text: I18n.t('dce.third_text', locale: 'en'),
                       question_type: 'CHOICE_TASK',
                       question_set_id: folder.question_set_id,
                       after_text_instruction_id: ins_one.id,
                       option_set_id: option_set.id,
                       position: folder.questions.size + 1)
-      question.translations.find_or_create_by(language: language)
-              .update(text: 'Tafadhali zingatia chaguo tatu zifuatazo.')
-
+      languages.each do |lang|
+        third_text_tr = I18n.t('dce.third_text', locale: lang)
+        question.translations.find_or_create_by(language: lang)
+                .update(text: third_text_tr)
+      end
       iq = display.instrument_questions.find_or_create_by(identifier: "#{row[3]}-#{prefix}#{row[4]}")
       display.reload
       instrument.reload
@@ -64,7 +72,11 @@ task :dce, [:project_id] => :environment do |_t, args|
         Option.find_or_create_by(identifier: "#{row[3]}-#{prefix}#{row[4]}-#{letter}") do |option|
           option.text = "Option #{letter}"
           option.save
-          option.translations.find_or_create_by(language: language).update(text: "Chaguo #{letter}")
+          languages.each do |lang|
+            fourth_text_tr = I18n.t('dce.fourth_text', locale: lang)
+            option.translations.find_or_create_by(language: lang)
+                  .update(text: "#{fourth_text_tr} #{letter}")
+          end
           option_set.reload
           option_set.option_in_option_sets.find_or_create_by(option_id: option.id) do |oios|
             oios.number_in_question = option_set.option_in_option_sets.size + 1
@@ -95,36 +107,42 @@ task :dce, [:project_id] => :environment do |_t, args|
                      instrument_position: instrument.displays.size + 1)
 
       puts fol_dis.inspect
-      txt = 'If you could start using this option today, right now, or continue to do what you normally do, what would you prefer?'
-      txt_sw = 'Kama ungeweza kuanza kutumia chaguo hili leo, sasa hivi, ama kuendelea kufanya kile unachofanya kwa kawaida, ungependelea kipi?'
+      txt = I18n.t('dce.fifth_text', locale: 'en')
       instruction = Instruction.find_or_create_by(title: txt)
       instruction.update(text: txt)
-      instruction.instruction_translations.find_or_create_by(language: language).update(text: txt_sw)
+      languages.each do |lang|
+        fifth_text_tr = I18n.t('dce.fifth_text', locale: lang)
+        instruction.instruction_translations.find_or_create_by(language: lang)
+                   .update(text: fifth_text_tr)
+      end
       os = OptionSet.find_or_create_by(title: 'Best Option Preference')
-      sw_translations = ['Anza kutumia chaguo hili leo',
-                         'Endelea kufanya kile unacho kifanya kwa kawaida',
-                         'Sina uhakika']
-      ['Start using this option today',
-       'Continue to do what you normally do',
-       'Not sure'].each_with_index do |text, index|
-        opt = Option.find_or_create_by(identifier: text)
-        opt.update(text: text)
-        opt.translations.find_or_create_by(language: language).update(text: sw_translations[index])
-        os.option_in_option_sets.find_or_create_by(option_id: opt.id)
-          .update(number_in_question: index + 1)
+      languages.each do |lang|
+        translations = [I18n.t('dce.sixth_text', locale: lang),
+                        I18n.t('dce.seventh_text', locale: lang),
+                        I18n.t('dce.eighth_text', locale: lang)]
+        [I18n.t('dce.sixth_text', locale: 'en'),
+         I18n.t('dce.seventh_text', locale: 'en'),
+         I18n.t('dce.eighth_text', locale: 'en')].each_with_index do |text, index|
+          opt = Option.find_or_create_by(identifier: text)
+          opt.update(text: text)
+          opt.translations.find_or_create_by(language: lang).update(text: translations[index])
+          os.option_in_option_sets.find_or_create_by(option_id: opt.id)
+            .update(number_in_question: index + 1)
+        end
       end
 
       folder.reload
       fol_qst = folder.questions.find_or_create_by(question_identifier: "#{row[3]}-#{prefix}#{row[4]}-Followup")
-      fol_qst.update(text: '<p>You selected [followup] as your most preferred option.</p>',
+      fol_qst.update(text: "<p>#{I18n.t('dce.ninth_text', locale: 'en')}</p>",
                      question_type: 'SELECT_ONE',
                      option_set_id: os.id,
                      question_set_id: folder.question_set_id,
                      after_text_instruction_id: instruction.id,
                      position: folder.questions.size + 1)
-      fol_qst.translations.find_or_create_by(language: language)
-             .update(text: '<p>Ulichagua [followup] kama chaguo unalopendelea zaidi.</p>')
-
+      languages.each do |lang|
+        fol_qst.translations.find_or_create_by(language: lang)
+               .update(text: "<p>#{I18n.t('dce.ninth_text', locale: lang)}</p>")
+      end
       fd_iq = fol_dis.instrument_questions.find_or_create_by(identifier: "#{row[3]}-#{prefix}#{row[4]}-Followup")
       fol_dis.reload
       instrument.reload

@@ -813,3 +813,13 @@ en:
     vol6_c: "To ensure the safety of the children and staff at the center, all volunteers should undergo a screening process before working in the center. The screening process can help verify the potential volunteer’s identity, and bring to light any worrying personal histories, enabling center leadership to better protect the children in their care. These processes are conducted by outside organizations and are the responsibility of the volunteer, meaning the center only needs to conduct a basic review of documentation. Consider implementing verification processes for volunteers who wish to work at your center."
     vol6_d_d: "The interviewee noted that none of the volunteers go through a verification process before working at the center"
     vol6_d: "To ensure the safety of the children and staff at the center, all volunteers should undergo a screening process before working in the center. The screening process can help verify the potential volunteer’s identity, and bring to light any worrying personal histories, enabling center leadership to better protect the children in their care. These processes are conducted by outside organizations and are the responsibility of the volunteer, meaning the center only needs to conduct a basic review of documentation. Consider implementing verification processes for volunteers who wish to work at your center."
+  dce:
+    first_text: "If these options were available to you right now, which option would you prefer: A, B or C?"
+    second_text: "Of the two remaining options, which option would you prefer?"
+    third_text: "Please consider the following three options."
+    fourth_text: "Option"
+    fifth_text: "If you could start using this option today, right now, or continue to do what you normally do, what would you prefer?"
+    sixth_text: "Start using this option today"
+    seventh_text: "Continue to do what you normally do"
+    eighth_text: "Not sure"
+    ninth_text: "You selected [followup] as your most preferred option."
