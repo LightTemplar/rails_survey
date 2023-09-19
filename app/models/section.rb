@@ -19,7 +19,7 @@ class Section < ApplicationRecord
   belongs_to :instrument, touch: true
   has_many :displays, -> { order 'displays.position' }, dependent: :destroy
   has_many :instrument_questions, through: :displays
-  has_many :translations, foreign_key: 'section_id', class_name: 'SectionTranslation', dependent: :destroy
+  has_many :translations, class_name: 'SectionTranslation', dependent: :destroy
 
   acts_as_paranoid
   acts_as_list scope: :instrument
@@ -47,5 +47,17 @@ class Section < ApplicationRecord
 
   def display_count
     displays.count
+  end
+
+  def copy(instrument_id)
+    ins = Instrument.find instrument_id
+    return if ins.blank?
+
+    section = dup
+    section.instrument_id = instrument_id
+    section.save
+    displays.each do |display|
+      display.copy(ins, section.title)
+    end
   end
 end
