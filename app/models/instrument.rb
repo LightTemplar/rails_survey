@@ -32,13 +32,12 @@ class Instrument < ApplicationRecord
   has_many :question_translations, through: :questions, source: :translations
   has_many :option_sets, -> { distinct }, through: :questions
   has_many :option_translations, through: :options, source: :translations
-  has_many :option_in_option_sets, -> { distinct }, through: :option_sets
   has_many :option_in_option_sets, through: :option_sets
   has_many :options, through: :option_in_option_sets
   has_many :displays, -> { order(position: :asc) }, dependent: :destroy
   has_many :display_translations, through: :displays
   has_many :instrument_rules
-  has_many :translations, foreign_key: 'instrument_id', class_name: 'InstrumentTranslation', dependent: :destroy
+  has_many :translations, class_name: 'InstrumentTranslation', dependent: :destroy
   has_many :surveys
   has_many :responses, through: :surveys
   has_many :response_images, through: :responses
@@ -77,7 +76,7 @@ class Instrument < ApplicationRecord
   end
 
   def self.create_translations
-    Instrument.all.each do |instrument|
+    Instrument.all.find_each do |instrument|
       languages = instrument.question_translations.pluck(:language).uniq
       languages.each do |translation_language|
         instrument_translation = instrument.translations.where(language: translation_language).first
@@ -129,7 +128,7 @@ class Instrument < ApplicationRecord
 
   def set_skip_patterns
     ActiveRecord::Base.transaction do
-      SkipPattern.all.each do |pattern|
+      SkipPattern.all.find_each do |pattern|
         nq = next_questions.where(
           option_identifier: pattern.option_identifier,
           question_identifier: pattern.question_identifier,
@@ -226,35 +225,45 @@ class Instrument < ApplicationRecord
     surveys.pluck(:instrument_version_number).uniq
   end
 
-  def to_csv
-    CSV.generate do |csv|
-      export(csv)
+  def to_excel(file)
+    Axlsx::Package.new do |p|
+      wb = p.workbook
+      wb.add_worksheet(name: title) do |sheet|
+        export(sheet)
+      end
+      p.serialize(file.path)
     end
+    file
   end
 
-  def export(format)
-    format << ['Instrument id:', id]
-    format << ['Instrument title:', title]
-    format << ['Version number:', current_version_number]
-    format << ['Language:', language]
-    format << ["\n"]
-    format << (%w[section display number identifier type text images] + instrument_translation_languages)
+  def export(sheet)
+    write_instrument_attributes(sheet)
+    languages = instrument_translation_languages
+    sheet.add_row(%w[section display number identifier type text images] + languages)
     sections.each do |section|
       section.displays.each_with_index do |display, index|
-        format << (index.zero? ? [section.title, display.title] : ['', display.title])
+        sheet.add_row(index.zero? ? [section.title, display.title] : ['', display.title])
         display.instrument_questions.each do |iq|
-          format << (['', '', iq.number_in_instrument, iq.identifier,
-                      iq.question_type, full_sanitize(iq.question_text),
-                      full_sanitize(iq.question_diagram_images)] +
-                    translations_for_object(iq))
+          sheet.add_row(['', '', iq.number_in_instrument, iq.identifier,
+                         iq.question_type, full_sanitize(iq.question_text),
+                         full_sanitize(iq.question_diagram_images)] +
+                    translations_for_object(iq, languages))
           iq.non_special_options.each do |option|
-            format << (['', '', '', '', '', full_sanitize(option.text),
-                        full_sanitize(iq.diagram_images(option))] +
-                      translations_for_object(option))
+            sheet.add_row(['', '', '', '', '', full_sanitize(option.text),
+                           full_sanitize(iq.diagram_images(option))] +
+                      translations_for_object(option, languages))
           end
         end
       end
     end
+  end
+
+  def write_instrument_attributes(sheet)
+    sheet.add_row ['Instrument id:', id]
+    sheet.add_row ['Instrument title:', title]
+    sheet.add_row ['Version number:', current_version_number]
+    sheet.add_row ['Language:', language]
+    sheet.add_row ["\n"]
   end
 
   def instrument_translation_languages
@@ -265,33 +274,37 @@ class Instrument < ApplicationRecord
     translation_languages
   end
 
-  def question_text_translation(obj)
-    str = ''
-    obj.question.instruction.try(:instruction_translations).try(:each) do |translation|
-      str += full_sanitize(translation.text) if instrument_translation_languages.include? translation.language
+  def question_text_translation(obj, languages)
+    translation_list = []
+    languages.each do |language|
+      str = ''
+      it = obj.question.instruction&.instruction_translations&.where(language: language)&.first
+      str += full_sanitize(it.text) if it
+      qt = obj.translations&.where(language: language)&.first
+      str += "\n" if str.present? && qt
+      str += full_sanitize(qt.text) if qt
+      ati = obj.question.after_text_instruction&.instruction_translations&.where(language: language)&.first
+      str += "\n" if str.present? && ati
+      str += full_sanitize(ati.text) if ati
+      osi = obj.question.option_set&.instruction&.instruction_translations&.where(language: language)&.first
+      str += "\n" if str.present? && osi
+      str += full_sanitize(osi.text) if osi
+      translation_list << str
     end
-    obj.translations.each do |translation|
-      str += "\n" if str.present?
-      str += full_sanitize(translation.text) if instrument_translation_languages.include? translation.language
-    end
-    obj.question.after_text_instruction.try(:instruction_translations).try(:each) do |translation|
-      str += "\n"
-      str += full_sanitize(translation.text) if instrument_translation_languages.include? translation.language
-    end
-    obj.question.option_set.try(:instruction).try(:instruction_translations).try(:each) do |translation|
-      str += "\n"
-      str += full_sanitize(translation.text) if instrument_translation_languages.include? translation.language
-    end
-    str
+    translation_list
   end
 
-  def translations_for_object(obj)
+  def translations_for_object(obj, languages)
     text_translations = []
     if obj.instance_of?(::InstrumentQuestion)
-      text_translations << question_text_translation(obj)
+      question_text_translation(obj, languages).each do |translation|
+        text_translations << translation
+      end
     else
-      obj.translations.each do |translation|
-        text_translations << full_sanitize(translation.text) if instrument_translation_languages.include? translation.language
+      languages.each do |language|
+        ot = obj.translations.where(language: language).first
+        transl_text = ot.nil? ? '' : full_sanitize(ot.text)
+        text_translations << transl_text
       end
     end
     text_translations
@@ -362,12 +375,12 @@ class Instrument < ApplicationRecord
   end
 
   def export_response_images
-    unless response_images.empty?
-      file = File.new(File.join('files', 'exports').to_s + "/#{Time.now.to_i}.zip", 'a+')
-      file.close
-      export = ResponseImagesExport.create(response_export_id: response_export.id, download_url: file.path)
-      InstrumentImagesExportWorker.perform_async(id, file.path, export.id)
-    end
+    return if response_images.empty?
+
+    file = File.new(File.join('files', 'exports').to_s + "/#{Time.now.to_i}.zip", 'a+')
+    file.close
+    export = ResponseImagesExport.create(response_export_id: response_export.id, download_url: file.path)
+    InstrumentImagesExportWorker.perform_async(id, file.path, export.id)
   end
 
   def write_export_rows
@@ -389,7 +402,7 @@ class Instrument < ApplicationRecord
     identifier = "#{lq.parent}_#{lq.looped}_#{idx}"
     variable_identifiers << identifier unless variable_identifiers.include? identifier
     question_identifier_variables.each do |variable|
-      variable_identifiers << identifier + variable unless variable_identifiers.include? identifier + variable
+      variable_identifiers << (identifier + variable) unless variable_identifiers.include? identifier + variable
     end
   end
 
@@ -402,13 +415,18 @@ class Instrument < ApplicationRecord
       instrument_questions.order(:number_in_instrument)
     end
     iqs.each do |iq|
-      if !iq.loop_questions.empty?
+      if iq.loop_questions.empty?
+        variable_identifiers << iq.identifier unless variable_identifiers.include? iq.identifier
+        question_identifier_variables.each do |variable|
+          variable_identifiers << (iq.identifier + variable) unless variable_identifiers.include? iq.identifier + variable
+        end
+      else
         iq.loop_questions.each do |lq|
           if iq.question.question_type == 'INTEGER'
             (1..12).each do |n|
               create_loop_question(lq, variable_identifiers, question_identifier_variables, n)
             end
-          elsif !lq.option_indices.blank?
+          elsif lq.option_indices.present?
             lq.option_indices.split(',').each do |ind|
               create_loop_question(lq, variable_identifiers, question_identifier_variables, ind)
             end
@@ -417,11 +435,6 @@ class Instrument < ApplicationRecord
               create_loop_question(lq, variable_identifiers, question_identifier_variables, idx)
             end
           end
-        end
-      else
-        variable_identifiers << iq.identifier unless variable_identifiers.include? iq.identifier
-        question_identifier_variables.each do |variable|
-          variable_identifiers << iq.identifier + variable unless variable_identifiers.include? iq.identifier + variable
         end
       end
     end

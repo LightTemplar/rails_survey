@@ -12,7 +12,8 @@ ActiveAdmin.register Instrument do
   index do
     column :id
     column :title do |instrument|
-      link_to truncate(instrument.title, length: 50), export_admin_project_instrument_path(instrument.project_id, instrument.id)
+      link_to "#{truncate(instrument.title, length: 50)} (download)",
+              export_admin_project_instrument_path(instrument.project_id, instrument.id)
     end
     actions
   end
@@ -20,10 +21,9 @@ ActiveAdmin.register Instrument do
   controller do
     def export
       instrument = Instrument.find(params[:id])
-      filename = "#{instrument.title} #{Time.now.to_i}.csv"
+      filename = "#{instrument.title} #{Time.now.to_i}.xlsx"
       file = Tempfile.new(filename)
-      File.write(file.path, instrument.to_csv, mode: 'w')
-      send_file file, type: 'text/csv', filename: filename
+      send_file instrument.to_excel(file), type: 'text/xlsx', filename: filename
     end
   end
 end
