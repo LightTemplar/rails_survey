@@ -68,6 +68,11 @@ task :dce, [:project_id] => :environment do |_t, args|
                 number_in_instrument: instrument.instrument_questions.size)
       ps.setup_gender_skips(iq)
 
+      option_set.option_in_option_sets.each do |oios|
+        oc = oios.option_collages
+        oc.each(&:destroy) if oc.size > 3
+      end
+
       %w[A B C].each do |letter|
         option = Option.find_or_create_by(identifier: "#{row[3]}-#{prefix}#{row[4]}-#{letter}")
         option.text = "Option #{letter}"
