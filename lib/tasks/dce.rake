@@ -69,34 +69,32 @@ task :dce, [:project_id] => :environment do |_t, args|
       ps.setup_gender_skips(iq)
 
       %w[A B C].each do |letter|
-        Option.find_or_create_by(identifier: "#{row[3]}-#{prefix}#{row[4]}-#{letter}") do |option|
-          option.text = "Option #{letter}"
-          option.save
-          languages.each do |lang|
-            fourth_text_tr = I18n.t('dce.fourth_text', locale: lang)
-            option.translations.find_or_create_by(language: lang)
-                  .update(text: "#{fourth_text_tr} #{letter}")
-          end
-          option_set.reload
-          option_set.option_in_option_sets.find_or_create_by(option_id: option.id) do |oios|
-            oios.number_in_question = option_set.option_in_option_sets.size + 1
-            oios.save
-            cells = { 'A' => [8, 9, 10, 11, 12, 13],
-                      'B' => [14, 15, 16, 17, 18, 19],
-                      'C' => [20, 21, 22, 23, 24, 25] }
-            index = 0
-            cells[letter].each_slice(2) do |t_cell, i_cell|
-              collage = Collage.find_or_create_by(name: "#{row[t_cell]}-#{row[i_cell]}")
-              oios.option_collages.find_or_create_by(collage_id: collage.id).update(position: index)
-              t_option = Option.find_or_create_by(identifier: row[t_cell])
-              t_option.update(text: row[t_cell])
-              collage.diagrams.find_or_create_by(option_id: t_option.id).update(position: 0)
-              i_option = Option.find_or_create_by(identifier: row[i_cell])
-              i_option.update(text: row[i_cell])
-              collage.diagrams.find_or_create_by(option_id: i_option.id).update(position: 1)
-              index += 1
-            end
-          end
+        option = Option.find_or_create_by(identifier: "#{row[3]}-#{prefix}#{row[4]}-#{letter}")
+        option.text = "Option #{letter}"
+        option.save
+        languages.each do |lang|
+          fourth_text_tr = I18n.t('dce.fourth_text', locale: lang)
+          option.translations.find_or_create_by(language: lang)
+                .update(text: "#{fourth_text_tr} #{letter}")
+        end
+        option_set.reload
+        oios = option_set.option_in_option_sets.find_or_create_by(option_id: option.id)
+        oios.number_in_question = option_set.option_in_option_sets.size + 1
+        oios.save
+        cells = { 'A' => [8, 9, 10, 11, 12, 13],
+                  'B' => [14, 15, 16, 17, 18, 19],
+                  'C' => [20, 21, 22, 23, 24, 25] }
+        index = 0
+        cells[letter].each_slice(2) do |t_cell, i_cell|
+          collage = Collage.find_or_create_by(name: "#{row[t_cell]}-#{row[i_cell]}")
+          oios.option_collages.find_or_create_by(collage_id: collage.id).update(position: index)
+          t_option = Option.find_or_create_by(identifier: row[t_cell])
+          t_option.update(text: row[t_cell])
+          collage.diagrams.find_or_create_by(option_id: t_option.id).update(position: 0)
+          i_option = Option.find_or_create_by(identifier: row[i_cell])
+          i_option.update(text: row[i_cell])
+          collage.diagrams.find_or_create_by(option_id: i_option.id).update(position: 1)
+          index += 1
         end
       end
       section.reload
