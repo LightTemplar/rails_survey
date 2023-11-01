@@ -71,6 +71,8 @@ languages: [
              ['Khmer', 'km'],
              ['Spanish', 'es'],
              ['Swahili', 'sw'],
+             ['Swahili (Kenya)', 'sw-KE'],
+             ['Swahili (Tanzania)', 'sw-TZ'],
              ['Telugu', 'te'],
              ['Chinese', 'zh']
           ]
