@@ -21,6 +21,7 @@ Bundler.require(*Rails.groups)
 module RailsSurvey
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
+    config.environment = "development"
     config.load_defaults 5.0
 
     # Settings in config/environments/* take precedence over those specified here.
@@ -49,7 +50,8 @@ module RailsSurvey
     config.api_only = true
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins ENV['ORIGIN_1'], ENV['ORIGIN_2']
+        origins ENV.fetch('ORIGIN_1', '127.0.0.1'), ENV.fetch('ORIGIN_2', 'localhost')
+        # origins ENV['ORIGIN_1'], ENV['ORIGIN_2']
         resource '*', headers: :any,
                       expose: %w[access-token expiry token-type uid client],
                       methods: %i[get post put delete options]

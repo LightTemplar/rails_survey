@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
-ruby '2.7.3'
+ruby '2.7.8'
 gem 'activeadmin', '~> 2.4'
 gem 'activerecord-import', '~> 1.0', '>= 1.0.3'
 gem 'active_storage_validations', '~> 0.9.2'
@@ -47,6 +47,7 @@ gem 'sidekiq-client-cli', '0.1.7'
 gem 'wicked_pdf', '1.1.0'
 gem 'wkhtmltopdf-binary', '0.12.3.1'
 gem 'zip-zip', '0.3'
+gem 'matrix'
 
 group :production do
   gem 'rails_12factor', '0.0.3'
@@ -55,7 +56,7 @@ end
 group :development do
   gem 'annotate', '~> 3.0', '>= 3.0.3'
   gem 'better_errors', '~> 2.10'
-  gem 'binding_of_caller', '0.7.2'
+  gem 'binding_of_caller' #, '0.7.2'
   gem 'bullet', '~> 6.1'
   gem 'byebug', '~> 9.0', '>= 9.0.6'
   gem 'capistrano', '~> 3.12.1'
