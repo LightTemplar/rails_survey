@@ -29,7 +29,7 @@ development:
   # database: isee
   # database: isee_dev
   # database: dce_development
-  database: dce
+  database: dce_production
   pool: 30
   # timeout: 5000
 

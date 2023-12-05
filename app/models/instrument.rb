@@ -39,6 +39,7 @@ class Instrument < ApplicationRecord
   has_many :instrument_rules
   has_many :translations, class_name: 'InstrumentTranslation', dependent: :destroy
   has_many :surveys
+  has_many :survey_exports, through: :surveys
   has_many :responses, through: :surveys
   has_many :response_images, through: :responses
   has_one :response_export
@@ -369,7 +370,7 @@ class Instrument < ApplicationRecord
       ResponseExport.create(instrument_id: id, instrument_versions: survey_instrument_versions)
       reload
     end
-    response_export.update_attributes(completion: 0.0)
+    response_export.update(completion: 0.0, instrument_versions: survey_instrument_versions)
     write_export_rows
     export_response_images
   end
@@ -410,9 +411,9 @@ class Instrument < ApplicationRecord
     variable_identifiers = []
     question_identifier_variables = %w[_short_qid _question_type _label _other_text _special
                                        _other _version _text _start_time _end_time]
-    iqs = Rails.cache.fetch("instrument-questions-#{id}-#{instrument_questions.maximum('updated_at')}",
+    iqs = Rails.cache.fetch("instrument-questions-#{id}-#{instrument_questions.with_deleted.maximum('updated_at')}",
                             expires_in: 30.minutes) do
-      instrument_questions.order(:number_in_instrument)
+      instrument_questions.with_deleted.order(:number_in_instrument)
     end
     iqs.each do |iq|
       if iq.loop_questions.empty?

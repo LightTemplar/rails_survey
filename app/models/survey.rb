@@ -48,8 +48,8 @@ class Survey < ApplicationRecord
   has_paper_trail on: %i[update destroy]
 
   after_create :calculate_percentage
-  after_commit :schedule_export, if: proc { |survey| survey.instrument.auto_export_responses }
   after_save :score, if: proc { |survey| survey.completed }
+  after_commit :schedule_export, if: proc { |survey| survey.instrument.auto_export_responses }
 
   validates :uuid, presence: true, allow_blank: false
   validates :instrument_id, presence: true, allow_blank: false
@@ -79,13 +79,13 @@ class Survey < ApplicationRecord
     return unless destination_instrument
 
     saved = update_attributes(instrument_id: destination_instrument.id, instrument_version_number: destination_instrument.current_version_number)
-    if saved
-      responses.each do |response|
-        destination_question = destination_instrument.questions.where(question_identifier: "#{response.question_identifier}_#{destination_instrument.project_id}").try(:first)
-        next unless destination_question
+    return unless saved
 
-        response.update_attributes(question_identifier: destination_question.question_identifier, question_id: destination_question.id)
-      end
+    responses.each do |response|
+      destination_question = destination_instrument.questions.where(question_identifier: "#{response.question_identifier}_#{destination_instrument.project_id}").try(:first)
+      next unless destination_question
+
+      response.update_attributes(question_identifier: destination_question.question_identifier, question_id: destination_question.id)
     end
   end
 
@@ -108,13 +108,9 @@ class Survey < ApplicationRecord
     "#{latitude} / #{longitude}" if latitude && longitude
   end
 
-  def project_name
-    project.name
-  end
+  delegate :name, to: :project, prefix: true
 
-  def project_id
-    project.id
-  end
+  delegate :id, to: :project, prefix: true
 
   def group_responses_by_day
     responses.group_by_day(:created_at).count
@@ -133,7 +129,7 @@ class Survey < ApplicationRecord
   end
 
   def metadata
-    JSON.parse(read_attribute(:metadata)) unless read_attribute(:metadata).blank?
+    JSON.parse(read_attribute(:metadata)) if read_attribute(:metadata).present?
   end
 
   def center_id
@@ -158,7 +154,13 @@ class Survey < ApplicationRecord
     datetime.nil? ? created_at : datetime
   end
 
-  def question_by_identifier(question_identifier)
+  def find_instrument_question(response)
+    iq = instrument.instrument_questions.with_deleted.where(id: response.question_id).first
+    iq = instrument_question_by_identifier(response.question_identifier) if iq.nil?
+    iq
+  end
+
+  def instrument_question_by_identifier(question_identifier)
     iq = instrument.instrument_questions.with_deleted.where(identifier: question_identifier).first
     if iq.nil?
       if question_identifier.count('_') > 2
@@ -171,11 +173,12 @@ class Survey < ApplicationRecord
         iq = instrument.instrument_questions.with_deleted.where(identifier: ids[1]).first
       end
     end
-    iq&.question
+    iq
   end
 
   def option_labels(response)
-    vq = question_by_identifier(response.question_identifier)
+    iq = find_instrument_question(response)
+    vq = iq&.question
     return '' if vq.nil? || !vq.options?
 
     labels = []
@@ -197,9 +200,7 @@ class Survey < ApplicationRecord
     versioned_question.options[option_index.to_i].try(:text)
   end
 
-  def sanitize(str)
-    full_sanitizer.sanitize(str)
-  end
+  delegate :sanitize, to: :full_sanitizer
 
   def start_time
     Rails.cache.fetch("start-time-#{id}-#{updated_at}", expires_in: 30.minutes) do
@@ -221,7 +222,7 @@ class Survey < ApplicationRecord
     headers =
       Rails.cache.fetch("w_w_r_h-#{instrument_id}-#{instrument_version_number}", expires_in: 30.minutes) do
         array = instrument.wide_headers
-        Hash[array.map.with_index.to_a]
+        array.map.with_index.to_a.to_h
       end
     row = [id, uuid, device.identifier, device_label || device.label, latitude, longitude,
            instrument_id, instrument_version_number, instrument_title, start_time&.to_s, end_time&.to_s, survey_duration]
@@ -231,12 +232,13 @@ class Survey < ApplicationRecord
     end
 
     responses.each do |response|
+      iq = find_instrument_question(response)
       identifier_index = headers["q_#{response.question_identifier}"] unless response.empty?
       row[identifier_index] = response.text if identifier_index
       short_qid_index = headers["q_#{response.question_identifier}_short_qid"]
       row[short_qid_index] = response.question_id if short_qid_index
       question_type_index = headers["q_#{response.question_identifier}_question_type"]
-      row[question_type_index] = question_by_identifier(response.question_identifier).try(:question_type) if question_type_index
+      row[question_type_index] = iq&.question&.question_type if question_type_index && iq
       other_text_identifier_index = headers["q_#{response.question_identifier}_other_text"] unless response.empty?
       row[other_text_identifier_index] = response.other_text if other_text_identifier_index
       special_identifier_index = headers["q_#{response.question_identifier}_special"] unless response.empty?
@@ -248,7 +250,7 @@ class Survey < ApplicationRecord
       question_version_index = headers["q_#{response.question_identifier}_version"]
       row[question_version_index] = response.question_version if question_version_index
       question_text_index = headers["q_#{response.question_identifier}_text"]
-      row[question_text_index] = sanitize(question_by_identifier(response.question_identifier).try(:text)) if question_text_index
+      row[question_text_index] = sanitize(iq&.question&.text) if question_text_index
       start_time_index = headers["q_#{response.question_identifier}_start_time"]
       row[start_time_index] = response.time_started.to_s if start_time_index
       end_time_index = headers["q_#{response.question_identifier}_end_time"]
@@ -270,19 +272,19 @@ class Survey < ApplicationRecord
   def write_long_row
     headers = Rails.cache.fetch("w_l_r_h-#{instrument_id}-#{instrument_version_number}", expires_in: 30.minutes) do
       array = instrument.long_headers
-      Hash[array.map.with_index.to_a]
+      array.map.with_index.to_a.to_h
     end
     csv = []
     responses.each do |response|
       next if response.empty?
 
+      iq = find_instrument_question(response)
       row = Rails.cache.fetch("w_l_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}
         -#{response.updated_at}", expires_in: 30.minutes) do
         ["q_#{response.question_identifier}", "q_#{response.question_id}", instrument_id,
          response.instrument_version_number, response.question_version, instrument_title, id,
-         response.survey_uuid, device_id, device_uuid, device_label, question_by_identifier(response.question_identifier).try(:question_type),
-         sanitize(question_by_identifier(response.question_identifier).try(:text)),
-         response.text, option_labels(response), response.other_text, sanitize(response.special_response),
+         response.survey_uuid, device_id, device_uuid, device_label, iq&.question&.question_type,
+         sanitize(iq&.question&.text), response.text, option_labels(response), response.other_text, sanitize(response.special_response),
          response.other_response, response.time_started.to_s, response.time_ended.to_s, response.device_user.try(:id),
          response.device_user.try(:username), start_time&.to_s, end_time&.to_s, survey_duration]
       end
@@ -296,7 +298,7 @@ class Survey < ApplicationRecord
   end
 
   def score
-    instrument.score_schemes.where(active: true).each do |scheme|
+    instrument.score_schemes.where(active: true).find_each do |scheme|
       ScoreGeneratorWorker.perform_async(scheme.id, id)
     end
   end

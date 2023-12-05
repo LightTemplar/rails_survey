@@ -49,12 +49,11 @@ class Response < ApplicationRecord
   after_destroy :calculate_response_rate
 
   def question
-    quest = if instrument_question
-              instrument_question.question
-            else
-              survey.question_by_identifier(question_identifier)
-            end
-    quest ||= InstrumentQuestion.find(question_id)&.question
+    if instrument_question
+      instrument_question.question
+    else
+      survey.find_instrument_question(self)&.question
+    end
   end
 
   def calculate_response_rate
@@ -143,14 +142,14 @@ class Response < ApplicationRecord
       cts8_all = cts8.text.split(',').inject(0.0) { |sum, ans| sum + ans.to_i }
       sdm1 = survey.responses.where(question_identifier: 'sdm1').first
       sdm1_a = sdm1.text.split(',')[0].to_f
-      return (cts7_all + cts8_all / sdm1_a) > 20
+      return (cts7_all + (cts8_all / sdm1_a)) > 20
     elsif question.question_identifier == 'cts8'
       cts8_all = text.split(',').inject(0.0) { |sum, ans| sum + ans.to_i }
       cts7 = survey.responses.where(question_identifier: 'cts7').first
       cts7_all = cts7.text.split(',').inject(0.0) { |sum, ans| sum + ans.to_i }
       sdm1 = survey.responses.where(question_identifier: 'sdm1').first
       sdm1_a = sdm1.text.split(',')[0].to_f
-      return (cts7_all + cts8_all / sdm1_a) > 20
+      return (cts7_all + (cts8_all / sdm1_a)) > 20
     elsif question.question_identifier == 'sdm6'
       l_array = text.split(',')
       l_count = l_array[0].to_f + l_array[2].to_f
