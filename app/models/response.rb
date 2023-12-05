@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: responses
@@ -43,7 +44,7 @@ class Response < ActiveRecord::Base
     if instrument_question
       instrument_question.question
     else
-      survey.question_by_identifier(question_identifier)
+      survey.find_instrument_question(self)&.question
     end
   end
 
@@ -71,8 +72,8 @@ class Response < ActiveRecord::Base
   end
 
   def is_critical
-    return false if !question
-    
+    return false unless question
+
     if !question.select_one_variant? && !question.select_multiple_variant? && !question.list_of_boxes_variant?
       false
     elsif text.blank?

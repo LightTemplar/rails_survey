@@ -65,13 +65,13 @@ class Survey < ActiveRecord::Base
     return unless destination_instrument
 
     saved = update_attributes(instrument_id: destination_instrument.id, instrument_version_number: destination_instrument.current_version_number)
-    if saved
-      responses.each do |response|
-        destination_question = destination_instrument.questions.where(question_identifier: "#{response.question_identifier}_#{destination_instrument.project_id}").try(:first)
-        next unless destination_question
+    return unless saved
 
-        response.update_attributes(question_identifier: destination_question.question_identifier, question_id: destination_question.id)
-      end
+    responses.each do |response|
+      destination_question = destination_instrument.questions.where(question_identifier: "#{response.question_identifier}_#{destination_instrument.project_id}").try(:first)
+      next unless destination_question
+
+      response.update_attributes(question_identifier: destination_question.question_identifier, question_id: destination_question.id)
     end
   end
 
@@ -134,7 +134,13 @@ class Survey < ActiveRecord::Base
     metadata['survey_label'] if metadata
   end
 
-  def question_by_identifier(question_identifier)
+  def find_instrument_question(response)
+    iq = instrument.instrument_questions.with_deleted.where(id: response.question_id).first
+    iq = instrument_question_by_identifier(response.question_identifier) if iq.nil?
+    iq
+  end
+
+  def instrument_question_by_identifier(question_identifier)
     iq = instrument.instrument_questions.with_deleted.where(identifier: question_identifier).first
     if iq.nil?
       if question_identifier.count('_') > 2
@@ -147,11 +153,12 @@ class Survey < ActiveRecord::Base
         iq = instrument.instrument_questions.with_deleted.where(identifier: ids[1]).first
       end
     end
-    iq&.question
+    iq
   end
 
   def option_labels(response)
-    vq = question_by_identifier(response.question_identifier)
+    iq = find_instrument_question(response)
+    vq = iq&.question
     return '' if vq.nil? || !vq.options?
 
     labels = []
@@ -181,8 +188,9 @@ class Survey < ActiveRecord::Base
   def write_short_row
     rows = []
     responses.each do |response|
+      iq = find_instrument_question(response)
       row = Rails.cache.fetch("w_s_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}-#{response.updated_at}", expires_in: 30.minutes) do
-        [identifier, id, response.question_identifier, sanitize(question_by_identifier(response.question_identifier).try(:text)), response.text, option_labels(response),
+        [identifier, id, response.question_identifier, sanitize(iq&.question&.text), response.text, option_labels(response),
          response.special_response, response.other_response]
       end
       row.map! { |item| item || '' }
@@ -232,8 +240,9 @@ class Survey < ActiveRecord::Base
       row[identifier_index] = response.text if identifier_index
       short_qid_index = headers["q_#{response.question_identifier}_short_qid"]
       row[short_qid_index] = response.question_id if short_qid_index
+      iq = find_instrument_question(response)
       question_type_index = headers["q_#{response.question_identifier}_question_type"]
-      row[question_type_index] = question_by_identifier(response.question_identifier).try(:question_type) if question_type_index
+      row[question_type_index] = iq&.question&.question_type if question_type_index && iq
       special_identifier_index = headers["q_#{response.question_identifier}_special"]
       row[special_identifier_index] = response.special_response if special_identifier_index
       other_identifier_index = headers["q_#{response.question_identifier}_other"]
@@ -243,7 +252,7 @@ class Survey < ActiveRecord::Base
       question_version_index = headers["q_#{response.question_identifier}_version"]
       row[question_version_index] = response.question_version if question_version_index
       question_text_index = headers["q_#{response.question_identifier}_text"]
-      row[question_text_index] = sanitize(question_by_identifier(response.question_identifier).try(:text)) if question_text_index
+      row[question_text_index] = sanitize(iq&.question&.text) if question_text_index
       start_time_index = headers["q_#{response.question_identifier}_start_time"]
       row[start_time_index] = response.time_started&.to_s if start_time_index
       end_time_index = headers["q_#{response.question_identifier}_end_time"]
@@ -269,13 +278,13 @@ class Survey < ActiveRecord::Base
     end
     csv = []
     responses.each do |response|
+      iq = find_instrument_question(response)
       row = Rails.cache.fetch("w_l_r-#{instrument_id}-#{instrument_version_number}-#{id}-#{updated_at}-#{response.id}
         -#{response.updated_at}", expires_in: 30.minutes) do
         ["q_#{response.question_identifier}", "q_#{response.question_id}", instrument_id,
          response.instrument_version_number, response.question_version, instrument_title, id,
          response.survey_uuid, device_id, device_uuid, device_label,
-         question_by_identifier(response.question_identifier).try(:question_type),
-         sanitize(question_by_identifier(response.question_identifier).try(:text)),
+         iq&.question&.question_type, sanitize(iq&.question&.text),
          response.text, option_labels(response), response.special_response,
          response.other_response, response.time_started&.to_s, response.time_ended&.to_s,
          response.device_user.try(:id), response.device_user.try(:username),

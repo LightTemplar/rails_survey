@@ -13,8 +13,9 @@ development:
   # database: from_instruments2_development
   # database: wci_development
   # database: chpir_survey_01
-  database: pofo_production
+  # database: pofo_production
   # database: pofo_development
+  database: pofo_production_1
   pool: 5
   # timeout: 5000
 

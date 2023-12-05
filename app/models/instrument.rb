@@ -40,6 +40,7 @@ class Instrument < ActiveRecord::Base
   has_many :instrument_rules
   has_many :translations, foreign_key: 'instrument_id', class_name: 'InstrumentTranslation', dependent: :destroy
   has_many :surveys
+  has_many :survey_exports, through: :surveys
   has_many :responses, through: :surveys
   has_many :response_images, through: :responses
   has_one :response_export
@@ -180,12 +181,12 @@ class Instrument < ActiveRecord::Base
   end
 
   def update_special_options
-    if special_options != special_options_was
-      deleted_special_options = special_options_was - special_options
-      options.special_options.where(text: deleted_special_options).delete_all unless deleted_special_options.blank?
-      new_special_options = special_options - special_options_was
-      questions.each(&:create_special_options) if !new_special_options.blank? && !questions.blank?
-    end
+    return unless special_options != special_options_was
+
+    deleted_special_options = special_options_was - special_options
+    options.special_options.where(text: deleted_special_options).delete_all unless deleted_special_options.blank?
+    new_special_options = special_options - special_options_was
+    questions.each(&:create_special_options) if !new_special_options.blank? && !questions.blank?
   end
 
   def version_by_version_number(version_number)
@@ -328,7 +329,7 @@ class Instrument < ActiveRecord::Base
       ResponseExport.create(instrument_id: id, instrument_versions: survey_instrument_versions)
       reload
     end
-    response_export.update_attributes(completion: 0.0)
+    response_export.update_attributes(completion: 0.0, instrument_versions: survey_instrument_versions)
     write_export_rows
   end
 
@@ -364,9 +365,9 @@ class Instrument < ActiveRecord::Base
     variable_identifiers = []
     question_identifier_variables = %w[_short_qid _question_type _label _special
                                        _other _version _text _start_time _end_time]
-    iqs = Rails.cache.fetch("instrument-questions-#{id}-#{instrument_questions.maximum('updated_at')}",
+    iqs = Rails.cache.fetch("instrument-questions-#{id}-#{instrument_questions.with_deleted.maximum('updated_at')}",
                             expires_in: 30.minutes) do
-      instrument_questions.order(:number_in_instrument)
+      instrument_questions.with_deleted.order(:number_in_instrument)
     end
     iqs.each do |iq|
       if !iq.loop_questions.empty?
@@ -375,15 +376,13 @@ class Instrument < ActiveRecord::Base
             (1..12).each do |n|
               create_loop_question(lq, variable_identifiers, question_identifier_variables, n)
             end
+          elsif !lq.option_indices.blank?
+            lq.option_indices.split(',').each do |ind|
+              create_loop_question(lq, variable_identifiers, question_identifier_variables, ind)
+            end
           else
-            if !lq.option_indices.blank?
-              lq.option_indices.split(',').each do |ind|
-                create_loop_question(lq, variable_identifiers, question_identifier_variables, ind)
-              end
-            else
-              iq.question.options.each_with_index do |_option, idx|
-                create_loop_question(lq, variable_identifiers, question_identifier_variables, idx)
-              end
+            iq.question.options.each_with_index do |_option, idx|
+              create_loop_question(lq, variable_identifiers, question_identifier_variables, idx)
             end
           end
         end
