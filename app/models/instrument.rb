@@ -372,7 +372,6 @@ class Instrument < ApplicationRecord
     end
     response_export.update(completion: 0.0, instrument_versions: survey_instrument_versions)
     write_export_rows
-    export_response_images
   end
 
   def export_response_images
