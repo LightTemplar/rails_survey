@@ -6,6 +6,8 @@ class SurveyExportWorker
 
   def perform(survey_uuid)
     survey = Survey.includes(:responses).where(uuid: survey_uuid).try(:first)
+    return unless survey
+
     SurveyExport.create(survey_id: survey.id) unless survey.survey_export
     survey.reload
 

@@ -186,7 +186,11 @@ class Survey < ApplicationRecord
       labels << vq.options.map { |o| sanitize o.text }
     else
       response.text.split(Settings.list_delimiter).each do |option_index|
-        labels << if vq.other? && option_index.to_i == vq.other_index
+        labels << if vq.question_type == 'CHOICE_TASK'
+                    choice_task_labels(vq, option_index.to_i)
+                  elsif vq.question_type == 'PAIRWISE_COMPARISON'
+                    pairwise_comparison_labels(vq, option_index)
+                  elsif vq.other? && option_index.to_i == vq.other_index
                     'Other'
                   else
                     sanitize(label_text(vq, option_index))
@@ -194,6 +198,41 @@ class Survey < ApplicationRecord
       end
     end
     labels.join(Settings.list_delimiter)
+  end
+
+  def choice_task_labels(question, index)
+    label = ''
+    oios = question.option_set.option_in_option_sets[index]
+    oios.option_collages.each do |oc|
+      label += ' || ' if label.present?
+      oc.collage.diagrams.each do |d|
+        label += d.option.identifier
+        label += ' & ' unless d == oc.collage.diagrams.last
+      end
+    end
+    "(#{label})"
+  end
+
+  def pairwise_comparison_labels(question, index)
+    option_identifiers = []
+    question.option_in_option_sets.each do |oios|
+      oios.option_collages.each do |oc|
+        oc.collage.diagrams.each do |d|
+          option_identifiers << d.option.identifier
+        end
+      end
+    end
+    if index == '1.0'
+      "Strongly prefer #{option_identifiers[0]}"
+    elsif index == '2.0'
+      "Somewhat prefer #{option_identifiers[0]}"
+    elsif index == '3.0'
+      "No preference between #{option_identifiers[0]} and #{option_identifiers[1]}"
+    elsif index == '4.0'
+      "Somewhat prefer #{option_identifiers[1]}"
+    elsif index == '5.0'
+      "Strongly prefer #{option_identifiers[1]}"
+    end
   end
 
   def label_text(versioned_question, option_index)
