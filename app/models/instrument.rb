@@ -408,7 +408,7 @@ class Instrument < ApplicationRecord
 
   def wide_headers
     variable_identifiers = []
-    question_identifier_variables = %w[_short_qid _question_type _label _other_text _special
+    question_identifier_variables = %w[_number _short_qid _question_type _label _option_order _other_text _special
                                        _other _version _text _start_time _end_time]
     iqs = Rails.cache.fetch("instrument-questions-#{id}-#{instrument_questions.with_deleted.maximum('updated_at')}",
                             expires_in: 30.minutes) do

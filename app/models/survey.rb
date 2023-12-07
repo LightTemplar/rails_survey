@@ -257,6 +257,17 @@ class Survey < ApplicationRecord
     end_time - start_time if end_time && start_time
   end
 
+  def question_order
+    question_order = []
+    s_display_order = metadata['display_order']&.split(',')
+    s_display_order ||= instrument.displays.pluck(:title)
+    s_display_order.each do |display_title|
+      display = instrument.displays.where(title: display_title).first
+      question_order << display.instrument_questions.map(&:identifier)
+    end
+    question_order.flatten!
+  end
+
   def write_wide_row
     headers =
       Rails.cache.fetch("w_w_r_h-#{instrument_id}-#{instrument_version_number}", expires_in: 30.minutes) do
@@ -265,15 +276,17 @@ class Survey < ApplicationRecord
       end
     row = [id, uuid, device.identifier, device_label || device.label, latitude, longitude,
            instrument_id, instrument_version_number, instrument_title, start_time&.to_s, end_time&.to_s, survey_duration]
-
     metadata&.each do |k, v|
       row[headers[k]] = v
     end
-
+    order = question_order
     responses.each do |response|
       iq = find_instrument_question(response)
       identifier_index = headers["q_#{response.question_identifier}"] unless response.empty?
       row[identifier_index] = response.text if identifier_index
+      question_number_index = headers["q_#{response.question_identifier}_number"]
+      qid_index = order.index(response.question_identifier)
+      row[question_number_index] = (qid_index ? (qid_index + 1) : -1) if question_number_index
       short_qid_index = headers["q_#{response.question_identifier}_short_qid"]
       row[short_qid_index] = response.question_id if short_qid_index
       question_type_index = headers["q_#{response.question_identifier}_question_type"]
@@ -286,6 +299,8 @@ class Survey < ApplicationRecord
       row[other_identifier_index] = response.other_response if other_identifier_index
       label_index = headers["q_#{response.question_identifier}_label"]
       row[label_index] = option_labels(response) if label_index && !response.empty?
+      label_order_index = headers["q_#{response.question_identifier}_option_order"]
+      row[label_order_index] = response.randomized_data if label_order_index && response.randomized_data.present?
       question_version_index = headers["q_#{response.question_identifier}_version"]
       row[question_version_index] = response.question_version if question_version_index
       question_text_index = headers["q_#{response.question_identifier}_text"]
