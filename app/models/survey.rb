@@ -184,11 +184,11 @@ class Survey < ApplicationRecord
     labels = []
     if Settings.list_question_types.include?(vq.question_type)
       labels << vq.options.map { |o| sanitize o.text }
+    elsif vq.question_type == 'CHOICE_TASK'
+      labels = choice_task_labels(vq, response)
     else
       response.text.split(Settings.list_delimiter).each do |option_index|
-        labels << if vq.question_type == 'CHOICE_TASK'
-                    choice_task_labels(vq, option_index.to_i)
-                  elsif vq.question_type == 'PAIRWISE_COMPARISON'
+        labels << if vq.question_type == 'PAIRWISE_COMPARISON'
                     pairwise_comparison_labels(vq, option_index)
                   elsif vq.other? && option_index.to_i == vq.other_index
                     'Other'
@@ -200,7 +200,7 @@ class Survey < ApplicationRecord
     labels.join(Settings.list_delimiter)
   end
 
-  def choice_task_labels(question, index)
+  def choice_task_label(question, index)
     label = ''
     oios = question.option_set.option_in_option_sets[index]
     oios.option_collages.each do |oc|
@@ -210,7 +210,23 @@ class Survey < ApplicationRecord
         label += ' & ' unless d == oc.collage.diagrams.last
       end
     end
-    "(#{label})"
+    label
+  end
+
+  def choice_task_labels(question, response)
+    labels = []
+    indices = response.text&.split(',')
+    return [] if indices.blank?
+
+    not_selected = [0, 1, 2] - indices.map(&:to_i)
+
+    most = choice_task_label(question, indices[0].to_i) if indices[0].present?
+    labels << "(Most preferred: #{most})"
+    second = choice_task_label(question, indices[1].to_i) if indices[1].present?
+    labels << "(Second most preferred: #{second})"
+    least = choice_task_label(question, not_selected[0]) if not_selected.size == 1
+    labels << "(Least preferred: #{least})"
+    labels
   end
 
   def pairwise_comparison_labels(question, index)
