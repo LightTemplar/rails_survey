@@ -33,9 +33,9 @@ class ResponseExport < ApplicationRecord
     data = []
     survey_exports.each do |export|
       if format == 'wide'
-        data << JSON.parse(export.wide)
+        data << JSON.parse(export.wide) unless export.wide.nil?
       elsif format == 'long'
-        JSON.parse(export.long).each { |arr| data << arr }
+        JSON.parse(export.long).each { |arr| data << arr } unless export.long.nil?
       end
     end
     data = data.reject { |arr| arr.all?(&:blank?) }
@@ -48,8 +48,8 @@ class ResponseExport < ApplicationRecord
           data.each do |row|
             csv << row
           end
-        else
-          instrument.export_surveys if surveys.count > 0
+        elsif surveys.count > 0
+          instrument.export_surveys
         end
       end
     elsif extension == 'xlsx'
