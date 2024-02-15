@@ -45,7 +45,7 @@ Rails.application.configure do
   config.log_level = :debug
 
   # Prepend all log lines with the following tags.
-  config.log_tags = [ :request_id ]
+  config.log_tags = [:request_id]
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
@@ -68,13 +68,13 @@ Rails.application.configure do
   config.active_support.deprecation = :notify
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
-  config.log_formatter = ::Logger::Formatter.new
+  config.log_formatter = Logger::Formatter.new
 
   # Use a different logger for distributed setups.
   # require 'syslog/logger'
   # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
 
-  if ENV["RAILS_LOG_TO_STDOUT"].present?
+  if ENV['RAILS_LOG_TO_STDOUT'].present?
     logger           = ActiveSupport::Logger.new(STDOUT)
     logger.formatter = config.log_formatter
     config.logger    = ActiveSupport::TaggedLogging.new(logger)
@@ -82,23 +82,24 @@ Rails.application.configure do
 
   config.middleware.use ExceptionNotification::Rack,
                         email: {
-                          email_prefix: Settings.exception_notifications.email_prefix,
-                          sender_address: Settings.exception_notifications.sender,
-                          exception_recipients: Settings.exception_notifications.recipients
+                          email_prefix: ENV.fetch('EMAIL_PREFIX', nil),
+                          sender_address: ENV.fetch('EMAIL_SENDER', nil),
+                          exception_recipients: ENV.fetch('EMAIL_RECIPIENTS', nil)
                         }
 
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.smtp_settings = {
+    user_name: ENV.fetch('SMTP_USERNAME', nil),
+    password: ENV.fetch('SMTP_PASSWORD', nil),
+    domain: ENV.fetch('SMTP_DOMAIN', nil),
+    address: ENV.fetch('SMTP_ADDRESS', nil),
+    port: ENV.fetch('SMTP_PORT', nil),
     authentication: :plain,
-    address: 'smtp.mailgun.org',
-    port: 587,
-    domain: ENV['SMTP_DOMAIN'],
-    user_name: ENV['SMTP_USERNAME'],
-    password: ENV['SMTP_PASSWORD']
+    enable_starttls_auto: true
   }
-  
+
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 end

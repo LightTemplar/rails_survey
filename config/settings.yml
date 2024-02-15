@@ -83,11 +83,6 @@ special_responses: ['DK', 'RF', 'MI', 'NA']
 any_default_non_empty_response: 'ANY RESPONSE'
 skipped_question_special_response: 'SKIP'
 
-exception_notifications:
-  email_prefix: '[iSEESurvey] '
-  sender: 'noreply@chpir.org'
-  recipients: ['leonard.ngeno@duke.edu']
-
 danger_zone_days: 3
 
 metric_keys: ['device_uuid', 'Participant ID', 'Center ID']
